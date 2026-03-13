@@ -9,7 +9,7 @@ public class InventoryManager : MonoBehaviour
 
     [Header("UI Balo")]
     public GameObject khungBalo; 
-    private bool trangThaiBalo = false; 
+    public bool trangThaiBalo = false; 
 
     [Header("Cấu hình Ô UI")]
     public Transform itemHolder;  // Khung chứa các ô (Grid Layout Group)

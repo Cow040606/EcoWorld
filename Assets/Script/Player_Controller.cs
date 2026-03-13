@@ -9,6 +9,7 @@ using static UnityEditor.Progress;
 public struct DuLieuInput : INetworkInput 
 {
     public Vector2 moveInput;
+    public NetworkBool isJumpPressed;
 }
 
 public struct O_VatPham : INetworkStruct
@@ -29,6 +30,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float banKinhNhat = 5f;
     private bool NutE = false;
     private bool _daNhatRac = false; 
+    [Header("Trọng lực")]
+    public float gravity = -9.81f; // Lực hút Trái Đất chuẩn
+    private Vector3 vanTocRoi; // Biến để lưu trữ vận tốc rơi tự do
+    public float jumpForce = 5f; // Lực nhảy (Số càng to nhảy càng cao)
+    private bool jumpPressedLocal; // Lưu trạng thái bấm phím ở máy mình
     [Networked, Capacity(20)] 
     public NetworkArray<O_VatPham> TuiDo { get; }
 
@@ -57,13 +63,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 RPC_YeuCauNhatRac();
             }
-            if (Keyboard.current.iKey.wasPressedThisFrame)
+            if (Keyboard.current.bKey.wasPressedThisFrame)
             {
                 if (InventoryManager.instance != null)
                 {
                     // NÉM CÁI TÚI ĐỒ (TuiDo) VÀO TRONG HÀM NÀY:
                     InventoryManager.instance.BatTatBalo(TuiDo); 
                 }
+            }
+            if (Keyboard.current.spaceKey.wasPressedThisFrame)
+            {
+                jumpPressedLocal = true;
             }
         }
     }
@@ -75,15 +85,56 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             // Bây giờ hàm này chỉ lo mỗi việc di chuyển
             Vector3 move = data.moveInput.x * transform.right + data.moveInput.y * transform.forward;
             character.Move(move * speed * Runner.DeltaTime);
+            vanTocRoi.y += gravity * Runner.DeltaTime;
+            character.Move(vanTocRoi * Runner.DeltaTime);
         }
+        if (character.isGrounded && vanTocRoi.y < 0)
+            {
+                vanTocRoi.y = -2f; 
+            }
+        if (character.isGrounded)
+            {
+                if (vanTocRoi.y < 0)
+                {
+                    vanTocRoi.y = -2f; // Ép xuống đất
+                }
+
+                // Nếu vừa chạm đất mà người chơi bấm phím Space -> Búng lên!
+                if (data.isJumpPressed)
+                {
+                    vanTocRoi.y = jumpForce;
+                }
+            }
+        
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {   
+        
         var data = new DuLieuInput();
         data.moveInput = moveInputLocal;
+        data.isJumpPressed = jumpPressedLocal;
+
+
+        // Lúc mở balo không cho điều khiển 
+
+        if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo == true)
+        {
+            data.moveInput = Vector2.zero; // không cho di chuyển
+            data.isJumpPressed = false; // không cho nhảy
+        }
+        else
+        {
+            data.moveInput = moveInputLocal;
+        }
+
+        //
+
+
+
         
         input.Set(data);
+        jumpPressedLocal = false;
     }
 
     public void OnMove(InputValue value)
@@ -112,7 +163,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                         if (thongTin != null) 
                         {
                             // Bò check lại file Item.cs xem Bò đặt tên biến là isStackable hay stackable nha
-                            isstack = thongTin.isStackable; 
+                            isstack = thongTin.stackable; 
                         }
                     }
                     if(isstack)
@@ -138,7 +189,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
                     if (daNhat) {
                         RPC_XoaRacKhapBanDo(nObj); 
-                        Debug.Log("<color=green>Server: Nhặt thành công ID: </color>" + idThucTe);
+                        //Debug.Log("<color=green>Server: Nhặt thành công ID: </color>" + idThucTe);
                         break; 
                     }
                 }
