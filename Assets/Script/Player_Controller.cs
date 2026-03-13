@@ -2,6 +2,7 @@ using UnityEngine;
 using Fusion;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using static UnityEditor.Progress;
 
 
 
@@ -104,7 +105,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 {
                     int idThucTe = theCanCuoc.thongTinDoVat.itemID; 
                     bool daNhat = false;
-                    
+                    bool isstack = true;
+                    if (InventoryManager.instance != null)
+                    {
+                        Item thongTin = InventoryManager.instance.TraCuuItem(idThucTe);
+                        if (thongTin != null) 
+                        {
+                            // Bò check lại file Item.cs xem Bò đặt tên biến là isStackable hay stackable nha
+                            isstack = thongTin.isStackable; 
+                        }
+                    }
+                    if(isstack)
                     for (int i = 0; i < TuiDo.Length; i++) {
                         if (TuiDo[i].ItemID == idThucTe) {
                             O_VatPham doVat = TuiDo[i];
@@ -126,9 +137,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                     }
 
                     if (daNhat) {
-                        // --- SỬA Ở ĐÂY NÈ BÒ: GỌI CÁI LOA PHÁT THANH ---
                         RPC_XoaRacKhapBanDo(nObj); 
-                        
                         Debug.Log("<color=green>Server: Nhặt thành công ID: </color>" + idThucTe);
                         break; 
                     }
