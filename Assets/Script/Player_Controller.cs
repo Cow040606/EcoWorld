@@ -10,6 +10,7 @@ public struct DuLieuInput : INetworkInput
 {
     public Vector2 moveInput;
     public NetworkBool isJumpPressed;
+    public float mouseX;
 }
 
 public struct O_VatPham : INetworkStruct
@@ -25,6 +26,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Header("Di chuyển")] CharacterController character;
     public float speed = 5f;
     private Vector2 moveInputLocal;
+    [Header("Camera & Chuột")]
+    public Transform cameraTransform;
+    public float mouseSensitivity = 0.5f;
+    private float xRotation = 0f;
+    private float yRotation = 0f; // Thêm trục Y để xoay trái/phải tự do
+    public float khoangCachCamera = 4f; // Khoảng cách từ cam đến lưng nhân vật
+    private float mouseXLocalAcc;
     
     [Header("Nhặt vật phẩm")]
     public float banKinhNhat = 5f;
@@ -38,11 +46,24 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Networked, Capacity(20)] 
     public NetworkArray<O_VatPham> TuiDo { get; }
 
+
+
+
+
+
+
+
+
+
+
+
     public override void Spawned()
     {
         if (HasInputAuthority)
         {
             Runner.AddCallbacks(this); 
+            // ĐÁ CAMERA RA NGOÀI ĐỂ NÓ ĐỘC LẬP, KHÔNG BỊ XOAY THEO THÂN HÌNH
+            if (cameraTransform != null) cameraTransform.SetParent(null); 
         }
         else
         {
@@ -55,92 +76,230 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     }
 
     
+
+
+
+
+
+
+
+
+
+
+
+
+
     void Update()
     {
-        if (HasInputAuthority && Keyboard.current != null)
+        // GỘP CHUNG BÀN PHÍM VÀ CHUỘT VÀO 1 CÁI IF THÔI!
+        if (HasInputAuthority && Keyboard.current != null && Mouse.current != null)
         {
+            // 1. NHẶT ĐỒ
             if (Keyboard.current.eKey.wasPressedThisFrame)
             {
                 RPC_YeuCauNhatRac();
             }
-            if (Keyboard.current.bKey.wasPressedThisFrame)
-            {
-                if (InventoryManager.instance != null)
-                {
-                    // NÉM CÁI TÚI ĐỒ (TuiDo) VÀO TRONG HÀM NÀY:
-                    InventoryManager.instance.BatTatBalo(TuiDo); 
-                }
-            }
+
+            // 2. NHẢY
             if (Keyboard.current.spaceKey.wasPressedThisFrame)
             {
                 jumpPressedLocal = true;
             }
+
+            // 3. MỞ / ĐÓNG BALO BẰNG PHÍM B
+            if (Keyboard.current.bKey.wasPressedThisFrame)
+            {
+                if (InventoryManager.instance != null)
+                {
+                    InventoryManager.instance.BatTatBalo(TuiDo); 
+                }
+            }
+
+            // ==========================================
+            // 4. KIỂM TRA TRẠNG THÁI BALO ĐỂ XỬ LÝ CHUỘT
+            // ==========================================
+            bool baloDangMo = false;
+            if (InventoryManager.instance != null)
+            {
+                baloDangMo = InventoryManager.instance.trangThaiBalo;
+            }
+
+            if (baloDangMo == true)
+            {
+                // MỞ BALO: Hiện trỏ chuột lên, KHÔNG cho xoay camera
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            else
+            {
+                // ĐÓNG BALO: Giấu trỏ chuột đi
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+
+                // 1. Đọc dữ liệu chuột di chuyển
+                float mouseX = Mouse.current.delta.x.ReadValue() * mouseSensitivity;
+                float mouseY = Mouse.current.delta.y.ReadValue() * mouseSensitivity;
+
+                // 2. Tính toán góc quay tự do (Cả Lên/Xuống và Trái/Phải)
+                yRotation += mouseX;
+                xRotation -= mouseY;
+                xRotation = Mathf.Clamp(xRotation, -60f, 60f); 
+
+                // 3. Ốp tọa độ để Camera bay theo đuôi nhân vật
+                if (cameraTransform != null)
+                {
+                    Quaternion camRotation = Quaternion.Euler(xRotation, yRotation, 0f);
+                    
+                    // Điểm nhìn nhắm vào ngang vai nhân vật (Cộng thêm 1.5f chiều cao)
+                    Vector3 diemNhin = transform.position + Vector3.up * 1.5f; 
+                    
+                    cameraTransform.position = diemNhin - (camRotation * Vector3.forward * khoangCachCamera);
+                    cameraTransform.rotation = camRotation;
+                }
+            }
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     public override void FixedUpdateNetwork()
     {
         if (GetInput(out DuLieuInput data))
         {
-            // Bây giờ hàm này chỉ lo mỗi việc di chuyển
-            Vector3 move = data.moveInput.x * transform.right + data.moveInput.y * transform.forward;
-            character.Move(move * speed * Runner.DeltaTime);
+            // 1. TÍNH TOÁN HƯỚNG DI CHUYỂN
+            // Ép dữ liệu từ W A S D vào trục X và Z của thế giới 3D (không dùng transform.forward nữa)
+            Vector3 huongDiChuyen = new Vector3(data.moveInput.x, 0f, data.moveInput.y);
+
+            // 2. XOAY MẶT THEO HƯỚNG ĐI
+            if (huongDiChuyen.magnitude >= 0.1f) // Nếu có bấm phím di chuyển
+            {
+                // Xác định góc quay mục tiêu
+                Quaternion huongMucTieu = Quaternion.LookRotation(huongDiChuyen);
+                
+                // Dùng Slerp để nhân vật xoay mượt mà (chỉnh số 10f to hơn thì quay nhanh hơn)
+                transform.rotation = Quaternion.Slerp(transform.rotation, huongMucTieu, Runner.DeltaTime * 10f);
+            }
+
+            // 3. DI CHUYỂN NHÂN VẬT THỰC TẾ
+            character.Move(huongDiChuyen.normalized * speed * Runner.DeltaTime);
+            
+            // 4. XỬ LÝ TRỌNG LỰC
             vanTocRoi.y += gravity * Runner.DeltaTime;
             character.Move(vanTocRoi * Runner.DeltaTime);
         }
-        if (character.isGrounded && vanTocRoi.y < 0)
-            {
-                vanTocRoi.y = -2f; 
-            }
-        if (character.isGrounded)
-            {
-                if (vanTocRoi.y < 0)
-                {
-                    vanTocRoi.y = -2f; // Ép xuống đất
-                }
-
-                // Nếu vừa chạm đất mà người chơi bấm phím Space -> Búng lên!
-                if (data.isJumpPressed)
-                {
-                    vanTocRoi.y = jumpForce;
-                }
-            }
         
+        // ==========================================
+        // ĐOẠN DƯỚI NÀY GIỮ NGUYÊN (CHẠM ĐẤT VÀ NHẢY)
+        // ==========================================
+        if (character.isGrounded)
+        {
+            if (vanTocRoi.y < 0)
+            {
+                vanTocRoi.y = -2f; // Ép xuống đất
+            }
+
+            // Nếu vừa chạm đất mà người chơi bấm phím Space -> Búng lên!
+            if (GetInput(out DuLieuInput dataJump) && dataJump.isJumpPressed)
+            {
+                vanTocRoi.y = jumpForce;
+            }
+        }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {   
-        
         var data = new DuLieuInput();
-        data.moveInput = moveInputLocal;
-        data.isJumpPressed = jumpPressedLocal;
 
-
-        // Lúc mở balo không cho điều khiển 
-
+        // Lúc mở balo không cho điều khiển (Đúng chuẩn ý Bò luôn)
         if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo == true)
         {
             data.moveInput = Vector2.zero; // không cho di chuyển
-            data.isJumpPressed = false; // không cho nhảy
+            data.isJumpPressed = false;    // không cho nhảy
+            data.mouseX = 0f;              // KHÓA CỔ LUÔN
         }
         else
         {
-            data.moveInput = moveInputLocal;
+            Vector3 huongChuanBiGui = Vector3.zero;
+            if (cameraTransform != null)
+            {
+                // Lấy hướng Nhìn Thẳng và Nhìn Ngang của Camera hiện tại
+                Vector3 camForward = cameraTransform.forward;
+                Vector3 camRight = cameraTransform.right;
+                
+                // Bỏ trục Y đi để nhân vật không bị hướng bay lên trời
+                camForward.y = 0;
+                camRight.y = 0;
+                camForward.Normalize();
+                camRight.Normalize();
+
+                // Tính toán: Bấm W thì đi theo camForward, bấm D thì đi theo camRight
+                huongChuanBiGui = camForward * moveInputLocal.y + camRight * moveInputLocal.x;
+            }
+
+            // Đóng gói cái hướng thật sự này gửi lên mạng
+            data.moveInput = new Vector2(huongChuanBiGui.x, huongChuanBiGui.z);
+            data.isJumpPressed = jumpPressedLocal;
         }
 
-        //
-
-
-
-        
         input.Set(data);
+        
+        // Gửi xong thì dọn sạch hộp chứa tạm
         jumpPressedLocal = false;
+        mouseXLocalAcc = 0f; 
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void OnMove(InputValue value)
     {
         moveInputLocal = value.Get<Vector2>();
     }
+
+
+
+
+
+
+
+
+
+
+
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_YeuCauNhatRac() 
     {
@@ -197,6 +356,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
     // --- CÁI LOA PHÁT THANH ĐỂ XÓA RÁC (THAY THẾ CHO CÁI CŨ) ---
     [Rpc(RpcSources.All, RpcTargets.All)]
     public void RPC_XoaRacKhapBanDo(NetworkObject rac)
@@ -213,6 +383,20 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // ==========================================================
     // BƯỚC 2: HOST PHÁT LỆNH CHO CẢ LÀNG (Tất cả máy đều chạy hàm này)
     // ==========================================================
@@ -229,6 +413,48 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // ==========================================================
     // GIẤU ĐỐNG NÀY ĐI BẰNG DẤU [-] CHO ĐỠ RÁC MẮT NHÉ BÒ
