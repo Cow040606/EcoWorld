@@ -2,6 +2,8 @@ using UnityEngine;
 using Fusion;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using System.Diagnostics;
 
 public struct DuLieuInput : INetworkInput 
 {
@@ -17,6 +19,13 @@ public struct O_VatPham : INetworkStruct
     public int SoLuong; 
 }
 
+public struct PlayerHealthData : INetworkStruct
+{
+    public float MaxHealth;
+    public float CurrentHealth;
+}
+
+
 public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 {
     [Header("Di chuyển")] 
@@ -25,6 +34,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float runfast = 15f;
     private Vector2 moveInputLocal;
     private bool sprintPressedLocal;
+
+    [Header("UI Thanh Máu")]
+    public Slider healthSlider; 
+
+    [Networked, OnChangedRender(nameof(UpdateHealthUI))]
+    public PlayerHealthData MauNhanVat { get; set; }
+
 
     [Header("Camera & Chuột")]
     public Transform cameraTransform;
@@ -54,12 +70,32 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     public override void Spawned()
     {
+        
         animator = GetComponent<Animator>();
         if (!HasStateAuthority && !HasInputAuthority)
         {
             if (character != null) character.enabled = false;
         }
-        
+
+
+        if (HasStateAuthority && HasInputAuthority)
+        {
+            MauNhanVat = new PlayerHealthData 
+            { 
+                MaxHealth = 100f, 
+                CurrentHealth = 100f 
+            };
+        }
+        GameObject thanhMauObj = GameObject.Find("Slider"); 
+        if (thanhMauObj != null)
+        {
+            healthSlider = thanhMauObj.GetComponent<Slider>();
+        }
+        else
+        {
+            //Debug.LogError("TOANG! Không tìm thấy cái nào tên là SliderMauHUD ngoài Scene hết Bò ơi!");
+        }
+    
         if (HasInputAuthority)
         {
             Runner.AddCallbacks(this); 
@@ -67,13 +103,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         else
         {
             if (character != null) character.enabled = true;
-
             Camera cam = GetComponentInChildren<Camera>();
             if (cam != null) cam.enabled = false;
             
             AudioListener listener = GetComponentInChildren<AudioListener>();
             if (listener != null) listener.enabled = false;
         }
+        
+        UpdateHealthUI();
     }
 
     void Update()
@@ -106,7 +143,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             // 5. MỞ / ĐÓNG ESC BẰNG PHÍM ESC
 
             bool ESCDangMo = false;
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)            {
+            if (Keyboard.current.escapeKey.wasPressedThisFrame)           
+            {
                 if (ESC.instance != null)
                 {
                     ESC.instance.BatTatESC();
@@ -126,6 +164,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
             }
+            
+
+
             else
             {
                 Cursor.lockState = CursorLockMode.Locked;
@@ -137,6 +178,22 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 yRotation += mouseX;
                 xRotation -= mouseY;
                 xRotation = Mathf.Clamp(xRotation, -60f, 60f); 
+            }
+
+
+            //7. HP
+            if (HasInputAuthority)
+            {
+                if (Keyboard.current.tKey.wasPressedThisFrame)
+                {
+                    RPC_YeuCauTakeDamage(10f);
+                    
+                }
+
+                if (Keyboard.current.hKey.wasPressedThisFrame)
+                {
+                    RPC_YeuCauTakeDamage(-10f);
+                }
             }
         }
     }
@@ -217,6 +274,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
+
+
+
+
     public override void Render()
     {
         if (animator != null)
@@ -233,6 +294,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             animator.SetBool("isRunFast", isSprinting);
         }
     }
+
+
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {   
@@ -273,19 +336,53 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         mouseXLocalAcc = 0f; 
     }
 
+
+
+    public void UpdateHealthUI()
+    {
+        // Ổ KHÓA: Chỉ cập nhật Slider nếu nhân vật đang bị đổi máu LÀ CỦA TÔI
+        if (HasInputAuthority) 
+        {
+            if (healthSlider != null && MauNhanVat.MaxHealth > 0)
+            {
+                healthSlider.maxValue = MauNhanVat.MaxHealth;
+                healthSlider.value = MauNhanVat.CurrentHealth;
+            }
+        }
+    }
+
+
+
+
     public void OnMove(InputValue value)
     {
         if (!HasInputAuthority) return;
         moveInputLocal = value.Get<Vector2>();
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+
+
+    public void TakeDamage(float damage)
+    {
+        if (HasStateAuthority)
+        {
+            var tempHealth = MauNhanVat;
+            tempHealth.CurrentHealth -= damage;
+            
+            if (tempHealth.CurrentHealth < 0) tempHealth.CurrentHealth = 0;
+            if (tempHealth.CurrentHealth > tempHealth.MaxHealth) tempHealth.CurrentHealth = tempHealth.MaxHealth;
+            
+            MauNhanVat = tempHealth; // Gán lại để mạng tự đồng bộ
+        }
+    }
+
+
     public void RPC_YeuCauNhatRac() 
     {
         Collider[] ketQuaQuet = Physics.OverlapSphere(transform.position, banKinhNhat);
         foreach (var Obj in ketQuaQuet)
         {
-            if (Obj.CompareTag("Rac"))
+            if (Obj.CompareTag("Items"))
             {
                 NetworkObject nObj = Obj.GetComponent<NetworkObject>();
                 XuLyItem theCanCuoc = Obj.GetComponent<XuLyItem>();
@@ -332,6 +429,24 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
     }
+
+
+    // Cầu nối: Bất kỳ ai gọi hàm này (All), lệnh sẽ được đẩy lên Server (StateAuthority)
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_YeuCauThayDoiMau(float luongMau)
+    {
+        TakeDamage(luongMau);
+    }
+
+    
+
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_YeuCauTakeDamage(float luongMauThayDoi)
+    {
+        TakeDamage(luongMauThayDoi);
+    }
+
 
     [Rpc(RpcSources.All, RpcTargets.All)]
     public void RPC_XoaRacKhapBanDo(NetworkObject rac)
