@@ -14,7 +14,7 @@ public class TrashSpawner : NetworkBehaviour
             for (int i = 0; i < soLuongRac; i++)
             {
                 // Rải rác ngẫu nhiên xung quanh máy đẻ rác
-                Vector3 toaDoDe = transform.position + new Vector3(Random.Range(20, 15f), 7f, Random.Range(60f, 65f));
+                Vector3 toaDoDe = transform.position + new Vector3(Random.Range(-5f, 5f), 1f, Random.Range(-5f, 5f));
                 
                 // Đây là rác ĐẺ BẰNG MẠNG, nên lúc Despawn nó sẽ bốc hơi hoàn toàn!
                 Runner.Spawn(racPrefab, toaDoDe, Quaternion.identity);

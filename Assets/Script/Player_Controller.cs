@@ -33,6 +33,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private float yRotation = 0f; 
     public float khoangCachCamera = 4f; 
     private float mouseXLocalAcc;
+    public LayerMask layerVaChamCamera;
     
     [Header("Nhặt vật phẩm")]
     public float banKinhNhat = 5f;
@@ -145,8 +146,25 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (HasInputAuthority && cameraTransform != null)
         {
             Quaternion camRotation = Quaternion.Euler(xRotation, yRotation, 0f);
-            Vector3 diemNhin = transform.position + Vector3.up * 1.5f; 
-            cameraTransform.position = diemNhin - (camRotation * Vector3.forward * khoangCachCamera);
+            Vector3 diemNhin = transform.position + Vector3.up * 1.5f; // Vị trí ngang đầu nhân vật
+            Vector3 huongCamera = -(camRotation * Vector3.forward); // Hướng chỉ từ đầu ra sau lưng
+            
+            // 1. Tính toán vị trí xa nhất (4f) mà camera muốn tới
+            Vector3 viTriDuKien = diemNhin + huongCamera * khoangCachCamera;
+            
+            // 2. BẮN TIA LASER TỪ ĐẦU NHÂN VẬT RA SAU LƯNG CAMERA
+            // Nếu tia laser đụng trúng bức tường (nằm trong layerVaChamCamera)...
+            if (Physics.Raycast(diemNhin, huongCamera, out RaycastHit hit, khoangCachCamera, layerVaChamCamera))
+            {
+                // ...thì kéo Camera tới ngay điểm va chạm, đẩy nhẹ ra 0.1f để không cạ sát tường
+                cameraTransform.position = hit.point + hit.normal * 0.1f; 
+            }
+            else
+            {
+                // Không đụng gì thì cứ đứng ở vị trí xa nhất
+                cameraTransform.position = viTriDuKien;
+            }
+            
             cameraTransform.rotation = camRotation;
         }
     }
