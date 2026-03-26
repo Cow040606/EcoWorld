@@ -423,12 +423,36 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
                     if (daNhat) {
                         RPC_XoaRacKhapBanDo(nObj); 
+                        Rpc_NotifyPickupClient(idThucTe, 1);
                         break; 
                     }
                 }
             }
         }
     }
+
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void Rpc_NotifyPickupClient(int itemID_ServerGui, int soLuong_ServerGui) 
+    {
+        // BƯỚC CHỐT HẠ: Dùng cái ID vừa nhận từ Server để tra trong Database của máy mình
+        if (InventoryManager.instance != null)
+        {
+            // Tra cứu dữ liệu (tên, icon, ...) từ ScriptableObject dựa trên ID
+            Item thongTinItem = InventoryManager.instance.TraCuuItem(itemID_ServerGui);
+            
+            if (thongTinItem != null)
+            {
+                // Bây giờ mới gọi UI hiển thị ra màn hình
+                ItemNotifyManager.Instance.ShowNotify(
+                    thongTinItem.itemName, 
+                    soLuong_ServerGui, 
+                    thongTinItem.icon // Lấy đúng cái hình của Item đó
+                );
+            }
+        }
+    }
+
 
 
     // Cầu nối: Bất kỳ ai gọi hàm này (All), lệnh sẽ được đẩy lên Server (StateAuthority)
