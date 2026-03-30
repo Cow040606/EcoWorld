@@ -67,7 +67,24 @@ public class InventoryManager : MonoBehaviour
                     TextMeshProUGUI itemName = oMoi.transform.Find("ItemName").GetComponent<TextMeshProUGUI>();
                     TextMeshProUGUI itemCountText = oMoi.transform.Find("stack").GetComponent<TextMeshProUGUI>();
                     Image itemIMG = oMoi.transform.Find("ItemIcon").GetComponent<Image>();
+                                     
+                    // Lấy ID và Giá bán từ thông tin món đồ
+                    int idHienTai = tuiDoCuaPlayer[i].ItemID;
+                    int giaHienTai = thongTinMonDo.value; // Giả sử trong ScriptableObject Item có biến value
 
+                    // Tìm nút Bán (đảm bảo trong itemPrefab có 1 cái Button tên "SellButton")
+                    Button nutBan = oMoi.transform.Find("SellButton").GetComponent<Button>();
+
+                    nutBan.onClick.AddListener(() => {
+                        if (chuSoHuuBalo != null)
+                        {
+                            // Gọi RPC đã viết ở Player_Controller
+                            chuSoHuuBalo.RPC_BanVatPham(idHienTai, giaHienTai);
+
+                            // Vẽ lại balo ngay lập tức để cập nhật số lượng mới
+                            VeBaloRaManHinh(chuSoHuuBalo.TuiDo);
+                        }
+                    });
                     // 5. Đắp dữ liệu từ Từ điển và Mạng lên UI
                     itemName.text = thongTinMonDo.itemName;
                     itemIMG.sprite = thongTinMonDo.icon;
@@ -90,5 +107,21 @@ public class InventoryManager : MonoBehaviour
             if (monDo.itemID == idCanTim) return monDo;
         }
         return null; 
+    }
+
+    // Thêm vào trong class InventoryManager
+    private Player_Controller chuSoHuuBalo;
+
+    public void BatTatBalo(NetworkArray<O_VatPham> tuiDoCuaPlayer, Player_Controller player)
+    {
+        chuSoHuuBalo = player; // Lưu lại để tí nữa biết ai bán đồ
+        trangThaiBalo = !trangThaiBalo;
+
+        if (khungBalo != null) khungBalo.SetActive(trangThaiBalo);
+
+        if (trangThaiBalo)
+        {
+            VeBaloRaManHinh(tuiDoCuaPlayer);
+        }
     }
 }
