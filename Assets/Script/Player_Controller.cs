@@ -39,6 +39,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float banKinhNhat = 5f;
 
     [Header("Trọng lực & Nhảy")]
+
+    [Header("Kinh tế")]
+    [Networked] public int Gold { get; set; }
     [Networked] public bool isJumping { get; set; }
     private bool jumpPressedLocal; 
     public float thoiGianHoiNhay = 1f; // Đổi thành 1 giây cho dễ test
@@ -100,7 +103,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 if (InventoryManager.instance != null)
                 {
-                    InventoryManager.instance.BatTatBalo(TuiDo); 
+                    InventoryManager.instance.BatTatBalo(TuiDo, this); 
                 }
             }
             // 5. MỞ / ĐÓNG ESC BẰNG PHÍM ESC
@@ -137,6 +140,36 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 yRotation += mouseX;
                 xRotation -= mouseY;
                 xRotation = Mathf.Clamp(xRotation, -60f, 60f); 
+            }
+
+            bool shopDangMo = false; // Thêm biến này
+
+            if (InventoryManager.instance != null) baloDangMo = InventoryManager.instance.trangThaiBalo;
+            if (ESC.instance != null) ESCDangMo = ESC.instance.isESC_Open;
+
+            // KIỂM TRA THÊM: Tìm cái Shop_Panel của NPC xem có đang mở không
+            GameObject shopObj = GameObject.Find("Shop_Panel"); // Hoặc dùng cách tham chiếu khác tốt hơn
+            if (shopObj != null) shopDangMo = shopObj.activeSelf;
+
+            // Cập nhật điều kiện: Nếu 1 trong 3 cái mở thì HIỆN CHUỘT
+            if (baloDangMo || ESCDangMo || shopDangMo)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+
+                // Ngắt không cho xoay Camera khi đang dùng chuột trong UI
+                xRotation = xRotation;
+                yRotation = yRotation;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+
+                // Chỉ xử lý xoay Camera khi không mở UI
+                float mouseX = Mouse.current.delta.x.ReadValue() * mouseSensitivity;
+                float mouseY = Mouse.current.delta.y.ReadValue() * mouseSensitivity;
+                // ... code xoay camera tiếp theo của bạn ...
             }
         }
     }
@@ -285,7 +318,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         Collider[] ketQuaQuet = Physics.OverlapSphere(transform.position, banKinhNhat);
         foreach (var Obj in ketQuaQuet)
         {
-            if (Obj.CompareTag("Rac"))
+            if (Obj.CompareTag("Rac") || Obj.CompareTag("Wood"))
             {
                 NetworkObject nObj = Obj.GetComponent<NetworkObject>();
                 XuLyItem theCanCuoc = Obj.GetComponent<XuLyItem>();
@@ -358,6 +391,36 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
     }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_BanVatPham(int id, int gia)
+    {
+        for (int i = 0; i < TuiDo.Length; i++)
+        {
+            if (TuiDo[i].ItemID == id && TuiDo[i].SoLuong > 0)
+            {
+                var item = TuiDo[i];
+                item.SoLuong--;
+                if (item.SoLuong <= 0) item.ItemID = 0;
+
+                TuiDo.Set(i, item); // Cập nhật túi đồ
+                Gold += gia;        // CỘNG XU TẠI ĐÂY
+                return;
+            }
+        }
+    }
+    public void Click_NutBanGo()
+    {
+        // Tìm Player của mình (người đang mở UI)
+        Player_Controller myPlayer = NetworkRunner.Instances[0].GetPlayerObject(NetworkRunner.Instances[0].LocalPlayer).GetComponent<Player_Controller>();
+
+        if (myPlayer != null)
+        {
+            // Ví dụ: ID gỗ là 1, giá bán là 10 xu
+            myPlayer.RPC_BanVatPham(1, 10);
+        }
+    }
+
 
     #region Hàm trống bắt buộc của Interface
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
