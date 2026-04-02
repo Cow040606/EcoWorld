@@ -312,13 +312,52 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         moveInputLocal = value.Get<Vector2>();
     }
 
+
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void Rpc_NotifyPickupClient(int itemID_ServerGui, int soLuong_ServerGui) 
+    {
+        //Debug.Log($"[CLIENT] Đã nhận được lệnh hiện UI cho Item ID: {itemID_ServerGui}");
+
+        if (InventoryManager.instance == null)
+        {
+            //Debug.LogError("Lỗi: InventoryManager.instance đang bị NULL! Bò chưa gắn script hoặc chưa gán Instance ở Awake.");
+            return;
+        }
+
+        Item thongTinItem = InventoryManager.instance.TraCuuItem(itemID_ServerGui);
+        
+        if (thongTinItem == null)
+        {
+            //Debug.LogError($"Lỗi: Không tìm thấy vật phẩm nào có ID {itemID_ServerGui} trong Database!");
+            return;
+        }
+
+        if (ItemNotifyManager.Instance == null)
+        {
+            //Debug.LogError("Lỗi: ItemNotifyManager.Instance đang bị NULL! Quên bật Object chứa script này à?");
+            return;
+        }
+
+        //Debug.Log($"[CLIENT] Đang gọi UI hiện thị: {thongTinItem.itemName}");
+        
+        ItemNotifyManager.Instance.ShowNotify(
+            thongTinItem.itemName, 
+            soLuong_ServerGui, 
+            thongTinItem.icon 
+        );
+    }
+
+
+
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_YeuCauNhatRac() 
     {
         Collider[] ketQuaQuet = Physics.OverlapSphere(transform.position, banKinhNhat);
         foreach (var Obj in ketQuaQuet)
         {
-            if (Obj.CompareTag("Rac") || Obj.CompareTag("Wood"))
+            if (Obj.CompareTag("Items") || Obj.CompareTag("Wood"))
             {
                 NetworkObject nObj = Obj.GetComponent<NetworkObject>();
                 XuLyItem theCanCuoc = Obj.GetComponent<XuLyItem>();
@@ -357,8 +396,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                         }
                     }
 
-                    if (daNhat) {
+                    if (daNhat) 
+                    {
                         RPC_XoaRacKhapBanDo(nObj); 
+                        
+                        // TRUYỀN BIẾN VÀO ĐÂY NÈ BÒ:
+                        Rpc_NotifyPickupClient(idThucTe, 1); 
+                        
                         break; 
                     }
                 }

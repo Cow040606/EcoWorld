@@ -3,15 +3,14 @@ using Fusion;
 
 public class NPC_BanDo : MonoBehaviour
 {
-    [Header("C?u hình UI")]
-    public GameObject uiShop; // Ô ?? kéo cái Shop_Panel vào
+    [Header("cáº¥u hÃ¬nh UI")]
+    public GameObject uiShop; // ï¿½ ?? kï¿½o cï¿½i Shop_Panel vï¿½o
 
     private bool isPlayerNearby = false;
     private Player_Controller localPlayer;
 
     private void OnTriggerEnter(Collider other)
     {
-        // Ki?m tra ?úng Tag Player c?a nhân v?t
         if (other.CompareTag("Player"))
         {
             isPlayerNearby = true;
@@ -24,7 +23,7 @@ public class NPC_BanDo : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isPlayerNearby = false;
-            if (uiShop != null) uiShop.SetActive(false); // ?i xa t? ?óng shop
+            if (uiShop != null) uiShop.SetActive(false); // ?i xa t? ?ï¿½ng shop
         }
     }
 
@@ -34,7 +33,7 @@ public class NPC_BanDo : MonoBehaviour
         {
             if (uiShop != null)
             {
-                // ??o ng??c tr?ng thái ?óng/m? c?a Shop
+                // ??o ng??c tr?ng thï¿½i ?ï¿½ng/m? c?a Shop
                 bool dangMo = !uiShop.activeSelf;
                 uiShop.SetActive(dangMo);
 
@@ -49,7 +48,7 @@ public class NPC_BanDo : MonoBehaviour
                 }
                 else
                 {
-                    // KHÓA CHU?T KHI ?ÓNG SHOP
+                    // KHï¿½A CHU?T KHI ?ï¿½NG SHOP
                     Cursor.lockState = CursorLockMode.Locked;
                     Cursor.visible = false;
                 }
