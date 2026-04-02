@@ -84,47 +84,48 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (HasInputAuthority && Keyboard.current != null && Mouse.current != null)
         {
             // 1. NHẶT ĐỒ
-            if (Keyboard.current.eKey.wasPressedThisFrame)
-            {
-                RPC_YeuCauNhatRac();
-            }
+            if (Keyboard.current.eKey.wasPressedThisFrame) RPC_YeuCauNhatRac();
 
             // 2. CHẠY NHANH
             sprintPressedLocal = Keyboard.current.leftShiftKey.isPressed;
 
             // 3. NHẢY
-            if (Keyboard.current.spaceKey.wasPressedThisFrame)
-            {
-                jumpPressedLocal = true;
-            }
+            if (Keyboard.current.spaceKey.wasPressedThisFrame) jumpPressedLocal = true;
 
-            // 4. MỞ / ĐÓNG BALO BẰNG PHÍM B
+            // --- 4. THÊM ĐOẠN NÀY ĐỂ TỰ ĐỌC PHÍM WASD CHẮC CÚ 100% ---
+            float trucX = 0f;
+            float trucY = 0f;
+            if (Keyboard.current.wKey.isPressed) trucY += 1f;
+            if (Keyboard.current.sKey.isPressed) trucY -= 1f;
+            if (Keyboard.current.dKey.isPressed) trucX += 1f;
+            if (Keyboard.current.aKey.isPressed) trucX -= 1f;
+            
+            moveInputLocal = new Vector2(trucX, trucY).normalized; 
+            // ---------------------------------------------------------
+
+            // 5. MỞ / ĐÓNG BALO & ESC
             if (Keyboard.current.bKey.wasPressedThisFrame)
             {
-                if (InventoryManager.instance != null)
-                {
-                    InventoryManager.instance.BatTatBalo(TuiDo, this); 
-                }
+                if (InventoryManager.instance != null) InventoryManager.instance.BatTatBalo(TuiDo, this); 
             }
-            // 5. MỞ / ĐÓNG ESC BẰNG PHÍM ESC
 
             bool ESCDangMo = false;
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)            {
-                if (ESC.instance != null)
-                {
-                    ESC.instance.BatTatESC();
-                }
-            }
-
-            // 6. KIỂM TRA TRẠNG THÁI BALO ĐỂ XỬ LÝ CHUỘT
-            bool baloDangMo = false;
-            if (InventoryManager.instance != null || ESC.instance != null)
+            if (Keyboard.current.escapeKey.wasPressedThisFrame)            
             {
-                baloDangMo = InventoryManager.instance.trangThaiBalo;
-                ESCDangMo = ESC.instance.isESC_Open;
+                if (ESC.instance != null) ESC.instance.BatTatESC();
             }
 
-            if (baloDangMo == true || ESCDangMo == true)
+            // 6. KIỂM TRA UI ĐỂ BẬT/TẮT CHUỘT
+            bool baloDangMo = false;
+            bool shopDangMo = false;
+
+            if (InventoryManager.instance != null) baloDangMo = InventoryManager.instance.trangThaiBalo;
+            if (ESC.instance != null) ESCDangMo = ESC.instance.isESC_Open;
+            
+            GameObject shopObj = GameObject.Find("Shop_Panel"); 
+            if (shopObj != null) shopDangMo = shopObj.activeSelf;
+
+            if (baloDangMo || ESCDangMo || shopDangMo)
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
@@ -140,36 +141,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 yRotation += mouseX;
                 xRotation -= mouseY;
                 xRotation = Mathf.Clamp(xRotation, -60f, 60f); 
-            }
-
-            bool shopDangMo = false; // Thêm biến này
-
-            if (InventoryManager.instance != null) baloDangMo = InventoryManager.instance.trangThaiBalo;
-            if (ESC.instance != null) ESCDangMo = ESC.instance.isESC_Open;
-
-            // KIỂM TRA THÊM: Tìm cái Shop_Panel của NPC xem có đang mở không
-            GameObject shopObj = GameObject.Find("Shop_Panel"); // Hoặc dùng cách tham chiếu khác tốt hơn
-            if (shopObj != null) shopDangMo = shopObj.activeSelf;
-
-            // Cập nhật điều kiện: Nếu 1 trong 3 cái mở thì HIỆN CHUỘT
-            if (baloDangMo || ESCDangMo || shopDangMo)
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-
-                // Ngắt không cho xoay Camera khi đang dùng chuột trong UI
-                xRotation = xRotation;
-                yRotation = yRotation;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-
-                // Chỉ xử lý xoay Camera khi không mở UI
-                float mouseX = Mouse.current.delta.x.ReadValue() * mouseSensitivity;
-                float mouseY = Mouse.current.delta.y.ReadValue() * mouseSensitivity;
-                // ... code xoay camera tiếp theo của bạn ...
             }
         }
     }

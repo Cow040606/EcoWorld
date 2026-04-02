@@ -16,10 +16,8 @@ public class NPC_DialogueTrigger : MonoBehaviour
             NetworkObject netObj = other.GetComponent<NetworkObject>();
             if (netObj != null && netObj.HasInputAuthority) 
             {
-                // BƯỚC 2: Nếu đúng máy mình, thì gọi lệnh mở hội thoại của Plugin
                 if (cuocHoiThoaiCuaNPC != null)
                 {
-                    // Lệnh này là lệnh gốc của Dialogue Editor để hiện UI lên
                     ConversationManager.Instance.StartConversation(cuocHoiThoaiCuaNPC);
                 }
             }
