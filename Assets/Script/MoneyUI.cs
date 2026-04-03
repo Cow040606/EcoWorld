@@ -8,17 +8,22 @@ public class MoneyUI : MonoBehaviour
 
     void Update()
     {
-        // Ch? ch?y n?u m�nh l� ng??i ch?i Local
-        if (NetworkRunner.Instances[0] == null) return;
+        // 1. Kiểm tra xem danh sách Runner có tồn tại người nào không (Sửa lỗi sập game)
+        if (NetworkRunner.Instances.Count == 0) return;
 
         var runner = NetworkRunner.Instances[0];
-        NetworkObject myPlayer = runner.GetPlayerObject(runner.LocalPlayer);
-
-        if (myPlayer != null)
+        
+        // 2. Chắc chắn Runner đang chạy thì mới lấy dữ liệu
+        if (runner != null && runner.IsRunning)
         {
-            // L?y component Player_Controller ?? ??c bi?n Gold
-            int currentGold = myPlayer.GetComponent<Player_Controller>().Gold;
-            txtGold.text = currentGold.ToString(); // Hi?n s? l�n m�n h�nh
+            // Nhờ bước "Đăng ký hộ khẩu" bên kia, hàm này giờ sẽ lấy đúng nhân vật!
+            NetworkObject myPlayer = runner.GetPlayerObject(runner.LocalPlayer);
+
+            if (myPlayer != null)
+            {
+                int currentGold = myPlayer.GetComponent<Player_Controller>().Gold;
+                txtGold.text = currentGold.ToString(); // Hiện số lên màn hình
+            }
         }
     }
 }
