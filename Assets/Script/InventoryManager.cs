@@ -29,18 +29,6 @@ public class InventoryManager : MonoBehaviour
     }
 
     // --- SỬA HÀM NÀY: Giờ nó sẽ đòi nhận cái mảng TuiDo của Player ---
-    public void BatTatBalo(NetworkArray<O_VatPham> tuiDoCuaPlayer)
-    {
-        trangThaiBalo = !trangThaiBalo; 
-        
-        if (khungBalo != null) khungBalo.SetActive(trangThaiBalo);
-
-        // Nếu balo đang MỞ thì vẽ đồ ra màn hình
-        if (trangThaiBalo == true)
-        {
-            VeBaloRaManHinh(tuiDoCuaPlayer);
-        }
-    }
 
     // --- HÀM VẼ UI SIÊU CẤP ---
     public void VeBaloRaManHinh(NetworkArray<O_VatPham> tuiDoCuaPlayer)
@@ -71,20 +59,7 @@ public class InventoryManager : MonoBehaviour
                     // Lấy ID và Giá bán từ thông tin món đồ
                     int idHienTai = tuiDoCuaPlayer[i].ItemID;
                     int giaHienTai = thongTinMonDo.value; // Giả sử trong ScriptableObject Item có biến value
-
-                    // Tìm nút Bán (đảm bảo trong itemPrefab có 1 cái Button tên "SellButton")
-                    Button nutBan = oMoi.transform.Find("SellButton").GetComponent<Button>();
-
-                    nutBan.onClick.AddListener(() => {
-                        if (chuSoHuuBalo != null)
-                        {
-                            // Gọi RPC đã viết ở Player_Controller
-                            chuSoHuuBalo.RPC_BanVatPham(idHienTai, giaHienTai);
-
-                            // Vẽ lại balo ngay lập tức để cập nhật số lượng mới
-                            VeBaloRaManHinh(chuSoHuuBalo.TuiDo);
-                        }
-                    });
+                    
                     // 5. Đắp dữ liệu từ Từ điển và Mạng lên UI
                     itemName.text = thongTinMonDo.itemName;
                     itemIMG.sprite = thongTinMonDo.icon;

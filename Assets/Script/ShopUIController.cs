@@ -1,9 +1,12 @@
-using UnityEngine;
 using Fusion;
-
+using UnityEngine;
+using System.Threading.Tasks;
+using TMPro;
+using Fusion.Photon.Realtime;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 public class ShopUIController : MonoBehaviour
 {
-    // PH?I CÓ CH? PUBLIC ? ?ÂY
     public void Click_BanVatPham(int id, int gia)
     {
         NetworkRunner runner = NetworkRunner.Instances[0];
@@ -19,5 +22,9 @@ public class ShopUIController : MonoBehaviour
                 }
             }
         }
+    }
+    public void Sell_Button()
+    {
+        Click_BanVatPham(2, 10);
     }
 }
