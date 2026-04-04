@@ -19,6 +19,7 @@ public struct O_VatPham : INetworkStruct
 
 public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 {
+    public static Player_Controller localPlayer;
     [Header("Di chuyển")] 
     public NetworkCharacterController character;
     public float speed = 5f;
@@ -65,6 +66,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         
         if (HasInputAuthority)
         {
+            localPlayer = this;
             Runner.AddCallbacks(this); 
             Runner.SetPlayerObject(Runner.LocalPlayer, Object); 
             
@@ -110,6 +112,20 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             
             moveInputLocal = new Vector2(trucX, trucY).normalized; 
             // ---------------------------------------------------------
+
+
+
+            if (Keyboard.current.kKey.wasPressedThisFrame)
+            {
+                RPC_ThayDoiTien(5);
+            }
+
+            // Bấm L để trừ 5 tiền
+            if (Keyboard.current.lKey.wasPressedThisFrame)
+            {
+                RPC_ThayDoiTien(-5);
+            }
+
 
             // 5. MỞ / ĐÓNG BALO & ESC
             if (Keyboard.current.bKey.wasPressedThisFrame)
@@ -417,6 +433,23 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
     }
+
+
+
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_ThayDoiTien(int soTien)
+    {
+        // Server sẽ trực tiếp cộng/trừ vào biến Networked
+        Gold += soTien;
+
+        // Tránh để tiền bị âm (nếu Bò muốn)
+        if (Gold < 0) Gold = 0;
+
+        Debug.Log("Server đã cập nhật tiền: " + Gold);
+    }
+
+    
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_AnRacTrenMoiMay(NetworkObject rac)
