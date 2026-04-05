@@ -29,8 +29,8 @@ public class Crop : NetworkBehaviour
 
     private void UpdateModels(bool isReady)
     {
-        seedlingModel.SetActive(!isReady);
-        fullyGrownModel.SetActive(isReady);
+        if (seedlingModel != null) seedlingModel.SetActive(!isReady);
+        if (fullyGrownModel != null) fullyGrownModel.SetActive(isReady);
     }
 
     private IEnumerator GrowRoutine()
