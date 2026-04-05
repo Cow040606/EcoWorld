@@ -6,7 +6,11 @@ public class Item : ScriptableObject
 {
     public int itemID;
     public string itemName;
+    public string Tag;
     public Sprite icon;   
     public bool stackable = true;
     public int value;
+    [Header("Mô tả chi tiết")]
+    [TextArea(3, 10)] // Tuyệt chiêu: Phóng to khung nhập chữ ngoài Inspector
+    public string description;
 }

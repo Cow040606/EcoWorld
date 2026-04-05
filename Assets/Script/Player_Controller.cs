@@ -19,6 +19,7 @@ public struct O_VatPham : INetworkStruct
 
 public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 {
+    public static Player_Controller localPlayer;
     [Header("Di chuyển")] 
     public NetworkCharacterController character;
     public float speed = 5f;
@@ -40,7 +41,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     [Header("Trọng lực & Nhảy")]
 
-    [Header("Kinh tế")]
+    [Header("Kinh tế")] 
     [Networked] public int Gold { get; set; }
     [Networked] public bool isJumping { get; set; }
     private bool jumpPressedLocal; 
@@ -65,8 +66,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         
         if (HasInputAuthority)
         {
+            localPlayer = this;
             Runner.AddCallbacks(this); 
+            Runner.SetPlayerObject(Runner.LocalPlayer, Object); 
+            
+            if (cameraTransform == null && Camera.main != null)
+            {
+                cameraTransform = Camera.main.transform;
+            }
+            Gold = 10000;
         }
+
         else
         {
             if (character != null) character.enabled = true;
@@ -103,6 +113,20 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             moveInputLocal = new Vector2(trucX, trucY).normalized; 
             // ---------------------------------------------------------
 
+
+
+            if (Keyboard.current.kKey.wasPressedThisFrame)
+            {
+                RPC_ThayDoiTien(5);
+            }
+
+            // Bấm L để trừ 5 tiền
+            if (Keyboard.current.lKey.wasPressedThisFrame)
+            {
+                RPC_ThayDoiTien(-5);
+            }
+
+
             // 5. MỞ / ĐÓNG BALO & ESC
             if (Keyboard.current.bKey.wasPressedThisFrame)
             {
@@ -117,18 +141,22 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             // 6. KIỂM TRA UI ĐỂ BẬT/TẮT CHUỘT
             bool baloDangMo = false;
-            bool shopDangMo = false;
-
+            bool IsChat = false;
+            bool ishopopen = false;
+            if(ShopUIController.instance != null) ishopopen = ShopUIController.instance.isShopOpen;
             if (InventoryManager.instance != null) baloDangMo = InventoryManager.instance.trangThaiBalo;
-            if (ESC.instance != null) ESCDangMo = ESC.instance.isESC_Open;
-            
-            GameObject shopObj = GameObject.Find("Shop_Panel"); 
-            if (shopObj != null) shopDangMo = shopObj.activeSelf;
+            if (DialogueEditor.ConversationManager.Instance != null)
+            {
+                IsChat = DialogueEditor.ConversationManager.Instance.IsConversationActive;
+            }
 
-            if (baloDangMo || ESCDangMo || shopDangMo)
+            if (baloDangMo || ESCDangMo || ishopopen || IsChat)
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
+                
+                xRotation = xRotation; 
+                yRotation = yRotation;
             }
             else
             {
@@ -244,8 +272,20 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (!HasInputAuthority) return;
 
         data.isJumpPressed = jumpPressedLocal;
+        bool baloDangMo = false;
+        bool ESCDangMo = false;
+        bool ishopopen = false;
+        bool IsChat = false;
 
-        if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo == true)
+        if (InventoryManager.instance != null) baloDangMo = InventoryManager.instance.trangThaiBalo;
+        if (ESC.instance != null) ESCDangMo = ESC.instance.isESC_Open;
+        if (ShopUIController.instance != null) ishopopen = ShopUIController.instance.isShopOpen;
+        if (DialogueEditor.ConversationManager.Instance != null)
+        {
+            IsChat = DialogueEditor.ConversationManager.Instance.IsConversationActive;
+        }
+
+        if (baloDangMo || ESCDangMo || ishopopen || IsChat)
         {
             data.moveInput = Vector2.zero; 
             data.isJumpPressed = false;    
@@ -328,7 +368,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         Collider[] ketQuaQuet = Physics.OverlapSphere(transform.position, banKinhNhat);
         foreach (var Obj in ketQuaQuet)
         {
-            if (Obj.CompareTag("Items") || Obj.CompareTag("Wood"))
+            if (Obj.CompareTag("Items"))
             {
                 NetworkObject nObj = Obj.GetComponent<NetworkObject>();
                 XuLyItem theCanCuoc = Obj.GetComponent<XuLyItem>();
@@ -394,6 +434,23 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
+
+
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_ThayDoiTien(int soTien)
+    {
+        // Server sẽ trực tiếp cộng/trừ vào biến Networked
+        Gold += soTien;
+
+        // Tránh để tiền bị âm (nếu Bò muốn)
+        if (Gold < 0) Gold = 0;
+
+        Debug.Log("Server đã cập nhật tiền: " + Gold);
+    }
+
+    
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_AnRacTrenMoiMay(NetworkObject rac)
     {
@@ -418,10 +475,65 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 item.SoLuong--;
                 if (item.SoLuong <= 0) item.ItemID = 0;
 
-                TuiDo.Set(i, item); // Cập nhật túi đồ
-                Gold += gia;        // CỘNG XU TẠI ĐÂY
+                TuiDo.Set(i, item);
+                Gold += gia;     
                 return;
             }
+        }
+    }
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_MuaVatPham(int idMatHang, int giaTien)
+    {
+        // 1. Kiểm tra xem túi có đủ Xu không?
+        if (Gold < giaTien) 
+        {
+            return; 
+        }
+
+        // 2. Tra từ điển xem món này có xếp chồng (stack) được không
+        if (InventoryManager.instance == null) return;
+        
+        Item thongTin = InventoryManager.instance.TraCuuItem(idMatHang);
+        if (thongTin == null) return;
+
+        bool daNhetVaoTui = false;
+        bool isstack = thongTin.stackable;
+
+        // 3. BẮT ĐẦU NHÉT ĐỒ VÀO TÚI
+        if (isstack)
+        {
+            // Nếu đồ xếp chồng được, tìm xem trong túi có ô nào đang chứa món này không
+            for (int i = 0; i < TuiDo.Length; i++) 
+            {
+                if (TuiDo[i].ItemID == idMatHang) 
+                {
+                    O_VatPham doVat = TuiDo[i];
+                    doVat.SoLuong++;       // Tăng số lượng lên 1
+                    TuiDo.Set(i, doVat);   // Lưu lại vào mạng
+                    daNhetVaoTui = true;
+                    break;
+                }
+            }
+        }
+
+        // Nếu đồ KHÔNG xếp chồng được HOẶC trong túi chưa có món này -> Tìm ô trống
+        if (!daNhetVaoTui) 
+        {
+            for (int i = 0; i < TuiDo.Length; i++) 
+            {
+                if (TuiDo[i].ItemID == 0) // Ô có ID = 0 nghĩa là ô đang trống
+                { 
+                    // Nhét đồ mới tinh vào ô trống này
+                    TuiDo.Set(i, new O_VatPham { ItemID = idMatHang, SoLuong = 1 });
+                    daNhetVaoTui = true;
+                    break;
+                }
+            }
+        }
+
+        if (daNhetVaoTui)
+        {
+            Gold -= giaTien;
         }
     }
     public void Click_NutBanGo()

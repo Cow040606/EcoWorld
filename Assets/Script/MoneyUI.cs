@@ -1,6 +1,5 @@
 using UnityEngine;
 using TMPro;
-using Fusion;
 
 public class MoneyUI : MonoBehaviour
 {
@@ -8,17 +7,11 @@ public class MoneyUI : MonoBehaviour
 
     void Update()
     {
-        // Ch? ch?y n?u m�nh l� ng??i ch?i Local
-        if (NetworkRunner.Instances[0] == null) return;
-
-        var runner = NetworkRunner.Instances[0];
-        NetworkObject myPlayer = runner.GetPlayerObject(runner.LocalPlayer);
-
-        if (myPlayer != null)
+        // Gọi thẳng tên Chủ tịch từ danh bạ VIP ra xài, không trượt đi đâu được!
+        if (Player_Controller.localPlayer != null)
         {
-            // L?y component Player_Controller ?? ??c bi?n Gold
-            int currentGold = myPlayer.GetComponent<Player_Controller>().Gold;
-            txtGold.text = currentGold.ToString(); // Hi?n s? l�n m�n h�nh
+            // Lu ít thêm dấu ": " vào cho nó giống thiết kế ban đầu của Bò nhé
+            txtGold.text = ": " + Player_Controller.localPlayer.Gold.ToString();
         }
     }
 }
