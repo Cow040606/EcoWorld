@@ -7611,6 +7611,7 @@ GameObject:
   - component: {fileID: 134463504}
   - component: {fileID: 134463503}
   - component: {fileID: 134463502}
+  - component: {fileID: 134463505}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -7727,6 +7728,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &134463505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134463501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 134463503}
+  _guid: f9f14c68-76c0-4303-
 --- !u!1001 &134827659
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8254,86 +8271,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 139687580}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &139766767
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 139766769}
-  - component: {fileID: 139766768}
-  - component: {fileID: 139766770}
-  m_Layer: 0
-  m_Name: Player
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!143 &139766768
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 139766767}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 1.8
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!4 &139766769
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 139766767}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.04314583, y: 0.7489485, z: -0.0490049, w: 0.6594036}
-  m_LocalPosition: {x: -1816, y: 21, z: -170}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1589245845}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 7.4870005, y: 97.276, z: 0}
---- !u!114 &139766770
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 139766767}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f5721f45a4372242a249d3bb70958a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controller: {fileID: 139766768}
-  speed: 3
-  gravity: -9.18
-  jumpHeight: 3
-  groundCheck: {fileID: 894822543}
-  groundDistance: 0.4
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!1001 &142168094
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9461,6 +9398,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 161523822}
+    - targetCorrespondingSourceObject: {fileID: 100006, guid: 2b120c828398db5439578c6f50bef162,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 161523824}
   m_SourcePrefab: {fileID: 100100000, guid: 2b120c828398db5439578c6f50bef162, type: 3}
 --- !u!4 &161523820 stripped
 Transform:
@@ -9503,6 +9444,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &161523823 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10800000, guid: 2b120c828398db5439578c6f50bef162,
+    type: 3}
+  m_PrefabInstance: {fileID: 161523819}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &161523824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161523821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 161523823}
+  _guid: 51c25d42-9ed6-41af-
 --- !u!1001 &161720233
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9888,6 +9851,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 164330681}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 164330683}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &164330679 stripped
 Transform:
@@ -9930,6 +9897,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &164330682 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 164330678}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &164330683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164330680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 164330682}
+  _guid: d9859d74-dc87-4939-
 --- !u!1001 &164649830
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14521,6 +14510,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 235648505}
+    - targetCorrespondingSourceObject: {fileID: 100006, guid: 2b120c828398db5439578c6f50bef162,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 235648507}
   m_SourcePrefab: {fileID: 100100000, guid: 2b120c828398db5439578c6f50bef162, type: 3}
 --- !u!4 &235648503 stripped
 Transform:
@@ -14563,6 +14556,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &235648506 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10800000, guid: 2b120c828398db5439578c6f50bef162,
+    type: 3}
+  m_PrefabInstance: {fileID: 235648502}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &235648507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 235648504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 235648506}
+  _guid: 452458d9-8fec-4234-
 --- !u!1 &236233510
 GameObject:
   m_ObjectHideFlags: 0
@@ -15224,6 +15239,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 243514470}
+    - targetCorrespondingSourceObject: {fileID: 155528, guid: 44eb32dcdfb035f4cb156673d7722d3a,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 243514472}
   m_SourcePrefab: {fileID: 100100000, guid: 44eb32dcdfb035f4cb156673d7722d3a, type: 3}
 --- !u!4 &243514468 stripped
 Transform:
@@ -15266,6 +15285,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &243514471 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10821712, guid: 44eb32dcdfb035f4cb156673d7722d3a,
+    type: 3}
+  m_PrefabInstance: {fileID: 243514467}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &243514472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 243514469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 243514471}
+  _guid: 87499de0-7779-4b7e-
 --- !u!1001 &245257977
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19241,6 +19282,7 @@ GameObject:
   - component: {fileID: 295694193}
   - component: {fileID: 295694195}
   - component: {fileID: 295694194}
+  - component: {fileID: 295694196}
   m_Layer: 0
   m_Name: Spot Light
   m_TagString: Untagged
@@ -19357,6 +19399,22 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &295694196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 295694192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 295694195}
+  _guid: 02422c1f-0538-482e-
 --- !u!1001 &295725795
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19664,6 +19722,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 303012833}
+    - targetCorrespondingSourceObject: {fileID: 100006, guid: 2b120c828398db5439578c6f50bef162,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 303012835}
   m_SourcePrefab: {fileID: 100100000, guid: 2b120c828398db5439578c6f50bef162, type: 3}
 --- !u!4 &303012831 stripped
 Transform:
@@ -19706,6 +19768,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &303012834 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10800000, guid: 2b120c828398db5439578c6f50bef162,
+    type: 3}
+  m_PrefabInstance: {fileID: 303012830}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &303012835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303012832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 303012834}
+  _guid: 0129df69-f75b-4347-
 --- !u!1001 &303155208
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24400,6 +24484,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 381507759}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 381507761}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &381507757 stripped
 Transform:
@@ -24442,6 +24530,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &381507760 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 381507756}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &381507761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 381507758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 381507760}
+  _guid: 679b7337-a8be-4db6-
 --- !u!1001 &383458941
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28317,6 +28427,77 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 448409868}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &449522924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 449522927}
+  - component: {fileID: 449522926}
+  - component: {fileID: 449522925}
+  m_Layer: 0
+  m_Name: Prototype Network Start
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &449522925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 449522924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ba5764f4714bd64ab9efab127938e77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.FusionBootstrapDebugGUI
+  EnableHotkeys: 0
+  BaseSkin: {fileID: 11400000, guid: e59b35dfeb4b6f54e9b2791b2a40a510, type: 2}
+--- !u!114 &449522926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 449522924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88230848386761045af440d808ee3efa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.FusionBootstrap
+  RunnerPrefab: {fileID: 0}
+  StartMode: 0
+  AutoStartAs: 2
+  AutoHideGUI: 1
+  AutoClients: 1
+  ClientStartDelay: 0.1
+  ServerPort: 0
+  DefaultRoomName: 
+  InitialScenePath: 
+  _currentStage: 0
+  AutoConnectVirtualInstances: 1
+  VirtualInstanceConnectDelay: 1
+--- !u!4 &449522927
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 449522924}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &450464707
 GameObject:
   m_ObjectHideFlags: 0
@@ -29978,6 +30159,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 469246050}
+    - targetCorrespondingSourceObject: {fileID: 100006, guid: 2b120c828398db5439578c6f50bef162,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 469246052}
   m_SourcePrefab: {fileID: 100100000, guid: 2b120c828398db5439578c6f50bef162, type: 3}
 --- !u!4 &469246048 stripped
 Transform:
@@ -30020,6 +30205,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &469246051 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10800000, guid: 2b120c828398db5439578c6f50bef162,
+    type: 3}
+  m_PrefabInstance: {fileID: 469246047}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &469246052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 469246049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 469246051}
+  _guid: 40e18b3d-c9cd-4c0a-
 --- !u!1001 &469538335
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34219,6 +34426,7 @@ GameObject:
   - component: {fileID: 538188175}
   - component: {fileID: 538188174}
   - component: {fileID: 538188173}
+  - component: {fileID: 538188176}
   m_Layer: 0
   m_Name: Point Light (3)
   m_TagString: Untagged
@@ -34335,6 +34543,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &538188176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 538188172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 538188174}
+  _guid: c4a4d50e-e144-4d91-
 --- !u!1001 &541562739
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35833,6 +36057,124 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 568764324}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &571395411
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 571395414}
+  - component: {fileID: 571395413}
+  - component: {fileID: 571395412}
+  m_Layer: 0
+  m_Name: Prototype Runner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &571395412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 571395411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f392676978a6af4ab65335042bb913e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player_Runner
+  playerPrefab:
+    RawGuidValue: 90f3e9377bbf22a4b948d3eccdf726b4
+  spawn: {fileID: 1347417813}
+  spawnenemy: {fileID: 0}
+--- !u!114 &571395413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 571395411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -232609262, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkEvents
+  OnInput:
+    m_PersistentCalls:
+      m_Calls: []
+  OnInputMissing:
+    m_PersistentCalls:
+      m_Calls: []
+  OnConnectedToServer:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDisconnectedFromServer:
+    m_PersistentCalls:
+      m_Calls: []
+  OnConnectRequest:
+    m_PersistentCalls:
+      m_Calls: []
+  OnConnectFailed:
+    m_PersistentCalls:
+      m_Calls: []
+  PlayerJoined:
+    m_PersistentCalls:
+      m_Calls: []
+  PlayerLeft:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSimulationMessage:
+    m_PersistentCalls:
+      m_Calls: []
+  OnShutdown:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSessionListUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  OnCustomAuthenticationResponse:
+    m_PersistentCalls:
+      m_Calls: []
+  OnHostMigration:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSceneLoadDone:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSceneLoadStart:
+    m_PersistentCalls:
+      m_Calls: []
+  OnReliableData:
+    m_PersistentCalls:
+      m_Calls: []
+  OnReliableProgress:
+    m_PersistentCalls:
+      m_Calls: []
+  OnObjectEnterAOI:
+    m_PersistentCalls:
+      m_Calls: []
+  OnObjectExitAOI:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!4 &571395414
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 571395411}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &571606820
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37853,6 +38195,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 602517330}
+    - targetCorrespondingSourceObject: {fileID: 1454373857832846, guid: 57bc482487154a64085c1d0847e454b3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 602517332}
   m_SourcePrefab: {fileID: 100100000, guid: 57bc482487154a64085c1d0847e454b3, type: 3}
 --- !u!4 &602517328 stripped
 Transform:
@@ -37895,6 +38241,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &602517331 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 108990059368549358, guid: 57bc482487154a64085c1d0847e454b3,
+    type: 3}
+  m_PrefabInstance: {fileID: 602517327}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &602517332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 602517329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 602517331}
+  _guid: 92c6f8e6-c77c-4139-
 --- !u!1001 &603174707
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -49033,6 +49401,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 789784196}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 789784198}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &789784194 stripped
 Transform:
@@ -49075,6 +49447,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &789784197 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 789784193}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &789784198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 789784195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 789784197}
+  _guid: 79b958ed-19a8-4f48-
 --- !u!1001 &791314067
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -49708,6 +50102,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 800204446}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 800204448}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &800204444 stripped
 Transform:
@@ -49750,6 +50148,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &800204447 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 800204443}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &800204448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 800204445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 800204447}
+  _guid: 7ac1b380-61d6-4b57-
 --- !u!1001 &802132214
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -52520,6 +52940,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 845828315}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 845828317}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &845828313 stripped
 Transform:
@@ -52562,6 +52986,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &845828316 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 845828312}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &845828317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 845828314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 845828316}
+  _guid: 70491328-471f-4af2-
 --- !u!1001 &846062854
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -56786,6 +57232,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 936038414}
+    - targetCorrespondingSourceObject: {fileID: 100006, guid: 2b120c828398db5439578c6f50bef162,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 936038416}
   m_SourcePrefab: {fileID: 100100000, guid: 2b120c828398db5439578c6f50bef162, type: 3}
 --- !u!4 &936038412 stripped
 Transform:
@@ -56828,6 +57278,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &936038415 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10800000, guid: 2b120c828398db5439578c6f50bef162,
+    type: 3}
+  m_PrefabInstance: {fileID: 936038411}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &936038416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936038413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 936038415}
+  _guid: c2bb35dd-7be5-4e54-
 --- !u!1001 &936047496
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -57154,6 +57626,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 936758232}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 936758234}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &936758230 stripped
 Transform:
@@ -57196,6 +57672,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &936758233 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 936758229}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &936758234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936758231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 936758233}
+  _guid: ec7a2e15-5762-41a5-
 --- !u!1 &938064639
 GameObject:
   m_ObjectHideFlags: 0
@@ -64064,6 +64562,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1031461862}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1031461864}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &1031461860 stripped
 Transform:
@@ -64106,6 +64608,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1031461863 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 1031461859}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1031461864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031461861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1031461863}
+  _guid: 8a636ca8-3664-42f2-
 --- !u!1001 &1031892031
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -66051,6 +66575,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1068148708}
+    - targetCorrespondingSourceObject: {fileID: 1454373857832846, guid: 57bc482487154a64085c1d0847e454b3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1068148710}
   m_SourcePrefab: {fileID: 100100000, guid: 57bc482487154a64085c1d0847e454b3, type: 3}
 --- !u!4 &1068148706 stripped
 Transform:
@@ -66093,6 +66621,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1068148709 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 108990059368549358, guid: 57bc482487154a64085c1d0847e454b3,
+    type: 3}
+  m_PrefabInstance: {fileID: 1068148705}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1068148710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1068148707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1068148709}
+  _guid: edb57399-37b7-4e1d-
 --- !u!1001 &1069551554
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -66821,6 +67371,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1077337471}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1077337473}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &1077337469 stripped
 Transform:
@@ -66863,6 +67417,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1077337472 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 1077337468}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1077337473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077337470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1077337472}
+  _guid: 02044ac7-fab2-42a2-
 --- !u!1001 &1077556332
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -74974,6 +75550,7 @@ GameObject:
   - component: {fileID: 1232238487}
   - component: {fileID: 1232238486}
   - component: {fileID: 1232238485}
+  - component: {fileID: 1232238488}
   m_Layer: 0
   m_Name: Point Light (2)
   m_TagString: Untagged
@@ -75090,6 +75667,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1232238488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1232238484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1232238486}
+  _guid: bb6a9eac-f903-4a96-
 --- !u!1001 &1232500810
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -75682,6 +76275,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1248841042}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1248841044}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &1248841040 stripped
 Transform:
@@ -75724,6 +76321,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1248841043 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 1248841039}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1248841044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1248841041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1248841043}
+  _guid: 5056c9a8-b365-4281-
 --- !u!1 &1250210648
 GameObject:
   m_ObjectHideFlags: 0
@@ -79221,6 +79840,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1308731411}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1308731413}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &1308731409 stripped
 Transform:
@@ -79263,6 +79886,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1308731412 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 1308731408}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1308731413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308731410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1308731412}
+  _guid: 93d75bd8-260a-45ec-
 --- !u!1001 &1310228367
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -79362,6 +80007,7 @@ GameObject:
   - component: {fileID: 1311821266}
   - component: {fileID: 1311821265}
   - component: {fileID: 1311821264}
+  - component: {fileID: 1311821267}
   m_Layer: 0
   m_Name: Point Light (4)
   m_TagString: Untagged
@@ -79478,6 +80124,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1311821267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1311821263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1311821265}
+  _guid: 24315857-668b-42a4-
 --- !u!1 &1312046910
 GameObject:
   m_ObjectHideFlags: 0
@@ -81089,6 +81751,37 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1346565046}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1347417813
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1347417814}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1347417814
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1347417813}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1826.6046, y: 10.09728, z: 533.97314}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1347483740
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -83032,6 +83725,7 @@ GameObject:
   - component: {fileID: 1385678929}
   - component: {fileID: 1385678928}
   - component: {fileID: 1385678927}
+  - component: {fileID: 1385678930}
   m_Layer: 0
   m_Name: Point Light (1)
   m_TagString: Untagged
@@ -83148,6 +83842,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1385678930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1385678926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1385678928}
+  _guid: 8000239d-b403-4844-
 --- !u!1001 &1387812260
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -84890,6 +85600,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1417129255}
+    - targetCorrespondingSourceObject: {fileID: 100006, guid: 2b120c828398db5439578c6f50bef162,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1417129257}
   m_SourcePrefab: {fileID: 100100000, guid: 2b120c828398db5439578c6f50bef162, type: 3}
 --- !u!4 &1417129253 stripped
 Transform:
@@ -84932,6 +85646,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1417129256 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10800000, guid: 2b120c828398db5439578c6f50bef162,
+    type: 3}
+  m_PrefabInstance: {fileID: 1417129252}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1417129257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1417129254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1417129256}
+  _guid: 836e3221-67ea-4e63-
 --- !u!1001 &1420569983
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -90093,6 +90829,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1503931855}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1503931857}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &1503931853 stripped
 Transform:
@@ -90135,6 +90875,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1503931856 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 1503931852}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1503931857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1503931854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1503931856}
+  _guid: ed53f780-d69c-4791-
 --- !u!1001 &1503995312
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -92087,6 +92849,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1541881987}
+    - targetCorrespondingSourceObject: {fileID: 155528, guid: 44eb32dcdfb035f4cb156673d7722d3a,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1541881989}
   m_SourcePrefab: {fileID: 100100000, guid: 44eb32dcdfb035f4cb156673d7722d3a, type: 3}
 --- !u!4 &1541881985 stripped
 Transform:
@@ -92129,6 +92895,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1541881988 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10821712, guid: 44eb32dcdfb035f4cb156673d7722d3a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1541881984}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1541881989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1541881986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1541881988}
+  _guid: 2d7c761e-9c9e-471b-
 --- !u!1 &1544471652
 GameObject:
   m_ObjectHideFlags: 0
@@ -96225,6 +97013,7 @@ GameObject:
   - component: {fileID: 1584797573}
   - component: {fileID: 1584797572}
   - component: {fileID: 1584797571}
+  - component: {fileID: 1584797574}
   m_Layer: 0
   m_Name: Point Light (6)
   m_TagString: Untagged
@@ -96341,6 +97130,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1584797574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1584797570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1584797572}
+  _guid: 494d8df3-807e-4c52-
 --- !u!1001 &1586179835
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -98163,6 +98968,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1612096754}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1612096756}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &1612096752 stripped
 Transform:
@@ -98205,6 +99014,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1612096755 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 1612096751}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1612096756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1612096753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1612096755}
+  _guid: 8bc2a013-b9d5-4b31-
 --- !u!1001 &1612137250
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -104999,6 +105830,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1739011633}
+    - targetCorrespondingSourceObject: {fileID: 100006, guid: 2b120c828398db5439578c6f50bef162,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1739011635}
   m_SourcePrefab: {fileID: 100100000, guid: 2b120c828398db5439578c6f50bef162, type: 3}
 --- !u!4 &1739011631 stripped
 Transform:
@@ -105041,6 +105876,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1739011634 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10800000, guid: 2b120c828398db5439578c6f50bef162,
+    type: 3}
+  m_PrefabInstance: {fileID: 1739011630}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1739011635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1739011632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1739011634}
+  _guid: 875b85af-b8fc-4e1e-
 --- !u!1001 &1739172596
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -105525,6 +106382,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1746248447}
+    - targetCorrespondingSourceObject: {fileID: 100006, guid: 2b120c828398db5439578c6f50bef162,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1746248449}
   m_SourcePrefab: {fileID: 100100000, guid: 2b120c828398db5439578c6f50bef162, type: 3}
 --- !u!4 &1746248445 stripped
 Transform:
@@ -105567,6 +106428,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1746248448 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10800000, guid: 2b120c828398db5439578c6f50bef162,
+    type: 3}
+  m_PrefabInstance: {fileID: 1746248444}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1746248449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746248446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1746248448}
+  _guid: d2f8b536-3194-4d8e-
 --- !u!1001 &1746867755
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -108303,6 +109186,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1798099685}
+    - targetCorrespondingSourceObject: {fileID: 100006, guid: 2b120c828398db5439578c6f50bef162,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1798099687}
   m_SourcePrefab: {fileID: 100100000, guid: 2b120c828398db5439578c6f50bef162, type: 3}
 --- !u!4 &1798099683 stripped
 Transform:
@@ -108345,6 +109232,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1798099686 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10800000, guid: 2b120c828398db5439578c6f50bef162,
+    type: 3}
+  m_PrefabInstance: {fileID: 1798099682}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1798099687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798099684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1798099686}
+  _guid: c69707fa-89b1-407d-
 --- !u!1 &1799752661
 GameObject:
   m_ObjectHideFlags: 0
@@ -108918,6 +109827,7 @@ GameObject:
   - component: {fileID: 1810393828}
   - component: {fileID: 1810393827}
   - component: {fileID: 1810393826}
+  - component: {fileID: 1810393829}
   m_Layer: 0
   m_Name: Point Light (5)
   m_TagString: Untagged
@@ -109034,6 +109944,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1810393829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810393825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1810393827}
+  _guid: 43502fa8-d5ec-46b1-
 --- !u!1001 &1812980457
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -110594,6 +111520,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1854918141}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1854918143}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &1854918139 stripped
 Transform:
@@ -110636,6 +111566,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1854918142 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 1854918138}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1854918143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854918140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1854918142}
+  _guid: 228148d9-71c7-40cf-
 --- !u!1001 &1855089218
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -113534,6 +114486,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1905641138}
+    - targetCorrespondingSourceObject: {fileID: 1454373857832846, guid: 57bc482487154a64085c1d0847e454b3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1905641140}
   m_SourcePrefab: {fileID: 100100000, guid: 57bc482487154a64085c1d0847e454b3, type: 3}
 --- !u!4 &1905641136 stripped
 Transform:
@@ -113576,6 +114532,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1905641139 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 108990059368549358, guid: 57bc482487154a64085c1d0847e454b3,
+    type: 3}
+  m_PrefabInstance: {fileID: 1905641135}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1905641140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1905641137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1905641139}
+  _guid: 40454e17-9177-432a-
 --- !u!1 &1906367006
 GameObject:
   m_ObjectHideFlags: 0
@@ -116520,6 +117498,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1951902826}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1951902828}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &1951902824 stripped
 Transform:
@@ -116562,6 +117544,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &1951902827 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 1951902823}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1951902828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1951902825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 1951902827}
+  _guid: 480e306e-b5bd-481f-
 --- !u!1001 &1953778226
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -121430,6 +122434,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2027348696}
+    - targetCorrespondingSourceObject: {fileID: 100006, guid: 2b120c828398db5439578c6f50bef162,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2027348698}
   m_SourcePrefab: {fileID: 100100000, guid: 2b120c828398db5439578c6f50bef162, type: 3}
 --- !u!4 &2027348694 stripped
 Transform:
@@ -121472,6 +122480,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &2027348697 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10800000, guid: 2b120c828398db5439578c6f50bef162,
+    type: 3}
+  m_PrefabInstance: {fileID: 2027348693}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2027348698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027348695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 2027348697}
+  _guid: 2bbf1b5a-7886-4f46-
 --- !u!1 &2028397129
 GameObject:
   m_ObjectHideFlags: 0
@@ -122586,73 +123616,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2039120213}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2040470870
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2040470874}
-  - component: {fileID: 2040470871}
-  - component: {fileID: 2040470875}
-  m_Layer: 0
-  m_Name: Prototype Runner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2040470871
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2040470870}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f392676978a6af4ab65335042bb913e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Player_Runner
-  playerPrefab:
-    RawGuidValue: 90f3e9377bbf22a4b948d3eccdf726b4
-  spawn: {fileID: 0}
-  spawnenemy: {fileID: 0}
---- !u!4 &2040470874
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2040470870}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1122, y: 3, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2040470875
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2040470870}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
-  SortKey: 300591367
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours: []
-  ForceRemoteRenderTimeframe: 0
 --- !u!1001 &2042429590
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -123473,6 +124436,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2055638757}
+    - targetCorrespondingSourceObject: {fileID: 1454373857832846, guid: 57bc482487154a64085c1d0847e454b3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2055638759}
   m_SourcePrefab: {fileID: 100100000, guid: 57bc482487154a64085c1d0847e454b3, type: 3}
 --- !u!4 &2055638755 stripped
 Transform:
@@ -123515,6 +124482,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &2055638758 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 108990059368549358, guid: 57bc482487154a64085c1d0847e454b3,
+    type: 3}
+  m_PrefabInstance: {fileID: 2055638754}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2055638759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055638756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 2055638758}
+  _guid: 1bc5e7c3-db64-4058-
 --- !u!1001 &2056165199
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -126149,6 +127138,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2088688498}
+    - targetCorrespondingSourceObject: {fileID: 177930, guid: f632ee341faffa64ebfa4e2c74d6e422,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2088688500}
   m_SourcePrefab: {fileID: 100100000, guid: f632ee341faffa64ebfa4e2c74d6e422, type: 3}
 --- !u!4 &2088688496 stripped
 Transform:
@@ -126191,6 +127184,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &2088688499 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 10897730, guid: f632ee341faffa64ebfa4e2c74d6e422,
+    type: 3}
+  m_PrefabInstance: {fileID: 2088688495}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2088688500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2088688497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Unity::Fusion.EnableOnSingleRunner
+  PreferredRunner: 0
+  Components:
+  - {fileID: 2088688499}
+  _guid: c5046def-6891-4b75-
 --- !u!1 &2090677204
 GameObject:
   m_ObjectHideFlags: 0
@@ -129647,7 +130662,6 @@ SceneRoots:
   - {fileID: 1151806835}
   - {fileID: 1821911521223183831}
   - {fileID: 201706615}
-  - {fileID: 139766769}
   - {fileID: 1560350455}
   - {fileID: 1269491061}
   - {fileID: 1546470280}
@@ -129672,7 +130686,6 @@ SceneRoots:
   - {fileID: 2090677205}
   - {fileID: 758502140}
   - {fileID: 1073665768}
-  - {fileID: 2040470874}
   - {fileID: 1874421530}
   - {fileID: 1934167556}
   - {fileID: 200849603}
@@ -129705,3 +130718,6 @@ SceneRoots:
   - {fileID: 799686783}
   - {fileID: 2037739265}
   - {fileID: 1701027222}
+  - {fileID: 449522927}
+  - {fileID: 571395414}
+  - {fileID: 1347417814}

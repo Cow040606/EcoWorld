@@ -6,6 +6,7 @@ public class Item : ScriptableObject
 {
     public int itemID;
     public string itemName;
+    public string Tag;
     public Sprite icon;   
     public bool stackable = true;
     public int value;
