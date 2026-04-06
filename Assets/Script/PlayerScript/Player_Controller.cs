@@ -56,12 +56,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private Animator animator;
 
-    // =======================================================
+    //        ======
     // === BỔ SUNG CHO HỆ THỐNG TRỒNG TRỌT (BIẾN MẠNG) ===
-    // =======================================================
+    //        ======
     [Networked, OnChangedRender(nameof(OnToolChanged))]
     public int CurrentToolIndex { get; set; }
-    // =======================================================
+    //        ======
 
     public override void Spawned()
     {
@@ -109,13 +109,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             // 3. NHẢY
             if (Keyboard.current.spaceKey.wasPressedThisFrame) jumpPressedLocal = true;
 
-            // --- 4. THÊM ĐOẠN NÀY ĐỂ TỰ ĐỌC PHÍM WASD CHẮC CÚ 100% ---
+            // --- 4. DI CHUYỂN WASD ---
             float trucX = 0f;
             float trucY = 0f;
             if (Keyboard.current.wKey.isPressed) trucY += 1f;
             if (Keyboard.current.sKey.isPressed) trucY -= 1f;
             if (Keyboard.current.dKey.isPressed) trucX += 1f;
             if (Keyboard.current.aKey.isPressed) trucX -= 1f;
+  HEAD:Assets/Script/Player_Controller.cs
 
             moveInputLocal = new Vector2(trucX, trucY).normalized;
             // ---------------------------------------------------------
@@ -139,18 +140,34 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             bool ESCDangMo = false;
             if (Keyboard.current.escapeKey.wasPressedThisFrame)
+ 
+            
+            moveInputLocal = new Vector2(trucX, trucY).normalized; 
+
+            //         = //
+            // 5. MỞ / ĐÓNG CÁC BẢNG UI
+            //         = //
+            
+            bool isChat = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
+            bool isShop = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
+
+            // Nút ESC là "Quyền lực tối thượng", lúc nào cũng cho bấm để thoát hiểm
+            if (Keyboard.current.escapeKey.wasPressedThisFrame)            
+  2374c74a8268f17799fbd4ad0536732c6e2fc803:Assets/Script/PlayerScript/Player_Controller.cs
             {
+                TatToanBoUI(); 
                 if (ESC.instance != null) ESC.instance.BatTatESC();
             }
 
-            // =======================================================
+  HEAD:Assets/Script/Player_Controller.cs
+            //        ======
             // === BỔ SUNG CHO HỆ THỐNG TRỒNG TRỌT (ĐỌC PHÍM HOTBAR) ===
-            // =======================================================
+            //        ======
             if (Keyboard.current.digit1Key.wasPressedThisFrame) RPC_EquipTool(0); // Phím 1 -> Tay không (Slot 0)
             if (Keyboard.current.digit2Key.wasPressedThisFrame) RPC_EquipTool(1); // Phím 2 -> Cuốc (Slot 1)
             if (Keyboard.current.digit3Key.wasPressedThisFrame) RPC_EquipTool(2); // Phím 3 -> Slot 2
             if (Keyboard.current.digit4Key.wasPressedThisFrame) RPC_EquipTool(4); // Phím 4 -> Hạt giống (Slot 4)
-            // =======================================================
+            //        ======
 
             // 6. KIỂM TRA UI ĐỂ BẬT/TẮT CHUỘT
             bool baloDangMo = false;
@@ -159,17 +176,45 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (ShopUIController.instance != null) ishopopen = ShopUIController.instance.isShopOpen;
             if (InventoryManager.instance != null) baloDangMo = InventoryManager.instance.trangThaiBalo;
             if (DialogueEditor.ConversationManager.Instance != null)
+ 
+            if (isChat == false && isShop == false)
+  2374c74a8268f17799fbd4ad0536732c6e2fc803:Assets/Script/PlayerScript/Player_Controller.cs
             {
-                IsChat = DialogueEditor.ConversationManager.Instance.IsConversationActive;
+                // Bấm B: Mở / Đóng Balo
+                if (Keyboard.current.bKey.wasPressedThisFrame)
+                {
+                    if (InventoryManager.instance != null) InventoryManager.instance.BatTatBalo(TuiDo, this); 
+                }
+
+                // Bấm Tab: Mở / Đóng Bảng nhiệm vụ
+                if(Keyboard.current.tabKey.wasPressedThisFrame)
+                {
+                    if (QuestManager.instance != null) QuestManager.instance.Battatbangnhiemvu();
+                }
             }
 
-            if (baloDangMo || ESCDangMo || ishopopen || IsChat)
+            //         = //
+            // 6. KIỂM TRA TRẠNG THÁI UI ĐỂ BẬT/TẮT CHUỘT
+            //         = //
+            
+            // Lấy trạng thái thực tế từ các bản hack (Instance)
+            bool baloDangMo = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
+            bool ishopopen = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
+            bool questDangMo = (QuestManager.instance != null && QuestManager.instance.isQuest_Open);
+            bool IsChat = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
+            bool ESCDangMo = (ESC.instance != null && ESC.instance.isESC_Open);
+
+            // Nếu CÓ BẤT KỲ CÁI UI NÀO ĐANG MỞ -> Bật chuột, khóa xoay camera
+            if (baloDangMo || ESCDangMo || ishopopen || IsChat || questDangMo)
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
+  HEAD:Assets/Script/Player_Controller.cs
 
                 xRotation = xRotation;
                 yRotation = yRotation;
+ 
+  2374c74a8268f17799fbd4ad0536732c6e2fc803:Assets/Script/PlayerScript/Player_Controller.cs
             }
             else
             {
@@ -183,6 +228,35 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 xRotation -= mouseY;
                 xRotation = Mathf.Clamp(xRotation, -60f, 60f);
             }
+        }
+    }
+
+    private void TatToanBoUI()
+    {
+        if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo == true)
+        {
+            InventoryManager.instance.BatTatBalo(TuiDo, this);
+        }
+
+        if (QuestManager.instance != null && QuestManager.instance.isQuest_Open == true)
+        {
+            QuestManager.instance.Battatbangnhiemvu();
+        }
+        
+        if (ShopUIController.instance != null && ShopUIController.instance.isShopOpen == true) 
+        {
+            // Tắt phần hồn (Biến)
+            ShopUIController.instance.isShopOpen = false;
+            ShopUIController.instance.dangmoshop = false; 
+            
+            // ShopUIController.instance.CloseShop();
+            
+            ShopUIController.instance.khungShop.SetActive(false); 
+        }
+
+        if (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive)
+        {
+            DialogueEditor.ConversationManager.Instance.EndConversation();
         }
     }
 
@@ -214,9 +288,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    // =======================================================
+    //        ======
     // TRÁI TIM CỦA GAME MẠNG NẰM Ở ĐÂY NÈ BÒ!
-    // =======================================================
+    //        ======
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority && !HasInputAuthority)
@@ -354,6 +428,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             soLuong_ServerGui,
             thongTinItem.icon
         );
+        if (Player_QuestManager.localQuest != null)
+        {
+            Player_QuestManager.localQuest.KiemTraTienDo();
+        }
     }
 
 
@@ -455,21 +533,42 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_BanVatPham(int id, int gia)
+    public void RPC_BanVatPham(int idBan, int giaBan)
     {
+        // 1. Lục lọi trong túi đồ xem có món này không
         for (int i = 0; i < TuiDo.Length; i++)
         {
-            if (TuiDo[i].ItemID == id && TuiDo[i].SoLuong > 0)
+            // Nếu tìm thấy đúng ID và số lượng lớn hơn 0
+            if (TuiDo[i].ItemID == idBan && TuiDo[i].SoLuong > 0)
             {
-                var item = TuiDo[i];
-                item.SoLuong--;
-                if (item.SoLuong <= 0) item.ItemID = 0;
+                // 2. Lấy món đồ ra, trừ đi 1
+                var doVat = TuiDo[i];
+                doVat.SoLuong -= 1;
+                
+                // Nếu bán hết sạch thì xóa luôn ID để ô đó thành ô trống
+                if (doVat.SoLuong <= 0) 
+                {
+                    doVat.ItemID = 0;
+                }
+                
+                // Cất lại vào túi đồ mạng (Cú pháp chuẩn của Fusion)
+                TuiDo.Set(i, doVat); 
 
+  HEAD:Assets/Script/Player_Controller.cs
                 TuiDo.Set(i, item);
                 Gold += gia;
                 return;
+ 
+                // 3. Cộng tiền vào ví
+                Gold += giaBan;
+                
+                Debug.Log($"[Server] Đã bán 1 cái (ID: {idBan}), thu về {giaBan} Xu. Tiền hiện tại: {Gold}");
+                return; // Bán xong 1 cái thì thoát hàm luôn để không bị trừ lố
+  2374c74a8268f17799fbd4ad0536732c6e2fc803:Assets/Script/PlayerScript/Player_Controller.cs
             }
         }
+        
+        Debug.Log("[Server] Bán thất bại: Túi đồ không có món này!");
     }
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_MuaVatPham(int idMatHang, int giaTien)
@@ -520,19 +619,60 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             Gold -= giaTien;
         }
     }
+  HEAD:Assets/Script/Player_Controller.cs
     public void Click_NutBanGo()
     {
         Player_Controller myPlayer = NetworkRunner.Instances[0].GetPlayerObject(NetworkRunner.Instances[0].LocalPlayer).GetComponent<Player_Controller>();
+ 
+  2374c74a8268f17799fbd4ad0536732c6e2fc803:Assets/Script/PlayerScript/Player_Controller.cs
 
-        if (myPlayer != null)
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_HoanThanhQuest(int idVatPham, int soLuongCanTru, int tienThuong)
+    {
+        int soLuongDaTru = 0;
+
+        // 1. Quét balo để tìm và trừ đồ nhiệm vụ
+        for (int i = 0; i < TuiDo.Length; i++)
         {
+  HEAD:Assets/Script/Player_Controller.cs
             myPlayer.RPC_BanVatPham(1, 10);
+ 
+            if (TuiDo[i].ItemID == idVatPham && TuiDo[i].SoLuong > 0)
+            {
+                var doVat = TuiDo[i];
+                
+                // Tính xem ô này có đủ để trừ không, hay chỉ trừ được 1 phần
+                int soLuongCoTheTru = Mathf.Min(doVat.SoLuong, soLuongCanTru - soLuongDaTru);
+                
+                doVat.SoLuong -= soLuongCoTheTru;
+                soLuongDaTru += soLuongCoTheTru;
+
+                // Nếu trừ xong mà ô đó về 0 thì làm rỗng ô đó luôn
+                if (doVat.SoLuong <= 0)
+                {
+                    doVat.ItemID = 0; 
+                }
+
+                TuiDo.Set(i, doVat); // Cập nhật lại Balo lên mạng
+
+                // Nếu đã gom đủ số lượng cần thiết thì dừng quét
+                if (soLuongDaTru >= soLuongCanTru)
+                {
+                    break;
+                }
+            }
+  2374c74a8268f17799fbd4ad0536732c6e2fc803:Assets/Script/PlayerScript/Player_Controller.cs
         }
+
+        // 2. Cộng tiền thưởng vào ví
+        Gold += tienThuong;
+        Debug.Log($"[Server] Trả Quest thành công! Trừ {soLuongCanTru} món (ID: {idVatPham}), Thưởng {tienThuong} Vàng. Tiền: {Gold}");
     }
 
-    // =======================================================
+    //        ======
     // === BỔ SUNG CHO HỆ THỐNG TRỒNG TRỌT (HÀM XỬ LÝ RPC) ===
-    // =======================================================
+    //        ======
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_EquipTool(int toolIndex)
     {
@@ -548,7 +688,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             UI_HotBar.Instance.HighlightSlot(CurrentToolIndex);
         }
     }
-    // =======================================================
+    //        ======
 
     #region Hàm trống bắt buộc của Interface
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
