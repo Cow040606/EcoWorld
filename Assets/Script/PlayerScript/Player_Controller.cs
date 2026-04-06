@@ -102,7 +102,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             // 3. NHẢY
             if (Keyboard.current.spaceKey.wasPressedThisFrame) jumpPressedLocal = true;
 
-            // --- 4. THÊM ĐOẠN NÀY ĐỂ TỰ ĐỌC PHÍM WASD CHẮC CÚ 100% ---
+            // --- 4. DI CHUYỂN WASD ---
             float trucX = 0f;
             float trucY = 0f;
             if (Keyboard.current.wKey.isPressed) trucY += 1f;
@@ -111,52 +111,52 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (Keyboard.current.aKey.isPressed) trucX -= 1f;
             
             moveInputLocal = new Vector2(trucX, trucY).normalized; 
-            // ---------------------------------------------------------
 
+            // ========================================================= //
+            // 5. MỞ / ĐÓNG CÁC BẢNG UI
+            // ========================================================= //
+            
+            bool isChat = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
+            bool isShop = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
 
-
-            if (Keyboard.current.kKey.wasPressedThisFrame)
-            {
-                RPC_ThayDoiTien(5);
-            }
-
-            // Bấm L để trừ 5 tiền
-            if (Keyboard.current.lKey.wasPressedThisFrame)
-            {
-                RPC_ThayDoiTien(-5);
-            }
-
-
-            // 5. MỞ / ĐÓNG BALO & ESC
-            if (Keyboard.current.bKey.wasPressedThisFrame)
-            {
-                if (InventoryManager.instance != null) InventoryManager.instance.BatTatBalo(TuiDo, this); 
-            }
-
-            bool ESCDangMo = false;
+            // Nút ESC là "Quyền lực tối thượng", lúc nào cũng cho bấm để thoát hiểm
             if (Keyboard.current.escapeKey.wasPressedThisFrame)            
             {
+                TatToanBoUI(); 
                 if (ESC.instance != null) ESC.instance.BatTatESC();
             }
 
-            // 6. KIỂM TRA UI ĐỂ BẬT/TẮT CHUỘT
-            bool baloDangMo = false;
-            bool IsChat = false;
-            bool ishopopen = false;
-            if(ShopUIController.instance != null) ishopopen = ShopUIController.instance.isShopOpen;
-            if (InventoryManager.instance != null) baloDangMo = InventoryManager.instance.trangThaiBalo;
-            if (DialogueEditor.ConversationManager.Instance != null)
+            if (isChat == false && isShop == false)
             {
-                IsChat = DialogueEditor.ConversationManager.Instance.IsConversationActive;
+                // Bấm B: Mở / Đóng Balo
+                if (Keyboard.current.bKey.wasPressedThisFrame)
+                {
+                    if (InventoryManager.instance != null) InventoryManager.instance.BatTatBalo(TuiDo, this); 
+                }
+
+                // Bấm Tab: Mở / Đóng Bảng nhiệm vụ
+                if(Keyboard.current.tabKey.wasPressedThisFrame)
+                {
+                    if (QuestManager.instance != null) QuestManager.instance.Battatbangnhiemvu();
+                }
             }
 
-            if (baloDangMo || ESCDangMo || ishopopen || IsChat)
+            // ========================================================= //
+            // 6. KIỂM TRA TRẠNG THÁI UI ĐỂ BẬT/TẮT CHUỘT
+            // ========================================================= //
+            
+            // Lấy trạng thái thực tế từ các bản hack (Instance)
+            bool baloDangMo = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
+            bool ishopopen = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
+            bool questDangMo = (QuestManager.instance != null && QuestManager.instance.isQuest_Open);
+            bool IsChat = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
+            bool ESCDangMo = (ESC.instance != null && ESC.instance.isESC_Open);
+
+            // Nếu CÓ BẤT KỲ CÁI UI NÀO ĐANG MỞ -> Bật chuột, khóa xoay camera
+            if (baloDangMo || ESCDangMo || ishopopen || IsChat || questDangMo)
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
-                
-                xRotation = xRotation; 
-                yRotation = yRotation;
             }
             else
             {
@@ -170,6 +170,35 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 xRotation -= mouseY;
                 xRotation = Mathf.Clamp(xRotation, -60f, 60f); 
             }
+        }
+    }
+
+    private void TatToanBoUI()
+    {
+        if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo == true)
+        {
+            InventoryManager.instance.BatTatBalo(TuiDo, this);
+        }
+
+        if (QuestManager.instance != null && QuestManager.instance.isQuest_Open == true)
+        {
+            QuestManager.instance.Battatbangnhiemvu();
+        }
+        
+        if (ShopUIController.instance != null && ShopUIController.instance.isShopOpen == true) 
+        {
+            // Tắt phần hồn (Biến)
+            ShopUIController.instance.isShopOpen = false;
+            ShopUIController.instance.dangmoshop = false; 
+            
+            // ShopUIController.instance.CloseShop();
+            
+            ShopUIController.instance.khungShop.SetActive(false); 
+        }
+
+        if (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive)
+        {
+            DialogueEditor.ConversationManager.Instance.EndConversation();
         }
     }
 
@@ -357,6 +386,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             soLuong_ServerGui, 
             thongTinItem.icon 
         );
+        if (Player_QuestManager.localQuest != null)
+        {
+            Player_QuestManager.localQuest.KiemTraTienDo();
+        }
     }
 
 
@@ -465,21 +498,36 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_BanVatPham(int id, int gia)
+    public void RPC_BanVatPham(int idBan, int giaBan)
     {
+        // 1. Lục lọi trong túi đồ xem có món này không
         for (int i = 0; i < TuiDo.Length; i++)
         {
-            if (TuiDo[i].ItemID == id && TuiDo[i].SoLuong > 0)
+            // Nếu tìm thấy đúng ID và số lượng lớn hơn 0
+            if (TuiDo[i].ItemID == idBan && TuiDo[i].SoLuong > 0)
             {
-                var item = TuiDo[i];
-                item.SoLuong--;
-                if (item.SoLuong <= 0) item.ItemID = 0;
+                // 2. Lấy món đồ ra, trừ đi 1
+                var doVat = TuiDo[i];
+                doVat.SoLuong -= 1;
+                
+                // Nếu bán hết sạch thì xóa luôn ID để ô đó thành ô trống
+                if (doVat.SoLuong <= 0) 
+                {
+                    doVat.ItemID = 0;
+                }
+                
+                // Cất lại vào túi đồ mạng (Cú pháp chuẩn của Fusion)
+                TuiDo.Set(i, doVat); 
 
-                TuiDo.Set(i, item);
-                Gold += gia;     
-                return;
+                // 3. Cộng tiền vào ví
+                Gold += giaBan;
+                
+                Debug.Log($"[Server] Đã bán 1 cái (ID: {idBan}), thu về {giaBan} Xu. Tiền hiện tại: {Gold}");
+                return; // Bán xong 1 cái thì thoát hàm luôn để không bị trừ lố
             }
         }
+        
+        Debug.Log("[Server] Bán thất bại: Túi đồ không có món này!");
     }
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_MuaVatPham(int idMatHang, int giaTien)
@@ -536,16 +584,45 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             Gold -= giaTien;
         }
     }
-    public void Click_NutBanGo()
-    {
-        // Tìm Player của mình (người đang mở UI)
-        Player_Controller myPlayer = NetworkRunner.Instances[0].GetPlayerObject(NetworkRunner.Instances[0].LocalPlayer).GetComponent<Player_Controller>();
 
-        if (myPlayer != null)
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_HoanThanhQuest(int idVatPham, int soLuongCanTru, int tienThuong)
+    {
+        int soLuongDaTru = 0;
+
+        // 1. Quét balo để tìm và trừ đồ nhiệm vụ
+        for (int i = 0; i < TuiDo.Length; i++)
         {
-            // Ví dụ: ID gỗ là 1, giá bán là 10 xu
-            myPlayer.RPC_BanVatPham(1, 10);
+            if (TuiDo[i].ItemID == idVatPham && TuiDo[i].SoLuong > 0)
+            {
+                var doVat = TuiDo[i];
+                
+                // Tính xem ô này có đủ để trừ không, hay chỉ trừ được 1 phần
+                int soLuongCoTheTru = Mathf.Min(doVat.SoLuong, soLuongCanTru - soLuongDaTru);
+                
+                doVat.SoLuong -= soLuongCoTheTru;
+                soLuongDaTru += soLuongCoTheTru;
+
+                // Nếu trừ xong mà ô đó về 0 thì làm rỗng ô đó luôn
+                if (doVat.SoLuong <= 0)
+                {
+                    doVat.ItemID = 0; 
+                }
+
+                TuiDo.Set(i, doVat); // Cập nhật lại Balo lên mạng
+
+                // Nếu đã gom đủ số lượng cần thiết thì dừng quét
+                if (soLuongDaTru >= soLuongCanTru)
+                {
+                    break;
+                }
+            }
         }
+
+        // 2. Cộng tiền thưởng vào ví
+        Gold += tienThuong;
+        Debug.Log($"[Server] Trả Quest thành công! Trừ {soLuongCanTru} món (ID: {idVatPham}), Thưởng {tienThuong} Vàng. Tiền: {Gold}");
     }
 
 

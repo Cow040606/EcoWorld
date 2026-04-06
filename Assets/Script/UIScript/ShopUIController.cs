@@ -93,6 +93,7 @@ public class ShopUIController : MonoBehaviour
             var itemPrice = oMoi.transform.Find("Price")?.GetComponent<TextMeshProUGUI>(); 
             var itemIMG = oMoi.transform.Find("ItemIcon")?.GetComponent<Image>();
             var nutMua = oMoi.transform.Find("BuyButton")?.GetComponent<Button>();
+            var nutBan = oMoi.transform.Find("SellButton")?.GetComponent<Button>();
 
             // --- ĐOẠN TÍNH TOÁN SỐ LƯỢNG ĐANG CÓ ---
             int soLuongThucTe = 0;
@@ -133,6 +134,21 @@ public class ShopUIController : MonoBehaviour
                     {
                         khachHang.RPC_MuaVatPham(idMua, giaMua);
                         UnityEngine.Debug.Log($"Đã gửi yêu cầu mua hàng: {tenMon} - Giá: {giaMua}");
+                        Invoke("VeShopRaManHinh", 0.1f);
+                    }
+                });
+            }
+            if(nutBan != null)
+            {
+                int idMua = matHang.itemID;
+                int giaban = matHang.value /2;
+                string tenMon = matHang.itemName;
+
+                nutBan.onClick.AddListener(() => {
+                    if (khachHang != null)
+                    {
+                        khachHang.RPC_BanVatPham(idMua, giaban);
+                        UnityEngine.Debug.Log($"Đã gửi yêu cầu Bán hàng: {tenMon} - Giá: {giaban}");
                         Invoke("VeShopRaManHinh", 0.1f);
                     }
                 });
