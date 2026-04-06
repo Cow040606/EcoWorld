@@ -1,14 +1,17 @@
-    using UnityEngine;
+using UnityEngine;
 
-    [CreateAssetMenu(fileName = "NewSeedData", menuName = "Farming/Seed Data")]
-    public class SO_SeedData : ScriptableObject
-    {
-        public string SeedItemID;         // VD: "seed_tomato"
-        public string HarvestItemID;      // VD: "crop_tomato"
-        public int HarvestYield = 3;      // Số lượng thu hoạch
-        public float GrowTimeSeconds = 300f; // 5 phút
+[CreateAssetMenu(fileName = "NewSeedData", menuName = "Farming/Seed Data")]
+public class SO_SeedData : ScriptableObject
+{
+    [Header("Định danh Item (Khớp với ID trong TuiDo)")]
+    public int SeedItemID;         // Ép về kiểu INT (VD: 101)
+    public int HarvestItemID;      // Ép về kiểu INT (VD: 201)
+    
+    [Header("Chỉ số nông nghiệp")]
+    public int HarvestYield = 3;   
+    public float GrowTimeSeconds = 300f; 
 
-        [Header("Visuals")]
-        public GameObject SeedlingPrefab; // Cây con
-        public GameObject MaturePrefab;   // Cây trưởng thành
-    }
+    [Header("Hình ảnh (Prefabs)")]
+    public GameObject SeedlingPrefab; 
+    public GameObject MaturePrefab;   
+}
