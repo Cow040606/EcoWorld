@@ -56,6 +56,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private Animator animator;
 
+
+    //Balo//
+    [Networked, Capacity(4)]
+    public NetworkArray<int> HotbarIDs { get; } // Lưu ItemID của phím 1, 2, 3, 4
+
     //        ======
     // === BỔ SUNG CHO HỆ THỐNG TRỒNG TRỌT (BIẾN MẠNG) ===
     //        ======
@@ -105,72 +110,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (HasInputAuthority && Keyboard.current != null && Mouse.current != null)
         {
-            // 1. NHẶT ĐỒ
-            if (Keyboard.current.eKey.wasPressedThisFrame) RPC_YeuCauNhatRac();
-
-            // 2. CHẠY NHANH
-            sprintPressedLocal = Keyboard.current.leftShiftKey.isPressed;
-
-            // 3. NHẢY
-            if (Keyboard.current.spaceKey.wasPressedThisFrame) jumpPressedLocal = true;
-
-            // --- 4. DI CHUYỂN WASD ---
-            float trucX = 0f;
-            float trucY = 0f;
-            if (Keyboard.current.wKey.isPressed) trucY += 1f;
-            if (Keyboard.current.sKey.isPressed) trucY -= 1f;
-            if (Keyboard.current.dKey.isPressed) trucX += 1f;
-            if (Keyboard.current.aKey.isPressed) trucX -= 1f;
-
-            moveInputLocal = new Vector2(trucX, trucY).normalized;
-            // ---------------------------------------------------------
-
-            if (Keyboard.current.kKey.wasPressedThisFrame) RPC_ThayDoiTien(5);
-            if (Keyboard.current.lKey.wasPressedThisFrame) RPC_ThayDoiTien(-5);
-
-            //        = //
-            // 5. MỞ / ĐÓNG CÁC BẢNG UI & NÚT HOTBAR
-            //        = //
-            bool isChat = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
-            bool isShop = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
-
-            // Nút ESC là "Quyền lực tối thượng"
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)            
-            {
-                TatToanBoUI(); 
-                if (ESC.instance != null) ESC.instance.BatTatESC();
-            }
-
-            // --- HỆ THỐNG TRỒNG TRỌT (ĐỌC PHÍM HOTBAR) ---
-            if (Keyboard.current.digit1Key.wasPressedThisFrame) RPC_EquipTool(0); // Phím 1 -> Tay không (Slot 0)
-            if (Keyboard.current.digit2Key.wasPressedThisFrame) RPC_EquipTool(1); // Phím 2 -> Cuốc (Slot 1)
-            if (Keyboard.current.digit3Key.wasPressedThisFrame) RPC_EquipTool(2); // Phím 3 -> Slot 2
-            if (Keyboard.current.digit4Key.wasPressedThisFrame) RPC_EquipTool(4); // Phím 4 -> Hạt giống (Slot 4)
-
-            // Tương tác Balo & Quest (Chỉ khi không Chat/Shop)
-            if (isChat == false && isShop == false)
-            {
-                if (Keyboard.current.bKey.wasPressedThisFrame && InventoryManager.instance != null)
-                {
-                    InventoryManager.instance.BatTatBalo(TuiDo, this); 
-                }
-
-                if(Keyboard.current.tabKey.wasPressedThisFrame && QuestManager.instance != null)
-                {
-                    QuestManager.instance.Battatbangnhiemvu();
-                }
-            }
-
-            //        = //
-            // 6. KIỂM TRA TRẠNG THÁI UI ĐỂ BẬT/TẮT CHUỘT
-            //        = //
+            // ========================================================= //
+            // 1. ĐỌC TRẠNG THÁI BẢNG UI (Phải đọc đầu tiên để ở dưới còn dùng)
+            // ========================================================= //
             bool baloDangMo = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
             bool ishopopen = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
             bool questDangMo = (QuestManager.instance != null && QuestManager.instance.isQuest_Open);
             bool IsChatAct = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
             bool ESCDangMo = (ESC.instance != null && ESC.instance.isESC_Open);
 
-            // Nếu CÓ BẤT KỲ CÁI UI NÀO ĐANG MỞ -> Bật chuột, khóa xoay camera
+            // ========================================================= //
+            // 2. QUẢN LÝ CHUỘT & CAMERA (Khóa/Mở chuột theo UI)
+            // ========================================================= //
             if (baloDangMo || ESCDangMo || ishopopen || IsChatAct || questDangMo)
             {
                 Cursor.lockState = CursorLockMode.None;
@@ -188,6 +139,83 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 xRotation -= mouseY;
                 xRotation = Mathf.Clamp(xRotation, -60f, 60f);
             }
+
+            // ========================================================= //
+            // 3. NÚT ESC (Quyền lực tối thượng - Tắt mọi thứ)
+            // ========================================================= //
+            if (Keyboard.current.escapeKey.wasPressedThisFrame)            
+            {
+                TatToanBoUI(); 
+                if (ESC.instance != null) ESC.instance.BatTatESC();
+            }
+
+            // ========================================================= //
+            // 4. MỞ / ĐÓNG BALO VÀ NHIỆM VỤ (Chặn khi đang Chat/Shop)
+            // ========================================================= //
+            if (!IsChatAct && !ishopopen)
+            {
+                if (Keyboard.current.bKey.wasPressedThisFrame && InventoryManager.instance != null)
+                {
+                    InventoryManager.instance.BatTatBalo(TuiDo, this); 
+                }
+
+                if(Keyboard.current.tabKey.wasPressedThisFrame && QuestManager.instance != null)
+                {
+                    QuestManager.instance.Battatbangnhiemvu();
+                }
+            }
+
+            // ========================================================= //
+            // 5. HỆ THỐNG HOTBAR (GÁN ĐỒ & RÚT ĐỒ)
+            // ========================================================= //
+            bool dangBam1 = Keyboard.current.digit1Key.wasPressedThisFrame;
+            bool dangBam2 = Keyboard.current.digit2Key.wasPressedThisFrame;
+            bool dangBam3 = Keyboard.current.digit3Key.wasPressedThisFrame;
+            bool dangBam4 = Keyboard.current.digit4Key.wasPressedThisFrame;
+
+            if (baloDangMo)
+            {
+                // TRƯỜNG HỢP 1: ĐANG MỞ BALO -> GÁN ĐỒ
+                if (ItemHover.itemID_DangDiChuot != 0) // Đã sửa thành ItemHover cho Bò
+                {
+                    if (dangBam1) RPC_GanVaoHotbar(0, ItemHover.itemID_DangDiChuot);
+                    if (dangBam2) RPC_GanVaoHotbar(1, ItemHover.itemID_DangDiChuot);
+                    if (dangBam3) RPC_GanVaoHotbar(2, ItemHover.itemID_DangDiChuot);
+                    if (dangBam4) RPC_GanVaoHotbar(3, ItemHover.itemID_DangDiChuot);
+                }
+            }
+            else if (!IsChatAct && !ishopopen && !ESCDangMo && !questDangMo)
+            {
+                // TRƯỜNG HỢP 2: KHÔNG MỞ UI NÀO CẢ -> RÚT ĐỒ
+                if (dangBam1) RPC_EquipTool(0); 
+                if (dangBam2) RPC_EquipTool(1); 
+                if (dangBam3) RPC_EquipTool(2); 
+                if (dangBam4) RPC_EquipTool(3); 
+            }
+
+            // ========================================================= //
+            // 6. CÁC HÀNH ĐỘNG CƠ BẢN (DI CHUYỂN, NHẶT ĐỒ)
+            // ========================================================= //
+            // Nhặt đồ
+            if (Keyboard.current.eKey.wasPressedThisFrame) RPC_YeuCauNhatRac();
+
+            // Chạy nhanh & Nhảy
+            sprintPressedLocal = Keyboard.current.leftShiftKey.isPressed;
+            if (Keyboard.current.spaceKey.wasPressedThisFrame) jumpPressedLocal = true;
+
+            // Đọc trục WASD
+            float trucX = 0f;
+            float trucY = 0f;
+            if (Keyboard.current.wKey.isPressed) trucY += 1f;
+            if (Keyboard.current.sKey.isPressed) trucY -= 1f;
+            if (Keyboard.current.dKey.isPressed) trucX += 1f;
+            if (Keyboard.current.aKey.isPressed) trucX -= 1f;
+
+            moveInputLocal = new Vector2(trucX, trucY).normalized;
+
+            // (Test) Cộng trừ tiền
+            if (Keyboard.current.kKey.wasPressedThisFrame) RPC_ThayDoiTien(5);
+            if (Keyboard.current.lKey.wasPressedThisFrame) RPC_ThayDoiTien(-5);
         }
     }
 
@@ -444,6 +472,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 Runner.Despawn(rac);
             }
         }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_GanVaoHotbar(int slotIndex, int itemID)
+    {
+        if (InventoryManager.instance != null)
+        {
+            Item thongTinItem = InventoryManager.instance.TraCuuItem(itemID);
+            if (thongTinItem == null) return;
+        }
+
+        HotbarIDs.Set(slotIndex, itemID);
+        Debug.Log($"[Server] Đã gán Item {itemID} vào phím số {slotIndex + 1}");
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
