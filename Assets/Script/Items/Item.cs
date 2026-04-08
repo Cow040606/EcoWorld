@@ -13,4 +13,6 @@ public class Item : ScriptableObject
     [Header("Mô tả chi tiết")]
     [TextArea(3, 10)] // Tuyệt chiêu: Phóng to khung nhập chữ ngoài Inspector
     public string description;
+    [Header("Mô hình 3D khi cầm trên tay")]
+    public GameObject model3DPrefab;
 }

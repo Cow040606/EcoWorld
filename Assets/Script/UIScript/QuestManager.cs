@@ -6,6 +6,7 @@ public class QuestManager : MonoBehaviour
     public static QuestManager instance;
     public GameObject khungnhiemvu;
     public bool isQuest_Open; 
+    public GameObject txtBangNhiemVu;
 
 
     void Awake()
