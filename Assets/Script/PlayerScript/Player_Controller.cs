@@ -403,22 +403,36 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_YeuCauNhatRac()
     {
+        // Quét các vật thể xung quanh nhân vật
         Collider[] ketQuaQuet = Physics.OverlapSphere(transform.position, banKinhNhat);
+
         foreach (var Obj in ketQuaQuet)
         {
-            if (Obj.CompareTag("Items"))
+            // Kiểm tra xem có trúng 1 trong 3 Tag mới không
+            if (Obj.CompareTag("Normal_Item") || Obj.CompareTag("Medium_Item") || Obj.CompareTag("Health_Item"))
             {
                 NetworkObject nObj = Obj.GetComponent<NetworkObject>();
+<<<<<<< HEAD:Assets/Script/PlayerScript/Player_Controller.cs
                 XuLyItem theCanCuoc = Obj.GetComponent<XuLyItem>();
 
                 if (nObj != null && nObj.IsValid && theCanCuoc != null && theCanCuoc.thongTinDoVat != null)
                 {
                     int idThucTe = theCanCuoc.thongTinDoVat.itemID;
+=======
+                // Sử dụng ItemObject thay vì XuLyItem cho khớp với script mới
+                ItemObject scriptItem = Obj.GetComponent<ItemObject>();
+
+                if (nObj != null && nObj.IsValid && scriptItem != null)
+                {
+                    int idThucTe = scriptItem.itemID;
+>>>>>>> b21cef80d2ff7bf17b1ec303653a39f80eb7cd7e:Assets/Script/Player_Controller.cs
                     bool daNhat = false;
                     bool isstack = true;
+
                     if (InventoryManager.instance != null)
                     {
                         Item thongTin = InventoryManager.instance.TraCuuItem(idThucTe);
+<<<<<<< HEAD:Assets/Script/PlayerScript/Player_Controller.cs
                         if (thongTin != null) isstack = thongTin.stackable;
                     }
                     
@@ -444,6 +458,44 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                             if (TuiDo[i].ItemID == 0)
                             {
                                 TuiDo.Set(i, new O_VatPham { ItemID = idThucTe, SoLuong = 1 });
+=======
+                        if (thongTin != null)
+                        {
+                            isstack = thongTin.stackable;
+                        }
+                    }
+
+                    // Logic cộng dồn (Stack)
+                    if (isstack)
+                    {
+                        for (int i = 0; i < TuiDo.Length; i++)
+                        {
+                            if (TuiDo[i].ItemID == idThucTe)
+                            {
+                                O_VatPham doVat = TuiDo[i];
+                                doVat.SoLuong += scriptItem.soLuong; // Cộng theo số lượng của item đó
+                                TuiDo.Set(i, doVat);
+>>>>>>> b21cef80d2ff7bf17b1ec303653a39f80eb7cd7e:Assets/Script/Player_Controller.cs
+                                daNhat = true;
+                                break;
+                            }
+                        }
+                    }
+
+<<<<<<< HEAD:Assets/Script/PlayerScript/Player_Controller.cs
+                    if (daNhat)
+                    {
+                        RPC_XoaRacKhapBanDo(nObj);
+                        Rpc_NotifyPickupClient(idThucTe, 1);
+=======
+                    // Nếu chưa nhặt được (ô mới)
+                    if (!daNhat)
+                    {
+                        for (int i = 0; i < TuiDo.Length; i++)
+                        {
+                            if (TuiDo[i].ItemID == 0)
+                            {
+                                TuiDo.Set(i, new O_VatPham { ItemID = idThucTe, SoLuong = scriptItem.soLuong });
                                 daNhat = true;
                                 break;
                             }
@@ -452,8 +504,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
                     if (daNhat)
                     {
+                        // Xóa vật thể trên mạng
                         RPC_XoaRacKhapBanDo(nObj);
-                        Rpc_NotifyPickupClient(idThucTe, 1);
+
+                        // Thông báo cho Client (Hiển thị UI hoặc âm thanh nhặt đồ)
+                        Rpc_NotifyPickupClient(idThucTe, scriptItem.soLuong);
+
+>>>>>>> b21cef80d2ff7bf17b1ec303653a39f80eb7cd7e:Assets/Script/Player_Controller.cs
                         break;
                     }
                 }
