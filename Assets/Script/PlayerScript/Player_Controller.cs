@@ -412,53 +412,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (Obj.CompareTag("Normal_Item") || Obj.CompareTag("Medium_Item") || Obj.CompareTag("Health_Item"))
             {
                 NetworkObject nObj = Obj.GetComponent<NetworkObject>();
-<<<<<<< HEAD:Assets/Script/PlayerScript/Player_Controller.cs
-                XuLyItem theCanCuoc = Obj.GetComponent<XuLyItem>();
-
-                if (nObj != null && nObj.IsValid && theCanCuoc != null && theCanCuoc.thongTinDoVat != null)
-                {
-                    int idThucTe = theCanCuoc.thongTinDoVat.itemID;
-=======
-                // Sử dụng ItemObject thay vì XuLyItem cho khớp với script mới
+                
+                // Đã sửa thành ItemObject theo yêu cầu mới của bạn
                 ItemObject scriptItem = Obj.GetComponent<ItemObject>();
 
                 if (nObj != null && nObj.IsValid && scriptItem != null)
                 {
                     int idThucTe = scriptItem.itemID;
->>>>>>> b21cef80d2ff7bf17b1ec303653a39f80eb7cd7e:Assets/Script/Player_Controller.cs
                     bool daNhat = false;
                     bool isstack = true;
 
                     if (InventoryManager.instance != null)
                     {
                         Item thongTin = InventoryManager.instance.TraCuuItem(idThucTe);
-<<<<<<< HEAD:Assets/Script/PlayerScript/Player_Controller.cs
-                        if (thongTin != null) isstack = thongTin.stackable;
-                    }
-                    
-                    if (isstack)
-                    {
-                        for (int i = 0; i < TuiDo.Length; i++)
-                        {
-                            if (TuiDo[i].ItemID == idThucTe)
-                            {
-                                O_VatPham doVat = TuiDo[i];
-                                doVat.SoLuong++;
-                                TuiDo.Set(i, doVat);
-                                daNhat = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!daNhat)
-                    {
-                        for (int i = 0; i < TuiDo.Length; i++)
-                        {
-                            if (TuiDo[i].ItemID == 0)
-                            {
-                                TuiDo.Set(i, new O_VatPham { ItemID = idThucTe, SoLuong = 1 });
-=======
                         if (thongTin != null)
                         {
                             isstack = thongTin.stackable;
@@ -475,19 +441,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                                 O_VatPham doVat = TuiDo[i];
                                 doVat.SoLuong += scriptItem.soLuong; // Cộng theo số lượng của item đó
                                 TuiDo.Set(i, doVat);
->>>>>>> b21cef80d2ff7bf17b1ec303653a39f80eb7cd7e:Assets/Script/Player_Controller.cs
                                 daNhat = true;
                                 break;
                             }
                         }
                     }
 
-<<<<<<< HEAD:Assets/Script/PlayerScript/Player_Controller.cs
-                    if (daNhat)
-                    {
-                        RPC_XoaRacKhapBanDo(nObj);
-                        Rpc_NotifyPickupClient(idThucTe, 1);
-=======
                     // Nếu chưa nhặt được (ô mới)
                     if (!daNhat)
                     {
@@ -509,9 +468,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
                         // Thông báo cho Client (Hiển thị UI hoặc âm thanh nhặt đồ)
                         Rpc_NotifyPickupClient(idThucTe, scriptItem.soLuong);
-
->>>>>>> b21cef80d2ff7bf17b1ec303653a39f80eb7cd7e:Assets/Script/Player_Controller.cs
-                        break;
+                        
+                        break; // Đã nhặt xong món này thì thoát vòng lặp
                     }
                 }
             }

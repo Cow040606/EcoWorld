@@ -30,10 +30,8 @@ public class FarmZone : MonoBehaviour
 
     private void Update()
     {
-        // Đảm bảo Local Player phải tồn tại và đang đứng trong ruộng
         if (!_isLocalPlayerInside || Player_Controller.localPlayer == null) return;
 
-        // Click chuột phải để cuốc đất / trồng cây
         if (Mouse.current.rightButton.wasPressedThisFrame)
         {
             InteractWithFarmTile();
@@ -42,13 +40,9 @@ public class FarmZone : MonoBehaviour
 
     private void InteractWithFarmTile()
     {
-        // Lấy Camera Transform trực tiếp từ Player_Controller thay vì Camera.main
         Transform camTransform = Player_Controller.localPlayer.cameraTransform;
-        
-        // Nếu vì lý do nào đó Camera chưa kịp load thì thoát hàm để tránh lỗi Null
         if (camTransform == null) return;
 
-        // Bắn tia Raycast từ vị trí camera, hướng về phía trước
         Ray ray = new Ray(camTransform.position, camTransform.forward);
         
         if (Physics.Raycast(ray, out RaycastHit hit, _interactDistance, _farmTileLayer))
@@ -59,12 +53,13 @@ public class FarmZone : MonoBehaviour
                 int currentTool = Player_Controller.localPlayer.CurrentToolIndex;
                 int seedId = 0;
 
-                // Nếu đang cầm Hạt Giống (Tool = 4), set ID hạt giống bằng SỐ (VD: 101)
-                if (currentTool == 4)
+                // SỬA Ở ĐÂY: Phím 4 tương ứng với ToolIndex = 3
+                if (currentTool == 3)
                 {
                     seedId = 101; 
                 }
 
+                Debug.Log($"[Client] Click vào đất! Đang cầm Tool: {currentTool}, Truyền SeedID: {seedId}");
                 targetTile.RPC_InteractTile(Player_Controller.localPlayer.Object.InputAuthority, currentTool, seedId);
             }
         }

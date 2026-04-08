@@ -16,9 +16,14 @@ public class FarmTile : NetworkBehaviour
     [SerializeField] private Material _untilledMat;
     [SerializeField] private Material _tilledMat;
 
+    // --- SỬA Ở ĐÂY: Gắn trực tiếp 2 Prefab vào đây để khỏi cần gọi Database ---
+    [Header("Plant Models (Kéo Prefab vào đây)")]
+    public GameObject m_SeedlingPrefab; // Kéo model cây mầm vào đây
+    public GameObject m_MaturePrefab;   // Kéo model cây to vào đây
+    // --------------------------------------------------------------------------
+
     private GameObject _currentPlantVisual;
 
-    // THÊM HÀM NÀY: Để ô đất cập nhật màu ngay khi vừa xuất hiện trong game
     public override void Spawned()
     {
         UpdateVisuals();
@@ -33,64 +38,40 @@ public class FarmTile : NetworkBehaviour
         }
     }
 
-    // SỬA Ở ĐÂY: Đổi RpcSources.InputAuthority thành RpcSources.All 
-    // Để bất kỳ ai đi ngang qua cũng có thể click vào ô đất này
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_InteractTile(PlayerRef player, int toolIndex, int seedIdToPlant = 0)
     {
+        // 1. Cày đất
         if (State == FarmTileState.Untilled && toolIndex == 1)
         {
             State = FarmTileState.Tilled;
             return;
         }
 
-        if (State == FarmTileState.Tilled && toolIndex == 4 && seedIdToPlant != 0)
+        // 2. Trồng cây
+        if (State == FarmTileState.Tilled && toolIndex == 3 && seedIdToPlant == 101)
         {
-            if (TryRemoveSeedFromPlayer(player, seedIdToPlant))
+            // TẠM THỜI BYPASS TÚI ĐỒ (Luôn cho trồng để test mọc cây trước)
+            bool coHatGiong = true; 
+            
+            if (coHatGiong)
             {
+                Debug.Log("[Server] Trồng thành công! Bắt đầu đếm 5 giây...");
                 PlantedSeedID = seedIdToPlant;
                 State = FarmTileState.Planted;
-                SO_SeedData seedData = GlobalSeedDatabase.GetSeed(seedIdToPlant);
-                if (seedData != null) GrowTimer = TickTimer.CreateFromSeconds(Runner, seedData.GrowTimeSeconds);
+                
+                // Đặt thẳng 5 giây không cần hỏi Database
+                GrowTimer = TickTimer.CreateFromSeconds(Runner, 5f); 
             }
             return;
         }
 
+        // 3. Thu hoạch
         if (State == FarmTileState.ReadyToHarvest && toolIndex == 0)
         {
-            SO_SeedData seedData = GlobalSeedDatabase.GetSeed(PlantedSeedID);
-            if (seedData != null) AddCropToPlayer(player, seedData.HarvestItemID, seedData.HarvestYield);
+            Debug.Log("[Server] Thu hoạch thành công!");
             PlantedSeedID = 0;
             State = FarmTileState.Tilled; 
-        }
-    }
-
-    private bool TryRemoveSeedFromPlayer(PlayerRef playerRef, int seedID)
-    {
-        var player = Runner.GetPlayerObject(playerRef).GetComponent<Player_Controller>();
-        if (player == null) return false;
-
-        for (int i = 0; i < player.TuiDo.Length; i++)
-        {
-            if (player.TuiDo[i].ItemID == seedID && player.TuiDo[i].SoLuong > 0)
-            {
-                var item = player.TuiDo[i];
-                item.SoLuong--;
-                if (item.SoLuong <= 0) item.ItemID = 0;
-                player.TuiDo.Set(i, item); 
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void AddCropToPlayer(PlayerRef playerRef, int cropID, int amount)
-    {
-        var player = Runner.GetPlayerObject(playerRef).GetComponent<Player_Controller>();
-        if (player != null)
-        {
-            // Tạm thời log ra, bạn có thể nối với hàm nhặt đồ sau
-            Debug.Log($"[Server] Đã thu hoạch {amount} vật phẩm {cropID}");
         }
     }
 
@@ -101,14 +82,14 @@ public class FarmTile : NetworkBehaviour
         if (_tileRenderer != null) 
             _tileRenderer.material = (State == FarmTileState.Untilled) ? _untilledMat : _tilledMat;
 
-        if (State == FarmTileState.Planted || State == FarmTileState.ReadyToHarvest)
+        // Sinh hình ảnh cây dựa trên 2 biến Prefab vừa khai báo ở trên
+        if (State == FarmTileState.Planted && m_SeedlingPrefab != null)
         {
-            SO_SeedData seedData = GlobalSeedDatabase.GetSeed(PlantedSeedID);
-            if (seedData != null)
-            {
-                GameObject prefab = (State == FarmTileState.Planted) ? seedData.SeedlingPrefab : seedData.MaturePrefab;
-                if (prefab != null) _currentPlantVisual = Instantiate(prefab, transform.position, Quaternion.identity, transform);
-            }
+            _currentPlantVisual = Instantiate(m_SeedlingPrefab, transform.position, Quaternion.identity, transform);
+        }
+        else if (State == FarmTileState.ReadyToHarvest && m_MaturePrefab != null)
+        {
+            _currentPlantVisual = Instantiate(m_MaturePrefab, transform.position, Quaternion.identity, transform);
         }
     }
 }

@@ -1,11 +1,12 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewSeedData", menuName = "Farming/Seed Data")]
+// Dòng dưới đây chính là lệnh tạo ra menu chuột phải mà bạn đang tìm
+[CreateAssetMenu(fileName = "NewSeedData", menuName = "Farming/Seed Data")] 
 public class SO_SeedData : ScriptableObject
 {
     [Header("Định danh Item (Khớp với ID trong TuiDo)")]
-    public int SeedItemID;         // Ép về kiểu INT (VD: 101)
-    public int HarvestItemID;      // Ép về kiểu INT (VD: 201)
+    public int SeedItemID;
+    public int HarvestItemID;
     
     [Header("Chỉ số nông nghiệp")]
     public int HarvestYield = 3;   
