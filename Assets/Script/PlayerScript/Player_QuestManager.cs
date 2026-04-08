@@ -20,21 +20,26 @@ public class Player_QuestManager : NetworkBehaviour
     public List<NhiemVuDangLam> danhSachNhiemVu = new List<NhiemVuDangLam>();
     
     [Header("Gắn UI bảng nhiệm vụ vào đây")]
+    
     public TextMeshProUGUI txtBangNhiemVu; 
 
     public override void Spawned()
     {
         if (HasInputAuthority)
         {
+            
             localQuest = this;
             KiemTraTienDo();
-            GameObject uiObj = GameObject.Find("Nhiemvu"); 
+            GameObject uiObj = QuestManager.instance.txtBangNhiemVu; 
+            Debug.Log("quest text");
 
             
             if (uiObj != null) 
             {
                 txtBangNhiemVu = uiObj.GetComponent<TextMeshProUGUI>();
+                Debug.Log("tìm thấy quest text");
             }
+            else {Debug.Log("không tìm thấy quest text");}
         }
     }
 
