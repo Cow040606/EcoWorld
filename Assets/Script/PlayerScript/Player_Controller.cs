@@ -384,43 +384,25 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_YeuCauNhatRac()
     {
-        // Quét các vật thể xung quanh nhân vật
         Collider[] ketQuaQuet = Physics.OverlapSphere(transform.position, banKinhNhat);
-
         foreach (var Obj in ketQuaQuet)
         {
-            // Kiểm tra xem có trúng 1 trong 3 Tag mới không
-            if (Obj.CompareTag("Normal_Item") || Obj.CompareTag("Medium_Item") || Obj.CompareTag("Health_Item"))
+            if (Obj.CompareTag("Items"))
             {
                 NetworkObject nObj = Obj.GetComponent<NetworkObject>();
- HEAD
-                
+                XuLyItem theCanCuoc = Obj.GetComponent<XuLyItem>();
 
-
-                // SỬ DỤNG SCRIPT MỚI (Xóa bỏ hoàn toàn cái XuLyItem cũ)
- 9cc5dfb60ac3af7026e617e3b6d88637512eb52e
-                ItemObject scriptItem = Obj.GetComponent<ItemObject>();
-
-                // Nếu đúng là vật phẩm xịn
-                if (nObj != null && nObj.IsValid && scriptItem != null)
+                if (nObj != null && nObj.IsValid && theCanCuoc != null && theCanCuoc.thongTinDoVat != null)
                 {
-                    int idThucTe = scriptItem.itemID;
+                    int idThucTe = theCanCuoc.thongTinDoVat.itemID;
                     bool daNhat = false;
                     bool isstack = true;
-
-                    // Lấy thông tin từ kho tổng để xem đồ này có được xếp chồng không
                     if (InventoryManager.instance != null)
                     {
                         Item thongTin = InventoryManager.instance.TraCuuItem(idThucTe);
-                        if (thongTin != null)
-                        {
-                            isstack = thongTin.stackable;
-                        }
+                        if (thongTin != null) isstack = thongTin.stackable;
                     }
-
-                    // --------------------------------------------------
-                    // LOGIC 1: CỘNG DỒN (STACK) NẾU ĐÃ CÓ TRONG TÚI
-                    // --------------------------------------------------
+                    
                     if (isstack)
                     {
                         for (int i = 0; i < TuiDo.Length; i++)
@@ -428,52 +410,30 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                             if (TuiDo[i].ItemID == idThucTe)
                             {
                                 O_VatPham doVat = TuiDo[i];
-                                doVat.SoLuong += scriptItem.soLuong; // Cộng theo số lượng của item đó
+                                doVat.SoLuong++;
                                 TuiDo.Set(i, doVat);
-                                daNhat = true;
-                                break;
+                                daNhat = true; break;
                             }
                         }
                     }
 
-  HEAD
-                    // Nếu chưa nhặt được (ô mới)
- 
-                    // --------------------------------------------------
-                    // LOGIC 2: NẾU CHƯA CÓ TRONG TÚI THÌ TÌM Ô TRỐNG
-                    // --------------------------------------------------
-  9cc5dfb60ac3af7026e617e3b6d88637512eb52e
                     if (!daNhat)
                     {
                         for (int i = 0; i < TuiDo.Length; i++)
                         {
                             if (TuiDo[i].ItemID == 0)
                             {
-                                TuiDo.Set(i, new O_VatPham { ItemID = idThucTe, SoLuong = scriptItem.soLuong });
-                                daNhat = true;
-                                break;
+                                TuiDo.Set(i, new O_VatPham { ItemID = idThucTe, SoLuong = 1 });
+                                daNhat = true; break;
                             }
                         }
                     }
 
-                    // --------------------------------------------------
-                    // LOGIC 3: XỬ LÝ SAU KHI NHẶT THÀNH CÔNG
-                    // --------------------------------------------------
                     if (daNhat)
                     {
-                        // 1. Xóa vật thể trên mạng để người khác không nhặt được nữa
                         RPC_XoaRacKhapBanDo(nObj);
-
-                        // 2. Thông báo cho Client (Hiển thị UI hoặc âm thanh nhặt đồ)
-                        Rpc_NotifyPickupClient(idThucTe, scriptItem.soLuong);
-  HEAD
-                        
-                        break; // Đã nhặt xong món này thì thoát vòng lặp
- 
-
-                        // 3. Thoát vòng lặp quét (Mỗi lần bấm E chỉ nhặt 1 món để tránh lỗi)
+                        Rpc_NotifyPickupClient(idThucTe, 1);
                         break;
-  9cc5dfb60ac3af7026e617e3b6d88637512eb52e
                     }
                 }
             }
