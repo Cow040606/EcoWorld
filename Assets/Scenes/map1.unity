@@ -13960,6 +13960,119 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5d5f1d29f2e94e45b0022124ff1f27f, type: 3}
+--- !u!1 &190809423
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 190809427}
+  - component: {fileID: 190809426}
+  - component: {fileID: 190809425}
+  - component: {fileID: 190809424}
+  - component: {fileID: 190809428}
+  m_Layer: 0
+  m_Name: TeleGate
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &190809424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190809423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+  SortKey: 3367560093
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours: []
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &190809425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190809423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d458ec8039a04064a9c6d162de039467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalPortal
+  ShowTopMostFoldoutHeaderGroup: 1
+  targetDestination: {fileID: 202890808}
+--- !u!65 &190809426
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190809423}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.8880157, y: 5.027176, z: 1}
+  m_Center: {x: 0.70119476, y: 2.013588, z: 0}
+--- !u!4 &190809427
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190809423}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 138.06, y: 4.30324, z: 209.57}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &190809428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190809423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 1148529932
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1001 &191004461
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14562,6 +14675,56 @@ Transform:
   - {fileID: 1193500419}
   m_Father: {fileID: 491264125}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &202890807
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 202890808}
+  - component: {fileID: 202890809}
+  m_Layer: 0
+  m_Name: DestinationPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &202890808
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202890807}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1742.2583, y: 43.48276, z: 343.19376}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &202890809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202890807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+  SortKey: 705181430
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!4 &203019715 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400002, guid: 6444e796ec18c4a4eb555f26a837c446,
@@ -28782,8 +28945,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 422621676}
   m_PrefabAsset: {fileID: 0}
-  HEAD
- 
 --- !u!1 &422780382
 GameObject:
   m_ObjectHideFlags: 0
@@ -28896,7 +29057,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  56cb156d60dffc1b7cb2787abbb70bc4c15c8fce
 --- !u!4 &423893441 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400002, guid: 31ff1d9c660717640aa75c9feef614cd,
@@ -88994,20 +89154,11 @@ Transform:
   - {fileID: 1287542477}
   - {fileID: 39838451}
   - {fileID: 2012622954}
-  HEAD
+  - {fileID: 693238258}
   - {fileID: 307701707}
- 
-  56cb156d60dffc1b7cb2787abbb70bc4c15c8fce
+  - {fileID: 53308804}
   - {fileID: 62210089}
-  - {fileID: 693238258}
-  - {fileID: 53308804}
   - {fileID: 1097019947}
-  HEAD
- 
-  - {fileID: 307701707}
-  - {fileID: 53308804}
-  - {fileID: 693238258}
-  56cb156d60dffc1b7cb2787abbb70bc4c15c8fce
   m_Father: {fileID: 491264125}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1350662338
@@ -90255,11 +90406,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 117573415}
   m_Direction: 2
   m_Value: 0
-  HEAD
   m_Size: 0.9995527
- 
-  m_Size: 0.2
-  56cb156d60dffc1b7cb2787abbb70bc4c15c8fce
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -102592,11 +102739,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  HEAD
-  m_AnchoredPosition: {x: 0, y: -326.3972}
- 
-  m_AnchoredPosition: {x: 0, y: -326.39658}
-  56cb156d60dffc1b7cb2787abbb70bc4c15c8fce
+  m_AnchoredPosition: {x: 0, y: -326.39737}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &1566401982
@@ -104127,11 +104270,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 503303314}
   m_Direction: 2
   m_Value: 0
-  HEAD
-  m_Size: 0.9999967
- 
-  m_Size: 0.9999977
-  56cb156d60dffc1b7cb2787abbb70bc4c15c8fce
+  m_Size: 0.9999962
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -141869,15 +142008,9 @@ Transform:
   - {fileID: 200306209}
   - {fileID: 311224363}
   - {fileID: 1447291952}
-  HEAD
-  - {fileID: 839904832}
   - {fileID: 212346083}
-  - {fileID: 52757796}
- 
-  - {fileID: 212346083}
-  - {fileID: 52757796}
   - {fileID: 839904832}
-  56cb156d60dffc1b7cb2787abbb70bc4c15c8fce
+  - {fileID: 52757796}
   m_Father: {fileID: 491264125}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2146486071
@@ -142509,31 +142642,18 @@ SceneRoots:
   - {fileID: 401693612}
   - {fileID: 772320919}
   - {fileID: 2048728396}
-  HEAD
-  - {fileID: 906900536}
-  - {fileID: 108452585}
- 
-  - {fileID: 621339745}
-  - {fileID: 125836733}
-  56cb156d60dffc1b7cb2787abbb70bc4c15c8fce
-  - {fileID: 1207666147}
-  - {fileID: 1598920806}
-  - {fileID: 906900536}
   - {fileID: 2056063277}
-  HEAD
-  - {fileID: 1205774500}
-  - {fileID: 125836733}
+  - {fileID: 108452585}
+  - {fileID: 906900536}
   - {fileID: 621339745}
+  - {fileID: 1205774500}
+  - {fileID: 1207666147}
+  - {fileID: 125836733}
   - {fileID: 234853428}
   - {fileID: 358899217}
-  - {fileID: 491264125}
-  - {fileID: 1498270972}
-  - {fileID: 1572654784}
- 
-  - {fileID: 108452585}
-  - {fileID: 1205774500}
-  - {fileID: 234853428}
   - {fileID: 422780386}
   - {fileID: 491264125}
   - {fileID: 1498270972}
-  56cb156d60dffc1b7cb2787abbb70bc4c15c8fce
+  - {fileID: 1572654784}
+  - {fileID: 190809427}
+  - {fileID: 202890808}
