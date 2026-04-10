@@ -1,9 +1,9 @@
 using UnityEngine;
 using TMPro;
 
-public class GemUI : MonoBehaviour
+public class MoneyUI : MonoBehaviour
 {
-    public TextMeshProUGUI txtGold;
+    public TextMeshProUGUI txtGem;
 
     void Update()
     {
@@ -11,7 +11,7 @@ public class GemUI : MonoBehaviour
         if (Player_Controller.localPlayer != null)
         {
             // Lu ít thêm dấu ": " vào cho nó giống thiết kế ban đầu của Bò nhé
-            txtGold.text = ": " + Player_Controller.localPlayer.Gold.ToString();
+            txtGem.text = ": " + Player_Controller.localPlayer.Gem.ToString();
         }
     }
 }
