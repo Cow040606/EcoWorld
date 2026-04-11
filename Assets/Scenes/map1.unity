@@ -14185,7 +14185,8 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours: []
+  NetworkedBehaviours:
+  - {fileID: 190809425}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &190809425
 MonoBehaviour:
@@ -14199,7 +14200,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d458ec8039a04064a9c6d162de039467, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalPortal
-  ShowTopMostFoldoutHeaderGroup: 1
   targetDestination: {fileID: 202890808}
 --- !u!65 &190809426
 BoxCollider:
@@ -76660,7 +76660,7 @@ GameObject:
   - component: {fileID: 1132550871}
   - component: {fileID: 1132550872}
   m_Layer: 6
-  m_Name: Slider
+  m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76734,7 +76734,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -104090,11 +104090,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-
-  m_AnchoredPosition: {x: 0, y: -326.3975}
-
-  m_AnchoredPosition: {x: 0, y: -326.39737}
-
+  m_AnchoredPosition: {x: 0, y: -326.39673}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1565344963
@@ -105852,11 +105848,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 503303314}
   m_Direction: 2
   m_Value: 0
-
-  m_Size: 1
-
-  m_Size: 0.9999962
-
+  m_Size: 0.9999973
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -140963,7 +140955,7 @@ PrefabInstance:
     - target: {fileID: 8410309893637623591, guid: 3c50fd2760d943346af58320800bc92d,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -285.90002
+      value: -285.8998
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
