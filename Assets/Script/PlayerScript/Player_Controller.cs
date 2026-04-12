@@ -2,7 +2,8 @@ using UnityEngine;
 using Fusion;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
-
+using UnityEngine.EventSystems;
+using TMPro;
 public struct DuLieuInput : INetworkInput
 {
     public Vector2 moveInput;
@@ -34,6 +35,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float runfast = 15f;
     private Vector2 moveInputLocal;
     private bool sprintPressedLocal;
+    [Header("Chỉ số nhân vật")]
+
+    [Networked] public float HP { get; set; }
+    [Networked] public float Stamina { get; set; }
+
 
     [Header("Camera & Chuột")]
     public Transform cameraTransform;
@@ -55,6 +61,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     [Header("Kinh tế & Túi đồ")]
     [Networked] public int Gold { get; set; }
+    [Networked] public int Gem { get; set; }
     [Networked, Capacity(20)] public NetworkArray<O_VatPham> TuiDo { get; }
     [Networked, Capacity(4)] public NetworkArray<int> HotbarIDs { get; } 
 
@@ -99,7 +106,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 cameraTransform = Camera.main.transform;
             }
-            Gold = 10000;
             TuiDo.Set(0, new O_VatPham { ItemID = 101, SoLuong = 50 });
         }
         else // NẾU LÀ NHÂN VẬT CỦA ĐỨA KHÁC TRÊN MÀN HÌNH MÌNH
@@ -126,6 +132,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (HasInputAuthority && Keyboard.current != null && Mouse.current != null)
         {
+            bool dangGoPhim = EventSystem.current != null && 
+                              EventSystem.current.currentSelectedGameObject != null && 
+                              EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
+            if (ChatSystem.IsChatting || dangGoPhim) return;
             // 1. ĐỌC TRẠNG THÁI BẢNG UI
             bool baloDangMo = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
             bool ishopopen = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
@@ -229,6 +239,15 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         var data = new DuLieuInput();
         if (!HasInputAuthority) return;
+        bool dangGoPhim = EventSystem.current != null && 
+                          EventSystem.current.currentSelectedGameObject != null && 
+                          EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
+
+        if (ChatSystem.IsChatting || dangGoPhim)
+        {
+            input.Set(data);
+            return; // Cắt điện toàn bộ phím gửi lên Server!
+        }
 
         data.isJumpPressed = jumpPressedLocal;
         bool baloDangMo = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
@@ -278,7 +297,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority && !HasInputAuthority) return;
+        bool dangGoPhim = EventSystem.current != null && 
+                          EventSystem.current.currentSelectedGameObject != null && 
+                          EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
 
+        if (ChatSystem.IsChatting || dangGoPhim) 
+        {
+            character.Move(Vector3.zero);
+            isrun = false;              
+            isSprinting = false;      
+            isJumping = false;
+            return; 
+        }
         if (GetInput(out DuLieuInput data))
         {
             if (data.isJumpPressed && character.Grounded)

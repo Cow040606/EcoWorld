@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-public class MoneyUI : MonoBehaviour
+public class GemUI : MonoBehaviour
 {
     public TextMeshProUGUI txtGold;
 
