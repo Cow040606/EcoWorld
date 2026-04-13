@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2046612870722388173
+--- !u!1 &7221304254227661618
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,39 +8,41 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3278996748213268362}
-  - component: {fileID: 125248392785728696}
-  - component: {fileID: 521779368438376019}
-  - component: {fileID: 904972740083598740}
-  - component: {fileID: -3789360095388760047}
-  m_Layer: 6
+  - component: {fileID: 2180900111212715332}
+  - component: {fileID: 9139176171467633909}
+  - component: {fileID: 5050938929074451467}
+  - component: {fileID: 3468879886035257421}
+  - component: {fileID: 2155623925578114000}
+  - component: {fileID: 4510657333083080204}
+  m_Layer: 0
   m_Name: ruongmau
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &3278996748213268362
+  m_IsActive: 1
+--- !u!4 &2180900111212715332
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2046612870722388173}
+  m_GameObject: {fileID: 7221304254227661618}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 136.0209, y: 4.4093, z: 181.66656}
-  m_LocalScale: {x: 1, y: 0.1, z: 1}
+  m_LocalPosition: {x: 145.61456, y: 4.39, z: 171.07098}
+  m_LocalScale: {x: 1, y: -0.03406, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &125248392785728696
-BoxCollider:
+--- !u!33 &9139176171467633909
+MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+ HEAD
   m_GameObject: {fileID: 2046612870722388173}
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -97,12 +99,17 @@ MonoBehaviour:
   m_MaturePrefab: {fileID: 5051541151816911208, guid: 714e21ba8a7b77c4c985683a0d66e5ec,
     type: 3}
 --- !u!23 &-3789360095388760047
+
+  m_GameObject: {fileID: 7221304254227661618}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &5050938929074451467
+ c17eb2e83fff429c53f5089fbc474b722728c243
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2046612870722388173}
+  m_GameObject: {fileID: 7221304254227661618}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -121,7 +128,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -145,3 +152,64 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &3468879886035257421
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7221304254227661618}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2155623925578114000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7221304254227661618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+  SortKey: 2754380418
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 4510657333083080204}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &4510657333083080204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7221304254227661618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e813330dbc5f619479e92a3d7bc24235, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FarmTile
+  _State: 0
+  _PlantedSeedID: 0
+  _tileRenderer: {fileID: 5050938929074451467}
+  _untilledMat: {fileID: 2100000, guid: 32500b23e22d8ba4cb4cb37d49605c1c, type: 2}
+  _tilledMat: {fileID: 2100000, guid: e393ab1e6a452ce4c90b42292263edfb, type: 2}
+  m_SeedlingPrefab: {fileID: 1243903680366033852, guid: 8b737cec0a7e32940b40272d22f3a2b7,
+    type: 3}
+  m_MaturePrefab: {fileID: 5051541151816911208, guid: 714e21ba8a7b77c4c985683a0d66e5ec,
+    type: 3}
