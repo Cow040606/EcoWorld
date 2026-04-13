@@ -35,10 +35,15 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float runfast = 15f;
     private Vector2 moveInputLocal;
     private bool sprintPressedLocal;
+
+
     [Header("Chỉ số nhân vật")]
 
-    [Networked] public float HP { get; set; }
-    [Networked] public float Stamina { get; set; }
+    public float CurrentHealth { get; set; }
+    public float MaxHealth = 100f;
+
+    public float CurrentStamina { get; set; }
+    public float MaxStamina = 100f;
 
 
     [Header("Camera & Chuột")]
@@ -87,7 +92,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public override void Spawned()
     {
         animator = GetComponent<Animator>();
-
+        CurrentHealth = 100;
         // Nếu mình không phải là chủ của con nhân vật này (Nhân vật của thằng khác) -> Tắt điều khiển
         if (!HasStateAuthority && !HasInputAuthority)
         {
@@ -163,6 +168,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 TatToanBoUI(); 
                 if (ESC.instance != null) ESC.instance.BatTatESC();
+            }
+            if (Keyboard.current.cKey.wasPressedThisFrame)            
+            {
+                RPC_TakeDame(10);
+            }
+            if (Keyboard.current.vKey.wasPressedThisFrame)            
+            {
+                RPC_TakeDame(-10);
             }
 
             if (!IsChatAct && !ishopopen)
@@ -410,6 +423,20 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     // Ví dụ: Client bấm nhặt rác -> Hét lên cho Server xử lý (Input -> State)
     // Server cập nhật tiền -> Hét lên cho Client biết để cập nhật UI (State -> Input)
     // ----------------------------------------------------------------------
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_TakeDame(float Dame)
+    {
+        CurrentHealth -= Dame;
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
+        if(CurrentHealth <= 0)
+        {
+            CurrentHealth = 0;
+            //Die
+        }
+    }
+
+
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_YeuCauNhatRac()

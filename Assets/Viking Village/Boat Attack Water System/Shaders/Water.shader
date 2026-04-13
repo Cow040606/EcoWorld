@@ -1,4 +1,4 @@
-﻿/*Shader "BoatAttack/Water"
+﻿Shader "BoatAttack/Water"
 {
 	Properties
 	{
@@ -49,4 +49,4 @@
 		}
 	}
 	FallBack "Hidden/InternalErrorShader"
-}*/
+}

@@ -646,8 +646,6 @@ MonoBehaviour:
   character: {fileID: 1979389992108088245}
   speed: 3
   runfast: 8
-  _HP: 0
-  _Stamina: 0
   cameraTransform: {fileID: 17911125521547612}
   mouseSensitivity: 0.1
   khoangCachCamera: 3
@@ -658,10 +656,9 @@ MonoBehaviour:
   _isJumping: 0
   thoiGianHoiNhay: 1.2
   _Gold: 0
-  _Gem: 0
   _HotbarIDs: 
   _CurrentToolIndex: 0
-  viTriCamVuKhi: {fileID: 8878608521619273619}
+  viTriCamVuKhi: {fileID: 0}
 --- !u!114 &8037529350765271450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -763,7 +760,6 @@ MonoBehaviour:
   textMessage: {fileID: 0}
   inputFieldMessage: {fileID: 0}
   buttonSend: {fileID: 0}
-  ChatSys: {fileID: 0}
 --- !u!4 &2956909077282468447 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
