@@ -1,5 +1,6 @@
 using Fusion;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class FarmPlot : NetworkBehaviour
 {
@@ -11,20 +12,29 @@ public class FarmPlot : NetworkBehaviour
     [Networked]
     public TickTimer growTimer { get; set; }
 
-    [Header("--- Models ---")]
+    [Header("--- Models (Kéo Prefab từ Project vào đây) ---")]
     [SerializeField] private GameObject modelDatThuong;
     [SerializeField] private GameObject modelDatCay;
     [SerializeField] private GameObject modelCayCon;
     [SerializeField] private GameObject modelCayLon;
 
+    [Header("--- Điểm Neo (Vị trí mọc cây) ---")]
+    [Tooltip("Kéo GameObject rỗng (DiemGieoHat) vào đây để làm tâm mọc cây")]
+    [SerializeField] private Transform diemGieoHat; 
+
     [Header("--- Farm Settings ---")]
-    [SerializeField] private int seedItemID = 102;
     [SerializeField] private int fruitItemID = 201;
     [SerializeField] private int harvestCount = 3;
-    [SerializeField] private float growTime = 10f;
+    [SerializeField] private float growTime = 10f; 
+
+    private List<GameObject> spawnedVisuals = new List<GameObject>();
 
     public override void Spawned()
     {
+        // Tắt hình ảnh của cục đất gốc trên Map
+        MeshRenderer rootMesh = GetComponent<MeshRenderer>();
+        if (rootMesh != null) rootMesh.enabled = false;
+
         OnStateChanged();
     }
 
@@ -32,6 +42,7 @@ public class FarmPlot : NetworkBehaviour
     {
         if (!Object.HasStateAuthority) return;
 
+        // Xử lý đếm giờ mọc cây
         if (CurrentState == PlotState.Seeded && growTimer.Expired(Runner))
         {
             CurrentState = PlotState.Grown;
@@ -39,84 +50,76 @@ public class FarmPlot : NetworkBehaviour
         }
     }
 
-    // Tự động chạy trên mọi Client khi CurrentState thay đổi
+    private void ClearVisuals()
+    {
+        foreach (var obj in spawnedVisuals)
+        {
+            if (obj != null) Destroy(obj);
+        }
+        spawnedVisuals.Clear();
+    }
+
+    private void SpawnVisual(GameObject prefab)
+    {
+        if (prefab == null) return;
+        
+        // CỐT LÕI CỦA CÁCH 1: Xác định điểm sinh ra
+        // Nếu bạn đã kéo DiemGieoHat vào Inspector thì lấy tọa độ đó, nếu quên kéo thì lấy tọa độ gốc của cục đất
+        Transform viTriSinhRa = (diemGieoHat != null) ? diemGieoHat : transform;
+
+        // Sinh ra Prefab tại đúng vị trí Điểm Neo
+        GameObject newVisual = Instantiate(prefab, viTriSinhRa.position, viTriSinhRa.rotation, transform);
+        
+        // Tắt hết collider của mô hình mới sinh ra để không cản tia Raycast
+        Collider[] cols = newVisual.GetComponentsInChildren<Collider>();
+        foreach (var c in cols) c.enabled = false;
+        
+        spawnedVisuals.Add(newVisual);
+    }
+
     private void OnStateChanged()
     {
-        if (modelDatThuong) modelDatThuong.SetActive(false);
-        if (modelDatCay)    modelDatCay.SetActive(false);
-        if (modelCayCon)    modelCayCon.SetActive(false);
-        if (modelCayLon)    modelCayLon.SetActive(false);
+        ClearVisuals(); 
 
         switch (CurrentState)
         {
             case PlotState.Normal:
-                if (modelDatThuong) modelDatThuong.SetActive(true);
+                SpawnVisual(modelDatThuong);
                 break;
             case PlotState.Tilled:
-                if (modelDatCay) modelDatCay.SetActive(true);
+                SpawnVisual(modelDatCay);
                 break;
             case PlotState.Seeded:
-                if (modelDatCay)  modelDatCay.SetActive(true);
-                if (modelCayCon)  modelCayCon.SetActive(true);
+                SpawnVisual(modelDatCay); 
+                SpawnVisual(modelCayCon); // Cây con sẽ tự động chui vào DiemGieoHat
                 break;
             case PlotState.Grown:
-                if (modelDatCay)  modelDatCay.SetActive(true);
-                if (modelCayLon)  modelCayLon.SetActive(true);
+                SpawnVisual(modelDatCay); 
+                SpawnVisual(modelCayLon); // Cây lớn sẽ tự động chui vào DiemGieoHat
                 break;
         }
     }
 
-    // -----------------------------------------------------------------------
-    // RPC CÀY ĐẤT
-    // -----------------------------------------------------------------------
+    // =========================================================
+    // CÁC LỆNH RPC XỬ LÝ LOGIC TRỒNG CÂY (Giữ nguyên)
+    // =========================================================
+
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_CayDat()
     {
-        if (CurrentState == PlotState.Normal)
+        if (CurrentState == PlotState.Normal) 
             CurrentState = PlotState.Tilled;
     }
 
-    // -----------------------------------------------------------------------
-    // RPC GIEO HẠT
-    // -----------------------------------------------------------------------
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_GieoHat(PlayerRef nguoi)
+    public void RPC_GieoHat()
     {
         if (CurrentState != PlotState.Tilled) return;
 
-        var playerObj = Runner.GetPlayerObject(nguoi);
-        if (playerObj == null) return;
-
-        Player_Controller player = playerObj.GetComponent<Player_Controller>();
-        if (player == null) return;
-
-        // Tìm hạt giống trong TuiDo — dùng đúng tên field: ItemID và SoLuong
-        bool hasSeed = false;
-        for (int i = 0; i < player.TuiDo.Length; i++)
-        {
-            O_VatPham item = player.TuiDo[i];
-
-            if (item.ItemID == seedItemID && item.SoLuong > 0)
-            {
-                item.SoLuong -= 1;
-                if (item.SoLuong <= 0) item.ItemID = 0; // Xóa ô nếu hết hạt
-
-                player.TuiDo.Set(i, item);
-                hasSeed = true;
-                break;
-            }
-        }
-
-        if (hasSeed)
-        {
-            CurrentState = PlotState.Seeded;
-            growTimer = TickTimer.CreateFromSeconds(Runner, growTime);
-        }
+        CurrentState = PlotState.Seeded;
+        growTimer = TickTimer.CreateFromSeconds(Runner, growTime); 
     }
 
-    // -----------------------------------------------------------------------
-    // RPC THU HOẠCH
-    // -----------------------------------------------------------------------
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_ThuHoach(PlayerRef nguoi)
     {
@@ -130,7 +133,6 @@ public class FarmPlot : NetworkBehaviour
 
         bool added = false;
 
-        // Bước 1: Tìm ô đã có quả này để cộng dồn (stack)
         for (int i = 0; i < player.TuiDo.Length; i++)
         {
             O_VatPham item = player.TuiDo[i];
@@ -143,7 +145,6 @@ public class FarmPlot : NetworkBehaviour
             }
         }
 
-        // Bước 2: Nếu chưa có ô nào, tìm ô trống
         if (!added)
         {
             for (int i = 0; i < player.TuiDo.Length; i++)
@@ -162,14 +163,11 @@ public class FarmPlot : NetworkBehaviour
 
         if (added)
         {
-            CurrentState = PlotState.Normal; // Reset về đất thường
+            CurrentState = PlotState.Normal;
             Rpc_ThongBaoThuHoach(nguoi, harvestCount);
         }
     }
 
-    // -----------------------------------------------------------------------
-    // RPC THÔNG BÁO THU HOẠCH (chỉ bắn về đúng máy người thu hoạch)
-    // -----------------------------------------------------------------------
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void Rpc_ThongBaoThuHoach([RpcTarget] PlayerRef targetPlayer, int soLuong)
     {
@@ -178,7 +176,5 @@ public class FarmPlot : NetworkBehaviour
         Item thongTin = InventoryManager.instance.TraCuuItem(fruitItemID);
         if (thongTin != null)
             ItemNotifyManager.Instance.ShowNotify(thongTin.itemName, soLuong, thongTin.icon);
-        else
-            ItemNotifyManager.Instance.ShowNotify("Nông sản", soLuong, null);
     }
 }

@@ -294,10 +294,11 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.40849, y: 1, z: 0.357025}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 244245897149980699}
+  - {fileID: 4869549338813530448}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &-7005507698558912862
@@ -319,8 +320,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 3.9009051, y: 1, z: 6.63536}
+  m_Center: {x: -0.025839567, y: 0, z: 0.20943844}
 --- !u!114 &6194666409097740214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -335,12 +336,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FarmPlot
   _CurrentState: 0
   modelDatThuong: {fileID: 2708797851999362083}
-  modelDatCay: {fileID: 2499808634676538581, guid: 54613694921bb5a4299bf42ae238c3a0,
+  modelDatCay: {fileID: 1812720153535698816, guid: 7e8af184731ccdd47ba70f09264b6010,
     type: 3}
-  modelCayCon: {fileID: 0}
-  modelCayLon: {fileID: 5051541151816911208, guid: 714e21ba8a7b77c4c985683a0d66e5ec,
+  modelCayCon: {fileID: 8887708481885014715, guid: cc5a4566b2e8e234b8f9fda5f43514ab,
     type: 3}
-  seedItemID: 102
+  modelCayLon: {fileID: 5094947159754296855, guid: 8cab2711bc9de804bab062a1da559676,
+    type: 3}
+  diemGieoHat: {fileID: 4869549338813530448}
   fruitItemID: 201
   harvestCount: 3
   growTime: 10
@@ -453,3 +455,34 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &8860256341380221232
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4869549338813530448}
+  m_Layer: 6
+  m_Name: DIemgiaohat
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4869549338813530448
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8860256341380221232}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.412, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3648929936807767145}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

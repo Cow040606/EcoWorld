@@ -1,24 +1,22 @@
 using Fusion;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using TMPro; // Nếu dùng TextMeshPro cho HintText
+using TMPro;
 
 public class FarmInteraction : MonoBehaviour
 {
     [Header("--- References ---")]
     public Player_Controller myPlayer;
-    public Transform cameraTransform; // Kéo Main Camera hoặc Camera của Player vào đây
-    public LayerMask farmlandLayer;   // Nhớ set layer "Farmland" cho Prefab Đất
-    public float interactRange = 4f;
+    public LayerMask farmlandLayer;   
+    public float interactRange = 3f;
 
     [Header("--- UI ---")]
-    public TextMeshProUGUI hintText;  // Text hiện gợi ý trên màn hình
+    public TextMeshProUGUI hintText;  
 
     private FarmPlot currentLookedPlot;
 
     private void Update()
     {
-        // Chỉ xử lý nếu Player_Controller có giá trị, có quyền điều khiển
         if (myPlayer == null || myPlayer.Object == null || !myPlayer.Object.HasInputAuthority) 
             return;
 
@@ -28,37 +26,31 @@ public class FarmInteraction : MonoBehaviour
 
     private void CheckRaycast()
     {
-        // Bắn tia raycast từ giữa màn hình (Camera) ra phía trước
-        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-        
+        Vector3 diemBatDau = myPlayer.transform.position + Vector3.up * 1.0f; 
+        Vector3 huongNhin = myPlayer.transform.forward + (Vector3.down * 0.7f); 
+
+        Ray ray = new Ray(diemBatDau, huongNhin.normalized);
+        Debug.DrawRay(ray.origin, ray.direction * interactRange, Color.red);
+
         if (Physics.Raycast(ray, out RaycastHit hit, interactRange, farmlandLayer))
         {
             currentLookedPlot = hit.collider.GetComponentInParent<FarmPlot>();
             
             if (currentLookedPlot != null && hintText != null)
             {
-                // Cập nhật text gợi ý theo State của mảnh đất
                 switch (currentLookedPlot.CurrentState)
                 {
-                    case FarmPlot.PlotState.Normal:
-                        hintText.text = "[Chuột phải] Cày đất";
-                        break;
-                    case FarmPlot.PlotState.Tilled:
-                        hintText.text = "[2] Gieo hạt";
-                        break;
-                    case FarmPlot.PlotState.Seeded:
-                        hintText.text = "Cây đang lớn...";
-                        break;
-                    case FarmPlot.PlotState.Grown:
-                        hintText.text = "[E] Thu hoạch\n[Chuột phải] Thu hoạch";
-                        break;
+                    case FarmPlot.PlotState.Normal: hintText.text = "[F] Cày đất"; break;
+                    case FarmPlot.PlotState.Tilled: hintText.text = "[Chuột Phải] Gieo hạt"; break;
+                    case FarmPlot.PlotState.Seeded: hintText.text = "Cây đang lớn..."; break;
+                    case FarmPlot.PlotState.Grown:  hintText.text = "[E] Thu hoạch"; break;
                 }
             }
         }
         else
         {
             currentLookedPlot = null;
-            if (hintText != null) hintText.text = ""; // Xóa text khi không nhìn vào đất
+            if (hintText != null) hintText.text = ""; 
         }
     }
 
@@ -66,35 +58,36 @@ public class FarmInteraction : MonoBehaviour
     {
         if (currentLookedPlot == null) return;
 
-        // [a] Nhấn chuột phải
-        if (Mouse.current.rightButton.wasPressedThisFrame)
+        // [F] CÀY ĐẤT
+        if (Keyboard.current.fKey.wasPressedThisFrame)
         {
             if (currentLookedPlot.CurrentState == FarmPlot.PlotState.Normal)
-            {
                 currentLookedPlot.RPC_CayDat();
-            }
-            else if (currentLookedPlot.CurrentState == FarmPlot.PlotState.Grown)
+        }
+
+        // =========================================================
+        // [CHUỘT PHẢI] GIEO HẠT - HỆ THỐNG DEBUG
+        // =========================================================
+        if (Mouse.current.rightButton.wasPressedThisFrame)
+        {
+            Debug.Log("<color=cyan>>>> [CLIENT - BƯỚC 1]: Bạn vừa bấm CHUỘT PHẢI!</color>");
+            
+            if (currentLookedPlot.CurrentState == FarmPlot.PlotState.Tilled)
             {
-                currentLookedPlot.RPC_ThuHoach(myPlayer.Runner.LocalPlayer);
+                Debug.Log("<color=cyan>>>> [CLIENT - BƯỚC 2]: Đất hợp lệ. Đang bắn lệnh RPC_GieoHat lên Server...</color>");
+                currentLookedPlot.RPC_GieoHat(); 
+            }
+            else
+            {
+                Debug.LogWarning($">>> [CLIENT - LỖI BƯỚC 2]: Không bắn lệnh được! Vì Client thấy trạng thái đất đang là: {currentLookedPlot.CurrentState}");
             }
         }
 
-        // [b] Nhấn phím E
+        // [E] THU HOẠCH
         if (Keyboard.current.eKey.wasPressedThisFrame)
         {
             if (currentLookedPlot.CurrentState == FarmPlot.PlotState.Grown)
-            {
                 currentLookedPlot.RPC_ThuHoach(myPlayer.Runner.LocalPlayer);
-            }
-        }
-
-        // [c] Nhấn phím 2
-        if (Keyboard.current.digit2Key.wasPressedThisFrame)
-        {
-            if (currentLookedPlot.CurrentState == FarmPlot.PlotState.Tilled)
-            {
-                currentLookedPlot.RPC_GieoHat(myPlayer.Runner.LocalPlayer);
-            }
         }
     }
 }
