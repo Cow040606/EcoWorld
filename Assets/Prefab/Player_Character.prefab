@@ -24,13 +24,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5086825539820154958}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.5416752, y: -0.5416752, z: 0.45451948, w: 0.45451948}
+  m_LocalPosition: {x: -0.06, y: -0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2120091504392891839}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 100, y: 0, z: 90}
 --- !u!1 &8673096975454500310
 GameObject:
   m_ObjectHideFlags: 0
@@ -646,6 +646,8 @@ MonoBehaviour:
   character: {fileID: 1979389992108088245}
   speed: 3
   runfast: 8
+  MaxHealth: 100
+  MaxStamina: 100
   cameraTransform: {fileID: 17911125521547612}
   mouseSensitivity: 0.1
   khoangCachCamera: 3
@@ -656,9 +658,10 @@ MonoBehaviour:
   _isJumping: 0
   thoiGianHoiNhay: 1.2
   _Gold: 0
+  _Gem: 0
   _HotbarIDs: 
   _CurrentToolIndex: 0
-  viTriCamVuKhi: {fileID: 0}
+  viTriCamVuKhi: {fileID: 8878608521619273619}
 --- !u!114 &8037529350765271450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -760,6 +763,7 @@ MonoBehaviour:
   textMessage: {fileID: 0}
   inputFieldMessage: {fileID: 0}
   buttonSend: {fileID: 0}
+  ChatSys: {fileID: 0}
 --- !u!4 &2956909077282468447 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
