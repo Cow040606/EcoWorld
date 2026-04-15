@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1754650891345173212}
   - component: {fileID: 4622343795317337378}
   - component: {fileID: 6574372978365962661}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EA_M_Env_Road_Mud_01b_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -58,6 +58,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -79,9 +84,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1687376526214455743
 GameObject:
@@ -93,7 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 244245897149980699}
   - component: {fileID: 3491187884911426250}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LOD Group
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -157,7 +164,7 @@ GameObject:
   - component: {fileID: 8769400958966486459}
   - component: {fileID: 2655295193151041251}
   - component: {fileID: 693447586437272930}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EA_M_Env_Road_Mud_01b_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,6 +211,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -225,9 +237,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &693447586437272930
 MeshCollider:
@@ -260,7 +274,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3648929936807767145}
-  m_Layer: 0
+  - component: {fileID: -7005507698558912862}
+  - component: {fileID: 6194666409097740214}
+  - component: {fileID: -8616301267039435036}
+  m_Layer: 6
   m_Name: EA_M_Env_Road_Mud_01b_PRE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -283,6 +300,69 @@ Transform:
   - {fileID: 244245897149980699}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &-7005507698558912862
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2708797851999362083}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6194666409097740214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2708797851999362083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1a32567974ff11469c4da6f4c6184c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FarmPlot
+  _CurrentState: 0
+  modelDatThuong: {fileID: 2708797851999362083}
+  modelDatCay: {fileID: 2499808634676538581, guid: 54613694921bb5a4299bf42ae238c3a0,
+    type: 3}
+  modelCayCon: {fileID: 0}
+  modelCayLon: {fileID: 5051541151816911208, guid: 714e21ba8a7b77c4c985683a0d66e5ec,
+    type: 3}
+  seedItemID: 102
+  fruitItemID: 201
+  harvestCount: 3
+  growTime: 10
+--- !u!114 &-8616301267039435036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2708797851999362083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+  SortKey: 27566462
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 6194666409097740214}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &3338960466511334629
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,7 +374,7 @@ GameObject:
   - component: {fileID: 8356451275532597753}
   - component: {fileID: 4055160728025296123}
   - component: {fileID: 6838122500503894843}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EA_M_Env_Road_Mud_01b_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -341,6 +421,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -362,7 +447,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}

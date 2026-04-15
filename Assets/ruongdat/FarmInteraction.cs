@@ -18,12 +18,9 @@ public class FarmInteraction : MonoBehaviour
 
     private void Update()
     {
-        // Chỉ xử lý nếu Player_Controller có giá trị, có quyền điều khiển và không mở UI/Inventory
+        // Chỉ xử lý nếu Player_Controller có giá trị, có quyền điều khiển
         if (myPlayer == null || myPlayer.Object == null || !myPlayer.Object.HasInputAuthority) 
             return;
-
-        // Giả sử có hàm kiểm tra UI đang mở bên GameManager/InventoryManager
-        // if (UIManager.Instance.IsUIOpen) { hintText.text = ""; return; }
 
         CheckRaycast();
         HandleInput();
