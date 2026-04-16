@@ -81,6 +81,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public Transform viTriCamVuKhi; // Điểm Neo trên tay
     private GameObject vuKhiDangCamThucTe; // Nhớ vũ khí đang cầm để xóa
 
+    [Header("Tương Tác - Chặt Cây & Nhặt Đồ")]
+    public Camera playerCamera;
+    public float interactRange = 3f;
+    public LayerMask interactLayer;
+
     #endregion
 
     #region KHỞI TẠO (SPAWNED)
@@ -221,6 +226,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             if (Keyboard.current.kKey.wasPressedThisFrame) RPC_ThayDoiTien(5);
             if (Keyboard.current.lKey.wasPressedThisFrame) RPC_ThayDoiTien(-5);
+
+            // 6. CHẶT CÂY & NHẶT ĐỒ BẰNG RAYCAST
+            if (!baloDangMo && !ESCDangMo && !ishopopen && !IsChatAct && !questDangMo)
+            {
+                HandleChopping();
+                HandlePickup();
+            }
         }
     }
 
@@ -242,6 +254,53 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 cameraTransform.position = viTriDuKien;
             }
             cameraTransform.rotation = camRotation;
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // [CHẶT CÂY] - Bấm chuột trái khi đang cầm rìu, bắn raycast vào Terrain
+    // ----------------------------------------------------------------------
+   private void HandleChopping()
+    {
+        if (playerCamera == null) return;
+        
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            // Bắn tia Raycast từ giữa màn hình camera (phù hợp với góc nhìn thứ 3)
+            Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+            
+            if (Physics.Raycast(ray, out RaycastHit hit, interactRange, interactLayer))
+            {
+                // Nếu tia bắn trúng TerrainCollider
+                if (hit.collider.GetComponent<TerrainCollider>() != null)
+                {
+                    // Gọi lệnh chặt cây ngay lập tức
+                    TreeManager.Instance.TryChopTree(hit.point, Runner);
+                }
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // [NHẶT ĐỒ RAYCAST] - Bấm chuột phải hoặc F để nhặt item nhìn thấy
+    // ----------------------------------------------------------------------
+    private void HandlePickup()
+    {
+        if (playerCamera == null) return;
+        if (Mouse.current.rightButton.wasPressedThisFrame)
+        {
+            Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+            if (Physics.Raycast(ray, out RaycastHit hit, interactRange, interactLayer))
+            {
+                if (hit.collider.CompareTag("Items"))
+                {
+                    NetworkObject itemNetObj = hit.collider.GetComponent<NetworkObject>();
+                    if (itemNetObj != null)
+                    {
+                        RPC_YeuCauNhatRacTheoID(itemNetObj.Id);
+                    }
+                }
+            }
         }
     }
 
@@ -499,6 +558,60 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
+    // ----------------------------------------------------------------------
+    // [RPC MỚI] - Nhặt item cụ thể theo NetworkId (dùng cho raycast pickup)
+    // ----------------------------------------------------------------------
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_YeuCauNhatRacTheoID(NetworkId itemId)
+    {
+        NetworkObject nObj = Runner.FindObject(itemId);
+        if (nObj == null || !nObj.IsValid) return;
+
+        XuLyItem theCanCuoc = nObj.GetComponent<XuLyItem>();
+        if (theCanCuoc == null || theCanCuoc.thongTinDoVat == null) return;
+
+        int idThucTe = theCanCuoc.thongTinDoVat.itemID;
+        bool daNhat = false;
+        bool isstack = true;
+
+        if (InventoryManager.instance != null)
+        {
+            Item thongTin = InventoryManager.instance.TraCuuItem(idThucTe);
+            if (thongTin != null) isstack = thongTin.stackable;
+        }
+
+        if (isstack)
+        {
+            for (int i = 0; i < TuiDo.Length; i++)
+            {
+                if (TuiDo[i].ItemID == idThucTe)
+                {
+                    O_VatPham doVat = TuiDo[i];
+                    doVat.SoLuong++;
+                    TuiDo.Set(i, doVat);
+                    daNhat = true; break;
+                }
+            }
+        }
+
+        if (!daNhat)
+        {
+            for (int i = 0; i < TuiDo.Length; i++)
+            {
+                if (TuiDo[i].ItemID == 0)
+                {
+                    TuiDo.Set(i, new O_VatPham { ItemID = idThucTe, SoLuong = 1 });
+                    daNhat = true; break;
+                }
+            }
+        }
+
+        if (daNhat)
+        {
+            RPC_XoaRacKhapBanDo(nObj);
+            Rpc_NotifyPickupClient(idThucTe, 1);
+        }
+    }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void Rpc_NotifyPickupClient(int itemID_ServerGui, int soLuong_ServerGui)
