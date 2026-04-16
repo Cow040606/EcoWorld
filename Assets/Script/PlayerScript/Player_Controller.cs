@@ -442,10 +442,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void RPC_YeuCauNhatRac()
     {
         Collider[] ketQuaQuet = Physics.OverlapSphere(transform.position, banKinhNhat);
+        
         foreach (var Obj in ketQuaQuet)
         {
             if (Obj.CompareTag("Items"))
             {
+                Debug.Log("Quét trúng được: " + Obj);
                 NetworkObject nObj = Obj.GetComponent<NetworkObject>();
                 XuLyItem theCanCuoc = Obj.GetComponent<XuLyItem>();
 

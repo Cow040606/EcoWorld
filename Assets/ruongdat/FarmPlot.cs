@@ -123,49 +123,16 @@ public class FarmPlot : NetworkBehaviour
         Player_Controller player = playerObj.GetComponent<Player_Controller>();
         if (player == null) return;
 
-        bool added = false;
+        player.RPC_YeuCauNhatRac();
+        // [ĐÃ SỬA LẠI LOGIC TẠI ĐÂY]
+        // Quay về cây baby (Seeded) thay vì đất trống (Normal)
+        // CurrentState = PlotState.Seeded; 
+        
+        // // Khởi động lại đồng hồ đếm ngược 10 giây để cây lớn tiếp
+        // growTimer = TickTimer.CreateFromSeconds(Runner, growTime); 
+        
+        // Rpc_ThongBaoThuHoach(nguoi, harvestCount);
 
-        // Cộng dồn vào ô có sẵn
-        for (int i = 0; i < player.TuiDo.Length; i++)
-        {
-            O_VatPham item = player.TuiDo[i];
-            if (item.ItemID == fruitItemID)
-            {
-                item.SoLuong += harvestCount;
-                player.TuiDo.Set(i, item);
-                added = true;
-                break;
-            }
-        }
-
-        // Tạo ô mới nếu chưa có
-        if (!added)
-        {
-            for (int i = 0; i < player.TuiDo.Length; i++)
-            {
-                O_VatPham item = player.TuiDo[i];
-                if (item.ItemID == 0)
-                {
-                    item.ItemID = fruitItemID;
-                    item.SoLuong = harvestCount;
-                    player.TuiDo.Set(i, item);
-                    added = true;
-                    break;
-                }
-            }
-        }
-
-        if (added)
-        {
-            // [ĐÃ SỬA LẠI LOGIC TẠI ĐÂY]
-            // Quay về cây baby (Seeded) thay vì đất trống (Normal)
-            CurrentState = PlotState.Seeded; 
-            
-            // Khởi động lại đồng hồ đếm ngược 10 giây để cây lớn tiếp
-            growTimer = TickTimer.CreateFromSeconds(Runner, growTime); 
-            
-            Rpc_ThongBaoThuHoach(nguoi, harvestCount);
-        }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
