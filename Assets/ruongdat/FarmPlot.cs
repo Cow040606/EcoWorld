@@ -63,14 +63,10 @@ public class FarmPlot : NetworkBehaviour
     {
         if (prefab == null) return;
         
-        // CỐT LÕI CỦA CÁCH 1: Xác định điểm sinh ra
-        // Nếu bạn đã kéo DiemGieoHat vào Inspector thì lấy tọa độ đó, nếu quên kéo thì lấy tọa độ gốc của cục đất
         Transform viTriSinhRa = (diemGieoHat != null) ? diemGieoHat : transform;
 
-        // Sinh ra Prefab tại đúng vị trí Điểm Neo
         GameObject newVisual = Instantiate(prefab, viTriSinhRa.position, viTriSinhRa.rotation, transform);
         
-        // Tắt hết collider của mô hình mới sinh ra để không cản tia Raycast
         Collider[] cols = newVisual.GetComponentsInChildren<Collider>();
         foreach (var c in cols) c.enabled = false;
         
@@ -91,18 +87,14 @@ public class FarmPlot : NetworkBehaviour
                 break;
             case PlotState.Seeded:
                 SpawnVisual(modelDatCay); 
-                SpawnVisual(modelCayCon); // Cây con sẽ tự động chui vào DiemGieoHat
+                SpawnVisual(modelCayCon); 
                 break;
             case PlotState.Grown:
                 SpawnVisual(modelDatCay); 
-                SpawnVisual(modelCayLon); // Cây lớn sẽ tự động chui vào DiemGieoHat
+                SpawnVisual(modelCayLon); 
                 break;
         }
     }
-
-    // =========================================================
-    // CÁC LỆNH RPC XỬ LÝ LOGIC TRỒNG CÂY (Giữ nguyên)
-    // =========================================================
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_CayDat()
@@ -133,6 +125,7 @@ public class FarmPlot : NetworkBehaviour
 
         bool added = false;
 
+        // Cộng dồn vào ô có sẵn
         for (int i = 0; i < player.TuiDo.Length; i++)
         {
             O_VatPham item = player.TuiDo[i];
@@ -145,6 +138,7 @@ public class FarmPlot : NetworkBehaviour
             }
         }
 
+        // Tạo ô mới nếu chưa có
         if (!added)
         {
             for (int i = 0; i < player.TuiDo.Length; i++)
@@ -163,7 +157,13 @@ public class FarmPlot : NetworkBehaviour
 
         if (added)
         {
-            CurrentState = PlotState.Normal;
+            // [ĐÃ SỬA LẠI LOGIC TẠI ĐÂY]
+            // Quay về cây baby (Seeded) thay vì đất trống (Normal)
+            CurrentState = PlotState.Seeded; 
+            
+            // Khởi động lại đồng hồ đếm ngược 10 giây để cây lớn tiếp
+            growTimer = TickTimer.CreateFromSeconds(Runner, growTime); 
+            
             Rpc_ThongBaoThuHoach(nguoi, harvestCount);
         }
     }
