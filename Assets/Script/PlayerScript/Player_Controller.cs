@@ -78,6 +78,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Header("Hệ Thống Hiển Thị Công Cụ Tự Động")]
     [Networked, OnChangedRender(nameof(OnToolChanged))] public int CurrentToolIndex { get; set; } 
     
+    
     public Transform viTriCamVuKhi; // Điểm Neo trên tay
     private GameObject vuKhiDangCamThucTe; // Nhớ vũ khí đang cầm để xóa
 
@@ -85,6 +86,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public Camera playerCamera;
     public float interactRange = 3f;
     public LayerMask interactLayer;
+
+    
 
     #endregion
 
@@ -561,6 +564,52 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     // ----------------------------------------------------------------------
     // [RPC MỚI] - Nhặt item cụ thể theo NetworkId (dùng cho raycast pickup)
     // ----------------------------------------------------------------------
+    public bool ThemDoVaoTui(int idCanThem, int soLuongCanThem)
+    {
+        bool isStackable = true;
+
+        // 1. Kiểm tra xem món này có cho xếp chồng không
+        if (InventoryManager.instance != null)
+        {
+            Item thongTin = InventoryManager.instance.TraCuuItem(idCanThem);
+            if (thongTin != null) isStackable = thongTin.stackable;
+        }
+
+        // 2. Tìm ô để xếp chồng (Cộng dồn)
+        if (isStackable)
+        {
+            for (int i = 0; i < TuiDo.Length; i++)
+            {
+                if (TuiDo[i].ItemID == idCanThem)
+                {
+                    O_VatPham doVat = TuiDo[i];
+                    doVat.SoLuong += soLuongCanThem;
+                    TuiDo.Set(i, doVat); // Lệnh Set này sẽ tự gọi UI Balo vẽ lại
+                    
+                    // GỌI THÔNG BÁO TING TING LUÔN Ở ĐÂY
+                    Rpc_NotifyPickupClient(idCanThem, soLuongCanThem);
+                    return true; // Báo cáo là đã nhét xong
+                }
+            }
+        }
+
+        // 3. Nếu không xếp chồng được thì tìm ô trống
+        for (int i = 0; i < TuiDo.Length; i++)
+        {
+            if (TuiDo[i].ItemID == 0)
+            {
+                TuiDo.Set(i, new O_VatPham { ItemID = idCanThem, SoLuong = soLuongCanThem });
+                
+                // GỌI THÔNG BÁO TING TING LUÔN Ở ĐÂY
+                Rpc_NotifyPickupClient(idCanThem, soLuongCanThem);
+                return true; // Báo cáo là đã nhét xong
+            }
+        }
+
+        // 4. Nếu chạy đến đây tức là Balo đầy
+        Debug.LogWarning("Balo đã đầy, không thể nhặt thêm!");
+        return false; 
+    }
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_YeuCauNhatRacTheoID(NetworkId itemId)
     {
@@ -571,45 +620,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (theCanCuoc == null || theCanCuoc.thongTinDoVat == null) return;
 
         int idThucTe = theCanCuoc.thongTinDoVat.itemID;
-        bool daNhat = false;
-        bool isstack = true;
 
-        if (InventoryManager.instance != null)
-        {
-            Item thongTin = InventoryManager.instance.TraCuuItem(idThucTe);
-            if (thongTin != null) isstack = thongTin.stackable;
-        }
+        // Gọi tuyệt chiêu!
+        bool daNhat = ThemDoVaoTui(idThucTe, 1);
 
-        if (isstack)
-        {
-            for (int i = 0; i < TuiDo.Length; i++)
-            {
-                if (TuiDo[i].ItemID == idThucTe)
-                {
-                    O_VatPham doVat = TuiDo[i];
-                    doVat.SoLuong++;
-                    TuiDo.Set(i, doVat);
-                    daNhat = true; break;
-                }
-            }
-        }
-
-        if (!daNhat)
-        {
-            for (int i = 0; i < TuiDo.Length; i++)
-            {
-                if (TuiDo[i].ItemID == 0)
-                {
-                    TuiDo.Set(i, new O_VatPham { ItemID = idThucTe, SoLuong = 1 });
-                    daNhat = true; break;
-                }
-            }
-        }
-
+        // Nếu nhét vào túi thành công thì mới xóa cục rác ngoài đường
         if (daNhat)
         {
             RPC_XoaRacKhapBanDo(nObj);
-            Rpc_NotifyPickupClient(idThucTe, 1);
         }
     }
 

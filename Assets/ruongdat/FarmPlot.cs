@@ -23,7 +23,7 @@ public class FarmPlot : NetworkBehaviour
     [SerializeField] private Transform diemGieoHat; 
 
     [Header("--- Farm Settings ---")]
-    [SerializeField] private int fruitItemID = 201;
+    [SerializeField] private int fruitItemID = 3;
     [SerializeField] private int harvestCount = 3;
     [SerializeField] private float growTime = 10f; 
 
@@ -121,18 +121,16 @@ public class FarmPlot : NetworkBehaviour
         if (playerObj == null) return;
 
         Player_Controller player = playerObj.GetComponent<Player_Controller>();
-        if (player == null) return;
-
-        player.RPC_YeuCauNhatRac();
-        // [ĐÃ SỬA LẠI LOGIC TẠI ĐÂY]
-        // Quay về cây baby (Seeded) thay vì đất trống (Normal)
-        // CurrentState = PlotState.Seeded; 
         
-        // // Khởi động lại đồng hồ đếm ngược 10 giây để cây lớn tiếp
-        // growTimer = TickTimer.CreateFromSeconds(Runner, growTime); 
-        
-        // Rpc_ThongBaoThuHoach(nguoi, harvestCount);
+        // Gọi tuyệt chiêu! Truyền ID cà chua và Số lượng vào
+        bool daCongXong = player.ThemDoVaoTui(fruitItemID, harvestCount);
+        Debug.Log("da nhat ca chua");
 
+        if (daCongXong)
+        {
+            CurrentState = PlotState.Seeded; 
+            growTimer = TickTimer.CreateFromSeconds(Runner, growTime); 
+        }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
