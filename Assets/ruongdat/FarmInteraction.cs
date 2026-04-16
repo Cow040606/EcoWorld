@@ -8,12 +8,20 @@ public class FarmInteraction : MonoBehaviour
     [Header("--- References ---")]
     public Player_Controller myPlayer;
     public LayerMask farmlandLayer;   
-    public float interactRange = 3f;
+    public float interactRange = 4f; 
 
-    [Header("--- UI ---")]
+    [Header("--- UI 3D Lơ Lửng ---")]
     public TextMeshProUGUI hintText;  
+    [Tooltip("Kéo Main Camera vào đây để chữ luôn xoay mặt về phía người chơi")]
+    public Transform cameraTransform; 
 
     private FarmPlot currentLookedPlot;
+
+    private void Start()
+    {
+        // Ẩn chữ đi khi mới vào game
+        if (hintText != null) hintText.text = ""; 
+    }
 
     private void Update()
     {
@@ -30,7 +38,6 @@ public class FarmInteraction : MonoBehaviour
         Vector3 huongNhin = myPlayer.transform.forward + (Vector3.down * 0.7f); 
 
         Ray ray = new Ray(diemBatDau, huongNhin.normalized);
-        Debug.DrawRay(ray.origin, ray.direction * interactRange, Color.red);
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactRange, farmlandLayer))
         {
@@ -38,6 +45,16 @@ public class FarmInteraction : MonoBehaviour
             
             if (currentLookedPlot != null && hintText != null)
             {
+                // 1. DỜI CHỮ ĐẾN CỤC ĐẤT (Cách mặt đất 1.5 unit)
+                hintText.transform.position = currentLookedPlot.transform.position + (Vector3.up * 1.5f);
+
+                // 2. XOAY CHỮ VỀ PHÍA CAMERA (Để chữ không bị ngược)
+                if (cameraTransform != null)
+                {
+                    hintText.transform.rotation = Quaternion.LookRotation(hintText.transform.position - cameraTransform.position);
+                }
+
+                // 3. HIỂN THỊ NỘI DUNG TƯƠNG ỨNG
                 switch (currentLookedPlot.CurrentState)
                 {
                     case FarmPlot.PlotState.Normal: hintText.text = "[F] Cày đất"; break;
@@ -58,32 +75,18 @@ public class FarmInteraction : MonoBehaviour
     {
         if (currentLookedPlot == null) return;
 
-        // [F] CÀY ĐẤT
         if (Keyboard.current.fKey.wasPressedThisFrame)
         {
             if (currentLookedPlot.CurrentState == FarmPlot.PlotState.Normal)
                 currentLookedPlot.RPC_CayDat();
         }
 
-        // =========================================================
-        // [CHUỘT PHẢI] GIEO HẠT - HỆ THỐNG DEBUG
-        // =========================================================
         if (Mouse.current.rightButton.wasPressedThisFrame)
         {
-            Debug.Log("<color=cyan>>>> [CLIENT - BƯỚC 1]: Bạn vừa bấm CHUỘT PHẢI!</color>");
-            
             if (currentLookedPlot.CurrentState == FarmPlot.PlotState.Tilled)
-            {
-                Debug.Log("<color=cyan>>>> [CLIENT - BƯỚC 2]: Đất hợp lệ. Đang bắn lệnh RPC_GieoHat lên Server...</color>");
                 currentLookedPlot.RPC_GieoHat(); 
-            }
-            else
-            {
-                Debug.LogWarning($">>> [CLIENT - LỖI BƯỚC 2]: Không bắn lệnh được! Vì Client thấy trạng thái đất đang là: {currentLookedPlot.CurrentState}");
-            }
         }
 
-        // [E] THU HOẠCH
         if (Keyboard.current.eKey.wasPressedThisFrame)
         {
             if (currentLookedPlot.CurrentState == FarmPlot.PlotState.Grown)
