@@ -785,7 +785,7 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
-  SortKey: 783610090
+  SortKey: 2893162655
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
@@ -837,16 +837,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f3d1184c4ccafb4d81995139d29d225, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalAI
-  _CurrentState: 0
   animalType: 0
+  maxHealth: 100
+  _CurrentHealth: 0
   wanderRadius: 10
-  minIdleTime: 2
-  maxIdleTime: 5
-  detectionRadius: 8
-  fleeRadius: 15
+  detectionRange: 8
   attackRange: 2
-  chaseRange: 20
+  attackDamage: 10
   attackCooldown: 1.5
+  fleeDistance: 15
+  wanderInterval: 3
+  thinkInterval: 0.2
 --- !u!1 &3955406351709833468
 GameObject:
   m_ObjectHideFlags: 0

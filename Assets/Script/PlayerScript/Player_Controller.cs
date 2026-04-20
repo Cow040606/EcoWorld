@@ -87,7 +87,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float interactRange = 3f;
     public LayerMask interactLayer;
 
-    
+    // ---- THÊM MỚI ----
+    [Header("Tấn Công Thú")]
+    public float attackDamageToAnimal = 25f;
+    // ------------------
 
     #endregion
 
@@ -230,11 +233,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (Keyboard.current.kKey.wasPressedThisFrame) RPC_ThayDoiTien(5);
             if (Keyboard.current.lKey.wasPressedThisFrame) RPC_ThayDoiTien(-5);
 
-            // 6. CHẶT CÂY & NHẶT ĐỒ BẰNG RAYCAST
+            // 6. CHẶT CÂY & NHẶT ĐỒ & ĐÁNH THÚ BẰNG RAYCAST
             if (!baloDangMo && !ESCDangMo && !ishopopen && !IsChatAct && !questDangMo)
             {
                 HandleChopping();
                 HandlePickup();
+                HandleAttackAnimal(); // THÊM MỚI
             }
         }
     }
@@ -263,7 +267,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     // ----------------------------------------------------------------------
     // [CHẶT CÂY] - Bấm chuột trái khi đang cầm rìu, bắn raycast vào Terrain
     // ----------------------------------------------------------------------
-   private void HandleChopping()
+    private void HandleChopping()
     {
         if (playerCamera == null) return;
         
@@ -302,6 +306,31 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                     {
                         RPC_YeuCauNhatRacTheoID(itemNetObj.Id);
                     }
+                }
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // [ĐÁNH THÚ] - Bấm chuột trái khi nhìn vào Animal
+    // ----------------------------------------------------------------------
+    private void HandleAttackAnimal()
+    {
+        if (playerCamera == null) return;
+
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            Ray ray = playerCamera.ScreenPointToRay(
+                new Vector3(Screen.width / 2, Screen.height / 2, 0));
+
+            if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
+            {
+               var animalAI = hit.collider.GetComponent<ithappy.Animals_FREE.AnimalAI_Controller>();
+
+                if (animalAI != null)
+                {
+                    animalAI.RPC_AnimalTakeDamage(attackDamageToAnimal, Runner.LocalPlayer);
+                    Debug.Log($"[Player] Đánh {hit.collider.name} gây {attackDamageToAnimal} dame!");
                 }
             }
         }
@@ -445,38 +474,38 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     // Hàm gọi khi Biến Mạng CurrentToolIndex thay đổi (Bật tắt Model trên tay)
     private void OnToolChanged()
-{
-    // 1. Cập nhật khung sáng UI (Chỉ chạy trên máy người chơi)
-    if (HasInputAuthority && UI_HotBar.Instance != null)
     {
-        UI_HotBar.Instance.HighlightSlot(CurrentToolIndex);
-    }
-
-    // 2. DỌN DẸP: Luôn hủy model cũ nếu nó đang tồn tại
-    if (vuKhiDangCamThucTe != null)
-    {
-        Destroy(vuKhiDangCamThucTe);
-        vuKhiDangCamThucTe = null;
-    }
-
-    // 3. Nếu CurrentToolIndex = -1 (đã cất đồ) thì dừng lại ở đây
-    if (CurrentToolIndex < 0 || CurrentToolIndex > 3) return;
-
-    // 4. Lấy ID từ Hotbar để sinh ra model mới
-    int idDangCam = HotbarIDs[CurrentToolIndex];
-
-    if (idDangCam > 0 && InventoryManager.instance != null)
-    {
-        Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
-        if (thongTinItem != null && thongTinItem.model3DPrefab != null)
+        // 1. Cập nhật khung sáng UI (Chỉ chạy trên máy người chơi)
+        if (HasInputAuthority && UI_HotBar.Instance != null)
         {
-            // Sinh ra vật phẩm mới tại Điểm Neo (Socket)
-            vuKhiDangCamThucTe = Instantiate(thongTinItem.model3DPrefab, viTriCamVuKhi);
-            vuKhiDangCamThucTe.transform.localPosition = Vector3.zero;
-            vuKhiDangCamThucTe.transform.localRotation = Quaternion.identity;
+            UI_HotBar.Instance.HighlightSlot(CurrentToolIndex);
+        }
+
+        // 2. DỌN DẸP: Luôn hủy model cũ nếu nó đang tồn tại
+        if (vuKhiDangCamThucTe != null)
+        {
+            Destroy(vuKhiDangCamThucTe);
+            vuKhiDangCamThucTe = null;
+        }
+
+        // 3. Nếu CurrentToolIndex = -1 (đã cất đồ) thì dừng lại ở đây
+        if (CurrentToolIndex < 0 || CurrentToolIndex > 3) return;
+
+        // 4. Lấy ID từ Hotbar để sinh ra model mới
+        int idDangCam = HotbarIDs[CurrentToolIndex];
+
+        if (idDangCam > 0 && InventoryManager.instance != null)
+        {
+            Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
+            if (thongTinItem != null && thongTinItem.model3DPrefab != null)
+            {
+                // Sinh ra vật phẩm mới tại Điểm Neo (Socket)
+                vuKhiDangCamThucTe = Instantiate(thongTinItem.model3DPrefab, viTriCamVuKhi);
+                vuKhiDangCamThucTe.transform.localPosition = Vector3.zero;
+                vuKhiDangCamThucTe.transform.localRotation = Quaternion.identity;
+            }
         }
     }
-}
     #endregion
 
     #region HỆ THỐNG GỌI HÀM TỪ XA (RPC - REMOTE PROCEDURE CALLS)
@@ -497,8 +526,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             //Die
         }
     }
-
-
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_YeuCauNhatRac()
@@ -610,6 +637,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         Debug.LogWarning("Balo đã đầy, không thể nhặt thêm!");
         return false; 
     }
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_YeuCauNhatRacTheoID(NetworkId itemId)
     {
