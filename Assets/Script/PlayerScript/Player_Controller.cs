@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using TMPro;
+
 public struct DuLieuInput : INetworkInput
 {
     public Vector2 moveInput;
@@ -23,11 +24,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public static Player_Controller localPlayer;
 
     #region KHAI BÁO BIẾN (VARIABLES)
-    // ----------------------------------------------------------------------
-    // [KHAI BÁO BIẾN] - Nơi chứa toàn bộ dữ liệu của Player
-    // Biến có [Networked] là biến xài chung trên mạng (Server quản lý)
-    // Biến bình thường là biến xài cục bộ (Chỉ máy người chơi đó biết)
-    // ----------------------------------------------------------------------
 
     [Header("Di chuyển")]
     public NetworkCharacterController character;
@@ -36,15 +32,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private Vector2 moveInputLocal;
     private bool sprintPressedLocal;
 
-
     [Header("Chỉ số nhân vật")]
-
     public float CurrentHealth { get; set; }
     public float MaxHealth = 100f;
-
     public float CurrentStamina { get; set; }
     public float MaxStamina = 100f;
-
 
     [Header("Camera & Chuột")]
     public Transform cameraTransform;
@@ -61,14 +53,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Header("Trọng lực & Nhảy")]
     [Networked] public bool isJumping { get; set; }
     private bool jumpPressedLocal;
-    public float thoiGianHoiNhay = 1f; 
+    public float thoiGianHoiNhay = 1f;
     [Networked] public TickTimer dongHoChoNhay { get; set; }
 
     [Header("Kinh tế & Túi đồ")]
     [Networked] public int Gold { get; set; }
     [Networked] public int Gem { get; set; }
     [Networked, Capacity(20)] public NetworkArray<O_VatPham> TuiDo { get; }
-    [Networked, Capacity(4)] public NetworkArray<int> HotbarIDs { get; } 
+    [Networked, Capacity(4)]  public NetworkArray<int> HotbarIDs { get; }
 
     [Header("Animation")]
     [Networked] private NetworkBool isrun { get; set; }
@@ -76,59 +68,65 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private Animator animator;
 
     [Header("Hệ Thống Hiển Thị Công Cụ Tự Động")]
-    [Networked, OnChangedRender(nameof(OnToolChanged))] public int CurrentToolIndex { get; set; } 
-    
-    
-    public Transform viTriCamVuKhi; // Điểm Neo trên tay
-    private GameObject vuKhiDangCamThucTe; // Nhớ vũ khí đang cầm để xóa
+    [Networked, OnChangedRender(nameof(OnToolChanged))] public int CurrentToolIndex { get; set; }
+    public Transform viTriCamVuKhi;
+    private GameObject vuKhiDangCamThucTe;
 
     [Header("Tương Tác - Chặt Cây & Nhặt Đồ")]
     public Camera playerCamera;
     public float interactRange = 3f;
+
+    [Tooltip("Layer cho Item, NPC,... (KHÔNG cần chứa Terrain)")]
     public LayerMask interactLayer;
 
-    // ---- THÊM MỚI ----
+    [Tooltip("Layer của Terrain. Nếu để trống sẽ Raycast tất cả layer rồi lọc bằng TerrainCollider.")]
+    public LayerMask chopLayer;
+
     [Header("Tấn Công Thú")]
     public float attackDamageToAnimal = 25f;
-    // ------------------
+
+    [Header("Debug - Chặt Cây")]
+    public bool showChopDebug = true;
+    private Vector3 _lastRayOrigin;
+    private Vector3 _lastRayDir;
+    private bool _lastRayHit;
+    private Vector3 _lastRayHitPoint;
 
     #endregion
 
     #region KHỞI TẠO (SPAWNED)
-    // ----------------------------------------------------------------------
-    // [SPAWNED] - Hàm này chạy ĐẦU TIÊN khi nhân vật vừa được sinh ra.
-    // Thay thế cho hàm Start() và Awake() trong game Singleplayer.
-    // Dùng để setup camera, nhận diện máy khách/máy chủ.
-    // ----------------------------------------------------------------------
+
     public override void Spawned()
     {
         animator = GetComponent<Animator>();
         CurrentHealth = 100;
-        // Nếu mình không phải là chủ của con nhân vật này (Nhân vật của thằng khác) -> Tắt điều khiển
+
         if (!HasStateAuthority && !HasInputAuthority)
         {
             if (character != null) character.enabled = false;
         }
 
-        // Nếu ĐÂY LÀ NHÂN VẬT CỦA MÌNH
         if (HasInputAuthority)
         {
-            
             localPlayer = this;
             Runner.AddCallbacks(this);
             Runner.SetPlayerObject(Runner.LocalPlayer, Object);
 
             if (cameraTransform == null && Camera.main != null)
-            {
                 cameraTransform = Camera.main.transform;
-            }
+
             TuiDo.Set(0, new O_VatPham { ItemID = 101, SoLuong = 50 });
+
+            if (playerCamera == null)
+                Debug.LogError("[Player_Controller] ❌ 'Player Camera' chưa được gán trong Inspector!");
+            
+            if (TreeManager.Instance == null)
+                Debug.LogError("[Player_Controller] ❌ Không tìm thấy TreeManager trong scene!");
         }
-        else // NẾU LÀ NHÂN VẬT CỦA ĐỨA KHÁC TRÊN MÀN HÌNH MÌNH
+        else
         {
             if (character != null) character.enabled = true;
 
-            // Tắt camera và tai nghe của đứa khác đi, để không bị nhìn lộn xộn
             Camera cam = GetComponentInChildren<Camera>();
             if (cam != null) cam.enabled = false;
 
@@ -136,69 +134,59 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (listener != null) listener.enabled = false;
         }
     }
+
     #endregion
 
     #region THU THẬP ĐẦU VÀO CỤC BỘ (UPDATE & ON INPUT)
-    // ----------------------------------------------------------------------
-    // [UPDATE] - Chạy liên tục mỗi khung hình (Cục bộ).
-    // Tuyệt đối KHÔNG code di chuyển ở đây trong Fusion. 
-    // Chỉ dùng Update để: Đọc phím bật/tắt UI, đọc chuột, gom data chuẩn bị gửi Server.
-    // ----------------------------------------------------------------------
+
     void Update()
     {
         if (HasInputAuthority && Keyboard.current != null && Mouse.current != null)
         {
-            bool dangGoPhim = EventSystem.current != null && 
-                              EventSystem.current.currentSelectedGameObject != null && 
+            bool dangGoPhim = EventSystem.current != null &&
+                              EventSystem.current.currentSelectedGameObject != null &&
                               EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
+            
             if (ChatSystem.IsChatting || dangGoPhim) return;
-            // 1. ĐỌC TRẠNG THÁI BẢNG UI
-            bool baloDangMo = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
-            bool ishopopen = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
-            bool questDangMo = (QuestManager.instance != null && QuestManager.instance.isQuest_Open);
-            bool IsChatAct = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
-            bool ESCDangMo = (ESC.instance != null && ESC.instance.isESC_Open);
 
-            // 2. QUẢN LÝ CHUỘT & CAMERA 
+            bool baloDangMo   = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
+            bool ishopopen    = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
+            bool questDangMo  = (QuestManager.instance != null && QuestManager.instance.isQuest_Open);
+            bool IsChatAct    = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
+            bool ESCDangMo    = (ESC.instance != null && ESC.instance.isESC_Open);
+
             if (baloDangMo || ESCDangMo || ishopopen || IsChatAct || questDangMo)
             {
                 Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
+                Cursor.visible   = true;
             }
             else
             {
                 Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+                Cursor.visible   = false;
                 yRotation += Mouse.current.delta.x.ReadValue() * mouseSensitivity;
                 xRotation -= Mouse.current.delta.y.ReadValue() * mouseSensitivity;
-                xRotation = Mathf.Clamp(xRotation, -60f, 60f);
+                xRotation  = Mathf.Clamp(xRotation, -60f, 60f);
             }
 
-            // 3. UI TƯƠNG TÁC (ESC, Balo, Nhiệm vụ)
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)            
+            if (Keyboard.current.escapeKey.wasPressedThisFrame)
             {
-                TatToanBoUI(); 
+                TatToanBoUI();
                 if (ESC.instance != null) ESC.instance.BatTatESC();
             }
-            if (Keyboard.current.cKey.wasPressedThisFrame)            
-            {
-                RPC_TakeDame(10);
-            }
-            if (Keyboard.current.vKey.wasPressedThisFrame)            
-            {
-                RPC_TakeDame(-10);
-            }
+            
+            if (Keyboard.current.cKey.wasPressedThisFrame) RPC_TakeDame(10);
+            if (Keyboard.current.vKey.wasPressedThisFrame) RPC_TakeDame(-10);
 
             if (!IsChatAct && !ishopopen)
             {
                 if (Keyboard.current.bKey.wasPressedThisFrame && InventoryManager.instance != null)
-                    InventoryManager.instance.BatTatBalo(TuiDo, this); 
+                    InventoryManager.instance.BatTatBalo(TuiDo, this);
 
-                if(Keyboard.current.tabKey.wasPressedThisFrame && QuestManager.instance != null)
+                if (Keyboard.current.tabKey.wasPressedThisFrame && QuestManager.instance != null)
                     QuestManager.instance.Battatbangnhiemvu();
             }
 
-            // 4. HỆ THỐNG HOTBAR (GÁN ĐỒ)
             bool dangBam1 = Keyboard.current.digit1Key.wasPressedThisFrame;
             bool dangBam2 = Keyboard.current.digit2Key.wasPressedThisFrame;
             bool dangBam3 = Keyboard.current.digit3Key.wasPressedThisFrame;
@@ -206,23 +194,29 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             if (baloDangMo && ItemHover.itemID_DangDiChuot != 0)
             {
-                // TRƯỜNG HỢP 1: ĐANG MỞ BALO -> GÁN ĐỒ VÀO Ô
-                if (dangBam1) RPC_GanVaoHotbar(0, ItemHover.itemID_DangDiChuot); 
+                if (dangBam1) RPC_GanVaoHotbar(0, ItemHover.itemID_DangDiChuot);
                 if (dangBam2) RPC_GanVaoHotbar(1, ItemHover.itemID_DangDiChuot);
                 if (dangBam3) RPC_GanVaoHotbar(2, ItemHover.itemID_DangDiChuot);
                 if (dangBam4) RPC_GanVaoHotbar(3, ItemHover.itemID_DangDiChuot);
             }
             else if (!baloDangMo && !ishopopen && !IsChatAct && !ESCDangMo && !questDangMo)
             {
-                // TRƯỜNG HỢP 2: ĐI DẠO BÌNH THƯỜNG (KHÔNG MỞ UI NÀO HẾT) -> RÚT/CẤT VŨ KHÍ
-                if (dangBam1) RPC_EquipTool(0); 
-                if (dangBam2) RPC_EquipTool(1); 
-                if (dangBam3) RPC_EquipTool(2); 
-                if (dangBam4) RPC_EquipTool(3); 
+                if (dangBam1) RPC_EquipTool(0);
+                if (dangBam2) RPC_EquipTool(1);
+                if (dangBam3) RPC_EquipTool(2);
+                if (dangBam4) RPC_EquipTool(3);
             }
 
-            // 5. CÁC HÀNH ĐỘNG CƠ BẢN CẦN GỬI CHO SERVER
-            if (Keyboard.current.eKey.wasPressedThisFrame) RPC_YeuCauNhatRac();
+            // Xử lý phím E: Ngắm trúng thì nhặt vật phẩm đó, ngắm trượt thì quét diện rộng
+            if (Keyboard.current.eKey.wasPressedThisFrame)
+            {
+                bool daNhatBangTia = HandlePickup();
+                if (!daNhatBangTia) 
+                {
+                    RPC_YeuCauNhatRac();
+                }
+            }
+
             sprintPressedLocal = Keyboard.current.leftShiftKey.isPressed;
             if (Keyboard.current.spaceKey.wasPressedThisFrame) jumpPressedLocal = true;
 
@@ -233,12 +227,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (Keyboard.current.kKey.wasPressedThisFrame) RPC_ThayDoiTien(5);
             if (Keyboard.current.lKey.wasPressedThisFrame) RPC_ThayDoiTien(-5);
 
-            // 6. CHẶT CÂY & NHẶT ĐỒ & ĐÁNH THÚ BẰNG RAYCAST
             if (!baloDangMo && !ESCDangMo && !ishopopen && !IsChatAct && !questDangMo)
             {
                 HandleChopping();
-                HandlePickup();
-                HandleAttackAnimal(); // THÊM MỚI
+                HandleAttackAnimal();
             }
         }
     }
@@ -247,123 +239,136 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (HasInputAuthority && cameraTransform != null)
         {
-            Quaternion camRotation = Quaternion.Euler(xRotation, yRotation, 0f);
-            Vector3 diemNhin = transform.position + Vector3.up * 1.5f; 
-            Vector3 huongCamera = -(camRotation * Vector3.forward); 
-            Vector3 viTriDuKien = diemNhin + huongCamera * khoangCachCamera;
+            Quaternion camRotation  = Quaternion.Euler(xRotation, yRotation, 0f);
+            Vector3 diemNhin        = transform.position + Vector3.up * 1.5f;
+            Vector3 huongCamera     = -(camRotation * Vector3.forward);
+            Vector3 viTriDuKien     = diemNhin + huongCamera * khoangCachCamera;
 
             if (Physics.Raycast(diemNhin, huongCamera, out RaycastHit hit, khoangCachCamera, layerVaChamCamera))
-            {
                 cameraTransform.position = hit.point + hit.normal * 0.1f;
-            }
             else
-            {
                 cameraTransform.position = viTriDuKien;
-            }
+
             cameraTransform.rotation = camRotation;
         }
     }
 
-    // ----------------------------------------------------------------------
-    // [CHẶT CÂY] - Bấm chuột trái khi đang cầm rìu, bắn raycast vào Terrain
-    // ----------------------------------------------------------------------
     private void HandleChopping()
     {
         if (playerCamera == null) return;
-        
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        if (!Mouse.current.leftButton.wasPressedThisFrame) return;
+
+        Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
+        Ray ray = playerCamera.ScreenPointToRay(screenCenter);
+
+        _lastRayOrigin = ray.origin;
+        _lastRayDir    = ray.direction;
+
+        LayerMask maskDung = (chopLayer.value != 0) ? chopLayer : Physics.DefaultRaycastLayers;
+
+        if (Physics.Raycast(ray, out RaycastHit hit, interactRange, maskDung))
         {
-            // Bắn tia Raycast từ giữa màn hình camera (phù hợp với góc nhìn thứ 3)
-            Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-            
-            if (Physics.Raycast(ray, out RaycastHit hit, interactRange, interactLayer))
+            _lastRayHit      = true;
+            _lastRayHitPoint = hit.point;
+
+            Terrain hitTerrain = hit.collider.GetComponent<Terrain>();
+            bool trungTerrain = hitTerrain != null;
+
+            if (trungTerrain)
             {
-                // Nếu tia bắn trúng TerrainCollider
-                if (hit.collider.GetComponent<TerrainCollider>() != null)
+                if (TreeManager.Instance == null)
                 {
-                    // Gọi lệnh chặt cây ngay lập tức
-                    TreeManager.Instance.TryChopTree(hit.point, Runner);
+                    Debug.LogError("[Player_Controller] ❌ TreeManager.Instance = NULL!");
+                    return;
                 }
+
+                TreeManager.Instance.TryChopTree(hitTerrain, hit.point, Runner);
             }
+        }
+        else
+        {
+            _lastRayHit = false;
         }
     }
 
-    // ----------------------------------------------------------------------
-    // [NHẶT ĐỒ RAYCAST] - Bấm chuột phải hoặc F để nhặt item nhìn thấy
-    // ----------------------------------------------------------------------
-    private void HandlePickup()
+    private void OnDrawGizmos()
     {
-        if (playerCamera == null) return;
-        if (Mouse.current.rightButton.wasPressedThisFrame)
+        if (!showChopDebug || !HasInputAuthority) return;
+
+        Gizmos.color = _lastRayHit ? Color.green : Color.red;
+        Gizmos.DrawRay(_lastRayOrigin, _lastRayDir * interactRange);
+
+        if (_lastRayHit)
         {
-            Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-            if (Physics.Raycast(ray, out RaycastHit hit, interactRange, interactLayer))
-            {
-                if (hit.collider.CompareTag("Items"))
-                {
-                    NetworkObject itemNetObj = hit.collider.GetComponent<NetworkObject>();
-                    if (itemNetObj != null)
-                    {
-                        RPC_YeuCauNhatRacTheoID(itemNetObj.Id);
-                    }
-                }
-            }
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(_lastRayHitPoint, 0.15f);
         }
     }
 
-    // ----------------------------------------------------------------------
-    // [ĐÁNH THÚ] - Bấm chuột trái khi nhìn vào Animal
-    // ----------------------------------------------------------------------
+    // Trả về true nếu ngắm trúng item, false nếu trượt
+    private bool HandlePickup()
+    {
+        if (playerCamera == null) return false;
+
+        Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+        if (Physics.Raycast(ray, out RaycastHit hit, interactRange, interactLayer))
+        {
+            if (hit.collider.CompareTag("Items"))
+            {
+                NetworkObject itemNetObj = hit.collider.GetComponent<NetworkObject>();
+                if (itemNetObj != null)
+                {
+                    Debug.Log($"[Player_Controller] Nhặt trúng item: {hit.collider.name} bằng ngắm tia Raycast");
+                    RPC_YeuCauNhatRacTheoID(itemNetObj.Id);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void HandleAttackAnimal()
     {
         if (playerCamera == null) return;
+        if (!Mouse.current.leftButton.wasPressedThisFrame) return;
 
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+        if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
         {
-            Ray ray = playerCamera.ScreenPointToRay(
-                new Vector3(Screen.width / 2, Screen.height / 2, 0));
-
-            if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
+            var animalAI = hit.collider.GetComponent<ithappy.Animals_FREE.AnimalAI_Controller>();
+            if (animalAI != null)
             {
-               var animalAI = hit.collider.GetComponent<ithappy.Animals_FREE.AnimalAI_Controller>();
-
-                if (animalAI != null)
-                {
-                    animalAI.RPC_AnimalTakeDamage(attackDamageToAnimal, Runner.LocalPlayer);
-                    Debug.Log($"[Player] Đánh {hit.collider.name} gây {attackDamageToAnimal} dame!");
-                }
+                animalAI.RPC_AnimalTakeDamage(attackDamageToAnimal, Runner.LocalPlayer);
             }
         }
     }
 
-    // ----------------------------------------------------------------------
-    // [ON INPUT] - Đóng gói dữ liệu phím bấm để ship lên Server
-    // ----------------------------------------------------------------------
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
         var data = new DuLieuInput();
         if (!HasInputAuthority) return;
-        bool dangGoPhim = EventSystem.current != null && 
-                          EventSystem.current.currentSelectedGameObject != null && 
+
+        bool dangGoPhim = EventSystem.current != null &&
+                          EventSystem.current.currentSelectedGameObject != null &&
                           EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
 
         if (ChatSystem.IsChatting || dangGoPhim)
         {
             input.Set(data);
-            return; // Cắt điện toàn bộ phím gửi lên Server!
+            return;
         }
 
         data.isJumpPressed = jumpPressedLocal;
         bool baloDangMo = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
-        bool ESCDangMo = (ESC.instance != null && ESC.instance.isESC_Open);
-        bool ishopopen = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
-        bool IsChat = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
+        bool ESCDangMo  = (ESC.instance != null && ESC.instance.isESC_Open);
+        bool ishopopen  = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
+        bool IsChat     = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
 
         if (baloDangMo || ESCDangMo || ishopopen || IsChat)
         {
-            data.moveInput = Vector2.zero;
+            data.moveInput     = Vector2.zero;
             data.isJumpPressed = false;
-            data.mouseX = 0f;
+            data.mouseX        = 0f;
         }
         else
         {
@@ -371,18 +376,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (cameraTransform != null)
             {
                 Vector3 camForward = cameraTransform.forward;
-                Vector3 camRight = cameraTransform.right;
+                Vector3 camRight   = cameraTransform.right;
                 camForward.y = 0; camRight.y = 0;
                 camForward.Normalize(); camRight.Normalize();
                 huongChuanBiGui = camForward * moveInputLocal.y + camRight * moveInputLocal.x;
             }
-            data.moveInput = new Vector2(huongChuanBiGui.x, huongChuanBiGui.z);
-            data.isRunfast = sprintPressedLocal;
+            data.moveInput  = new Vector2(huongChuanBiGui.x, huongChuanBiGui.z);
+            data.isRunfast  = sprintPressedLocal;
         }
 
         input.Set(data);
         jumpPressedLocal = false;
-        mouseXLocalAcc = 0f;
+        mouseXLocalAcc   = 0f;
     }
 
     public void OnMove(InputValue value)
@@ -390,37 +395,35 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (!HasInputAuthority) return;
         moveInputLocal = value.Get<Vector2>();
     }
+
     #endregion
 
     #region XỬ LÝ VẬT LÝ & ĐỒNG BỘ TRÊN MẠNG (FIXED UPDATE NETWORK)
-    // ----------------------------------------------------------------------
-    // [FIXED UPDATE NETWORK] - Trái tim của Fusion. 
-    // Chạy với tốc độ cố định trên Server. Mọi tính toán liên quan đến 
-    // vị trí, di chuyển, vật lý bắt buộc phải nằm ở đây để chống hack và lag.
-    // ----------------------------------------------------------------------
+
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority && !HasInputAuthority) return;
-        bool dangGoPhim = EventSystem.current != null && 
-                          EventSystem.current.currentSelectedGameObject != null && 
+        bool dangGoPhim = EventSystem.current != null &&
+                          EventSystem.current.currentSelectedGameObject != null &&
                           EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
 
-        if (ChatSystem.IsChatting || dangGoPhim) 
+        if (ChatSystem.IsChatting || dangGoPhim)
         {
             character.Move(Vector3.zero);
-            isrun = false;              
-            isSprinting = false;      
-            isJumping = false;
-            return; 
+            isrun       = false;
+            isSprinting = false;
+            isJumping   = false;
+            return;
         }
+
         if (GetInput(out DuLieuInput data))
         {
             if (data.isJumpPressed && character.Grounded)
             {
                 if (dongHoChoNhay.ExpiredOrNotRunning(Runner))
                 {
-                    character.Jump(); 
-                    isJumping = true;
+                    character.Jump();
+                    isJumping     = true;
                     dongHoChoNhay = TickTimer.CreateFromSeconds(Runner, thoiGianHoiNhay);
                 }
             }
@@ -429,10 +432,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 isJumping = false;
             }
 
-            Vector3 huongDiChuyen = new Vector3(data.moveInput.x, 0f, data.moveInput.y);
-            float tocDoHienTai = data.isRunfast ? runfast : speed;
+            Vector3 huongDiChuyen   = new Vector3(data.moveInput.x, 0f, data.moveInput.y);
+            float tocDoHienTai      = data.isRunfast ? runfast : speed;
 
-            isrun = data.moveInput.magnitude > 0.1f;
+            isrun       = data.moveInput.magnitude > 0.1f;
             isSprinting = isrun && data.isRunfast;
 
             if (huongDiChuyen.magnitude >= 0.1f)
@@ -448,13 +451,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
     }
+
     #endregion
 
     #region XỬ LÝ HÌNH ẢNH & HOẠT ẢNH (RENDER)
-    // ----------------------------------------------------------------------
-    // [RENDER] - Dành riêng cho Animation và Hiệu ứng hình ảnh.
-    // Hàm này chạy rất mượt, dùng để nội suy, làm mềm chuyển động 3D.
-    // ----------------------------------------------------------------------
+
     public override void Render()
     {
         if (animator != null)
@@ -462,95 +463,77 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (isJumping)
             {
                 isSprinting = false;
-                isrun = false;
+                isrun       = false;
                 animator.SetBool("isJump", isJumping);
             }
-            else if (!isJumping) animator.SetBool("isJump", false);
-
+            else
+            {
+                animator.SetBool("isJump", false);
+            }
             animator.SetBool("isRunning", isrun);
             animator.SetBool("isRunFast", isSprinting);
         }
     }
 
-    // Hàm gọi khi Biến Mạng CurrentToolIndex thay đổi (Bật tắt Model trên tay)
     private void OnToolChanged()
     {
-        // 1. Cập nhật khung sáng UI (Chỉ chạy trên máy người chơi)
         if (HasInputAuthority && UI_HotBar.Instance != null)
-        {
             UI_HotBar.Instance.HighlightSlot(CurrentToolIndex);
-        }
 
-        // 2. DỌN DẸP: Luôn hủy model cũ nếu nó đang tồn tại
         if (vuKhiDangCamThucTe != null)
         {
             Destroy(vuKhiDangCamThucTe);
             vuKhiDangCamThucTe = null;
         }
 
-        // 3. Nếu CurrentToolIndex = -1 (đã cất đồ) thì dừng lại ở đây
         if (CurrentToolIndex < 0 || CurrentToolIndex > 3) return;
 
-        // 4. Lấy ID từ Hotbar để sinh ra model mới
         int idDangCam = HotbarIDs[CurrentToolIndex];
-
         if (idDangCam > 0 && InventoryManager.instance != null)
         {
             Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
             if (thongTinItem != null && thongTinItem.model3DPrefab != null)
             {
-                // Sinh ra vật phẩm mới tại Điểm Neo (Socket)
                 vuKhiDangCamThucTe = Instantiate(thongTinItem.model3DPrefab, viTriCamVuKhi);
                 vuKhiDangCamThucTe.transform.localPosition = Vector3.zero;
                 vuKhiDangCamThucTe.transform.localRotation = Quaternion.identity;
             }
         }
     }
+
     #endregion
 
-    #region HỆ THỐNG GỌI HÀM TỪ XA (RPC - REMOTE PROCEDURE CALLS)
-    // ----------------------------------------------------------------------
-    // [RPC] - Dùng để "hét" qua mạng. 
-    // Ví dụ: Client bấm nhặt rác -> Hét lên cho Server xử lý (Input -> State)
-    // Server cập nhật tiền -> Hét lên cho Client biết để cập nhật UI (State -> Input)
-    // ----------------------------------------------------------------------
+    #region HỆ THỐNG GỌI HÀM TỪ XA (RPC)
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_TakeDame(float Dame)
     {
-        CurrentHealth -= Dame;
-        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
-        if(CurrentHealth <= 0)
-        {
-            CurrentHealth = 0;
-            //Die
-        }
+        CurrentHealth = Mathf.Clamp(CurrentHealth - Dame, 0, MaxHealth);
+        if (CurrentHealth <= 0) { /* Die */ }
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_YeuCauNhatRac()
     {
         Collider[] ketQuaQuet = Physics.OverlapSphere(transform.position, banKinhNhat);
-        
         foreach (var Obj in ketQuaQuet)
         {
             if (Obj.CompareTag("Items"))
             {
-                Debug.Log("Quét trúng được: " + Obj);
-                NetworkObject nObj = Obj.GetComponent<NetworkObject>();
-                XuLyItem theCanCuoc = Obj.GetComponent<XuLyItem>();
+                NetworkObject nObj      = Obj.GetComponent<NetworkObject>();
+                XuLyItem theCanCuoc     = Obj.GetComponent<XuLyItem>();
 
                 if (nObj != null && nObj.IsValid && theCanCuoc != null && theCanCuoc.thongTinDoVat != null)
                 {
                     int idThucTe = theCanCuoc.thongTinDoVat.itemID;
-                    bool daNhat = false;
+                    bool daNhat  = false;
                     bool isstack = true;
                     if (InventoryManager.instance != null)
                     {
                         Item thongTin = InventoryManager.instance.TraCuuItem(idThucTe);
                         if (thongTin != null) isstack = thongTin.stackable;
                     }
-                    
+
                     if (isstack)
                     {
                         for (int i = 0; i < TuiDo.Length; i++)
@@ -588,21 +571,15 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    // ----------------------------------------------------------------------
-    // [RPC MỚI] - Nhặt item cụ thể theo NetworkId (dùng cho raycast pickup)
-    // ----------------------------------------------------------------------
     public bool ThemDoVaoTui(int idCanThem, int soLuongCanThem)
     {
         bool isStackable = true;
-
-        // 1. Kiểm tra xem món này có cho xếp chồng không
         if (InventoryManager.instance != null)
         {
             Item thongTin = InventoryManager.instance.TraCuuItem(idCanThem);
             if (thongTin != null) isStackable = thongTin.stackable;
         }
 
-        // 2. Tìm ô để xếp chồng (Cộng dồn)
         if (isStackable)
         {
             for (int i = 0; i < TuiDo.Length; i++)
@@ -611,31 +588,25 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 {
                     O_VatPham doVat = TuiDo[i];
                     doVat.SoLuong += soLuongCanThem;
-                    TuiDo.Set(i, doVat); // Lệnh Set này sẽ tự gọi UI Balo vẽ lại
-                    
-                    // GỌI THÔNG BÁO TING TING LUÔN Ở ĐÂY
+                    TuiDo.Set(i, doVat);
                     Rpc_NotifyPickupClient(idCanThem, soLuongCanThem);
-                    return true; // Báo cáo là đã nhét xong
+                    return true;
                 }
             }
         }
 
-        // 3. Nếu không xếp chồng được thì tìm ô trống
         for (int i = 0; i < TuiDo.Length; i++)
         {
             if (TuiDo[i].ItemID == 0)
             {
                 TuiDo.Set(i, new O_VatPham { ItemID = idCanThem, SoLuong = soLuongCanThem });
-                
-                // GỌI THÔNG BÁO TING TING LUÔN Ở ĐÂY
                 Rpc_NotifyPickupClient(idCanThem, soLuongCanThem);
-                return true; // Báo cáo là đã nhét xong
+                return true;
             }
         }
 
-        // 4. Nếu chạy đến đây tức là Balo đầy
-        Debug.LogWarning("Balo đã đầy, không thể nhặt thêm!");
-        return false; 
+        Debug.LogWarning("[Player_Controller] Balo đã đầy, không thể nhặt thêm!");
+        return false;
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -648,15 +619,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (theCanCuoc == null || theCanCuoc.thongTinDoVat == null) return;
 
         int idThucTe = theCanCuoc.thongTinDoVat.itemID;
-
-        // Gọi tuyệt chiêu!
-        bool daNhat = ThemDoVaoTui(idThucTe, 1);
-
-        // Nếu nhét vào túi thành công thì mới xóa cục rác ngoài đường
-        if (daNhat)
-        {
-            RPC_XoaRacKhapBanDo(nObj);
-        }
+        bool daNhat  = ThemDoVaoTui(idThucTe, 1);
+        if (daNhat) RPC_XoaRacKhapBanDo(nObj);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
@@ -683,9 +647,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_ThayDoiTien(int soTien)
     {
-        Gold += soTien;
-        if (Gold < 0) Gold = 0;
-        Debug.Log("Server đã cập nhật tiền: " + Gold);
+        Gold = Mathf.Max(0, Gold + soTien);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -706,13 +668,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (TuiDo[i].ItemID == idBan && TuiDo[i].SoLuong > 0)
             {
                 var doVat = TuiDo[i];
-                doVat.SoLuong -= 1;
+                doVat.SoLuong--;
                 if (doVat.SoLuong <= 0) doVat.ItemID = 0;
-                
-                TuiDo.Set(i, doVat); 
+                TuiDo.Set(i, doVat);
                 Gold += giaBan;
                 KiemTraDonDepHotbar();
-                return; 
+                return;
             }
         }
     }
@@ -725,9 +686,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (thongTin == null) return;
 
         bool daNhetVaoTui = false;
-        bool isstack = thongTin.stackable;
-
-        if (isstack)
+        if (thongTin.stackable)
         {
             for (int i = 0; i < TuiDo.Length; i++)
             {
@@ -766,12 +725,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 var doVat = TuiDo[i];
                 int soLuongCoTheTru = Mathf.Min(doVat.SoLuong, soLuongCanTru - soLuongDaTru);
-                
-                doVat.SoLuong -= soLuongCoTheTru;
-                soLuongDaTru += soLuongCoTheTru;
-                if (doVat.SoLuong <= 0) doVat.ItemID = 0; 
-                
-                TuiDo.Set(i, doVat); 
+                doVat.SoLuong      -= soLuongCoTheTru;
+                soLuongDaTru       += soLuongCoTheTru;
+                if (doVat.SoLuong <= 0) doVat.ItemID = 0;
+                TuiDo.Set(i, doVat);
                 if (soLuongDaTru >= soLuongCanTru) break;
             }
         }
@@ -782,15 +739,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_EquipTool(int toolIndex)
     {
-        if (CurrentToolIndex == toolIndex)
-        {
-            CurrentToolIndex = -1; 
-        }
-        else
-        {
-            // Nếu bấm ô khác -> Chuyển sang ô đó
-            CurrentToolIndex = toolIndex; 
-        }
+        CurrentToolIndex = (CurrentToolIndex == toolIndex) ? -1 : toolIndex;
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
@@ -806,20 +755,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             if (HotbarIDs[i] == itemID && i != slotIndex)
             {
-                HotbarIDs.Set(i, 0); 
-                RPC_CapNhatUIHotbarKhach(i, 0); 
+                HotbarIDs.Set(i, 0);
+                RPC_CapNhatUIHotbarKhach(i, 0);
             }
         }
         HotbarIDs.Set(slotIndex, itemID);
-        RPC_CapNhatUIHotbarKhach(slotIndex, itemID); 
+        RPC_CapNhatUIHotbarKhach(slotIndex, itemID);
     }
+
     #endregion
 
     #region CÁC HÀM TIỆN ÍCH & XỬ LÝ GIAO DIỆN CỤC BỘ
-    // ----------------------------------------------------------------------
-    // [HÀM TIỆN ÍCH] - Chứa các đoạn mã xử lý vòng lặp, UI cục bộ
-    // Không liên quan tới mạng lưới, chỉ chạy trên máy người chơi
-    // ----------------------------------------------------------------------
 
     private void TatToanBoUI()
     {
@@ -828,12 +774,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (QuestManager.instance != null && QuestManager.instance.isQuest_Open)
             QuestManager.instance.Battatbangnhiemvu();
-        
-        if (ShopUIController.instance != null && ShopUIController.instance.isShopOpen) 
+
+        if (ShopUIController.instance != null && ShopUIController.instance.isShopOpen)
         {
-            ShopUIController.instance.isShopOpen = false;
-            ShopUIController.instance.dangmoshop = false; 
-            ShopUIController.instance.khungShop.SetActive(false); 
+            ShopUIController.instance.isShopOpen   = false;
+            ShopUIController.instance.dangmoshop    = false;
+            ShopUIController.instance.khungShop.SetActive(false);
         }
 
         if (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive)
@@ -843,11 +789,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void CapNhatUIHotbarLocal(int slotIndex, int itemID)
     {
         if (UI_HotBar.Instance == null) return;
-        if (itemID == 0)
-        {
-            UI_HotBar.Instance.CapNhatHinhAnhSlot(slotIndex, null); 
-            return;
-        }
+        if (itemID == 0) { UI_HotBar.Instance.CapNhatHinhAnhSlot(slotIndex, null); return; }
 
         if (InventoryManager.instance != null)
         {
@@ -862,40 +804,36 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         for (int i = 0; i < HotbarIDs.Length; i++)
         {
             int idDangGan = HotbarIDs[i];
-            if (idDangGan > 0)
+            if (idDangGan <= 0) continue;
+
+            bool conHangTrongBalo = false;
+            for (int j = 0; j < TuiDo.Length; j++)
             {
-                bool conHangTrongBalo = false;
-                for (int j = 0; j < TuiDo.Length; j++)
-                {
-                    if (TuiDo[j].ItemID == idDangGan && TuiDo[j].SoLuong > 0)
-                    {
-                        conHangTrongBalo = true;
-                        break;
-                    }
-                }
+                if (TuiDo[j].ItemID == idDangGan && TuiDo[j].SoLuong > 0)
+                { conHangTrongBalo = true; break; }
+            }
 
-                if (conHangTrongBalo == false)
-                {
-                    HotbarIDs.Set(i, 0); 
-                    RPC_CapNhatUIHotbarKhach(i, 0); 
-
-                    if (CurrentToolIndex == i)
-                    {
-                        CurrentToolIndex = -1; 
-                    }
-                }
+            if (!conHangTrongBalo)
+            {
+                HotbarIDs.Set(i, 0);
+                RPC_CapNhatUIHotbarKhach(i, 0);
+                if (CurrentToolIndex == i) CurrentToolIndex = -1;
             }
         }
     }
 
     public void Click_NutBanGo()
     {
-        Player_Controller myPlayer = NetworkRunner.Instances[0].GetPlayerObject(NetworkRunner.Instances[0].LocalPlayer).GetComponent<Player_Controller>();
-        if(myPlayer != null) myPlayer.RPC_BanVatPham(1, 10);
+        Player_Controller myPlayer = NetworkRunner.Instances[0]
+            .GetPlayerObject(NetworkRunner.Instances[0].LocalPlayer)
+            .GetComponent<Player_Controller>();
+        if (myPlayer != null) myPlayer.RPC_BanVatPham(1, 10);
     }
+
     #endregion
 
-    #region HÀM TRỐNG BẮT BUỘC CỦA INTERFACE (Bỏ qua)
+    #region HÀM TRỐNG BẮT BUỘC CỦA INTERFACE
+
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
@@ -914,5 +852,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, Fusion.Sockets.ReliableKey key, System.ArraySegment<byte> data) { }
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, Fusion.Sockets.ReliableKey key, float progress) { }
+
     #endregion
 }
