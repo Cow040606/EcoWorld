@@ -262,7 +262,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 1594163311682653800, guid: a62f2b36b3386ba449979aa133716f03, type: 3}
 --- !u!1 &5293930613812059791
@@ -368,6 +368,7 @@ GameObject:
   - component: {fileID: 1893876024543328433}
   - component: {fileID: 7981459496445121634}
   - component: {fileID: 281255903534273852}
+  - component: {fileID: -6795627369822758807}
   m_Layer: 0
   m_Name: go 1
   m_TagString: Items
@@ -385,7 +386,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 156.00117, y: 4.2299924, z: 164.35347}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 845474942255226577}
@@ -411,7 +412,7 @@ Rigidbody:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_ImplicitCom: 1
+  m_ImplicitCom: 0
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -457,6 +458,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 281255903534273852}
+  - {fileID: -6795627369822758807}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &281255903534273852
 MonoBehaviour:
@@ -471,3 +473,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   _woodAmount: 1
+--- !u!114 &-6795627369822758807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7885316471019484564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8edad5bba242ef44b8e6c396918452ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::XuLyItem
+  thongTinDoVat: {fileID: 11400000, guid: f24e98474fea44a409a67f774f722f25, type: 2}

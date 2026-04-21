@@ -8,7 +8,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
     public NPCConversation cuocHoiThoaiCuaNPC; 
 
     [Header("Khoảng cách được phép chat (Mét)")]
-    public float tamHoatDong = 3f; // Bò có thể chỉnh xa gần tùy ý ngoài Inspector
+    public float tamHoatDong = 5f; // Bò có thể chỉnh xa gần tùy ý ngoài Inspector
 
     private void Update()
     {
