@@ -80,9 +80,6 @@ public class GameManager : MonoBehaviour
     // Nút "Thoát Game (Quit)"
     public void BamNutThoatHanGame()
     {
-        
-        // Lưu ý: Lệnh này chỉ hoạt động khi Bò đã Build game ra file .exe hoặc .apk. 
-        // Trong Unity Editor bấm nó sẽ không có hiện tượng gì đâu nhé.
         Application.Quit();
     }
 }
