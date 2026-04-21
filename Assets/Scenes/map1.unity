@@ -26433,6 +26433,75 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed5f82224b99b30438c4330a2dca3429, type: 3}
+--- !u!1 &348718980
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 348718982}
+  - component: {fileID: 348718981}
+  - component: {fileID: 348718983}
+  m_Layer: 0
+  m_Name: VillagerSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &348718981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348718980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ed395ea7309c5347911b352f08c6509, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  villagerPrefab:
+    RawGuidValue: 1c8950e890f8de640b645d9ccc90ffa4
+  spawnPoint: {fileID: 1606812578}
+  exitOffset: {x: 0, y: 0, z: 5}
+--- !u!4 &348718982
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348718980}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 121.1, y: 6.1, z: 167.5319}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1606812578}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &348718983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348718980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+  SortKey: 3984718055
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 348718981}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &348962308
 GameObject:
   m_ObjectHideFlags: 0
@@ -75148,7 +75217,11 @@ PrefabInstance:
     - target: {fileID: 2767074144710284913, guid: cc0505adbda09254eb1f02fda10cc0fb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+
       value: -285.89978
+
+      value: -285.89645
+
       objectReference: {fileID: 0}
     - target: {fileID: 3562031123075822164, guid: cc0505adbda09254eb1f02fda10cc0fb,
         type: 3}
@@ -101285,8 +101358,8 @@ Transform:
   m_GameObject: {fileID: 1425322975}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.52687585, z: -0, w: 0.8499422}
-  m_LocalPosition: {x: 137.8717, y: 7.2862, z: 190.6357}
-  m_LocalScale: {x: 0.20888142, y: 5.9923, z: 8.2441225}
+  m_LocalPosition: {x: 138.2226, y: 7.5472, z: 190.7973}
+  m_LocalScale: {x: 0.227075, y: 6.51423, z: 8.962186}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1934167556}
@@ -111125,7 +111198,11 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
+
   m_AnchoredPosition: {x: 0, y: -326.39737}
+
+  m_AnchoredPosition: {x: 0, y: -326.39575}
+
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1565344963
@@ -112883,7 +112960,11 @@ MonoBehaviour:
   m_HandleRect: {fileID: 503303314}
   m_Direction: 2
   m_Value: 0
+
   m_Size: 1
+
+  m_Size: 0.99999577
+
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -114934,6 +115015,37 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2113761839}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1606812577
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1606812578}
+  m_Layer: 0
+  m_Name: Spawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1606812578
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1606812577}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.617, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 348718982}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1607648028
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -125243,7 +125355,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a9cb1d35009fd80448d7eb83c73b2efd, type: 2}
+  - {fileID: 2100000, guid: 0b34e8d424147d9489b74fc68db1189c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -125283,13 +125395,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1756096383}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.22053736, z: -0, w: 0.9753785}
-  m_LocalPosition: {x: 137.99, y: 7.76, z: 190.51}
-  m_LocalScale: {x: 4.6051, y: 4.6051, z: 4.6051}
+  m_LocalRotation: {x: -0, y: -0.23106684, z: -0, w: 0.9729379}
+  m_LocalPosition: {x: 138.2857, y: 7.9239, z: 190.6509}
+  m_LocalScale: {x: 7.7713695, y: 4.933031, z: 4.6051}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -25.481, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -26.72, z: 0}
 --- !u!4 &1756871727 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 468674, guid: 7d609f7b85b8b834c967c9708aa167ee,
@@ -153039,8 +153151,8 @@ Transform:
   m_GameObject: {fileID: 2139522651}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.52687585, z: -0, w: 0.8499422}
-  m_LocalPosition: {x: 137.83, y: 4.79, z: 190.76}
-  m_LocalScale: {x: 1, y: 1, z: 8.90163}
+  m_LocalPosition: {x: 138.1772, y: 4.8336, z: 190.9324}
+  m_LocalScale: {x: 1.0871, y: 1.0871, z: 9.676963}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1934167556}
@@ -154958,3 +155070,4 @@ SceneRoots:
   - {fileID: 384721910}
   - {fileID: 1707668787}
   - {fileID: 1033068782}
+  - {fileID: 348718982}
