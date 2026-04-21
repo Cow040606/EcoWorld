@@ -121,13 +121,13 @@ public class FarmPlot : NetworkBehaviour
         if (playerObj == null) return;
 
         Player_Controller player = playerObj.GetComponent<Player_Controller>();
-        
-        // Gọi tuyệt chiêu! Truyền ID cà chua và Số lượng vào
+
         bool daCongXong = player.ThemDoVaoTui(fruitItemID, harvestCount);
-        Debug.Log("da nhat ca chua");
 
         if (daCongXong)
         {
+            Rpc_ThongBaoThuHoach(nguoi, harvestCount);
+
             CurrentState = PlotState.Seeded; 
             growTimer = TickTimer.CreateFromSeconds(Runner, growTime); 
         }
@@ -136,10 +136,17 @@ public class FarmPlot : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void Rpc_ThongBaoThuHoach([RpcTarget] PlayerRef targetPlayer, int soLuong)
     {
-        if (ItemNotifyManager.Instance == null || InventoryManager.instance == null) return;
+
+        if (ItemNotifyManager.Instance == null || InventoryManager.instance == null) 
+        {
+            return;
+        }
 
         Item thongTin = InventoryManager.instance.TraCuuItem(fruitItemID);
+        
         if (thongTin != null)
+        {
             ItemNotifyManager.Instance.ShowNotify(thongTin.itemName, soLuong, thongTin.icon);
-    }
+        }  
+        }
 }

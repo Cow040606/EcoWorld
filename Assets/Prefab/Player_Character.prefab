@@ -457,7 +457,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
@@ -676,6 +676,11 @@ MonoBehaviour:
   interactLayer:
     serializedVersion: 2
     m_Bits: 1
+  chopLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  attackDamageToAnimal: 25
+  showChopDebug: 1
 --- !u!114 &8037529350765271450
 MonoBehaviour:
   m_ObjectHideFlags: 0
