@@ -661,6 +661,8 @@ MonoBehaviour:
   runfast: 8
   MaxHealth: 100
   MaxStamina: 100
+  level: 0
+  expToLevelUp: 100
   cameraTransform: {fileID: 17911125521547612}
   mouseSensitivity: 0.1
   khoangCachCamera: 3
@@ -676,7 +678,7 @@ MonoBehaviour:
   _CurrentToolIndex: 0
   viTriCamVuKhi: {fileID: 8878608521619273619}
   playerCamera: {fileID: 8272481790431223185}
-  interactRange: 10
+  interactRange: 5
   interactLayer:
     serializedVersion: 2
     m_Bits: 1
@@ -685,6 +687,11 @@ MonoBehaviour:
     m_Bits: 0
   attackDamageToAnimal: 25
   showChopDebug: 1
+  mineRange: 3
+  rockLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  showDebugRay: 1
 --- !u!114 &8037529350765271450
 MonoBehaviour:
   m_ObjectHideFlags: 0
