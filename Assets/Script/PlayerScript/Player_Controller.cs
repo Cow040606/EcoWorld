@@ -37,6 +37,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float MaxHealth = 100f;
     public float CurrentStamina { get; set; }
     public float MaxStamina = 100f;
+    public float ExpCurrent { get; set; }
+    public int level = 0;
+    public float expToLevelUp = 100f;
 
     [Header("Camera & Chuột")]
     public Transform cameraTransform;
@@ -74,7 +77,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     [Header("Tương Tác - Chặt Cây & Nhặt Đồ")]
     public Camera playerCamera;
-    public float interactRange = 3f;
+    public float interactRange = 10f;
 
     [Tooltip("Layer cho Item, NPC,... (KHÔNG cần chứa Terrain)")]
     public LayerMask interactLayer;
@@ -91,6 +94,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private Vector3 _lastRayDir;
     private bool _lastRayHit;
     private Vector3 _lastRayHitPoint;
+    
+    [Header("Đào Khoáng Sản")]
+    public LayerMask rockLayer;
+
+    [Header("Debug")]
+    public bool showDebugRay = true; // Ô tick để Bò bật/tắt tia Debug ở Inspector
+    private Vector3 debugRayOrigin; // Điểm bắt đầu của tia
+    private Vector3 debugRayDirection; // Hướng của tia
+    private float debugRayDistance; // Độ dài của tia
+    private bool didRayHit; // Tia có đụng trúng cái gì không
+    private Vector3 rayHitPoint; // Điểm mà tia đụng trúng
 
     #endregion
 
@@ -100,6 +114,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         animator = GetComponent<Animator>();
         CurrentHealth = 100;
+        ExpCurrent = 0;
 
         if (!HasStateAuthority && !HasInputAuthority)
         {
@@ -143,6 +158,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (HasInputAuthority && Keyboard.current != null && Mouse.current != null)
         {
+            int idDangCam = (CurrentToolIndex >= 0) ? HotbarIDs[CurrentToolIndex] : 0;
+            RPC_AddExp(0.1f);
             bool dangGoPhim = EventSystem.current != null &&
                               EventSystem.current.currentSelectedGameObject != null &&
                               EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
@@ -227,10 +244,24 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (Keyboard.current.kKey.wasPressedThisFrame) RPC_ThayDoiTien(5);
             if (Keyboard.current.lKey.wasPressedThisFrame) RPC_ThayDoiTien(-5);
 
+
             if (!baloDangMo && !ESCDangMo && !ishopopen && !IsChatAct && !questDangMo)
             {
-                HandleChopping();
-                HandleAttackAnimal();
+                switch (idDangCam)
+                {
+                    case 4:
+                        HandleAttackAnimal();//sword
+                        break; 
+                    case 5:
+                        HandleChopping();//axe
+                        break;
+                    case 6:
+                        HandleMining();//pickaxe
+                        break;
+                    default: 
+                        Debug.Log("Vật phẩm này không dùng để tương tác được!");
+                        break;
+                }
             }
         }
     }
@@ -252,7 +283,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             cameraTransform.rotation = camRotation;
         }
     }
-
+    
     private void HandleChopping()
     {
         if (playerCamera == null) return;
@@ -291,37 +322,15 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        if (!showChopDebug || !HasInputAuthority) return;
-
-        Gizmos.color = _lastRayHit ? Color.green : Color.red;
-        Gizmos.DrawRay(_lastRayOrigin, _lastRayDir * interactRange);
-
-        if (_lastRayHit)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(_lastRayHitPoint, 0.15f);
-        }
-    }
-
-    // Trả về true nếu ngắm trúng item, false nếu trượt
     private bool HandlePickup()
     {
-        if (playerCamera == null) return false;
-
-        Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-        if (Physics.Raycast(ray, out RaycastHit hit, interactRange, interactLayer))
+        // Cực kỳ sạch sẽ!
+        if (BanTiaTuTamManHinh(interactRange, interactLayer, out RaycastHit hit))
         {
-            if (hit.collider.CompareTag("Items"))
+            if (hit.collider.CompareTag("Items") && hit.collider.GetComponent<NetworkObject>() is NetworkObject itemNetObj)
             {
-                NetworkObject itemNetObj = hit.collider.GetComponent<NetworkObject>();
-                if (itemNetObj != null)
-                {
-                    Debug.Log($"[Player_Controller] Nhặt trúng item: {hit.collider.name} bằng ngắm tia Raycast");
-                    RPC_YeuCauNhatRacTheoID(itemNetObj.Id);
-                    return true;
-                }
+                RPC_YeuCauNhatRacTheoID(itemNetObj.Id);
+                return true;
             }
         }
         return false;
@@ -329,17 +338,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private void HandleAttackAnimal()
     {
-        if (playerCamera == null) return;
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
 
-        Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-        if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
+        // Truyền số 0 vào nghĩa là ngắm trúng gì chém nấy (Default Layer)
+        if (BanTiaTuTamManHinh(interactRange, 0, out RaycastHit hit))
         {
             var animalAI = hit.collider.GetComponent<ithappy.Animals_FREE.AnimalAI_Controller>();
-            if (animalAI != null)
-            {
-                animalAI.RPC_AnimalTakeDamage(attackDamageToAnimal, Runner.LocalPlayer);
-            }
+            if (animalAI != null) animalAI.RPC_AnimalTakeDamage(attackDamageToAnimal, Runner.LocalPlayer);
         }
     }
 
@@ -499,6 +504,29 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 vuKhiDangCamThucTe.transform.localRotation = Quaternion.identity;
             }
         }
+    }
+
+    private bool BanTiaTuTamManHinh(float khoangCach, LayerMask layerDich, out RaycastHit hit)
+    {
+        hit = default;
+        if (playerCamera == null) return false;
+
+        Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0f));
+
+        // --- MỚI: LƯU DỮ LIỆU ĐỂ VẼ DEBUG ---
+        debugRayOrigin = ray.origin;
+        debugRayDirection = ray.direction;
+        debugRayDistance = khoangCach;
+
+        LayerMask maskCuoi = (layerDich.value != 0) ? layerDich : Physics.DefaultRaycastLayers;
+        
+        // Thực hiện bắn tia và lưu kết quả
+        didRayHit = Physics.Raycast(ray, out hit, khoangCach, maskCuoi);
+        
+        // --- MỚI: NẾU TRÚNG THÌ LƯU ĐIỂM ĐỤNG ---
+        if (didRayHit) rayHitPoint = hit.point;
+
+        return didRayHit;
     }
 
     #endregion
@@ -761,6 +789,48 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
         HotbarIDs.Set(slotIndex, itemID);
         RPC_CapNhatUIHotbarKhach(slotIndex, itemID);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_AddExp(float exp)
+    {
+        ExpCurrent += exp;
+        while (ExpCurrent >= expToLevelUp)
+        {
+            ExpCurrent = 0;
+            level++;
+            expToLevelUp *= 1.1f; 
+        }
+    }
+    private void HandleMining()
+    {
+        if (!Mouse.current.leftButton.wasPressedThisFrame) return;
+
+        // Gọn gàng chưa! Vứt luôn 3 dòng Raycast lằng nhằng đi!
+        if (BanTiaTuTamManHinh(interactRange, rockLayer, out RaycastHit hit))
+        {
+            RockScript cucDa = hit.collider.GetComponent<RockScript>();
+            if (cucDa != null) cucDa.RPC_NhanSatThuongCuoc(25f); 
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        // Chỉ vẽ khi Bò tick vào ô 'showDebugRay' ở Inspector
+        if (!showDebugRay) return;
+
+        // 1. Chọn màu cho tia: Xanh dương nếu hụt, Xanh lá nếu trúng!
+        Gizmos.color = didRayHit ? Color.green : Color.blue;
+
+        // 2. Vẽ cái tia bắn ra
+        Gizmos.DrawRay(debugRayOrigin, debugRayDirection * debugRayDistance);
+
+        // 3. Nếu tia đụng trúng cái gì đó, vẽ thêm một cục cầu màu vàng ngay điểm đụng
+        if (didRayHit)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(rayHitPoint, 0.2f); // Cục cầu nhỏ 0.2f
+        }
     }
 
     #endregion
