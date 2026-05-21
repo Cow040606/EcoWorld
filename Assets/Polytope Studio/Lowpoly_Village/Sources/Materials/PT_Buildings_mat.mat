@@ -8,7 +8,9 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: PT_Buildings_mat
-  m_Shader: {fileID: 4800000, guid: 255b400e6b8ac644588946664da1ff3f, type: 3}
+  m_Shader: {fileID: 10752, guid: 0000000000000000f000000000000000, type: 0}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _GRADIENT_ON
@@ -26,6 +28,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -39,6 +42,10 @@ Material:
         m_Offset: {x: 0.17, y: 0.35}
     - _Interiorwallstexture:
         m_Texture: {fileID: 2800000, guid: f4eb315dde56f204bb13b39760d2f3b1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 93f1137555d60aa48b6f16072ee7f7b8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TextureSample2:
@@ -89,6 +96,7 @@ Material:
     - _Ceramictiles2color: {r: 0.20507877, g: 0.017641952, b: 0.015208514, a: 1}
     - _Ceramictiles3color: {r: 0.3679245, g: 0.047693916, b: 0, a: 1}
     - _Coatofarmscolor: {r: 1, g: 0, b: 0, a: 0}
+    - _Color: {r: 0.41960788, g: 0.34901962, b: 0.2901961, a: 1}
     - _Exteriorwalls1colour: {r: 0.68668544, g: 0.5647117, b: 0.30946895, a: 1}
     - _Exteriorwalls2color: {r: 0.68668544, g: 0.5647117, b: 0.30946895, a: 1}
     - _Exteriorwalls3color: {r: 0.68668544, g: 0.5647117, b: 0.30946895, a: 1}
@@ -110,3 +118,4 @@ Material:
     - _Wood2color: {r: 0.24528301, g: 0.10263903, b: 0.059006754, a: 1}
     - _Wood3color: {r: 0.2735849, g: 0.1579125, b: 0.04774831, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

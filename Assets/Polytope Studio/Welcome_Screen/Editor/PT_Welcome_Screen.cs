@@ -1,10 +1,11 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-[InitializeOnLoad]
 public class PT_PackageWelcomeWindow : EditorWindow
 {
-    private const string PrefKey = "PT_WelcomeScreen";
+    private const string PrefKey      = "PT_WelcomeScreen";            // EditorPrefs  – permanent dismiss
+    private const string ShouldShowKey = "PT_WelcomeScreen_ShouldShow"; // SessionState – survives domain reload, cleared after use
 
     private static Texture2D banner;
     private static Texture2D iconTwitter;
@@ -28,25 +29,47 @@ public class PT_PackageWelcomeWindow : EditorWindow
     private bool demosExpanded;
     private bool gamesExpanded;
 
-    private const float WindowWidth       = 500f;
-    private const float BannerHeight      = 160f;
-    private const float SocialIconSize    = 24f;
+    private const float WindowWidth = 500f;
+    private const float BannerHeight = 125f;
+    private const float SocialIconSize = 24f;
     private const float SocialIconSpacing = 6f;
-    private const float CardSpacing       = 8f * 1.21f;
-    private const float CardScale         = 0.7f;
-    private const float CaptionHeight     = 65f;
-    private const float LinkButtonWidth   = (WindowWidth - 56f) / 4f * 1.05f;
+    private const float CardSpacing = 8f * 1.21f;
+    private const float CardScale = 0.7f;
+    private const float CaptionHeight = 65f;
+    private const float LinkButtonWidth = (WindowWidth - 56f) / 4f * 1.05f;
 
-    // ─── Detect package import (custom package or Package Manager) ────────────
+    // --- Post-domain-reload opener -------------------------------------------
+    // Runs after EVERY domain reload (startup, script compile, entering Play Mode).
+    // Checks ShouldShowKey, which is set by PT_ImportDetector on fresh import and
+    // survives domain reloads via SessionState. Cleared immediately after use so
+    // it fires exactly once — it cannot cause the window to reopen on later reloads.
+    [InitializeOnLoad]
+    private class PT_StartupChecker
+    {
+        static PT_StartupChecker()
+        {
+            if (Application.isBatchMode) return;
+
+            if (SessionState.GetBool(ShouldShowKey, false))
+            {
+                SessionState.SetBool(ShouldShowKey, false); // consume immediately
+                EditorApplication.update += ShowOnLoad;
+            }
+        }
+    }
+    // -------------------------------------------------------------------------
+
+    // --- Detect package import -----------------------------------------------
+    // AssetPostprocessor fires when any asset is imported (including on platform
+    // switches and Reimport All). We use SessionState to suppress reruns within
+    // the same session, and we only set ShouldShowKey when the user hasn't
+    // permanently dismissed the window.
     private class PT_ImportDetector : AssetPostprocessor
     {
-        // Marker asset that is part of this package. Adjust the path if needed.
         private const string MarkerAsset =
             "Assets/Polytope Studio/Welcome_Screen/Editor/Textures/banner_dark.png";
 
-        // SessionState key so we only trigger once per Unity session even if
-        // several assets arrive in the same import batch.
-        private const string SessionKey = "PT_WelcomeShownThisSession";
+        private const string ShownThisSessionKey = "PT_WelcomeScreen_ShownThisSession";
 
         static void OnPostprocessAllAssets(
             string[] importedAssets,
@@ -54,48 +77,52 @@ public class PT_PackageWelcomeWindow : EditorWindow
             string[] movedAssets,
             string[] movedFromAssetPaths)
         {
-            if (SessionState.GetBool(SessionKey, false))
-                return;
+            if (Application.isBatchMode) return;
+
+            // One trigger per session — guards platform switches and Reimport All.
+            if (SessionState.GetBool(ShownThisSessionKey, false)) return;
 
             foreach (string path in importedAssets)
             {
                 if (path == MarkerAsset)
                 {
-                    SessionState.SetBool(SessionKey, true);
-                    // Reset the "don't show" pref so the window appears after import.
-                    EditorPrefs.SetBool(PrefKey, false);
-                    LoadAssets();
-                    EditorApplication.update += ShowOnLoad;
+                    SessionState.SetBool(ShownThisSessionKey, true);
+
+                    // Only queue a show if the user hasn't permanently dismissed it.
+                    // Store the intent in SessionState so it survives the domain
+                    // reload that typically follows a package import (script compile).
+                    // PT_StartupChecker will pick it up after the reload.
+                    if (!EditorPrefs.GetBool(PrefKey, false))
+                        SessionState.SetBool(ShouldShowKey, true);
+
                     break;
                 }
             }
         }
     }
-    // ─────────────────────────────────────────────────────────────────────────
-
-    static PT_PackageWelcomeWindow()
-    {
-        if (!EditorPrefs.GetBool(PrefKey, false))
-        {
-            LoadAssets();
-            EditorApplication.update += ShowOnLoad;
-        }
-    }
+    // -------------------------------------------------------------------------
 
     [MenuItem("Tools/Polytope/Welcome Screen")]
     public static void OpenWindow()
     {
         LoadAssets();
         var window = GetWindow<PT_PackageWelcomeWindow>(true, "Welcome");
-        window.minSize = new Vector2(WindowWidth, 0);
-        window.maxSize = new Vector2(WindowWidth, 5000);
+        window.minSize = new Vector2(WindowWidth, 500);
+        window.maxSize = new Vector2(WindowWidth, 900);
         window.Show();
     }
 
     private static void ShowOnLoad()
     {
         EditorApplication.update -= ShowOnLoad;
+        LoadAssets();
         OpenWindow();
+    }
+
+    private void OnDestroy()
+    {
+        // Save the user's choice even if they close via the ✕ button.
+        EditorPrefs.SetBool(PrefKey, dontShowAgain);
     }
 
     private void OnEnable()
@@ -103,9 +130,9 @@ public class PT_PackageWelcomeWindow : EditorWindow
         // Initialise the toggle to whatever the user last saved.
         // GetBool returns false when the pref is absent (first ever run),
         // so dontShowAgain will be false until the user checks the box and closes.
-        dontShowAgain = !EditorPrefs.GetBool(PrefKey, false);
-        minSize = new Vector2(WindowWidth, 0);
-        maxSize = new Vector2(WindowWidth, 5000);
+        dontShowAgain = EditorPrefs.GetBool(PrefKey, false);
+        minSize = new Vector2(WindowWidth, 500);
+        maxSize = new Vector2(WindowWidth, 900);
     }
 
     private static void LoadAssets()
@@ -114,12 +141,12 @@ public class PT_PackageWelcomeWindow : EditorWindow
             ? "Assets/Polytope Studio/Welcome_Screen/Editor/Textures/banner_dark.png"
             : "Assets/Polytope Studio/Welcome_Screen/Editor/Textures/banner_light.png";
 
-        banner         = AssetDatabase.LoadAssetAtPath<Texture2D>(bannerPath);
-        iconTwitter    = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/icon_twitter.png");
-        iconYouTube    = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/icon_youtube.png");
-        iconFacebook   = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/icon_facebook.png");
-        iconInstagram  = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/icon_instagram.png");
-        iconTikTok     = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/icon_tiktok.png");
+        banner = AssetDatabase.LoadAssetAtPath<Texture2D>(bannerPath);
+        iconTwitter = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/icon_twitter.png");
+        iconYouTube = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/icon_youtube.png");
+        iconFacebook = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/icon_facebook.png");
+        iconInstagram = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/icon_instagram.png");
+        iconTikTok = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/icon_tiktok.png");
         iconArtStation = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/icon_artstation.png");
 
         demoIcon1 = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/demo1.png");
@@ -133,363 +160,439 @@ public class PT_PackageWelcomeWindow : EditorWindow
         gameIcon6 = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Polytope Studio/Welcome_Screen/Editor/Textures/game6.png");
     }
 
-    private static GUIStyle SectionTitleStyle() =>
-        new GUIStyle(EditorStyles.boldLabel) { alignment = TextAnchor.MiddleCenter };
-
-    private static GUIStyle SectionDescStyle() =>
-        new GUIStyle(EditorStyles.wordWrappedMiniLabel)
-        {
-            normal   = { textColor = EditorStyles.wordWrappedMiniLabel.normal.textColor },
-            wordWrap = true,
-            fontSize = 11
-        };
-
-    private void DrawSectionDesc(string text)
+    // --- UI Toolkit entry point ----------------------------------------------
+    private void CreateGUI()
     {
-        GUIStyle style  = SectionDescStyle();
-        float    width  = WindowWidth - 24f;
-        float    height = Mathf.Max(style.CalcHeight(new GUIContent(text), width), 36f);
-        GUILayout.Label(text, style, GUILayout.Height(height));
-    }
+        var scroll = new ScrollView(ScrollViewMode.Vertical);
+        scroll.style.flexGrow = 1;
+        rootVisualElement.Add(scroll);
 
-    private void OnGUI()
-    {
+        var content = new VisualElement();
+        content.style.paddingLeft = 4;
+        content.style.paddingRight = 4;
+        scroll.Add(content);
+
         // Banner
-        if (banner)
-        {
-            Rect bannerRect = GUILayoutUtility.GetRect(WindowWidth, BannerHeight);
-            GUI.DrawTexture(bannerRect, banner, ScaleMode.StretchToFill);
+        if (banner != null)
+            content.Add(BuildBanner());
 
-            GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel)
-            {
-                alignment = TextAnchor.MiddleCenter,
-                fontSize  = 18,
-                normal    = { textColor = Color.white },
-                hover     = { textColor = Color.white }
-            };
-            GUIStyle descStyle = new GUIStyle(EditorStyles.wordWrappedLabel)
-            {
-                alignment = TextAnchor.MiddleCenter,
-                normal    = { textColor = Color.white },
-                hover     = { textColor = Color.white }
-            };
+        content.Add(Spacer(8));
 
-            float titleH = 28f;
-            float descH  = 20f;
-            float startY = bannerRect.yMax - titleH - descH - 5f;
+        // Welcome text pills
+        var pillsRow = new VisualElement();
+        pillsRow.style.alignItems = Align.Center;
 
-            GUI.Label(new Rect(bannerRect.x, startY,          bannerRect.width, titleH), "Thank you for trusting our assets!", titleStyle);
-            GUI.Label(new Rect(bannerRect.x, startY + titleH, bannerRect.width, descH),  "Below are some useful resources to help you get started.", descStyle);
-        }
+        var titleLabel = new Label("Thank you for trusting our assets!");
+        titleLabel.style.backgroundColor = new Color(0f, 0f, 0f, 0.25f);
+        titleLabel.style.fontSize = 14;
+        titleLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+        titleLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+        titleLabel.style.paddingTop = 4;
+        titleLabel.style.paddingBottom = 4;
+        titleLabel.style.paddingLeft = 12;
+        titleLabel.style.paddingRight = 12;
+        titleLabel.style.marginBottom = 4;
+        RoundCorners(titleLabel, 6);
+        pillsRow.Add(titleLabel);
 
-        GUILayout.Space(10);
+        var descLabel = new Label("Below are some useful resources to help you get started.");
+        descLabel.style.backgroundColor = new Color(0f, 0f, 0f, 0.25f);
+        descLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+        descLabel.style.paddingTop = 3;
+        descLabel.style.paddingBottom = 3;
+        descLabel.style.paddingLeft = 12;
+        descLabel.style.paddingRight = 12;
+        RoundCorners(descLabel, 6);
+        pillsRow.Add(descLabel);
+
+        content.Add(pillsRow);
+
+        content.Add(Spacer(10));
 
         // Discord
-        DrawPanel(() =>
+        content.Add(BuildPanel(p =>
         {
-            GUILayout.Label("💬  Discord Community", SectionTitleStyle());
-            GUILayout.Label("Join our community, share your project, ask for support, and win free vouchers every month.", EditorStyles.wordWrappedMiniLabel);
-            GUILayout.Space(6);
-            DrawDiscordGallery();
-        });
+            p.Add(SectionTitle("💬  Discord Community"));
+            p.Add(SectionDesc("Join our community, share your project, ask for support, and win free vouchers every month."));
+            p.Add(Spacer(6));
+            p.Add(BuildDiscordGallery());
+        }));
 
-        GUILayout.Space(8);
+        content.Add(Spacer(8));
 
         // Games / Demos
-        DrawPanel(() =>
+        content.Add(BuildPanel(p =>
         {
-            GUILayout.Space(4);
-            DrawGamesGallery();
-        });
+            p.Add(Spacer(4));
+            BuildGamesGallery(p);
+        }));
 
-        GUILayout.Space(8);
+        content.Add(Spacer(8));
 
         // Docs / Support
-        DrawPanel(() =>
+        content.Add(BuildPanel(p =>
         {
-            GUILayout.Label("📋  Docs, Support, Reviews & Roadmap", SectionTitleStyle());
-            GUILayout.Space(4);
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
+            p.Add(SectionTitle("📋  Docs, Support, Reviews & Roadmap"));
+            p.Add(Spacer(4));
+            var row = new VisualElement();
+            row.style.flexDirection = FlexDirection.Row;
+            row.style.justifyContent = Justify.Center;
+            row.Add(BuildLinkCard("Documentation", "Documentations for every pack.",
+                "https://drive.google.com/drive/folders/1mcjjdqr91Qt38Jhko_64K0E1Kx-Efh31?usp=drive_link"));
+            row.Add(BuildLinkCard("Support Email", "Send us a question or report an issue.",
+                "mailto:contact@polytope.studio"));
+            row.Add(BuildLinkCard("⭐ Rate & Review", "Enjoyed our assets? Leave us a review!",
+                "https://assetstore.unity.com/publishers/35251"));
+            row.Add(BuildLinkCard("🗺 Roadmap", "See what we're building next.",
+                "https://trello.com/b/HTwC0zvm/polytope-studio-lowpoly-assets"));
+            p.Add(row);
+        }));
 
-            GUILayout.BeginVertical(GUILayout.Width(LinkButtonWidth));
-            DrawLink("Documentation", "Documentations for every pack.",
-                "https://drive.google.com/drive/folders/1mcjjdqr91Qt38Jhko_64K0E1Kx-Efh31?usp=drive_link");
-            GUILayout.EndVertical();
-
-            GUILayout.BeginVertical(GUILayout.Width(LinkButtonWidth));
-            DrawLink("Support Email", "Send us a question or report an issue.",
-                "mailto:contact@polytope.studio");
-            GUILayout.EndVertical();
-
-            GUILayout.BeginVertical(GUILayout.Width(LinkButtonWidth));
-            DrawLink("⭐ Rate & Review", "Enjoyed our assets? Leave us a review!",
-                "https://assetstore.unity.com/publishers/35251");
-            GUILayout.EndVertical();
-
-            GUILayout.BeginVertical(GUILayout.Width(LinkButtonWidth));
-            DrawLink("🗺 Roadmap", "See what we're building next.",
-                "https://trello.com/b/HTwC0zvm/polytope-studio-lowpoly-assets");
-            GUILayout.EndVertical();
-
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-        });
-
-        GUILayout.Space(8);
+        content.Add(Spacer(8));
 
         // Social
-        DrawPanel(() =>
+        content.Add(BuildPanel(p =>
         {
-            GUILayout.Label("🌐  Follow Us", SectionTitleStyle());
-            GUILayout.Space(8);
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            DrawSocial(iconTwitter,    "https://x.com/PolytopeStudio");
-            DrawSocial(iconYouTube,    "https://www.youtube.com/@polytopestudio");
-            DrawSocial(iconFacebook,   "https://www.facebook.com/PolytopeStudio");
-            DrawSocial(iconInstagram,  "https://www.instagram.com/polytopestudio/");
-            DrawSocial(iconTikTok,     "https://www.tiktok.com/@polytopestudio");
-            DrawSocial(iconArtStation, "https://www.artstation.com/polytope/store");
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-        });
+            p.Add(SectionTitle("🌐  Follow Us"));
+            p.Add(Spacer(8));
+            var row = new VisualElement();
+            row.style.flexDirection = FlexDirection.Row;
+            row.style.justifyContent = Justify.Center;
+            row.style.alignItems = Align.Center;
+            row.Add(BuildSocialIcon(iconTwitter, "https://x.com/PolytopeStudio"));
+            row.Add(BuildSocialIcon(iconYouTube, "https://www.youtube.com/@polytopestudio"));
+            row.Add(BuildSocialIcon(iconFacebook, "https://www.facebook.com/PolytopeStudio"));
+            row.Add(BuildSocialIcon(iconInstagram, "https://www.instagram.com/polytopestudio/"));
+            row.Add(BuildSocialIcon(iconTikTok, "https://www.tiktok.com/@polytopestudio"));
+            row.Add(BuildSocialIcon(iconArtStation, "https://www.artstation.com/polytope/store"));
+            p.Add(row);
+        }));
 
-        GUILayout.Space(8);
+        content.Add(Spacer(8));
 
-        dontShowAgain = EditorGUILayout.ToggleLeft("Don't show this again", dontShowAgain);
-        GUILayout.Space(8);
+        // Don't show again toggle
+        var toggle = new Toggle("Don't show this again") { value = dontShowAgain };
+        toggle.RegisterValueChangedCallback(evt => dontShowAgain = evt.newValue);
+        toggle.style.marginLeft = 2;
+        content.Add(toggle);
 
-        if (GUILayout.Button("Close", GUILayout.Height(30)))
+        content.Add(Spacer(8));
+
+        // Close button
+        var closeBtn = new Button(() =>
         {
             // Always persist the user's choice explicitly in both directions.
             EditorPrefs.SetBool(PrefKey, dontShowAgain);
             Close();
-        }
+        });
+        closeBtn.text = "Close";
+        closeBtn.style.height = 30;
+        RoundCorners(closeBtn, 8);
+        content.Add(closeBtn);
 
-        if (Event.current.type == EventType.Repaint)
+        content.Add(Spacer(12));
+    }
+    // -------------------------------------------------------------------------
+
+    // --- Section builders ----------------------------------------------------
+
+    private VisualElement BuildBanner()
+    {
+        var container = new VisualElement();
+        container.style.height = BannerHeight;
+        container.style.overflow = Overflow.Hidden;
+        container.style.marginTop = 4;
+        RoundCorners(container, 10);
+
+        if (banner != null)
         {
-            float h = GUILayoutUtility.GetLastRect().yMax + 20f;
-            minSize = new Vector2(WindowWidth, h);
-            maxSize = new Vector2(WindowWidth, h);
+            container.style.backgroundImage = new StyleBackground(banner);
+#if UNITY_2022_2_OR_NEWER
+            container.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Cover);
+#else
+#pragma warning disable CS0618
+            container.style.unityBackgroundScaleMode = ScaleMode.ScaleAndCrop;
+#pragma warning restore CS0618
+#endif
         }
+
+        return container;
     }
 
-    private void DrawDiscordGallery()
+    private VisualElement BuildDiscordGallery()
     {
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-
-        GUILayout.BeginVertical(GUILayout.Width(LinkButtonWidth));
-        DrawLink("Join Server", "Meet the community.", "https://discord.com/invite/SZ6whXU");
-        GUILayout.EndVertical();
-
-        GUILayout.BeginVertical(GUILayout.Width(LinkButtonWidth));
-        DrawLink("#giveaway", "Free vouchers monthly.", "https://discord.gg/DAKGgUu2yE");
-        GUILayout.EndVertical();
-
-        GUILayout.BeginVertical(GUILayout.Width(LinkButtonWidth));
-        DrawLink("#unity-support", "Get help with our assets.", "https://discord.gg/YAKSckftfn");
-        GUILayout.EndVertical();
-
-        GUILayout.BeginVertical(GUILayout.Width(LinkButtonWidth));
-        DrawLink("#FAQ", "Frequently asked questions.", "https://discord.gg/PPbYzb5tRT");
-        GUILayout.EndVertical();
-
-        GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
+        var row = new VisualElement();
+        row.style.flexDirection = FlexDirection.Row;
+        row.style.justifyContent = Justify.Center;
+        row.Add(BuildLinkCard("Join Server", "Meet the community.", "https://discord.com/invite/SZ6whXU"));
+        row.Add(BuildLinkCard("#giveaway", "Free vouchers monthly.", "https://discord.gg/DAKGgUu2yE"));
+        row.Add(BuildLinkCard("#unity-support", "Get help with our assets.", "https://discord.gg/YAKSckftfn"));
+        row.Add(BuildLinkCard("#FAQ", "Frequently asked questions.", "https://discord.gg/PPbYzb5tRT"));
+        return row;
     }
 
-    private void DrawGamesGallery()
+    private void BuildGamesGallery(VisualElement parent)
     {
-        float available      = WindowWidth - 12f;
-        float cardWidth      = (available - CardSpacing * 2f) / 3f * CardScale * 1.2f;
-        float cardHeight     = cardWidth * (9f / 16f);
-        float demoCardWidth  = available * 0.4f * CardScale;
+        float available = WindowWidth - 12f;
+        float cardWidth = (available - CardSpacing * 2f) / 3f * CardScale * 1.2f;
+        float cardHeight = cardWidth * (9f / 16f);
+        float demoCardWidth = available * 0.4f * CardScale;
         float demoCardHeight = demoCardWidth * (9f / 16f);
-        float rowH           = cardHeight     + CaptionHeight * 1.1f;
-        float demoRowH       = demoCardHeight + CaptionHeight;
 
-        DrawCollapsibleSeparator("Polytope Demos", ref demosExpanded);
-        if (demosExpanded)
-        {
-            DrawSectionDesc("Try our interactive demos and see our assets in action.");
-            GUILayout.Space(6f);
-            DrawCardRow(demoRowH, () =>
-            {
-                GUILayout.FlexibleSpace();
-                DrawCardCentered(demoIcon1, "https://apps.microsoft.com/detail/9n4hbjpcznqn?hl=es-ES&gl=ES", demoCardWidth, demoCardHeight, "Mix and preview modular armor sets with real-time character customization");
-                HGap();
-                DrawCardCentered(demoIcon2, "https://apps.microsoft.com/detail/9pl3wkh940q7?hl=es-ES&gl=ES", demoCardWidth, demoCardHeight, "Explore a stylized village built entirely with the our modular assets.");
-                GUILayout.FlexibleSpace();
-            });
-            GUILayout.Space(4f);
-        }
+        // -- Demos --
+        var demosContent = new VisualElement();
+        demosContent.style.display = demosExpanded ? DisplayStyle.Flex : DisplayStyle.None;
 
-        GUILayout.Space(6f);
+        parent.Add(BuildCollapsibleSeparator("Polytope Demos", demosContent, () => demosExpanded, v => demosExpanded = v));
 
-        DrawCollapsibleSeparator("Made with our Assets", ref gamesExpanded);
-        if (gamesExpanded)
-        {
-            DrawSectionDesc("Games built by the community using our asset packs.");
-            GUILayout.Space(6f);
-            DrawCardRow(rowH, () =>
-            {
-                GUILayout.FlexibleSpace();
-                DrawCardCentered(gameIcon1, "https://store.steampowered.com/app/3722910/Legends_of_Azamar_Demo/",      cardWidth, cardHeight, "Step into the world of Avendor and brave the ruins of Bar-Ulduun, the fabled lost city of the dwarves",         CaptionHeight * 1.1f);
-                HGap();
-                DrawCardCentered(gameIcon2, "https://store.steampowered.com/app/2932960/A_Merchants_Promise/",         cardWidth, cardHeight, "Medieval Trading & Transport with Physics-Based Items",                                                            CaptionHeight * 1.1f);
-                HGap();
-                DrawCardCentered(gameIcon3, "https://store.steampowered.com/app/1434840/Dungeons__Kingdoms_Prologue/", cardWidth, cardHeight, "A medieval fantasy kingdom builder, management sim and dungeon delver RPG hybrid",                                  CaptionHeight * 1.1f);
-                GUILayout.FlexibleSpace();
-            });
-            GUILayout.Space(5f);
-            DrawCardRow(rowH, () =>
-            {
-                GUILayout.FlexibleSpace();
-                DrawCardCentered(gameIcon4, "https://store.steampowered.com/app/2369850/Dolven/",                    cardWidth, cardHeight, "A narrative-driven tactical RPG where combat blends party-based skills with poker-style card combos", CaptionHeight * 1.1f);
-                HGap();
-                DrawCardCentered(gameIcon5, "https://store.steampowered.com/app/1228500/1428_Shadows_over_Silesia/", cardWidth, cardHeight, "Immerse yourself in a dark fantasy story with true historical events",                              CaptionHeight * 1.1f);
-                HGap();
-                DrawCardCentered(gameIcon6, "https://store.steampowered.com/app/3516100/Tenebyss/",                  cardWidth, cardHeight, "A brutal souls-like extraction adventure game set in massive dystopian worlds",                      CaptionHeight * 1.1f);
-                GUILayout.FlexibleSpace();
-            });
-            GUILayout.Space(4f);
-        }
+        demosContent.Add(SectionDesc("Try our interactive demos and see our assets in action."));
+        demosContent.Add(Spacer(6));
+        var demoRow = new VisualElement();
+        demoRow.style.flexDirection = FlexDirection.Row;
+        demoRow.style.justifyContent = Justify.Center;
+        demoRow.Add(BuildCard(demoIcon1, "https://apps.microsoft.com/detail/9n4hbjpcznqn?hl=es-ES&gl=ES", demoCardWidth, demoCardHeight, "Mix and preview modular armor sets with real-time character customization"));
+        demoRow.Add(Spacer(CardSpacing, horizontal: true));
+        demoRow.Add(BuildCard(demoIcon2, "https://apps.microsoft.com/detail/9pl3wkh940q7?hl=es-ES&gl=ES", demoCardWidth, demoCardHeight, "Explore a stylized village built entirely with the our modular assets."));
+        demosContent.Add(demoRow);
+        demosContent.Add(Spacer(4));
+        parent.Add(demosContent);
+
+        parent.Add(Spacer(6));
+
+        // -- Made with our Assets --
+        var gamesContent = new VisualElement();
+        gamesContent.style.display = gamesExpanded ? DisplayStyle.Flex : DisplayStyle.None;
+
+        parent.Add(BuildCollapsibleSeparator("Made with our Assets", gamesContent, () => gamesExpanded, v => gamesExpanded = v));
+
+        gamesContent.Add(SectionDesc("Games built by the community using our asset packs."));
+        gamesContent.Add(Spacer(6));
+
+        var gameRow1 = new VisualElement();
+        gameRow1.style.flexDirection = FlexDirection.Row;
+        gameRow1.style.justifyContent = Justify.Center;
+        gameRow1.Add(BuildCard(gameIcon1, "https://store.steampowered.com/app/3722910/Legends_of_Azamar_Demo/", cardWidth, cardHeight, "Step into the world of Avendor and brave the ruins of Bar-Ulduun, the fabled lost city of the dwarves", CaptionHeight * 1.1f));
+        gameRow1.Add(Spacer(CardSpacing, horizontal: true));
+        gameRow1.Add(BuildCard(gameIcon2, "https://store.steampowered.com/app/2932960/A_Merchants_Promise/", cardWidth, cardHeight, "Medieval Trading & Transport with Physics-Based Items", CaptionHeight * 1.1f));
+        gameRow1.Add(Spacer(CardSpacing, horizontal: true));
+        gameRow1.Add(BuildCard(gameIcon3, "https://store.steampowered.com/app/1434840/Dungeons__Kingdoms_Prologue/", cardWidth, cardHeight, "A medieval fantasy kingdom builder, management sim and dungeon delver RPG hybrid", CaptionHeight * 1.1f));
+        gamesContent.Add(gameRow1);
+        gamesContent.Add(Spacer(5));
+
+        var gameRow2 = new VisualElement();
+        gameRow2.style.flexDirection = FlexDirection.Row;
+        gameRow2.style.justifyContent = Justify.Center;
+        gameRow2.Add(BuildCard(gameIcon4, "https://store.steampowered.com/app/2369850/Dolven/", cardWidth, cardHeight, "A narrative-driven tactical RPG where combat blends party-based skills with poker-style card combos", CaptionHeight * 1.1f));
+        gameRow2.Add(Spacer(CardSpacing, horizontal: true));
+        gameRow2.Add(BuildCard(gameIcon5, "https://store.steampowered.com/app/1228500/1428_Shadows_over_Silesia/", cardWidth, cardHeight, "Immerse yourself in a dark fantasy story with true historical events", CaptionHeight * 1.1f));
+        gameRow2.Add(Spacer(CardSpacing, horizontal: true));
+        gameRow2.Add(BuildCard(gameIcon6, "https://store.steampowered.com/app/3516100/Tenebyss/", cardWidth, cardHeight, "A brutal souls-like extraction adventure game set in massive dystopian worlds", CaptionHeight * 1.1f));
+        gamesContent.Add(gameRow2);
+        gamesContent.Add(Spacer(4));
+        parent.Add(gamesContent);
     }
 
-    private void DrawCollapsibleSeparator(string label, ref bool expanded)
+    private VisualElement BuildCollapsibleSeparator(string label, VisualElement contentTarget,
+        System.Func<bool> getExpanded, System.Action<bool> setExpanded)
     {
-        GUIStyle labelStyle = new GUIStyle(EditorStyles.boldLabel)
-        {
-            alignment = TextAnchor.MiddleCenter
-        };
-        GUIStyle arrowStyle = new GUIStyle(EditorStyles.boldLabel)
-        {
-            alignment = TextAnchor.MiddleRight,
-            normal    = { textColor = new Color(0.6f, 0.6f, 0.6f, 1f) },
-            hover     = { textColor = new Color(0.9f, 0.9f, 0.9f, 1f) },
-            fontSize  = 10
-        };
+        var row = new VisualElement();
+        row.style.flexDirection = FlexDirection.Row;
+        row.style.alignItems = Align.Center;
+        row.style.height = 20;
 
-        Vector2 labelSize   = labelStyle.CalcSize(new GUIContent(label));
-        float   rowHeight   = Mathf.Max(labelSize.y, 18f);
-        Rect    rowRect     = GUILayoutUtility.GetRect(0f, rowHeight, GUILayout.ExpandWidth(true), GUILayout.Height(rowHeight));
+        var leftLine = new VisualElement();
+        leftLine.style.flexGrow = 1;
+        leftLine.style.height = 1;
+        leftLine.style.backgroundColor = new Color(1f, 1f, 1f, 0.15f);
+        leftLine.style.marginRight = 4;
 
-        if (rowRect.Contains(Event.current.mousePosition))
+        var labelEl = new Label(label);
+        labelEl.style.unityFontStyleAndWeight = FontStyle.Bold;
+        labelEl.style.unityTextAlign = TextAnchor.MiddleCenter;
+
+        var rightLine = new VisualElement();
+        rightLine.style.flexGrow = 1;
+        rightLine.style.height = 1;
+        rightLine.style.backgroundColor = new Color(1f, 1f, 1f, 0.15f);
+        rightLine.style.marginLeft = 4;
+        rightLine.style.marginRight = 4;
+
+        var arrowLabel = new Label(getExpanded() ? "▼" : "▶");
+        arrowLabel.style.color = new Color(0.6f, 0.6f, 0.6f, 1f);
+        arrowLabel.style.fontSize = 10;
+        arrowLabel.style.unityTextAlign = TextAnchor.MiddleRight;
+        arrowLabel.style.width = 16;
+
+        row.Add(leftLine);
+        row.Add(labelEl);
+        row.Add(rightLine);
+        row.Add(arrowLabel);
+
+        row.RegisterCallback<MouseEnterEvent>(evt => row.style.backgroundColor = new Color(1f, 1f, 1f, 0.04f));
+        row.RegisterCallback<MouseLeaveEvent>(evt => row.style.backgroundColor = Color.clear);
+        row.RegisterCallback<ClickEvent>(evt =>
         {
-            EditorGUI.DrawRect(rowRect, new Color(1f, 1f, 1f, 0.04f));
-            EditorGUIUtility.AddCursorRect(rowRect, MouseCursor.Link);
+            bool newVal = !getExpanded();
+            setExpanded(newVal);
+            contentTarget.style.display = newVal ? DisplayStyle.Flex : DisplayStyle.None;
+            arrowLabel.text = newVal ? "▼" : "▶";
+        });
+
+        return row;
+    }
+
+    // --- Widget builders -----------------------------------------------------
+
+    private VisualElement BuildPanel(System.Action<VisualElement> content)
+    {
+        Color bg = EditorGUIUtility.isProSkin
+            ? new Color(0.22f, 0.22f, 0.22f, 1f)
+            : new Color(0.82f, 0.82f, 0.82f, 1f);
+        Color border = EditorGUIUtility.isProSkin
+            ? new Color(0.13f, 0.13f, 0.13f, 1f)
+            : new Color(0.58f, 0.58f, 0.58f, 1f);
+
+        var panel = new VisualElement();
+        panel.style.backgroundColor = bg;
+        panel.style.paddingTop = 8;
+        panel.style.paddingBottom = 8;
+        panel.style.paddingLeft = 6;
+        panel.style.paddingRight = 6;
+        panel.style.borderTopWidth = 1;
+        panel.style.borderBottomWidth = 1;
+        panel.style.borderLeftWidth = 1;
+        panel.style.borderRightWidth = 1;
+        panel.style.borderTopColor = border;
+        panel.style.borderBottomColor = border;
+        panel.style.borderLeftColor = border;
+        panel.style.borderRightColor = border;
+        RoundCorners(panel, 8);
+        content(panel);
+        return panel;
+    }
+
+    private VisualElement BuildLinkCard(string title, string description, string url)
+    {
+        var container = new VisualElement();
+        container.style.width = LinkButtonWidth;
+        container.style.paddingRight = 4;
+
+        var btn = new Button(() => Application.OpenURL(url));
+        btn.text = title;
+        btn.style.height = 26;
+        RoundCorners(btn, 6);
+        container.Add(btn);
+
+        var desc = new Label(description);
+        desc.style.whiteSpace = WhiteSpace.Normal;
+        desc.style.fontSize = 9;
+        container.Add(desc);
+
+        container.Add(Spacer(6));
+        return container;
+    }
+
+    private VisualElement BuildCard(Texture2D icon, string url, float cardWidth, float cardHeight,
+        string caption = null, float captionHeight = CaptionHeight)
+    {
+        var container = new VisualElement();
+        container.style.width = cardWidth;
+        container.style.flexDirection = FlexDirection.Column;
+        container.style.alignItems = Align.Center;
+
+        var imgWrap = new VisualElement();
+        imgWrap.style.width = cardWidth;
+        imgWrap.style.height = cardHeight;
+        imgWrap.style.overflow = Overflow.Hidden;
+        imgWrap.style.borderTopWidth = 2;
+        imgWrap.style.borderBottomWidth = 2;
+        imgWrap.style.borderLeftWidth = 2;
+        imgWrap.style.borderRightWidth = 2;
+        imgWrap.style.borderTopColor = new Color(0.1f, 0.1f, 0.1f, 1f);
+        imgWrap.style.borderBottomColor = new Color(0.1f, 0.1f, 0.1f, 1f);
+        imgWrap.style.borderLeftColor = new Color(0.1f, 0.1f, 0.1f, 1f);
+        imgWrap.style.borderRightColor = new Color(0.1f, 0.1f, 0.1f, 1f);
+        RoundCorners(imgWrap, 6);
+
+        if (icon != null)
+        {
+            var img = new Image();
+            img.image = icon;
+            img.scaleMode = ScaleMode.ScaleToFit;
+            img.style.width = cardWidth;
+            img.style.height = cardHeight;
+            imgWrap.Add(img);
         }
 
-        float arrowW        = 20f;
-        float labelW        = labelSize.x + 12f;
-        float halfRemainder = (rowRect.width - labelW - arrowW) * 0.5f;
-        float lineY         = rowRect.y + rowRect.height * 0.5f;
-        float lineMargin    = 4f;
+        imgWrap.RegisterCallback<MouseEnterEvent>(evt => imgWrap.style.backgroundColor = new Color(1f, 1f, 1f, 0.08f));
+        imgWrap.RegisterCallback<MouseLeaveEvent>(evt => imgWrap.style.backgroundColor = Color.clear);
+        imgWrap.RegisterCallback<ClickEvent>(evt => Application.OpenURL(url));
 
-        EditorGUI.DrawRect(new Rect(rowRect.x, lineY, halfRemainder - lineMargin, 1f), new Color(1f, 1f, 1f, 0.15f));
-        GUI.Label(new Rect(rowRect.x + halfRemainder, rowRect.y, labelW, rowHeight), label, labelStyle);
-        EditorGUI.DrawRect(new Rect(rowRect.x + halfRemainder + labelW + lineMargin, lineY, halfRemainder - lineMargin, 1f), new Color(1f, 1f, 1f, 0.15f));
-        GUI.Label(new Rect(rowRect.xMax - arrowW, rowRect.y, arrowW, rowHeight), expanded ? "▼" : "▶", arrowStyle);
+        container.Add(imgWrap);
 
-        if (Event.current.type == EventType.MouseDown && rowRect.Contains(Event.current.mousePosition))
-        {
-            expanded = !expanded;
-            Event.current.Use();
-            Repaint();
-        }
-    }
-
-    private void DrawCardRow(float rowHeight, System.Action content)
-    {
-        GUILayout.BeginHorizontal(GUILayout.Height(rowHeight));
-        content();
-        GUILayout.EndHorizontal();
-    }
-
-    private void HGap()
-    {
-        GUILayout.Label(GUIContent.none, GUIStyle.none, GUILayout.Width(CardSpacing), GUILayout.Height(0));
-    }
-
-    private void DrawCardCentered(Texture2D icon, string url, float cardWidth, float cardHeight, string caption = null, float captionHeight = CaptionHeight)
-    {
-        GUIStyle captionStyle = new GUIStyle(EditorStyles.wordWrappedMiniLabel)
-        {
-            alignment = TextAnchor.UpperCenter,
-            normal    = { textColor = EditorStyles.wordWrappedMiniLabel.normal.textColor },
-            wordWrap  = true,
-            fontSize  = 11
-        };
-
-        float totalH = cardHeight + (caption != null ? 3f + captionHeight : 0f);
-        GUILayout.BeginVertical(GUILayout.Width(cardWidth), GUILayout.Height(totalH));
-        GUILayout.FlexibleSpace();
-        DrawIconCard(icon, url, cardWidth, cardHeight);
         if (caption != null)
         {
-            GUILayout.Space(3f);
-            GUILayout.Label(caption, captionStyle, GUILayout.Width(cardWidth), GUILayout.Height(captionHeight));
-        }
-        GUILayout.FlexibleSpace();
-        GUILayout.EndVertical();
-    }
-
-    private void DrawIconCard(Texture2D icon, string url, float cardWidth, float cardHeight)
-    {
-        Rect cardRect = GUILayoutUtility.GetRect(cardWidth, cardHeight, GUILayout.Width(cardWidth), GUILayout.Height(cardHeight));
-
-        if (icon)
-            GUI.DrawTexture(cardRect, icon, ScaleMode.ScaleToFit);
-
-        float bw = 2f;
-        EditorGUI.DrawRect(new Rect(cardRect.x,         cardRect.y,         cardRect.width, bw),              new Color(0.8f, 0.8f, 0.8f, 0.8f));
-        EditorGUI.DrawRect(new Rect(cardRect.x,         cardRect.yMax - bw, cardRect.width, bw),              new Color(0.8f, 0.8f, 0.8f, 0.8f));
-        EditorGUI.DrawRect(new Rect(cardRect.x,         cardRect.y,         bw,             cardRect.height), new Color(0.8f, 0.8f, 0.8f, 0.8f));
-        EditorGUI.DrawRect(new Rect(cardRect.xMax - bw, cardRect.y,         bw,             cardRect.height), new Color(0.8f, 0.8f, 0.8f, 0.8f));
-
-        if (cardRect.Contains(Event.current.mousePosition))
-        {
-            EditorGUI.DrawRect(cardRect, new Color(1f, 1f, 1f, 0.08f));
-            EditorGUIUtility.AddCursorRect(cardRect, MouseCursor.Link);
+            container.Add(Spacer(3));
+            var captionLabel = new Label(caption);
+            captionLabel.style.width = cardWidth;
+            captionLabel.style.height = captionHeight;
+            captionLabel.style.whiteSpace = WhiteSpace.Normal;
+            captionLabel.style.unityTextAlign = TextAnchor.UpperCenter;
+            captionLabel.style.fontSize = 11;
+            container.Add(captionLabel);
         }
 
-        if (GUI.Button(cardRect, GUIContent.none, GUIStyle.none))
-            Application.OpenURL(url);
+        return container;
     }
 
-    private void DrawPanel(System.Action content)
+    private static VisualElement BuildSocialIcon(Texture2D icon, string url)
     {
-        GUILayout.BeginVertical(EditorStyles.helpBox);
-        GUILayout.Space(4);
-        content();
-        GUILayout.Space(4);
-        GUILayout.EndVertical();
+        if (icon == null) return new VisualElement();
+
+        var img = new Image();
+        img.image = icon;
+        img.scaleMode = ScaleMode.ScaleToFit;
+        img.style.width = SocialIconSize;
+        img.style.height = SocialIconSize;
+        img.style.marginRight = SocialIconSpacing;
+        img.RegisterCallback<MouseEnterEvent>(evt => img.style.opacity = 0.75f);
+        img.RegisterCallback<MouseLeaveEvent>(evt => img.style.opacity = 1f);
+        img.RegisterCallback<ClickEvent>(evt => Application.OpenURL(url));
+        return img;
     }
 
-    private void DrawLink(string title, string description, string url)
+    // --- Style helpers -------------------------------------------------------
+
+    private static Label SectionTitle(string text)
     {
-        if (GUILayout.Button(title, GUILayout.Height(26)))
-            Application.OpenURL(url);
-        GUILayout.Label(description, EditorStyles.wordWrappedMiniLabel);
-        GUILayout.Space(6);
+        var label = new Label(text);
+        label.style.unityFontStyleAndWeight = FontStyle.Bold;
+        label.style.unityTextAlign = TextAnchor.MiddleCenter;
+        label.style.fontSize = 12;
+        return label;
     }
 
-    private void DrawSocial(Texture2D icon, string url)
+    private static Label SectionDesc(string text)
     {
-        if (!icon) return;
+        var label = new Label(text);
+        label.style.whiteSpace = WhiteSpace.Normal;
+        label.style.fontSize = 11;
+        return label;
+    }
 
-        GUILayout.BeginVertical(GUILayout.Width(SocialIconSize), GUILayout.Height(SocialIconSize));
-        GUILayout.FlexibleSpace();
+    private static VisualElement Spacer(float size, bool horizontal = false)
+    {
+        var s = new VisualElement();
+        if (horizontal) s.style.width = size;
+        else s.style.height = size;
+        return s;
+    }
 
-        Rect r = GUILayoutUtility.GetRect(SocialIconSize, SocialIconSize, GUILayout.Width(SocialIconSize), GUILayout.Height(SocialIconSize));
-        if (GUI.Button(r, icon, GUIStyle.none))
-            Application.OpenURL(url);
-
-        GUILayout.FlexibleSpace();
-        GUILayout.EndVertical();
-
-        GUILayout.Space(SocialIconSpacing);
+    private static void RoundCorners(VisualElement el, int radius)
+    {
+        el.style.borderTopLeftRadius = radius;
+        el.style.borderTopRightRadius = radius;
+        el.style.borderBottomLeftRadius = radius;
+        el.style.borderBottomRightRadius = radius;
     }
 }
