@@ -10,19 +10,19 @@ public class Player_Runner : NetworkBehaviour, IPlayerJoined
     // ==========================================
     // 1. HÀM CHẠY KHI SCENE VỪA LOAD XONG (CHỮA BỆNH LỠ ĐÒ)
     // ==========================================
-    // public override void Spawned()
-    // {
-    //     // Chỉ Host (StateAuthority) mới được quyền đẻ
-    //     if (Object.HasStateAuthority)
-    //     {
-    //         // Quét xem trong phòng lúc này có những ai đã vào sẵn rồi (Thường là Host)
-    //         foreach (var player in Runner.ActivePlayers)
-    //         {
-    //             ThucHienDeNhanVat(player);
-    //         }
+    public override void Spawned()
+    {
+        // Chỉ Host (StateAuthority) mới được quyền đẻ
+        if (Object.HasStateAuthority)
+        {
+            // Quét xem trong phòng lúc này có những ai đã vào sẵn rồi (Thường là Host)
+            foreach (var player in Runner.ActivePlayers)
+            {
+                ThucHienDeNhanVat(player);
+            }
 
-    //     }
-    // }
+        }
+    }
 
     // ==========================================
     // 2. HÀM CHẠY KHI CÓ KHÁCH (CLIENT) VÀO SAU
