@@ -1,35 +1,30 @@
 using Fusion;
 using UnityEngine;
+using System.Collections.Generic; // Bắt buộc phải có thư viện này để dùng Sổ Hộ Khẩu (Dictionary)
 
-// BẮT BUỘC phải đổi lại thành NetworkBehaviour để dùng được hàm Spawned()
-public class Player_Runner : NetworkBehaviour, IPlayerJoined
+public class Player_Runner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 {
     [SerializeField] NetworkPrefabRef playerPrefab; 
     public GameObject spawn;
     
     // ==========================================
-    // 1. HÀM CHẠY KHI SCENE VỪA LOAD XONG (CHỮA BỆNH LỠ ĐÒ)
+    // SỔ HỘ KHẨU: Theo dõi ID nào đã đẻ nhân vật nào
     // ==========================================
+    private Dictionary<PlayerRef, NetworkObject> danhSachDaDe = new Dictionary<PlayerRef, NetworkObject>();
+
     public override void Spawned()
     {
-        // Chỉ Host (StateAuthority) mới được quyền đẻ
         if (Object.HasStateAuthority)
         {
-            // Quét xem trong phòng lúc này có những ai đã vào sẵn rồi (Thường là Host)
             foreach (var player in Runner.ActivePlayers)
             {
                 ThucHienDeNhanVat(player);
             }
-
         }
     }
 
-    // ==========================================
-    // 2. HÀM CHẠY KHI CÓ KHÁCH (CLIENT) VÀO SAU
-    // ==========================================
     public void PlayerJoined(PlayerRef player)
     {
-        // Khi có đứa bạn vào sau, Host sẽ thấy và đẻ cho nó
         if (Object.HasStateAuthority)
         {
             ThucHienDeNhanVat(player);
@@ -37,14 +32,37 @@ public class Player_Runner : NetworkBehaviour, IPlayerJoined
     }
 
     // ==========================================
-    // 3. LOGIC ĐẺ NHÂN VẬT GOM CHUNG CHO GỌN
+    // MỚI: DỌN RÁC KHI CÓ NGƯỜI THOÁT GAME
     // ==========================================
+    public void PlayerLeft(PlayerRef player)
+    {
+        // Nếu Host thấy có đứa thoát, và thằng đó có trong sổ
+        if (Object.HasStateAuthority && danhSachDaDe.TryGetValue(player, out NetworkObject caiXac))
+        {
+            // Xóa sổ cái xác nó trên map
+            Runner.Despawn(caiXac);
+            // Gạch tên nó khỏi sổ
+            danhSachDaDe.Remove(player);
+            Debug.Log($"<color=yellow>Server thông báo:</color> ID {player.PlayerId} đã out, dọn dẹp xác!");
+        }
+    }
+
     private void ThucHienDeNhanVat(PlayerRef chuSohuu)
     {
+        // KIỂM TRA TƯỜNG LỬA: Nếu trong sổ ĐÃ CÓ tên thằng này rồi -> QUAY XE! Không đẻ nữa!
+        if (danhSachDaDe.ContainsKey(chuSohuu))
+        {
+            return;
+        }
+
         Vector3 vitrispawn = spawn != null ? spawn.transform.position : Vector3.up;
             
-        // Đẻ nhân vật và giao chìa khóa điều khiển cho đúng người
-        Runner.Spawn(playerPrefab, vitrispawn, Quaternion.identity, chuSohuu);
+        // Đẻ ra và lưu luôn cái NetworkObject đó vào một biến
+        NetworkObject nhanVatMoi = Runner.Spawn(playerPrefab, vitrispawn, Quaternion.identity, chuSohuu);
+        
+        // Ghi tên nó vào sổ (ID của nó + Cái xác vừa đẻ)
+        danhSachDaDe.Add(chuSohuu, nhanVatMoi);
+        
         Debug.Log($"<color=cyan>Server thông báo:</color> Đã đẻ Player thành công cho ID: {chuSohuu.PlayerId}");
     }
 }

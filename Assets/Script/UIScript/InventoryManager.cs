@@ -28,9 +28,6 @@ public class InventoryManager : MonoBehaviour
         if (khungBalo != null) khungBalo.SetActive(false);
     }
 
-    // --- SỬA HÀM NÀY: Giờ nó sẽ đòi nhận cái mảng TuiDo của Player ---
-
-    // --- HÀM VẼ UI SIÊU CẤP ---
     public void VeBaloRaManHinh(NetworkArray<O_VatPham> tuiDoCuaPlayer)
     {
         // 1. Xóa sạch sẽ các ô cũ đang có trên màn hình
@@ -92,7 +89,6 @@ public class InventoryManager : MonoBehaviour
         return null; 
     }
 
-    // Thêm vào trong class InventoryManager
     private Player_Controller chuSoHuuBalo;
 
     public void BatTatBalo(NetworkArray<O_VatPham> tuiDoCuaPlayer, Player_Controller player)
@@ -100,7 +96,16 @@ public class InventoryManager : MonoBehaviour
         chuSoHuuBalo = player; // Lưu lại để tí nữa biết ai bán đồ
         trangThaiBalo = !trangThaiBalo;
 
-        if (khungBalo != null) khungBalo.SetActive(trangThaiBalo);
+        // 🚨 MÁY PHÁT HIỆN NÓI DỐI
+        if (khungBalo != null) 
+        {
+            khungBalo.SetActive(trangThaiBalo);
+            Debug.Log("<color=yellow>Đã ra lệnh SetActive thành: " + trangThaiBalo + " | Đối tượng bị bật/tắt là: [" + khungBalo.name + "]</color>");
+        }
+        else
+        {
+            Debug.Log("<color=red>BÁO ĐỘNG ĐỎ: Ô khungBalo đang TRỐNG (Null). Chưa kéo giao diện vào!</color>");
+        }
 
         if (trangThaiBalo)
         {

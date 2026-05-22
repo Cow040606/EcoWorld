@@ -98,6 +98,15 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Header("Đào Khoáng Sản")]
     public LayerMask rockLayer;
 
+    [Header("Câu cá")]
+    public LayerMask waterLayer;
+    public GameObject Phaocauca; 
+    private GameObject currentphaocauca;
+    private Coroutine cauCaCoroutine; // Quản lý tiến trình thời gian
+
+    public enum FishState { Idle, Waiting, Giatca }
+    public FishState currentState = FishState.Idle;
+
     [Header("Debug")]
     public bool showDebugRay = true; // Ô tick để Bò bật/tắt tia Debug ở Inspector
     private Vector3 debugRayOrigin; // Điểm bắt đầu của tia
@@ -129,8 +138,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             if (cameraTransform == null && Camera.main != null)
                 cameraTransform = Camera.main.transform;
-
-            TuiDo.Set(0, new O_VatPham { ItemID = 101, SoLuong = 50 });
 
             if (playerCamera == null)
                 Debug.LogError("[Player_Controller] ❌ 'Player Camera' chưa được gán trong Inspector!");
@@ -197,8 +204,20 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             if (!IsChatAct && !ishopopen)
             {
-                if (Keyboard.current.bKey.wasPressedThisFrame && InventoryManager.instance != null)
-                    InventoryManager.instance.BatTatBalo(TuiDo, this);
+                if (Keyboard.current.bKey.wasPressedThisFrame)
+                {
+                    Debug.Log("<color=cyan>1. Player_Controller: Bò vừa gõ phím B!</color>");
+                    
+                    if (InventoryManager.instance == null)
+                    {
+                        Debug.Log("<color=red>2. LỖI RỒI: InventoryManager.instance đang bị NULL! Hệ thống không tìm thấy người quản lý Balo!</color>");
+                    }
+                    else
+                    {
+                        Debug.Log("<color=green>2. TỐT: Tìm thấy Quản lý Balo, chuẩn bị ra lệnh Mở!</color>");
+                        InventoryManager.instance.BatTatBalo(TuiDo, this);
+                    }
+                }
 
                 if (Keyboard.current.tabKey.wasPressedThisFrame && QuestManager.instance != null)
                     QuestManager.instance.Battatbangnhiemvu();
@@ -244,6 +263,22 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (Keyboard.current.kKey.wasPressedThisFrame) RPC_ThayDoiTien(5);
             if (Keyboard.current.lKey.wasPressedThisFrame) RPC_ThayDoiTien(-5);
 
+            // ================= CƠ CHẾ CÂU CÁ =================
+            if (Mouse.current.rightButton.wasPressedThisFrame)
+            {
+                if (currentState == FishState.Idle)
+                {
+                    BatDauCauCa();
+                }
+                else if (currentState == FishState.Waiting)
+                {
+                    ThuCanCau("<color=orange>Kéo cần sớm quá, cá hoảng sợ chạy mất!</color>");
+                }
+                else if (currentState == FishState.Giatca)
+                {
+                    ThanhCongGiatCa();
+                }
+            }
 
             if (!baloDangMo && !ESCDangMo && !ishopopen && !IsChatAct && !questDangMo)
             {
@@ -259,7 +294,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                         HandleMining();//pickaxe
                         break;
                     default: 
-                        Debug.Log("Vật phẩm này không dùng để tương tác được!");
+                        //Debug.Log("Vật phẩm này không dùng để tương tác được!");
                         break;
                 }
             }
@@ -527,6 +562,89 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (didRayHit) rayHitPoint = hit.point;
 
         return didRayHit;
+    }
+
+    #endregion
+
+    #region HỆ THỐNG CÂU CÁ (LOGIC & RPC)
+
+    private void BatDauCauCa()
+    {
+        // Bắn tia từ tâm màn hình xem có trúng mặt nước tàng hình không
+        if (BanTiaTuTamManHinh(interactRange, waterLayer, out RaycastHit hit))
+        {
+            currentState = FishState.Waiting;
+            Debug.Log("<color=blue>Đã quăng cần!</color>");
+            // Loa lên cho cả phòng cùng đẻ cục phao ra
+            RPC_HienThiPhao(hit.point);
+
+            // Bắt đầu đếm ngược thời gian
+            cauCaCoroutine = StartCoroutine(TienTrinhCauCa());
+        }
+        else
+        {
+            Debug.Log("<color=red>Chỗ này không có nước, không câu được!</color>");
+            currentState = FishState.Idle;
+        }
+    }
+
+    private System.Collections.IEnumerator TienTrinhCauCa()
+    {
+        // 1. Random chờ 3-6 giây
+        float thoiGianCho = Random.Range(3f, 6f);
+        yield return new WaitForSeconds(thoiGianCho);
+
+        // 2. Tới giờ cá cắn!
+        currentState = FishState.Giatca;
+        Debug.Log("<color=yellow>Cá cắn câu!!! BẤM CHUỘT PHẢI ĐỂ GIẬT NGAY!</color>");
+        // (Sau này Bò có thể thêm tiếng "Bóp" hoặc dấu ! ở đây)
+
+        // 3. Thời gian phản xạ: Có 1.5 giây để bấm chuột
+        yield return new WaitForSeconds(1.5f);
+
+        // 4. Nếu hết 1.5s mà chưa đổi trạng thái -> Hụt
+        if (currentState == FishState.Giatca)
+        {
+            ThuCanCau("<color=red>Trễ quá, cá xơi mồi rồi bơi mất tiêu!</color>");
+        }
+    }
+
+    private void ThanhCongGiatCa()
+    {
+        Debug.Log("<color=green>Giật thành công! Lên cá!!!</color>");
+        if (cauCaCoroutine != null) StopCoroutine(cauCaCoroutine);
+        
+        // TODO: Gắn UI Minigame kéo cá (Stardew Valley) vào đây sau!
+        
+        ThuCanCau("Hoàn tất câu cá, cất cần vào túi!");
+    }
+
+    private void ThuCanCau(string lyDo)
+    {
+        Debug.Log(lyDo);
+        currentState = FishState.Idle; 
+        RPC_ThuPhao(); // Loa lên kêu cả phòng xóa phao
+        if (cauCaCoroutine != null) StopCoroutine(cauCaCoroutine);
+    }
+
+    // --- CÁC LỆNH ĐỒNG BỘ MẠNG (RPC) ---
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_HienThiPhao(Vector3 viTriMatNuoc)
+    {
+        if (currentphaocauca != null) Destroy(currentphaocauca);
+        if (Phaocauca != null)
+        {
+            currentphaocauca = Instantiate(Phaocauca, viTriMatNuoc, Quaternion.identity);
+        }
+        // animator.SetTrigger("QuangCan"); // (Mở lên khi có Animation)
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_ThuPhao()
+    {
+        if (currentphaocauca != null) Destroy(currentphaocauca);
+        // animator.SetTrigger("GiatCan"); // (Mở lên khi có Animation)
     }
 
     #endregion
