@@ -31,15 +31,16 @@ public class Player_QuestManager : NetworkBehaviour
             localQuest = this;
             KiemTraTienDo();
             GameObject uiObj = QuestManager.instance.txtBangNhiemVu; 
-            Debug.Log("quest text");
+            //Debug.Log("quest text");
 
             
             if (uiObj != null) 
             {
                 txtBangNhiemVu = uiObj.GetComponent<TextMeshProUGUI>();
-                Debug.Log("tìm thấy quest text");
+                //Debug.Log("tìm thấy quest text");
             }
-            else {Debug.Log("không tìm thấy quest text");}
+            else {//Debug.Log("không tìm thấy quest text");
+            }
         }
     }
 
@@ -52,7 +53,7 @@ public class Player_QuestManager : NetworkBehaviour
         NhiemVuDangLam nvMoi = new NhiemVuDangLam();
         nvMoi.duLieuQuest = questMoi;
         danhSachNhiemVu.Add(nvMoi);
-        Debug.Log("da nhan nhiem vu");
+        //Debug.Log("da nhan nhiem vu");
         KiemTraTienDo(); // Quét túi đồ xem có sẵn đồ chưa
     }
 

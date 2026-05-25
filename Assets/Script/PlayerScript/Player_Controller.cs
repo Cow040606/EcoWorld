@@ -103,8 +103,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public GameObject Phaocauca; 
     private GameObject currentphaocauca;
     private Coroutine cauCaCoroutine; // Quản lý tiến trình thời gian
+    public float khoangCachDutDay = 10f; // Khoảng cách tối đa trước khi thu mồi (Bò tự chỉnh nhé)
 
-    public enum FishState { Idle, Waiting, Giatca }
+    public enum FishState { Idle, Casting, Waiting, Giatca }
     public FishState currentState = FishState.Idle;
 
     [Header("Debug")]
@@ -263,38 +264,60 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (Keyboard.current.kKey.wasPressedThisFrame) RPC_ThayDoiTien(5);
             if (Keyboard.current.lKey.wasPressedThisFrame) RPC_ThayDoiTien(-5);
 
-            // ================= CƠ CHẾ CÂU CÁ =================
-            if (Mouse.current.rightButton.wasPressedThisFrame)
-            {
-                if (currentState == FishState.Idle)
-                {
-                    BatDauCauCa();
-                }
-                else if (currentState == FishState.Waiting)
-                {
-                    ThuCanCau("<color=orange>Kéo cần sớm quá, cá hoảng sợ chạy mất!</color>");
-                }
-                else if (currentState == FishState.Giatca)
-                {
-                    ThanhCongGiatCa();
-                }
-            }
 
             if (!baloDangMo && !ESCDangMo && !ishopopen && !IsChatAct && !questDangMo)
             {
+                // ================= KIỂM TRA ĐIỀU KIỆN ĐỂ TỰ ĐỘNG THU CẦN =================
+                if (currentState != FishState.Idle)
+                {
+                    // 1. Nếu không còn cầm đúng cần câu (ID 8) nữa -> Thu cần!
+                    if (idDangCam != 8)
+                    {
+                        ThuCanCau("<color=orange>Đã cất cần câu, tự động thu mồi!</color>");
+                    }
+                    // 2. Nếu đang cầm cần, và phao đã được quăng ra -> Kiểm tra khoảng cách
+                    else if (currentphaocauca != null)
+                    {
+                        float khoangCach = Vector3.Distance(transform.position, currentphaocauca.transform.position);
+                        if (khoangCach > khoangCachDutDay)
+                        {
+                            ThuCanCau("<color=red>Đi xa quá đứt dây cước rồi!</color>");
+                        }
+                    }
+                }
+                // =========================================================================
+
                 switch (idDangCam)
                 {
                     case 4:
-                        HandleAttackAnimal();//sword
+                        HandleAttackAnimal(); // sword
                         break; 
                     case 5:
-                        HandleChopping();//axe
+                        HandleChopping(); // axe
                         break;
                     case 6:
-                        HandleMining();//pickaxe
+                        HandleMining(); // pickaxe
+                        break;
+                    case 8:
+                        // ================= CƠ CHẾ CÂU CÁ =================
+                        if (Mouse.current.rightButton.wasPressedThisFrame)
+                        {
+                            if (currentState == FishState.Idle)
+                            {
+                                BatDauCauCa();
+                            }
+                            else if (currentState == FishState.Waiting)
+                            {
+                                ThuCanCau("<color=orange>Kéo cần sớm quá, cá hoảng sợ chạy mất!</color>");
+                            }
+                            else if (currentState == FishState.Giatca)
+                            {
+                                ThanhCongGiatCa();
+                            }
+                        }
                         break;
                     default: 
-                        //Debug.Log("Vật phẩm này không dùng để tương tác được!");
+                        // Debug.Log("Vật phẩm này không dùng để tương tác được!");
                         break;
                 }
             }
@@ -570,22 +593,56 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private void BatDauCauCa()
     {
-        // Bắn tia từ tâm màn hình xem có trúng mặt nước tàng hình không
-        if (BanTiaTuTamManHinh(interactRange, waterLayer, out RaycastHit hit))
-        {
-            currentState = FishState.Waiting;
-            Debug.Log("<color=blue>Đã quăng cần!</color>");
-            // Loa lên cho cả phòng cùng đẻ cục phao ra
-            RPC_HienThiPhao(hit.point);
+        currentState = FishState.Casting; // Khóa trạng thái, đang quăng không cho bấm nữa
+        Debug.Log("<color=blue>Đã quăng cần! Chờ phao rơi xuống...</color>");
 
-            // Bắt đầu đếm ngược thời gian
-            cauCaCoroutine = StartCoroutine(TienTrinhCauCa());
-        }
-        else
+        // Vị trí ném: Ngay trước mặt camera một chút để không đập vào mặt nhân vật
+        Vector3 diemBatDau = cameraTransform.position + cameraTransform.forward * 1.5f;
+        
+        // Tính lực ném: Nhân vật ngước lên càng cao (forward hướng lên), phao bay càng xa
+        float lucNem = 12f; // Bò có thể chỉnh số này cho ném mạnh/yếu
+        Vector3 huongNem = cameraTransform.forward * lucNem + Vector3.up * 2f; 
+
+        // Gọi RPC loa lên cho CẢ PHÒNG cùng đẻ phao bay vèo vèo
+        RPC_QuangPhaoVatLy(diemBatDau, huongNem);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_QuangPhaoVatLy(Vector3 diemBatDau, Vector3 huongNem)
+    {
+        if (currentphaocauca != null) Destroy(currentphaocauca);
+
+        if (Phaocauca != null)
         {
-            Debug.Log("<color=red>Chỗ này không có nước, không câu được!</color>");
-            currentState = FishState.Idle;
+            // Đẻ cục phao ra
+            currentphaocauca = Instantiate(Phaocauca, diemBatDau, Quaternion.identity);
+            
+            // Tác dụng lực vật lý vào nó
+            Rigidbody rb = currentphaocauca.GetComponent<Rigidbody>();
+            if (rb != null) rb.AddForce(huongNem, ForceMode.Impulse);
+
+            // Cài đặt Script logic cho cục phao
+            PhaoCauCa_Logic logic = currentphaocauca.GetComponent<PhaoCauCa_Logic>();
+            if (logic == null) logic = currentphaocauca.AddComponent<PhaoCauCa_Logic>();
+
+            logic.chuSohuu = this;
+            logic.isLocal = HasInputAuthority; // Chỉ máy người quăng mới xử lý va chạm nước
         }
+    }
+
+    // --- CÁC HÀM CỤC PHAO GỌI NGƯỢC VỀ NHÂN VẬT ---
+
+    public void PhaoDaChamNuoc()
+    {
+        Debug.Log("<color=cyan>Phao đã tiếp nước êm ái! Bắt đầu dụ cá...</color>");
+        currentState = FishState.Waiting;
+        cauCaCoroutine = StartCoroutine(TienTrinhCauCa());
+    }
+
+    public void PhaoRotTrenCan()
+    {
+        Debug.Log("<color=red>Trượt nước rồi! Phao rớt trên bờ, tự động thu cần!</color>");
+        ThuCanCau("Rớt trên cạn");
     }
 
     private System.Collections.IEnumerator TienTrinhCauCa()

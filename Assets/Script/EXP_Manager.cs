@@ -16,7 +16,7 @@ public class EXP_Manager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Slider hoặc Player_Controller chưa được gán!");
+            //Debug.LogWarning("Slider hoặc Player_Controller chưa được gán!");
         }
     }
 }
