@@ -17,16 +17,10 @@ public class PhaoCauCa_Logic : MonoBehaviour
     {
         if (!isLocal || daChamCaiGiDo) return;
 
-        // Kiểm tra xem vật đụng trúng có thuộc Layer Nước không
         if (((1 << other.gameObject.layer) & chuSohuu.waterLayer) != 0)
         {
             daChamCaiGiDo = true;
-            
-            // Đóng băng phao lại để nó nổi trên mặt nước (không bị rớt xuyên qua)
-            if (rb != null) rb.isKinematic = true; 
-            
-            // Báo về cho Nhân vật biết là phao đã tới nơi an toàn
-            chuSohuu.PhaoDaChamNuoc();
+            chuSohuu.PhaoDaChamNuoc(); 
         }
     }
 
