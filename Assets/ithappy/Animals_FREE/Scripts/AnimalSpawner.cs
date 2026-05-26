@@ -76,7 +76,7 @@ namespace ithappy.Animals_FREE
 
             if (prefab == null)
             {
-                Debug.LogWarning($"[Spawner] Chưa gán prefab cho {type}!");
+                //Debug.LogWarning($"[Spawner] Chưa gán prefab cho {type}!");
                 return;
             }
 
@@ -99,7 +99,7 @@ namespace ithappy.Animals_FREE
                 else _currentCarnivores++;
             }
 
-            Debug.Log($"[Spawner] Spawned {type} tại {spawnPos}");
+            //Debug.Log($"[Spawner] Spawned {type} tại {spawnPos}");
         }
 
         private Vector3 GetRandomSpawnPosition()

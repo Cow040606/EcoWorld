@@ -11,14 +11,14 @@ public class TuHuyGianGiao : MonoBehaviour
         // Nếu có ít nhất 1 thằng Runner (Tức là nó vừa bay từ Menu qua đây)
         if (cacRunner.Length > 0)
         {
-            Debug.Log("<color=red>Giàn giáo Test:</color> Thấy Chủ tịch từ Menu xuống, tôi xin phép tự hủy để nhường chỗ!");
+           // Debug.Log("<color=red>Giàn giáo Test:</color> Thấy Chủ tịch từ Menu xuống, tôi xin phép tự hủy để nhường chỗ!");
             
             // Xóa ngay lập tức cái cục [TEST_FUSION] này đi
             Destroy(this.gameObject); 
         }
         else
         {
-            Debug.Log("<color=green>Giàn giáo Test:</color> Không có ai ở đây cả, để tôi tự tạo Server test cho Bò!");
+            //Debug.Log("<color=green>Giàn giáo Test:</color> Không có ai ở đây cả, để tôi tự tạo Server test cho Bò!");
         }
     }
 }
