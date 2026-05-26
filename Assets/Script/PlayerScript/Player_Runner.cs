@@ -43,7 +43,7 @@ public class Player_Runner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             Runner.Despawn(caiXac);
             // Gạch tên nó khỏi sổ
             danhSachDaDe.Remove(player);
-            Debug.Log($"<color=yellow>Server thông báo:</color> ID {player.PlayerId} đã out, dọn dẹp xác!");
+            //Debug.Log($"<color=yellow>Server thông báo:</color> ID {player.PlayerId} đã out, dọn dẹp xác!");
         }
     }
 
@@ -63,6 +63,6 @@ public class Player_Runner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         // Ghi tên nó vào sổ (ID của nó + Cái xác vừa đẻ)
         danhSachDaDe.Add(chuSohuu, nhanVatMoi);
         
-        Debug.Log($"<color=cyan>Server thông báo:</color> Đã đẻ Player thành công cho ID: {chuSohuu.PlayerId}");
+        //Debug.Log($"<color=cyan>Server thông báo:</color> Đã đẻ Player thành công cho ID: {chuSohuu.PlayerId}");
     }
 }

@@ -100,11 +100,11 @@ public class InventoryManager : MonoBehaviour
         if (khungBalo != null) 
         {
             khungBalo.SetActive(trangThaiBalo);
-            Debug.Log("<color=yellow>Đã ra lệnh SetActive thành: " + trangThaiBalo + " | Đối tượng bị bật/tắt là: [" + khungBalo.name + "]</color>");
+            //Debug.Log("<color=yellow>Đã ra lệnh SetActive thành: " + trangThaiBalo + " | Đối tượng bị bật/tắt là: [" + khungBalo.name + "]</color>");
         }
         else
         {
-            Debug.Log("<color=red>BÁO ĐỘNG ĐỎ: Ô khungBalo đang TRỐNG (Null). Chưa kéo giao diện vào!</color>");
+            //Debug.Log("<color=red>BÁO ĐỘNG ĐỎ: Ô khungBalo đang TRỐNG (Null). Chưa kéo giao diện vào!</color>");
         }
 
         if (trangThaiBalo)
