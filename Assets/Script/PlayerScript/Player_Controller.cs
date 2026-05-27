@@ -1012,6 +1012,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #region CÁC HÀM TIỆN ÍCH & XỬ LÝ GIAO DIỆN CỤC BỘ
 
+    
+    public void ThucHienDichChuyen(Vector3 toaDoMoi)
+    {
+        // Lệnh chuẩn của Fusion để dịch chuyển nhân vật an toàn
+        if (character != null)
+        {
+            character.Teleport(toaDoMoi);
+            Debug.Log("<color=magenta>Đã dịch chuyển tới: " + toaDoMoi + "</color>");
+        }
+    }
+
+
     private void TatToanBoUI()
     {
         if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo)
