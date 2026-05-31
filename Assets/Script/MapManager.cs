@@ -3,9 +3,19 @@ using UnityEngine.InputSystem;
 
 public class MapManager : MonoBehaviour
 {
+    public static MapManager Instance;
+
+    void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
+
     [Header("Cài đặt Bản đồ")]
     public GameObject mapPanel; 
-    public RectTransform mapPanelRect; // (MỚI) Thêm biến này để đo khung nhìn của người chơi
+    public RectTransform mapPanelRect; // Dùng để đo khung nhìn của người chơi
     public RectTransform mapContent; 
 
     [Header("Cài đặt Zoom")]
@@ -13,7 +23,7 @@ public class MapManager : MonoBehaviour
     public float zoomNhoNhat = 0.5f; 
     public float zoomLonNhat = 2.5f; 
 
-    private bool dangMoMap = false;
+    public bool dangMoMap = false;
 
     void Update()
     {
@@ -52,8 +62,7 @@ public class MapManager : MonoBehaviour
         }
     }
 
-    // ================= MỚI: VÒNG KIM CÔ GIỚI HẠN MAP =================
-    // Dùng LateUpdate để chạy NGAY SAU KHI cục Scroll Rect lỡ kéo Map đi quá trớn
+    // ================= VÒNG KIM CÔ GIỚI HẠN MAP =================
     void LateUpdate()
     {
         if (dangMoMap && mapContent != null && mapPanelRect != null)
@@ -72,5 +81,21 @@ public class MapManager : MonoBehaviour
             // Gắn tọa độ đã sửa lại trả về cho Map
             mapContent.anchoredPosition = toaDoHienTai;
         }
+    }
+
+    // ==========================================
+    // HÀM ĐÓNG MAP TỪ XA ĐỂ FIX LỖI CS1061
+    // ==========================================
+    public void DongMap()
+    {
+        dangMoMap = false;
+        
+        if (mapPanel != null)
+        {
+            mapPanel.SetActive(false);
+        }
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 }

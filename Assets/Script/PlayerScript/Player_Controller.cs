@@ -179,8 +179,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             bool questDangMo  = (QuestManager.instance != null && QuestManager.instance.isQuest_Open);
             bool IsChatAct    = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
             bool ESCDangMo    = (ESC.instance != null && ESC.instance.isESC_Open);
+            bool ismapOpen     = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
 
-            if (baloDangMo || ESCDangMo || ishopopen || IsChatAct || questDangMo)
+            if (baloDangMo || ESCDangMo || ishopopen || IsChatAct || questDangMo || ismapOpen)
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible   = true;
@@ -207,15 +208,15 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 if (Keyboard.current.bKey.wasPressedThisFrame)
                 {
-                    Debug.Log("<color=cyan>1. Player_Controller: Bò vừa gõ phím B!</color>");
+                    //Debug.Log("<color=cyan>1. Player_Controller: Bò vừa gõ phím B!</color>");
                     
                     if (InventoryManager.instance == null)
                     {
-                        Debug.Log("<color=red>2. LỖI RỒI: InventoryManager.instance đang bị NULL! Hệ thống không tìm thấy người quản lý Balo!</color>");
+                        //Debug.Log("<color=red>2. LỖI RỒI: InventoryManager.instance đang bị NULL! Hệ thống không tìm thấy người quản lý Balo!</color>");
                     }
                     else
                     {
-                        Debug.Log("<color=green>2. TỐT: Tìm thấy Quản lý Balo, chuẩn bị ra lệnh Mở!</color>");
+                        //Debug.Log("<color=green>2. TỐT: Tìm thấy Quản lý Balo, chuẩn bị ra lệnh Mở!</color>");
                         InventoryManager.instance.BatTatBalo(TuiDo, this);
                     }
                 }
@@ -256,7 +257,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             sprintPressedLocal = Keyboard.current.leftShiftKey.isPressed;
             if (Keyboard.current.spaceKey.wasPressedThisFrame) jumpPressedLocal = true;
-
+            //if (Keyboard.current.mKey.wasPressedThisFrame)
             float trucX = Keyboard.current.dKey.isPressed ? 1f : (Keyboard.current.aKey.isPressed ? -1f : 0f);
             float trucY = Keyboard.current.wKey.isPressed ? 1f : (Keyboard.current.sKey.isPressed ? -1f : 0f);
             moveInputLocal = new Vector2(trucX, trucY).normalized;
@@ -426,8 +427,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         bool ESCDangMo  = (ESC.instance != null && ESC.instance.isESC_Open);
         bool ishopopen  = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
         bool IsChat     = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
+        bool isMapOpen    = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
 
-        if (baloDangMo || ESCDangMo || ishopopen || IsChat)
+        if (baloDangMo || ESCDangMo || ishopopen || IsChat || isMapOpen)
         {
             data.moveInput     = Vector2.zero;
             data.isJumpPressed = false;
@@ -1015,17 +1017,32 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     
     public void ThucHienDichChuyen(Vector3 toaDoMoi)
     {
-        // Lệnh chuẩn của Fusion để dịch chuyển nhân vật an toàn
+        if (Object.HasStateAuthority)
+        {
+            if (character != null)
+            {
+                character.Teleport(toaDoMoi);
+            }
+        }
+        else
+        {
+            RPC_XinPhepDichChuyen(toaDoMoi);
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_XinPhepDichChuyen(Vector3 toaDoMoi)
+    {
         if (character != null)
         {
             character.Teleport(toaDoMoi);
-            Debug.Log("<color=magenta>Đã dịch chuyển tới: " + toaDoMoi + "</color>");
         }
     }
 
 
     private void TatToanBoUI()
     {
+        if(MapManager.Instance != null && MapManager.Instance.dangMoMap) MapManager.Instance.DongMap();
         if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo)
             InventoryManager.instance.BatTatBalo(TuiDo, this);
 

@@ -1,6 +1,6 @@
 using Fusion;
 using UnityEngine;
-using System.Collections.Generic; // Bắt buộc phải có thư viện này để dùng Sổ Hộ Khẩu (Dictionary)
+using System.Collections.Generic; 
 
 public class Player_Runner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 {
@@ -23,28 +23,48 @@ public class Player_Runner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         }
     }
 
+    // ==========================================
+    // KHI CÓ NGƯỜI VÀO GAME
+    // ==========================================
     public void PlayerJoined(PlayerRef player)
     {
+        // 1. Chỉ Host mới có quyền đẻ nhân vật
         if (Object.HasStateAuthority)
         {
             ThucHienDeNhanVat(player);
         }
+
+        // 2. THÔNG BÁO CHAT (Nằm ngoài if để máy ai cũng hiện)
+        // ⚠️ BÒ LƯU Ý: Đổi tên "ChatManager.Instance.HienThiTinNhan" thành đúng cái script Chat của Bò nhé!
+        // if (ChatManager.Instance != null)
+        // {
+        //     ChatManager.Instance.HienThiTinNhan($"<color=yellow>Người chơi {player.PlayerId} vừa tham gia server!</color>");
+        // }
     }
 
     // ==========================================
-    // MỚI: DỌN RÁC KHI CÓ NGƯỜI THOÁT GAME
+    // KHI CÓ NGƯỜI THOÁT GAME (DỌN RÁC)
     // ==========================================
     public void PlayerLeft(PlayerRef player)
     {
-        // Nếu Host thấy có đứa thoát, và thằng đó có trong sổ
-        if (Object.HasStateAuthority && danhSachDaDe.TryGetValue(player, out NetworkObject caiXac))
+        // 1. Chỉ Host mới có quyền dọn xác
+        if (Object.HasStateAuthority)
         {
-            // Xóa sổ cái xác nó trên map
-            Runner.Despawn(caiXac);
-            // Gạch tên nó khỏi sổ
-            danhSachDaDe.Remove(player);
-            //Debug.Log($"<color=yellow>Server thông báo:</color> ID {player.PlayerId} đã out, dọn dẹp xác!");
+            if (danhSachDaDe.TryGetValue(player, out NetworkObject caiXac))
+            {
+                // Xóa sổ cái xác nó trên map
+                Runner.Despawn(caiXac);
+                // Gạch tên nó khỏi sổ
+                danhSachDaDe.Remove(player);
+                Debug.Log($"<color=yellow>Server thông báo:</color> ID {player.PlayerId} đã out, dọn dẹp xác an toàn!");
+            }
         }
+
+        // 2. THÔNG BÁO CHAT (Nằm ngoài if để máy ai cũng hiện)
+        // if (ChatManager.Instance != null)
+        // {
+        //     ChatManager.Instance.HienThiTinNhan($"<color=gray>Người chơi {player.PlayerId} đã rời đi!</color>");
+        // }
     }
 
     private void ThucHienDeNhanVat(PlayerRef chuSohuu)
@@ -60,9 +80,12 @@ public class Player_Runner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         // Đẻ ra và lưu luôn cái NetworkObject đó vào một biến
         NetworkObject nhanVatMoi = Runner.Spawn(playerPrefab, vitrispawn, Quaternion.identity, chuSohuu);
         
-        // Ghi tên nó vào sổ (ID của nó + Cái xác vừa đẻ)
-        danhSachDaDe.Add(chuSohuu, nhanVatMoi);
-        
-        //Debug.Log($"<color=cyan>Server thông báo:</color> Đã đẻ Player thành công cho ID: {chuSohuu.PlayerId}");
+        // Đề phòng lỗi Fusion chưa đẻ kịp, check khác null mới ghi vào sổ
+        if (nhanVatMoi != null)
+        {
+            // Ghi tên nó vào sổ (ID của nó + Cái xác vừa đẻ)
+            danhSachDaDe.Add(chuSohuu, nhanVatMoi);
+            //Debug.Log($"<color=cyan>Server thông báo:</color> Đã đẻ Player thành công cho ID: {chuSohuu.PlayerId}");
+        }
     }
 }
