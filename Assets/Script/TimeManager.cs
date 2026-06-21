@@ -20,10 +20,16 @@ public class TimeManager : MonoBehaviour
     ColorAdjustments colorAdjustments;
     TimeService timeService;
 
+    // Biến để lưu lại tốc độ gốc, bảo vệ ScriptableObject không bị lưu đè số tào lao
+    float defaultTimeMultiplier;
+
     void Start()
     {
         timeService = new TimeService(timeSetting);
         volume.profile.TryGet(out colorAdjustments);
+
+        // Lưu lại tốc độ thời gian ban đầu khi game vừa bắt đầu (ví dụ: 360)
+        defaultTimeMultiplier = timeSetting.timeMultiplier;
     }
 
     void Update()
@@ -31,15 +37,23 @@ public class TimeManager : MonoBehaviour
         UpdateTimeOfDay();
         RotateSun();
         UpdateLightSettings();
+        
+        // Tách phần kiểm tra phím bấm ra hàm riêng cho sạch code
+        HandleTimeSpeedInput(); 
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+    void HandleTimeSpeedInput()
+    {
+        // Khi BẤM nút U: Gán thẳng tốc độ tua nhanh là 3600 (Không dùng dấu *= nữa)
+        if (Input.GetKeyDown(KeyCode.U))
         {
-            timeSetting.timeMultiplier *= 3600;
+            timeSetting.timeMultiplier = 3600;
         }
 
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        // Khi NHẢ nút U: Trả về tốc độ bình thường ban đầu
+        if (Input.GetKeyUp(KeyCode.U))
         {
-            timeSetting.timeMultiplier /= 2;
+            timeSetting.timeMultiplier = defaultTimeMultiplier;
         }
     }
 
@@ -72,6 +86,15 @@ public class TimeManager : MonoBehaviour
         if (timeText != null)
         {
             timeText.text = timeService.GetCurrentTime().ToString("HH:mm");
+        }
+    }
+
+    // Đảm bảo khi tắt chế độ Play, ScriptableObject luôn được trả về mốc chuẩn
+    void OnDisable()
+    {
+        if (timeSetting != null)
+        {
+            timeSetting.timeMultiplier = defaultTimeMultiplier;
         }
     }
 }
