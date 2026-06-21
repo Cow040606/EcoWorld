@@ -37,9 +37,9 @@ public class TimeManager : MonoBehaviour
         UpdateTimeOfDay();
         RotateSun();
         UpdateLightSettings();
-        
+
         // Tách phần kiểm tra phím bấm ra hàm riêng cho sạch code
-        HandleTimeSpeedInput(); 
+        HandleTimeSpeedInput();
     }
 
     void HandleTimeSpeedInput()

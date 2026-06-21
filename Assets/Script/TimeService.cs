@@ -1,11 +1,12 @@
 using UnityEngine;
 using System;
-using UniRx;
 
 public class TimeService
 {
     readonly TimeSetting timeSetting;
+
     DateTime currentTime;
+
     readonly TimeSpan sunriseTime;
     readonly TimeSpan sunsetTime;
 
@@ -13,59 +14,107 @@ public class TimeService
     public event Action Onsunset = delegate { };
     public event Action OnHourChanged = delegate { };
 
-    readonly ReactiveProperty<bool> isDayTime;
-    readonly ReactiveProperty<int> currentHour;
+    bool isDayTime;
+    int currentHour;
 
     public TimeService(TimeSetting settings)
     {
         timeSetting = settings;
-        currentTime = DateTime.Now.Date + TimeSpan.FromHours(timeSetting.startHour);
+
+        currentTime = DateTime.Now.Date +
+                      TimeSpan.FromHours(timeSetting.startHour);
+
         sunriseTime = TimeSpan.FromHours(timeSetting.sunriseHour);
         sunsetTime = TimeSpan.FromHours(timeSetting.sunsetHour);
 
-        isDayTime = new ReactiveProperty<bool>(IsDayTime());
-        currentHour = new ReactiveProperty<int>(currentTime.Hour);
-
-        isDayTime.Subscribe(day =>
-        {
-            if (day) Onsunrise.Invoke();
-            else Onsunset.Invoke();
-        });
-
-        currentHour.Subscribe(_ => OnHourChanged.Invoke());
+        isDayTime = IsDayTime();
+        currentHour = currentTime.Hour;
     }
 
     public void UpdateTime(float deltaTime)
     {
-        currentTime = currentTime.AddSeconds(deltaTime * timeSetting.timeMultiplier);
-        isDayTime.Value = IsDayTime();
-        currentHour.Value = currentTime.Hour;
+        currentTime = currentTime.AddSeconds(
+            deltaTime * timeSetting.timeMultiplier
+        );
+
+        bool newDayTime = IsDayTime();
+
+        // Ki?m tra chuy?n ??i ngày/?êm
+        if (newDayTime != isDayTime)
+        {
+            isDayTime = newDayTime;
+
+            if (isDayTime)
+                Onsunrise.Invoke();
+            else
+                Onsunset.Invoke();
+        }
+
+        // Ki?m tra ??i gi?
+        if (currentTime.Hour != currentHour)
+        {
+            currentHour = currentTime.Hour;
+            OnHourChanged.Invoke();
+        }
     }
 
     public float CalculateSunAngle()
     {
         bool isDay = IsDayTime();
-        float startDegree = isDay ? 0 : 180;
-        TimeSpan start = isDay ? sunriseTime : sunsetTime;
-        TimeSpan end = isDay ? sunsetTime : sunriseTime;
 
-        TimeSpan totalTime = CalculateDifference(start, end);
-        TimeSpan elapsedTime = CalculateDifference(start, currentTime.TimeOfDay);
+        float startDegree = isDay ? 0f : 180f;
 
-        double percentage = elapsedTime.TotalSeconds / totalTime.TotalSeconds;
-        return Mathf.Lerp(startDegree, startDegree + 180, (float)percentage);
+        TimeSpan start = isDay
+            ? sunriseTime
+            : sunsetTime;
+
+        TimeSpan end = isDay
+            ? sunsetTime
+            : sunriseTime;
+
+        TimeSpan totalTime =
+            CalculateDifference(start, end);
+
+        TimeSpan elapsedTime =
+            CalculateDifference(
+                start,
+                currentTime.TimeOfDay
+            );
+
+        double percentage =
+            elapsedTime.TotalSeconds /
+            totalTime.TotalSeconds;
+
+        return Mathf.Lerp(
+            startDegree,
+            startDegree + 180f,
+            (float)percentage
+        );
     }
 
-    public DateTime GetCurrentTime() => currentTime;
+    public DateTime GetCurrentTime()
+    {
+        return currentTime;
+    }
 
     bool IsDayTime()
-        => currentTime.TimeOfDay >= sunriseTime && currentTime.TimeOfDay < sunsetTime;
+    {
+        return currentTime.TimeOfDay >= sunriseTime
+            && currentTime.TimeOfDay < sunsetTime;
+    }
 
-    TimeSpan CalculateDifference(TimeSpan from, TimeSpan to)
+    TimeSpan CalculateDifference(
+        TimeSpan from,
+        TimeSpan to
+    )
     {
         TimeSpan difference = to - from;
-        return difference.TotalHours < 0
-            ? difference + TimeSpan.FromHours(24)
-            : difference;
+
+        if (difference.TotalHours < 0)
+        {
+            difference += TimeSpan.FromHours(24);
+        }
+
+        return difference;
     }
 }
