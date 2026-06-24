@@ -50,6 +50,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private float mouseXLocalAcc;
     public LayerMask layerVaChamCamera;
 
+    public float fovBinhThuong = 60f;  // Góc nhìn lúc đi bộ/đứng im
+    public float fovChayNhanh = 75f;   // Góc nhìn lúc chạy nước rút (càng to nhìn càng xa)
+    public float tocDoZoom = 5f;       // Tốc độ chuyển đổi cho mượt (không bị giật cục)
+
     [Header("Nhặt vật phẩm")]
     public float banKinhNhat = 5f;
 
@@ -340,6 +344,16 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 cameraTransform.position = viTriDuKien;
 
             cameraTransform.rotation = camRotation;
+
+            // ================= MỚI THÊM: HIỆU ỨNG ZOOM CAMERA KHI CHẠY =================
+            if (playerCamera != null)
+            {
+                // Nếu đang chạy nhanh (isSprinting = true) thì mục tiêu là fovChayNhanh, ngược lại là fovBinhThuong
+                float fovMucTieu = isSprinting ? fovChayNhanh : fovBinhThuong;
+                
+                // Dùng Mathf.Lerp để camera từ từ thu phóng cực kỳ mượt mà
+                playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, fovMucTieu, Runner.DeltaTime * tocDoZoom);
+            }
         }
     }
     
@@ -557,11 +571,32 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (idDangCam > 0 && InventoryManager.instance != null)
         {
             Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
-            if (thongTinItem != null && thongTinItem.model3DPrefab != null)
+            
+            // viTriCamVuKhi của Bò ở đây chính là cái Diemcam trên tay nhân vật
+            if (thongTinItem != null && thongTinItem.model3DPrefab != null && viTriCamVuKhi != null)
             {
+                // 1. Sinh món đồ ra làm con của Diemcam (viTriCamVuKhi)
                 vuKhiDangCamThucTe = Instantiate(thongTinItem.model3DPrefab, viTriCamVuKhi);
-                vuKhiDangCamThucTe.transform.localPosition = Vector3.zero;
-                vuKhiDangCamThucTe.transform.localRotation = Quaternion.identity;
+
+                // 2. Ép Scale theo thông số Bò chỉnh trong Item
+                vuKhiDangCamThucTe.transform.localScale = thongTinItem.scaleTrenTay;
+
+                // 3. Tìm cái "vitricam" giấu bên trong món đồ
+                Transform vitriCamModel = vuKhiDangCamThucTe.transform.Find("vitricam");
+
+                if (vitriCamModel != null)
+                {
+                    // Lùi món đồ lại một khoảng bằng tọa độ của vitricam để 2 khớp dính vào nhau
+                    vuKhiDangCamThucTe.transform.localPosition = -vitriCamModel.localPosition;
+                    vuKhiDangCamThucTe.transform.localRotation = Quaternion.Inverse(vitriCamModel.localRotation);
+                }
+                else
+                {
+                    // Nếu Bò quên tạo vitricam thì nó cứ bám cứng vào tay như cũ
+                    vuKhiDangCamThucTe.transform.localPosition = Vector3.zero;
+                    vuKhiDangCamThucTe.transform.localRotation = Quaternion.identity;
+                    //Debug.LogWarning($"[Hệ thống cầm đồ] Ê Bò, món đồ {thongTinItem.itemName} (ID: {thongTinItem.itemID}) quên tạo empty 'vitricam' kìa!");
+                }
             }
         }
     }
@@ -630,6 +665,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             logic.chuSohuu = this;
             logic.isLocal = HasInputAuthority; // Chỉ máy người quăng mới xử lý va chạm nước
         }
+
+        // ===== MỞ PHONG ẤN ANIMATION Ở ĐÂY NÈ BÒ =====
+        if (animator != null)
+        {
+            animator.SetTrigger("QuangCan"); 
+        }
     }
 
     // --- CÁC HÀM CỤC PHAO GỌI NGƯỢC VỀ NHÂN VẬT ---
@@ -667,26 +708,42 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             ThuCanCau("<color=red>Trễ quá, cá xơi mồi rồi bơi mất tiêu!</color>");
         }
     }
-
     private void ThanhCongGiatCa()
     {
         Debug.Log("<color=green>Giật thành công! Lên cá!!!</color>");
         if (cauCaCoroutine != null) StopCoroutine(cauCaCoroutine);
         
-        // TODO: Gắn UI Minigame kéo cá (Stardew Valley) vào đây sau!
-        
-        ThuCanCau("Hoàn tất câu cá, cất cần vào túi!");
+        // Gọi hàm thu cần, truyền thêm 'false' để máy hiểu đây là Giật chứ không phải Hủy
+        ThuCanCau("Hoàn tất câu cá, cất cần vào túi!", false); 
     }
 
-    private void ThuCanCau(string lyDo)
+    // Thêm tham số 'bool laHuy = true' để mặc định mọi lệnh cất cần khác đều là Hủy
+    private void ThuCanCau(string lyDo, bool laHuy = true)
     {
         Debug.Log(lyDo);
         currentState = FishState.Idle; 
-        RPC_ThuPhao(); // Loa lên kêu cả phòng xóa phao
+        
+        RPC_ThuPhao(laHuy); // Báo cho server
+
         if (cauCaCoroutine != null) StopCoroutine(cauCaCoroutine);
     }
 
-    // --- CÁC LỆNH ĐỒNG BỘ MẠNG (RPC) ---
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_ThuPhao(bool laHuy)
+    {
+        if (currentphaocauca != null) Destroy(currentphaocauca);
+
+        // Kích hoạt Animation dựa trên tình huống
+        if (laHuy)
+        {
+            animator.SetTrigger("HuyCau"); // Chạy thẳng về Idle
+        }
+        else
+        {
+            animator.SetTrigger("GiatCan"); // Chạy sang dáng múa giật cá (final)
+        }
+    }
+     // --- CÁC LỆNH ĐỒNG BỘ MẠNG (RPC) ---
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_HienThiPhao(Vector3 viTriMatNuoc)
@@ -699,12 +756,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         // animator.SetTrigger("QuangCan"); // (Mở lên khi có Animation)
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    public void RPC_ThuPhao()
-    {
-        if (currentphaocauca != null) Destroy(currentphaocauca);
-        // animator.SetTrigger("GiatCan"); // (Mở lên khi có Animation)
-    }
 
     #endregion
 
