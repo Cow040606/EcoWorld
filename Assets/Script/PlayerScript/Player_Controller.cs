@@ -41,6 +41,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public int level = 0;
     public float expToLevelUp = 100f;
 
+
+    [Header("Hiệu ứng Câu cá")]
+    public GameObject iconCamThan;
+
     [Header("Camera & Chuột")]
     public Transform cameraTransform;
     public float mouseSensitivity = 0.5f;
@@ -437,13 +441,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
 
         data.isJumpPressed = jumpPressedLocal;
+        
         bool baloDangMo = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
         bool ESCDangMo  = (ESC.instance != null && ESC.instance.isESC_Open);
         bool ishopopen  = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
         bool IsChat     = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
-        bool isMapOpen    = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
+        bool isMapOpen  = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
+        
+        // --- LU ÍT THÊM Ổ KHÓA CÂU CÁ VÀO ĐÂY ---
+        bool dangCauCa  = (currentState != FishState.Idle); 
 
-        if (baloDangMo || ESCDangMo || ishopopen || IsChat || isMapOpen)
+        // Nhét thêm chữ dangCauCa vào chung với đám mở Balo, mở Map...
+        if (baloDangMo || ESCDangMo || ishopopen || IsChat || isMapOpen || dangCauCa)
         {
             data.moveInput     = Vector2.zero;
             data.isJumpPressed = false;
@@ -697,7 +706,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         // 2. Tới giờ cá cắn!
         currentState = FishState.Giatca;
         Debug.Log("<color=yellow>Cá cắn câu!!! BẤM CHUỘT PHẢI ĐỂ GIẬT NGAY!</color>");
-        // (Sau này Bò có thể thêm tiếng "Bóp" hoặc dấu ! ở đây)
+        
+        // BẬT DẤU CHẤM THAN TRÊN ĐẦU NHÂN VẬT!
+        if (iconCamThan != null) iconCamThan.SetActive(true);
 
         // 3. Thời gian phản xạ: Có 1.5 giây để bấm chuột
         yield return new WaitForSeconds(1.5f);
@@ -713,6 +724,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         Debug.Log("<color=green>Giật thành công! Lên cá!!!</color>");
         if (cauCaCoroutine != null) StopCoroutine(cauCaCoroutine);
         
+        // ==========================================
+        // NHẬN CÁ: ID 9, Số lượng 1
+        // ==========================================
+        ThemDoVaoTui(9, 1); 
+
         // Gọi hàm thu cần, truyền thêm 'false' để máy hiểu đây là Giật chứ không phải Hủy
         ThuCanCau("Hoàn tất câu cá, cất cần vào túi!", false); 
     }
@@ -723,6 +739,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         Debug.Log(lyDo);
         currentState = FishState.Idle; 
         
+        // TẮT DẤU CHẤM THAN ĐI
+        if (iconCamThan != null) iconCamThan.SetActive(false);
+
         RPC_ThuPhao(laHuy); // Báo cho server
 
         if (cauCaCoroutine != null) StopCoroutine(cauCaCoroutine);
