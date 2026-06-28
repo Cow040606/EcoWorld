@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 public class FarmPlot : NetworkBehaviour
 {
-    public enum PlotState { Normal, Tilled, Seeded, Grown }
+    // Chỉ còn 3 trạng thái: Đất trống -> Cây non -> Cây lớn
+    public enum PlotState { DatTrong, CayCon, CayLon }
 
     [Networked, OnChangedRender(nameof(OnStateChanged))]
     public PlotState CurrentState { get; set; }
@@ -12,14 +13,12 @@ public class FarmPlot : NetworkBehaviour
     [Networked]
     public TickTimer growTimer { get; set; }
 
-    [Header("--- Models (Kéo Prefab từ Project vào đây) ---")]
+    [Header("--- Models (Kéo Prefab từ thư mục Project vào đây) ---")]
     [SerializeField] private GameObject modelDatThuong;
-    [SerializeField] private GameObject modelDatCay;
     [SerializeField] private GameObject modelCayCon;
     [SerializeField] private GameObject modelCayLon;
 
     [Header("--- Điểm Neo (Vị trí mọc cây) ---")]
-    [Tooltip("Kéo GameObject rỗng (DiemGieoHat) vào đây để làm tâm mọc cây")]
     [SerializeField] private Transform diemGieoHat; 
 
     [Header("--- Farm Settings ---")]
@@ -31,7 +30,6 @@ public class FarmPlot : NetworkBehaviour
 
     public override void Spawned()
     {
-        // Tắt hình ảnh của cục đất gốc trên Map
         MeshRenderer rootMesh = GetComponent<MeshRenderer>();
         if (rootMesh != null) rootMesh.enabled = false;
 
@@ -42,10 +40,9 @@ public class FarmPlot : NetworkBehaviour
     {
         if (!Object.HasStateAuthority) return;
 
-        // Xử lý đếm giờ mọc cây
-        if (CurrentState == PlotState.Seeded && growTimer.Expired(Runner))
+        if (CurrentState == PlotState.CayCon && growTimer.Expired(Runner))
         {
-            CurrentState = PlotState.Grown;
+            CurrentState = PlotState.CayLon;
             growTimer = TickTimer.None;
         }
     }
@@ -64,7 +61,6 @@ public class FarmPlot : NetworkBehaviour
         if (prefab == null) return;
         
         Transform viTriSinhRa = (diemGieoHat != null) ? diemGieoHat : transform;
-
         GameObject newVisual = Instantiate(prefab, viTriSinhRa.position, viTriSinhRa.rotation, transform);
         
         Collider[] cols = newVisual.GetComponentsInChildren<Collider>();
@@ -79,74 +75,58 @@ public class FarmPlot : NetworkBehaviour
 
         switch (CurrentState)
         {
-            case PlotState.Normal:
+            case PlotState.DatTrong:
                 SpawnVisual(modelDatThuong);
                 break;
-            case PlotState.Tilled:
-                SpawnVisual(modelDatCay);
-                break;
-            case PlotState.Seeded:
-                SpawnVisual(modelDatCay); 
+            case PlotState.CayCon:
+                SpawnVisual(modelDatThuong); 
                 SpawnVisual(modelCayCon); 
                 break;
-            case PlotState.Grown:
-                SpawnVisual(modelDatCay); 
+            case PlotState.CayLon:
+                SpawnVisual(modelDatThuong); 
                 SpawnVisual(modelCayLon); 
                 break;
         }
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_CayDat()
-    {
-        if (CurrentState == PlotState.Normal) 
-            CurrentState = PlotState.Tilled;
-    }
-
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_GieoHat()
     {
-        if (CurrentState != PlotState.Tilled) return;
+        if (CurrentState != PlotState.DatTrong) return; // Đất trống mới được gieo!
 
-        CurrentState = PlotState.Seeded;
+        CurrentState = PlotState.CayCon;
         growTimer = TickTimer.CreateFromSeconds(Runner, growTime); 
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_ThuHoach(PlayerRef nguoi)
     {
-        if (CurrentState != PlotState.Grown) return;
+        if (CurrentState != PlotState.CayLon) return;
 
         var playerObj = Runner.GetPlayerObject(nguoi);
         if (playerObj == null) return;
 
         Player_Controller player = playerObj.GetComponent<Player_Controller>();
-
         bool daCongXong = player.ThemDoVaoTui(fruitItemID, harvestCount);
 
         if (daCongXong)
         {
             Rpc_ThongBaoThuHoach(nguoi, harvestCount);
-
-            CurrentState = PlotState.Seeded; 
-            growTimer = TickTimer.CreateFromSeconds(Runner, growTime); 
+            
+            // THU HOẠCH XONG LÀ VỀ LẠI ĐẤT TRỐNG ĐỂ GIEO TIẾP
+            CurrentState = PlotState.DatTrong; 
         }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void Rpc_ThongBaoThuHoach([RpcTarget] PlayerRef targetPlayer, int soLuong)
     {
-
-        if (ItemNotifyManager.Instance == null || InventoryManager.instance == null) 
-        {
-            return;
-        }
+        if (ItemNotifyManager.Instance == null || InventoryManager.instance == null) return;
 
         Item thongTin = InventoryManager.instance.TraCuuItem(fruitItemID);
-        
         if (thongTin != null)
         {
             ItemNotifyManager.Instance.ShowNotify(thongTin.itemName, soLuong, thongTin.icon);
         }  
-        }
+    }
 }

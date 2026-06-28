@@ -942,10 +942,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 108076666022026914}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: -2046579597246600168}
   m_SourcePrefab: {fileID: 100100000, guid: 175abce4628c6784cbddb19be0e5bca3, type: 3}
 --- !u!1 &2468779152711149797 stripped
@@ -1139,25 +1135,6 @@ MonoBehaviour:
   inputFieldMessage: {fileID: 0}
   buttonSend: {fileID: 0}
   ChatSys: {fileID: 0}
---- !u!114 &108076666022026914
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2468779152711149797}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58ceb85d3e66e214eb65cf1767df7536, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FarmInteraction
-  myPlayer: {fileID: 4622133995427023118}
-  farmlandLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  interactRange: 10
-  hintText: {fileID: 0}
-  cameraTransform: {fileID: 17911125521547612}
 --- !u!114 &-2046579597246600168
 MonoBehaviour:
   m_ObjectHideFlags: 0

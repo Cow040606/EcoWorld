@@ -12,14 +12,12 @@ public class FarmInteraction : MonoBehaviour
 
     [Header("--- UI 3D Lơ Lửng ---")]
     public TextMeshProUGUI hintText;  
-    [Tooltip("Kéo Main Camera vào đây để chữ luôn xoay mặt về phía người chơi")]
     public Transform cameraTransform; 
 
     private FarmPlot currentLookedPlot;
 
     private void Start()
     {
-        // Ẩn chữ đi khi mới vào game
         if (hintText != null) hintText.text = ""; 
     }
 
@@ -45,22 +43,18 @@ public class FarmInteraction : MonoBehaviour
             
             if (currentLookedPlot != null && hintText != null)
             {
-                // 1. DỜI CHỮ ĐẾN CỤC ĐẤT (Cách mặt đất 1.5 unit)
                 hintText.transform.position = currentLookedPlot.transform.position + (Vector3.up * 1.5f);
 
-                // 2. XOAY CHỮ VỀ PHÍA CAMERA (Để chữ không bị ngược)
                 if (cameraTransform != null)
                 {
                     hintText.transform.rotation = Quaternion.LookRotation(hintText.transform.position - cameraTransform.position);
                 }
 
-                // 3. HIỂN THỊ NỘI DUNG TƯƠNG ỨNG
                 switch (currentLookedPlot.CurrentState)
                 {
-                    case FarmPlot.PlotState.Normal: hintText.text = "[F] Cày đất"; break;
-                    case FarmPlot.PlotState.Tilled: hintText.text = "[Chuột Phải] Gieo hạt"; break;
-                    case FarmPlot.PlotState.Seeded: hintText.text = "Cây đang lớn..."; break;
-                    case FarmPlot.PlotState.Grown:  hintText.text = "[E] Thu hoạch"; break;
+                    case FarmPlot.PlotState.DatTrong: hintText.text = "[Chuột Phải] Gieo hạt"; break;
+                    case FarmPlot.PlotState.CayCon:   hintText.text = "Cây đang lớn..."; break;
+                    case FarmPlot.PlotState.CayLon:   hintText.text = "[E] Thu hoạch"; break;
                 }
             }
         }
@@ -75,21 +69,16 @@ public class FarmInteraction : MonoBehaviour
     {
         if (currentLookedPlot == null) return;
 
-        if (Keyboard.current.fKey.wasPressedThisFrame)
-        {
-            if (currentLookedPlot.CurrentState == FarmPlot.PlotState.Normal)
-                currentLookedPlot.RPC_CayDat();
-        }
-
         if (Mouse.current.rightButton.wasPressedThisFrame)
         {
-            if (currentLookedPlot.CurrentState == FarmPlot.PlotState.Tilled)
+            // Chỉ cần 1 Click Chuột Phải là Gieo Hạt (không cần cày cuốc nữa)
+            if (currentLookedPlot.CurrentState == FarmPlot.PlotState.DatTrong)
                 currentLookedPlot.RPC_GieoHat(); 
         }
 
         if (Keyboard.current.eKey.wasPressedThisFrame)
         {
-            if (currentLookedPlot.CurrentState == FarmPlot.PlotState.Grown)
+            if (currentLookedPlot.CurrentState == FarmPlot.PlotState.CayLon)
                 currentLookedPlot.RPC_ThuHoach(myPlayer.Runner.LocalPlayer);
         }
     }
