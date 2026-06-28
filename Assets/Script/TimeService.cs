@@ -1,120 +1,58 @@
-using UnityEngine;
 using System;
+using UnityEngine;
 
-public class TimeService
-{
-    readonly TimeSetting timeSetting;
-
+public class TimeService {
+    readonly TimeSettings settings;
     DateTime currentTime;
-
     readonly TimeSpan sunriseTime;
     readonly TimeSpan sunsetTime;
 
-    public event Action Onsunrise = delegate { };
-    public event Action Onsunset = delegate { };
-    public event Action OnHourChanged = delegate { };
+    public DateTime CurrentTime => currentTime;
 
-    bool isDayTime;
-    int currentHour;
+    public event Action OnSunrise = delegate { };
+    public event Action OnSunset = delegate { };
+    public event Action OnHourChange = delegate { };
 
-    public TimeService(TimeSetting settings)
-    {
-        timeSetting = settings;
+    readonly Observable<bool> isDayTime;
+    readonly Observable<int> currentHour;
 
-        currentTime = DateTime.Now.Date +
-                      TimeSpan.FromHours(timeSetting.startHour);
-
-        sunriseTime = TimeSpan.FromHours(timeSetting.sunriseHour);
-        sunsetTime = TimeSpan.FromHours(timeSetting.sunsetHour);
-
-        isDayTime = IsDayTime();
-        currentHour = currentTime.Hour;
+    public TimeService(TimeSettings settings) {
+        this.settings = settings;
+        currentTime = DateTime.Now.Date + TimeSpan.FromHours(settings.startHour);
+        sunriseTime = TimeSpan.FromHours(settings.sunriseHour);
+        sunsetTime = TimeSpan.FromHours(settings.sunsetHour);
+        
+        isDayTime = new Observable<bool>(IsDayTime());
+        currentHour = new Observable<int>(currentTime.Hour);
+        
+        isDayTime.ValueChanged += day => (day ? OnSunrise : OnSunset)?.Invoke();
+        currentHour.ValueChanged += _ => OnHourChange?.Invoke();
     }
 
-    public void UpdateTime(float deltaTime)
-    {
-        currentTime = currentTime.AddSeconds(
-            deltaTime * timeSetting.timeMultiplier
-        );
-
-        bool newDayTime = IsDayTime();
-
-        // Ki?m tra chuy?n ??i ng�y/?�m
-        if (newDayTime != isDayTime)
-        {
-            isDayTime = newDayTime;
-
-            if (isDayTime)
-                Onsunrise.Invoke();
-            else
-                Onsunset.Invoke();
-        }
-
-        // Ki?m tra ??i gi?
-        if (currentTime.Hour != currentHour)
-        {
-            currentHour = currentTime.Hour;
-            OnHourChanged.Invoke();
-        }
+    public void UpdateTime(float deltaTime) {
+        currentTime = currentTime.AddSeconds(deltaTime * settings.timeMultiplier);
+        isDayTime.Value = IsDayTime();
+        currentHour.Value = currentTime.Hour;
     }
-
-    public float CalculateSunAngle()
-    {
+    
+    public float CalculateSunAngle() {
         bool isDay = IsDayTime();
+        float startDegree = isDay ? 0 : 180;
+        TimeSpan start = isDay ? sunriseTime : sunsetTime;
+        TimeSpan end = isDay ? sunsetTime : sunriseTime;
+        
+        TimeSpan totalTime = CalculateDifference(start, end);
+        TimeSpan elapsedTime = CalculateDifference(start, currentTime.TimeOfDay);
 
-        float startDegree = isDay ? 0f : 180f;
-
-        TimeSpan start = isDay
-            ? sunriseTime
-            : sunsetTime;
-
-        TimeSpan end = isDay
-            ? sunsetTime
-            : sunriseTime;
-
-        TimeSpan totalTime =
-            CalculateDifference(start, end);
-
-        TimeSpan elapsedTime =
-            CalculateDifference(
-                start,
-                currentTime.TimeOfDay
-            );
-
-        double percentage =
-            elapsedTime.TotalSeconds /
-            totalTime.TotalSeconds;
-
-        return Mathf.Lerp(
-            startDegree,
-            startDegree + 180f,
-            (float)percentage
-        );
+        double percentage = elapsedTime.TotalMinutes / totalTime.TotalMinutes;
+        return Mathf.Lerp(startDegree, startDegree + 180, (float) percentage);
     }
 
-    public DateTime GetCurrentTime()
-    {
-        return currentTime;
-    }
-
-    bool IsDayTime()
-    {
-        return currentTime.TimeOfDay >= sunriseTime
-            && currentTime.TimeOfDay < sunsetTime;
-    }
-
-    TimeSpan CalculateDifference(
-        TimeSpan from,
-        TimeSpan to
-    )
-    {
+    // ĐÃ SỬA: Thêm ">=" để tránh lọt khung hình tại thời điểm chuyển giao
+    bool IsDayTime() => currentTime.TimeOfDay >= sunriseTime && currentTime.TimeOfDay < sunsetTime;
+    
+    TimeSpan CalculateDifference(TimeSpan from, TimeSpan to) {
         TimeSpan difference = to - from;
-
-        if (difference.TotalHours < 0)
-        {
-            difference += TimeSpan.FromHours(24);
-        }
-
-        return difference;
+        return difference.TotalHours < 0 ? difference + TimeSpan.FromHours(24) : difference;
     }
 }
