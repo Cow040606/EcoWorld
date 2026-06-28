@@ -366,6 +366,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (playerCamera == null) return;
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
 
+        // Đồng bộ Animation chặt cây qua mạng cho mọi người cùng thấy
+        RPC_AnimChatCay();
+
         Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
         Ray ray = playerCamera.ScreenPointToRay(screenCenter);
 
@@ -1049,6 +1052,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             expToLevelUp *= 1.1f; 
         }
     }
+    
+    // --- MỚI THÊM: HÀM ĐỒNG BỘ ANIMATION CHẶT CÂY ---
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_AnimChatCay()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("Chatcay");
+        }
+    }
+    
     private void HandleMining()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
