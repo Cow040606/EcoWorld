@@ -1211,9 +1211,9 @@ CharacterController:
   m_Height: 0.63
   m_Radius: 0.26
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
+  m_StepOffset: 0.5
+  m_SkinWidth: 0.01
+  m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0.31, z: 0}
 --- !u!95 &8881504610387854120
 Animator:
@@ -1278,6 +1278,7 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
+  - {fileID: 8881504610387854121}
   - {fileID: 3454400928112920996}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &3454400928112920996

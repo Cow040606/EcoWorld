@@ -296,22 +296,26 @@ namespace ithappy.Animals_FREE
             }
         }
 
-        private void Die()
+       private void Die()
+{
+    _state = AnimalState.Dead;
+    MoveAnimal(Vector2.zero, false);
+    
+    DropItems();
+    Debug.Log($"[Animal] {gameObject.name} đã chết và biến mất!");
+
+    if (HasStateAuthority)
+    {
+        // TÌM SPAWNER VÀ THÔNG BÁO THÚ ĐÃ CHẾT
+        AnimalSpawner spawner = FindObjectOfType<AnimalSpawner>();
+        if (spawner != null)
         {
-            _state = AnimalState.Dead;
-            MoveAnimal(Vector2.zero, false);
-            
-            // Gọi hàm rớt đồ ngay khi thú chết
-            DropItems();
-
-            Debug.Log($"[Animal] {gameObject.name} đã chết và biến mất!");
-
-            // Xóa object ngay lập tức
-            if (HasStateAuthority)
-            {
-                Runner.Despawn(Object);
-            }
+            spawner.OnAnimalDied(animalType);
         }
+
+        Runner.Despawn(Object);
+    }
+}
 
         // -------------------------------------------------------
         // LOGIC RỚT ĐỒ (THỊT VÀ DA)

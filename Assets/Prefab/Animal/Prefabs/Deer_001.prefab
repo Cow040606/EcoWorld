@@ -1074,13 +1074,13 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1.71
-  m_Radius: 0.5
+  m_Height: 0.63
+  m_Radius: 0.26
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.88, z: 0}
+  m_StepOffset: 0.5
+  m_SkinWidth: 0.01
+  m_MinMoveDistance: 0
+  m_Center: {x: 0, y: 0.31, z: 0}
 --- !u!95 &7922649801668778610
 Animator:
   serializedVersion: 7
@@ -1144,6 +1144,7 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
+  - {fileID: 7922649801668778611}
   - {fileID: -1324604315303134429}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &-1324604315303134429
