@@ -1082,9 +1082,20 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
     
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_AnimDapDa()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("dapda");
+        }
+    }
+    
     private void HandleMining()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
+
+        RPC_AnimDapDa();
 
         if (BanTiaTuTamManHinh(interactRange, rockLayer, out RaycastHit hit))
         {
