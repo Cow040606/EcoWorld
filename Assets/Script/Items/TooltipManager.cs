@@ -34,6 +34,15 @@ public class TooltipManager : MonoBehaviour
 
     public void HienThiTooltip(Item monDo, int soLuong) 
     {
+        // 1. KHIÊN BẢO VỆ: Nếu di chuột vào ô trống (không có đồ), tắt bảng và ngừng chạy code ngay!
+        if (monDo == null) 
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
+        // 2. MÁY PHÁT HIỆN NÓI DỐI: In ra Console xem có nhận được data thật không
+
         txtTen.text = monDo.itemName;
         txtGia.text = "Giá: " + monDo.value.ToString() + " Xu";
         txtMoTa.text = monDo.description;
@@ -41,7 +50,6 @@ public class TooltipManager : MonoBehaviour
         // HIỆN SỐ LƯỢNG LÊN MÀN HÌNH
         if (txtSoLuong != null)
         {
-            // Nếu có đồ thì hiện, còn nếu = 0 thì báo là Chưa có
             if (soLuong > 0) 
             {
                 txtSoLuong.text = "Đang sở hữu: " + soLuong.ToString();
@@ -64,15 +72,24 @@ public class TooltipManager : MonoBehaviour
     private void DiChuyenTheoChuot()
     {
         Vector2 viTriChuot = Input.mousePosition;
-        float tiLeX = viTriChuot.x / Screen.width;
-        float tiLeY = viTriChuot.y / Screen.height;
-        float tamX = tiLeX > 0.5f ? 1.05f : -0.05f;
-        float tamY = tiLeY > 0.5f ? 1.05f : -0.05f;
+        
+        // 1. Chia màn hình làm 4 góc để xác định vị trí chuột
+        float nuaManHinhX = Screen.width / 2f;
+        float nuaManHinhY = Screen.height / 2f;
 
-        // Đảo tâm Pivot liên tục
-        rectTransform.pivot = new Vector2(tamX, tamY);
+        // Nếu chuột ở nửa Phải -> Tâm Pivot dời sang Phải (1). Nửa Trái -> dời sang Trái (0)
+        float pivotX = viTriChuot.x > nuaManHinhX ? 1f : 0f;
+        
+        // Nếu chuột ở nửa Trên -> Tâm Pivot dời lên Trên (1). Nửa Dưới -> dời xuống Dưới (0)
+        float pivotY = viTriChuot.y > nuaManHinhY ? 1f : 0f;
 
-        // Kéo bảng đi theo chuột
-        transform.position = viTriChuot;
+        rectTransform.pivot = new Vector2(pivotX, pivotY);
+
+        // 2. Đẩy cái bảng ra xa con trỏ chuột 15 pixel để Bò không bị che mất Item đang nhìn
+        float offsetX = pivotX == 1f ? -15f : 15f;
+        float offsetY = pivotY == 1f ? -15f : 15f;
+
+        // 3. Chốt tọa độ cuối cùng
+        transform.position = new Vector2(viTriChuot.x + offsetX, viTriChuot.y + offsetY);
     }
 }
