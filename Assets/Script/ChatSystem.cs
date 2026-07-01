@@ -1,4 +1,4 @@
-/*using UnityEngine;
+using UnityEngine;
 using Fusion;
 using TMPro;
 using UnityEngine.UI;
@@ -187,4 +187,4 @@ public class ChatSystem : NetworkBehaviour
         if (chatCanvasGroup != null) chatCanvasGroup.alpha = 0f;
         ChatSys.SetActive(false);
     }
-}*/
+}

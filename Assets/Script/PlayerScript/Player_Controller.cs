@@ -188,7 +188,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                               EventSystem.current.currentSelectedGameObject != null &&
                               EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
 
-            //if (ChatSystem.IsChatting || dangGoPhim) return;
+            if (ChatSystem.IsChatting || dangGoPhim) return;
 
             bool baloDangMo = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
             bool ishopopen = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
@@ -494,11 +494,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                           EventSystem.current.currentSelectedGameObject != null &&
                           EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
 
-        /*if (ChatSystem.IsChatting || dangGoPhim)
+        if (ChatSystem.IsChatting || dangGoPhim)
         {
             input.Set(data);
             return;
-        }*/
+        }
 
         data.isJumpPressed = jumpPressedLocal;
 
@@ -553,14 +553,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                           EventSystem.current.currentSelectedGameObject != null &&
                           EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
 
-        /*if (ChatSystem.IsChatting || dangGoPhim)
+        if (ChatSystem.IsChatting || dangGoPhim)
         {
             character.Move(Vector3.zero);
             isrun = false;
             isSprinting = false;
             isJumping = false;
             return;
-        }*/
+        }
 
         // --- KHÓA DI CHUYỂN & XỬ LÝ VA CHẠM KHI CHẶT CÂY/ĐẬP ĐÁ ---
         if (isDoingAction)
