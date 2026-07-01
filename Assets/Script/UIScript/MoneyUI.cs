@@ -1,17 +1,19 @@
 using UnityEngine;
 using TMPro;
 
-public class GemUI : MonoBehaviour
+public class MoneyUI : MonoBehaviour
 {
-    public TextMeshProUGUI txtGold;
+    public TextMeshProUGUI[] txtGem; 
 
     void Update()
     {
-        // Gọi thẳng tên Chủ tịch từ danh bạ VIP ra xài, không trượt đi đâu được!
         if (Player_Controller.localPlayer != null)
         {
-            // Lu ít thêm dấu ": " vào cho nó giống thiết kế ban đầu của Bò nhé
-            txtGold.text = ": " + Player_Controller.localPlayer.Gold.ToString();
+            for (int i = 0; i < txtGem.Length; i++)
+            {
+                // Thêm [i] để chỉ định đúng phần tử trong mảng
+                txtGem[i].text = ": " + Player_Controller.localPlayer.Gem.ToString();
+            }
         }
     }
 }
