@@ -27,6 +27,8 @@ public class MapManager : MonoBehaviour
 
     void Update()
     {
+
+        if (ChatSystem.IsChatting) return;
         // 1. BẬT/TẮT BẢN ĐỒ BẰNG PHÍM M
         if (Keyboard.current.mKey.wasPressedThisFrame)
         {
