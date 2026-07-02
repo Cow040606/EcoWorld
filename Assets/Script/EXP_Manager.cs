@@ -12,7 +12,7 @@ public class EXP_Manager : MonoBehaviour
         if(sliderExp != null && myPlayer != null) 
         {
             sliderExp.value = myPlayer.ExpCurrent / myPlayer.expToLevelUp;
-            ExpText.text = " Lvl " +myPlayer.level.ToString();
+            ExpText.text = " Lvl: " + myPlayer.level.ToString();
         }
         else
         {
