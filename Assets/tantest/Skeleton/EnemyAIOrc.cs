@@ -4,7 +4,6 @@ using UnityEngine.AI;
 
 public class EnemyAIOrc : NetworkBehaviour
 {
-    // Đã thêm trạng thái Attack cho animation "slash"
     public enum EnemyState { Idle, Patrol, Scream, Chase, Attack, Return, Dead }
 
     [Networked, OnChangedRender(nameof(OnStateChanged))]
@@ -14,13 +13,13 @@ public class EnemyAIOrc : NetworkBehaviour
     public int Health { get; set; }
 
     [Header("AI Settings")]
-    public float patrolRadius = 10f;       
-    public float detectionRadius = 8f;     
-    public float loseRadius = 15f;         
-    public float attackRadius = 2f;        // Khoảng cách để quái chém (slash)
-    public float idleWaitTime = 5f;        
-    public float screamDuration = 2f;      
-    public float attackCooldown = 1.5f;    // Thời gian nghỉ giữa 2 lần chém
+    public float patrolRadius = 10f;
+    public float detectionRadius = 8f;
+    public float loseRadius = 15f;
+    public float attackRadius = 2f;
+    public float idleWaitTime = 5f;
+    public float screamDuration = 2f;
+    public float attackCooldown = 1.5f;
     public int maxHealth = 100;
 
     private NavMeshAgent agent;
@@ -42,6 +41,11 @@ public class EnemyAIOrc : NetworkBehaviour
         }
     }
 
+    private bool IsAgentValid()
+    {
+        return agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh;
+    }
+
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority || CurrentState == EnemyState.Dead) return;
@@ -58,7 +62,7 @@ public class EnemyAIOrc : NetworkBehaviour
                 break;
 
             case EnemyState.Patrol:
-                if (!agent.pathPending && agent.remainingDistance < 0.5f)
+                if (IsAgentValid() && !agent.pathPending && agent.remainingDistance < 0.5f)
                 {
                     CurrentState = EnemyState.Idle;
                     stateTimer = 0f;
@@ -78,43 +82,39 @@ public class EnemyAIOrc : NetworkBehaviour
                 if (targetPlayer != null)
                 {
                     float distanceToPlayer = Vector3.Distance(transform.position, targetPlayer.position);
-                    
-                    // Nếu lại gần đủ tầm chém -> Chuyển sang Attack
+
                     if (distanceToPlayer <= attackRadius)
                     {
                         CurrentState = EnemyState.Attack;
-                        stateTimer = 0f; // Reset timer để tính cooldown chém
-                        agent.ResetPath(); // Dừng chạy để đứng chém
+                        stateTimer = 0f;
+                        if (IsAgentValid()) agent.ResetPath();
                     }
-                    // Nếu đi quá xa -> Bỏ cuộc quay về
                     else if (distanceToPlayer > loseRadius)
                     {
                         targetPlayer = null;
                         CurrentState = EnemyState.Return;
-                        agent.SetDestination(startPosition);
+                        if (IsAgentValid()) agent.SetDestination(startPosition);
                     }
                     else
                     {
-                        agent.SetDestination(targetPlayer.position);
+                        if (IsAgentValid()) agent.SetDestination(targetPlayer.position);
                     }
                 }
                 else
                 {
                     CurrentState = EnemyState.Return;
-                    agent.SetDestination(startPosition);
+                    if (IsAgentValid()) agent.SetDestination(startPosition);
                 }
                 break;
 
             case EnemyState.Attack:
                 if (targetPlayer != null)
                 {
-                    // Xoay mặt về phía người chơi khi chém
                     transform.LookAt(new Vector3(targetPlayer.position.x, transform.position.y, targetPlayer.position.z));
-                    
+
                     stateTimer += Runner.DeltaTime;
                     if (stateTimer >= attackCooldown)
                     {
-                        // Chém xong, kiểm tra xem người chơi còn ở gần không, nếu chạy xa thì đổi lại thành Chase
                         float dist = Vector3.Distance(transform.position, targetPlayer.position);
                         if (dist > attackRadius)
                         {
@@ -122,8 +122,7 @@ public class EnemyAIOrc : NetworkBehaviour
                         }
                         else
                         {
-                            // Nếu vẫn đứng gần, chém tiếp (Trigger lại animation thông qua RPC hoặc OnStateChanged)
-                            CurrentState = EnemyState.Idle; // Mẹo nhỏ nhảy về Idle 1 frame để kích hoạt lại Attack
+                            CurrentState = EnemyState.Idle;
                             CurrentState = EnemyState.Attack;
                             stateTimer = 0f;
                         }
@@ -136,7 +135,7 @@ public class EnemyAIOrc : NetworkBehaviour
                 break;
 
             case EnemyState.Return:
-                if (!agent.pathPending && agent.remainingDistance < 0.5f)
+                if (IsAgentValid() && !agent.pathPending && agent.remainingDistance < 0.5f)
                 {
                     CurrentState = EnemyState.Idle;
                     stateTimer = 0f;
@@ -146,16 +145,39 @@ public class EnemyAIOrc : NetworkBehaviour
         }
     }
 
+    // =========================================================================
+    // HÀM GÂY SÁT THƯƠNG TỪ ANIMATION EVENT CỦA QUÁI VẬT
+    // =========================================================================
+    public void EnemyDoDamage()
+    {
+        if (targetPlayer != null)
+        {
+            float dist = Vector3.Distance(transform.position, targetPlayer.position);
+            if (dist <= attackRadius + 1f)
+            {
+                Player_Controller player = targetPlayer.GetComponent<Player_Controller>();
+                if (player != null)
+                {
+                    player.RPC_TakeDame(15f);
+                }
+            }
+        }
+    }
+    // =========================================================================
+
     private void StartPatrol()
     {
         Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
         randomDirection += startPosition;
-        
+
         NavMeshHit hit;
         if (NavMesh.SamplePosition(randomDirection, out hit, patrolRadius, 1))
         {
-            agent.SetDestination(hit.position);
-            CurrentState = EnemyState.Patrol;
+            if (IsAgentValid())
+            {
+                agent.SetDestination(hit.position);
+                CurrentState = EnemyState.Patrol;
+            }
         }
     }
 
@@ -169,22 +191,24 @@ public class EnemyAIOrc : NetworkBehaviour
                 targetPlayer = hit.transform;
                 CurrentState = EnemyState.Scream;
                 stateTimer = 0f;
-                agent.ResetPath(); 
+                if (IsAgentValid()) agent.ResetPath();
                 transform.LookAt(new Vector3(targetPlayer.position.x, transform.position.y, targetPlayer.position.z));
                 break;
             }
         }
     }
 
-    public void TakeDamage(int damage)
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_TakeDamageFromPlayer(int damage)
     {
-        if (!HasStateAuthority || CurrentState == EnemyState.Dead) return;
+        if (CurrentState == EnemyState.Dead) return;
 
         Health -= damage;
+
         if (Health <= 0)
         {
             CurrentState = EnemyState.Dead;
-            agent.ResetPath();
+            if (IsAgentValid()) agent.ResetPath();
         }
         else
         {
@@ -195,7 +219,6 @@ public class EnemyAIOrc : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_PlayTakeDamageAnim()
     {
-        // Gọi chính xác tên trigger "takedame"
         animator.SetTrigger("takedame");
     }
 
@@ -203,7 +226,6 @@ public class EnemyAIOrc : NetworkBehaviour
     {
         if (animator == null) return;
 
-        // Reset các cờ di chuyển
         animator.SetBool("isWalking", false);
         animator.SetBool("isRunning", false);
 
@@ -225,7 +247,7 @@ public class EnemyAIOrc : NetworkBehaviour
             case EnemyState.Dead:
                 animator.SetTrigger("death");
                 Collider col = GetComponent<Collider>();
-                if(col != null) col.enabled = false; 
+                if (col != null) col.enabled = false;
                 break;
         }
     }
