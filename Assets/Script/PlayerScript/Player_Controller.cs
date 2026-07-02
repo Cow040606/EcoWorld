@@ -133,12 +133,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private bool didRayHit; // Tia có đụng trúng cái gì không
     private Vector3 rayHitPoint; // Điểm mà tia đụng trúng
 
-    public bool showDebugRay = true;
-    private Vector3 debugRayOrigin;
-    private Vector3 debugRayDirection;
-    private float debugRayDistance;
-    private bool didRayHit;
-    private Vector3 rayHitPoint;
 
     [Header("Trạng thái Hành Động (Chặt/Đào)")]
     [Networked] public NetworkBool isDoingAction { get; set; }
@@ -326,9 +320,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                         HandleAttackAnimal(); // sword
                         break; 
 
-                        HandleMeleeAttack();
-                        break;
-
                     case 5:
                         HandleChopping(); // axe
                         break;
@@ -378,34 +369,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     // =========================================================================
     // HÀM GÂY SÁT THƯƠNG TỪ ANIMATION EVENT
     // =========================================================================
-    public void PlayerDoDamage()
+
+
+    private void HandleAttackAnimal()
     {
+        if (!Mouse.current.leftButton.wasPressedThisFrame) return;
+
         if (BanTiaTuTamManHinh(interactRange, 0, out RaycastHit hit))
         {
-            var enemyAI = hit.collider.GetComponent<EnemyAIOrc>();
-            if (enemyAI != null) enemyAI.RPC_TakeDamageFromPlayer(25);
-
             var animalAI = hit.collider.GetComponent<ithappy.Animals_FREE.AnimalAI_Controller>();
             if (animalAI != null) animalAI.RPC_AnimalTakeDamage(attackDamageToAnimal, Runner.LocalPlayer);
         }
     }
 
-    private void HandleMeleeAttack()
-    {
-        if (isAttacking || !Mouse.current.leftButton.wasPressedThisFrame) return;
-
-        StartCoroutine(AttackCooldownRoutine());
-    }
-
-    private System.Collections.IEnumerator AttackCooldownRoutine()
-    {
-        isAttacking = true;
-        RPC_AnimSlash();
-
-        yield return new WaitForSeconds(1.0f); // Cooldown 1 giây tránh spam
-
-        isAttacking = false;
-    }
     // =========================================================================
 
     private void UpdateFarmingUI(int idDangCam)
@@ -473,8 +449,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void HandleMining()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
-
         RPC_BaoHieuBatDauAction(2, 1.5f, 0.6f);
+
+        if (BanTiaTuTamManHinh(interactRange, rockLayer, out RaycastHit hit))
+        {
+            RockScript cucDa = hit.collider.GetComponent<RockScript>();
+            if (cucDa != null) cucDa.RPC_NhanSatThuongCuoc(25f); 
+        }
     }
 
     private void ThucHienXetVaChamChop()
@@ -591,6 +572,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority && !HasInputAuthority) return;
+        
         bool dangGoPhim = EventSystem.current != null &&
                           EventSystem.current.currentSelectedGameObject != null &&
                           EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
@@ -604,8 +586,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             return;
         }
 
-
-
         if (isDoingAction)
         {
             character.Move(Vector3.zero);
@@ -616,8 +596,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (hitTimer.Expired(Runner))
             {
                 hitTimer = TickTimer.None;
+                
+                // Đã xóa phần else if liên quan đến ThucHienXetVaChamMine()
                 if (pendingActionType == 1) ThucHienXetVaChamChop();
-                else if (pendingActionType == 2) ThucHienXetVaChamMine();
             }
 
             if (actionTimer.Expired(Runner))
@@ -629,7 +610,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             return;
         }
-
 
         if (GetInput(out DuLieuInput data))
         {
@@ -1190,17 +1170,15 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             animator.SetTrigger("Chatcay");
         }
     }
-    
-    private void HandleMining()
-    {
-        if (!Mouse.current.leftButton.wasPressedThisFrame) return;
 
-        if (BanTiaTuTamManHinh(interactRange, rockLayer, out RaycastHit hit))
+    public void RPC_AnimDapDa()
+    {
+        if (animator != null)
         {
-            RockScript cucDa = hit.collider.GetComponent<RockScript>();
-            if (cucDa != null) cucDa.RPC_NhanSatThuongCuoc(25f); 
+            animator.SetTrigger("dapda");
         }
     }
+    
 
     void OnDrawGizmos()
     {

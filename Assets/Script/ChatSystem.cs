@@ -25,8 +25,9 @@ public class ChatSystem : NetworkBehaviour
 
     public override void Spawned()
     {
-        if (HasInputAuthority)
-        {
+        //if (HasInputAuthority)
+        //{
+            ChatSys.SetActive(true);
             LocalInstance = this; // Khẳng định: Đây là UI trên màn hình của mình!
             IsChatting = false;
 
@@ -51,12 +52,12 @@ public class ChatSystem : NetworkBehaviour
             
             // Ép tàng hình khung chat ngay từ đầu
             if (chatCanvasGroup != null) chatCanvasGroup.alpha = 0f; 
-        }
+        //}
     }
 
     void Update()
     {
-        if (!HasInputAuthority) return;
+        //if (!HasInputAuthority) return;
 
         // Bật chat (/)
         if (!IsChatting && Keyboard.current != null && Keyboard.current.slashKey.wasPressedThisFrame)
@@ -80,8 +81,16 @@ public class ChatSystem : NetworkBehaviour
         var message = inputFieldMessage.text;
         if (!string.IsNullOrWhiteSpace(message))
         {
-            var id = Runner.LocalPlayer.PlayerId;
-            var text = $"Player {id}: {message}";
+            // Yêu cầu: Xác định đúng tên của người chơi nhắn
+            string tenHienThi = "Người chơi";
+            if (Player_Controller.localPlayer != null)
+            {
+                Player_Data data = Player_Controller.localPlayer.GetComponent<Player_Data>();
+                if (data != null) tenHienThi = data.tenTrenMang.ToString();
+            }
+            
+            // Yêu cầu: Tên màu vàng, nội dung màu trắng
+            var text = $"<color=yellow>{tenHienThi}</color>: <color=white>{message}</color>";
             RpcChat(text);
         }
         
@@ -90,6 +99,7 @@ public class ChatSystem : NetworkBehaviour
 
     void OpenChat()
     {
+        ChatSys.SetActive(true);
         IsChatting = true;
         
         // Sáng 100% ngay lập tức
@@ -179,5 +189,6 @@ public class ChatSystem : NetworkBehaviour
 
         // Chốt hạ tàng hình 100%
         if (chatCanvasGroup != null) chatCanvasGroup.alpha = 0f;
+        ChatSys.SetActive(false);
     }
 }

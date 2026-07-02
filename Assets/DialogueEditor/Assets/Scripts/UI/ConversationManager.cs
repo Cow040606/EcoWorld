@@ -45,6 +45,10 @@ namespace DialogueEditor
         // Base panels
         public RectTransform DialoguePanel;
         public RectTransform OptionsPanel;
+
+        [Header("Danh Sách UI Cần Ẩn Khi Chat")] 
+        public List<GameObject> UIElementsToHide;
+
         // Dialogue UI
         public Image DialogueBackground;
         public Image NpcIcon;
@@ -628,6 +632,14 @@ namespace DialogueEditor
         {
             DialoguePanel.gameObject.SetActive(true);
             OptionsPanel.gameObject.SetActive(true);
+            if (UIElementsToHide != null)
+            {
+                for (int i = 0; i < UIElementsToHide.Count; i++)
+                {
+                    if (UIElementsToHide[i] != null) 
+                        UIElementsToHide[i].SetActive(false);
+                }
+            }
 
             if (BackgroundImage != null)
             {
@@ -642,10 +654,18 @@ namespace DialogueEditor
             NpcIcon.sprite = BlankSprite;
         }
 
-        private void TurnOffUI()
+       private void TurnOffUI()
         {
             DialoguePanel.gameObject.SetActive(false);
             OptionsPanel.gameObject.SetActive(false);
+            if (UIElementsToHide != null)
+            {
+                for (int i = 0; i < UIElementsToHide.Count; i++)
+                {
+                    if (UIElementsToHide[i] != null) 
+                        UIElementsToHide[i].SetActive(true);
+                }
+            }
             SetState(eState.Off);
 #if UNITY_EDITOR
             // Debug.Log("[ConversationManager]: Conversation UI off.");
