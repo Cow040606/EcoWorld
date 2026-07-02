@@ -8,7 +8,6 @@ using System.Collections; // BẮT BUỘC THÊM ĐỂ DÙNG HIỆU ỨNG THỜI 
 public class ChatSystem : NetworkBehaviour
 {
     [Header("UI Components")]
-    
     public TextMeshProUGUI textMessage;
     public TMP_InputField inputFieldMessage;
     public Button buttonSend;
@@ -26,10 +25,8 @@ public class ChatSystem : NetworkBehaviour
 
     public override void Spawned()
     {
-        
         if (HasInputAuthority)
         {
-            ChatSys.SetActive(true);
             LocalInstance = this; // Khẳng định: Đây là UI trên màn hình của mình!
             IsChatting = false;
 
@@ -54,7 +51,6 @@ public class ChatSystem : NetworkBehaviour
             
             // Ép tàng hình khung chat ngay từ đầu
             if (chatCanvasGroup != null) chatCanvasGroup.alpha = 0f; 
-            ChatSys.SetActive(false);
         }
     }
 
@@ -84,10 +80,8 @@ public class ChatSystem : NetworkBehaviour
         var message = inputFieldMessage.text;
         if (!string.IsNullOrWhiteSpace(message))
         {
-            Player_Data data = GetComponent<Player_Data>();
-            string tenHienThi = (data != null) ? data.tenTrenMang.ToString() : "Người chơi";
-    
-            var text = $"<color=yellow>{tenHienThi}</color>: <color=white>{message}</color>";
+            var id = Runner.LocalPlayer.PlayerId;
+            var text = $"Player {id}: {message}";
             RpcChat(text);
         }
         
@@ -97,7 +91,7 @@ public class ChatSystem : NetworkBehaviour
     void OpenChat()
     {
         IsChatting = true;
-        ChatSys.SetActive(true);
+        
         // Sáng 100% ngay lập tức
         if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
         if (chatCanvasGroup != null) chatCanvasGroup.alpha = 1f;
@@ -185,6 +179,5 @@ public class ChatSystem : NetworkBehaviour
 
         // Chốt hạ tàng hình 100%
         if (chatCanvasGroup != null) chatCanvasGroup.alpha = 0f;
-        ChatSys.SetActive(false);
     }
 }

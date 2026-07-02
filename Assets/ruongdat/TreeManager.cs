@@ -5,19 +5,10 @@ using Fusion;
 public class TreeManager : NetworkBehaviour
 {
     public static TreeManager Instance;
-
-    [Header("Prefabs & Hiệu ứng")]
     public NetworkPrefabRef woodPrefab;
-    [Tooltip("Kéo Prefab Particle dăm gỗ vào đây")]
-    public GameObject woodChipParticlePrefab;
-
-    [Header("Thông số cấu hình")]
     public float chopRadius = 3.0f;
 
-    // Lưu trữ số lần bị chém của từng cây.
-    private Dictionary<string, int> treeHitCounts = new Dictionary<string, int>();
-
-    // Lưu trữ dữ liệu gốc của các Terrain để phục hồi khi tắt game
+    // Lưu trữ dữ liệu gốc của các Terrain để phục hồi khi tắt game (tránh mất cây vĩnh viễn trong file Asset)
     private Dictionary<Terrain, TreeInstance[]> originalTrees = new Dictionary<Terrain, TreeInstance[]>();
 
     private void Awake()
@@ -25,6 +16,7 @@ public class TreeManager : NetworkBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
+        // Backup toàn bộ cây của mọi Terrain đang có trong Scene
         foreach (Terrain t in Terrain.activeTerrains)
         {
             originalTrees[t] = t.terrainData.treeInstances;
@@ -33,22 +25,28 @@ public class TreeManager : NetworkBehaviour
 
     private void OnApplicationQuit()
     {
+        // Trả lại toàn bộ cây cho Terrain khi thoát game để bảo vệ dữ liệu Asset gốc
         foreach (var kvp in originalTrees)
         {
             if (kvp.Key != null)
+            {
                 kvp.Key.terrainData.treeInstances = kvp.Value;
+            }
         }
     }
 
     public void TryChopTree(Terrain targetTerrain, Vector3 hitPoint, NetworkRunner runner)
     {
         int treeIndex = GetClosestTreeIndexOnTerrain(targetTerrain, hitPoint);
+        
         if (treeIndex < 0) return;
 
-        // Chỉ Input Authority gọi lên Server
+        Debug.Log($"[TreeManager] ✅ Gửi yêu cầu chặt cây #{treeIndex} lên Server...");
+        // Chỉ người chơi (Input Authority) gọi lệnh này lên Server
         RPC_RequestChopTree(targetTerrain.transform.position, treeIndex, hitPoint, runner.LocalPlayer);
     }
 
+    // 1. Client yêu cầu Server xử lý chặt cây
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     private void RPC_RequestChopTree(Vector3 terrainPosition, int treeIndex, Vector3 hitPoint, PlayerRef chopper)
     {
@@ -58,66 +56,53 @@ public class TreeManager : NetworkBehaviour
         TreeInstance[] trees = targetTerrain.terrainData.treeInstances;
         if (treeIndex < 0 || treeIndex >= trees.Length) return;
 
-        string treeKey = $"{Mathf.RoundToInt(terrainPosition.x)}_{Mathf.RoundToInt(terrainPosition.z)}_{treeIndex}";
+        // Tính toán vị trí sinh ra gỗ (cộng thêm 1.5f trục Y để rớt từ trên xuống)
+        Vector3 spawnPos = TreeToWorld(targetTerrain, trees[treeIndex]) + Vector3.up * 1.5f;
 
-        if (!treeHitCounts.ContainsKey(treeKey))
-        {
-            treeHitCounts[treeKey] = 0;
-        }
+        // Sinh gỗ rớt ra (Chỉ Server thực hiện để tránh đẻ ra nhiều cục gỗ trùng lặp)
+        if (woodPrefab.IsValid)
+            Runner.Spawn(woodPrefab, spawnPos, Quaternion.identity, chopper);
 
-        // 1. Tăng máu/hit
-        treeHitCounts[treeKey]++;
-
-        // 2. Yêu cầu tất cả các máy khách phát hiệu ứng dăm gỗ tại tọa độ chém trúng
-        RPC_PlayTreeHitEffect(hitPoint);
-
-        // 3. Nếu đủ 3 hit thì cây gãy
-        if (treeHitCounts[treeKey] >= 3)
-        {
-            Vector3 spawnPos = TreeToWorld(targetTerrain, trees[treeIndex]) + Vector3.up * 1.5f;
-
-            if (woodPrefab.IsValid)
-                Runner.Spawn(woodPrefab, spawnPos, Quaternion.identity, chopper);
-
-            RPC_SyncRemoveTree(terrainPosition, treeIndex);
-            treeHitCounts.Remove(treeKey);
-        }
+        // 2. Server ra lệnh cho TẤT CẢ các máy (bao gồm cả nó) xóa cây đó đi
+        RPC_SyncRemoveTree(terrainPosition, treeIndex);
     }
 
-    // GỌI HIỆU ỨNG CHO TOÀN BỘ CÁC MÁY TRONG MẠNG
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_PlayTreeHitEffect(Vector3 hitPoint)
-    {
-        // Sinh ra hiệu ứng dăm gỗ văng ra
-        if (woodChipParticlePrefab != null)
-        {
-            GameObject vfx = Instantiate(woodChipParticlePrefab, hitPoint, Quaternion.identity);
-            Destroy(vfx, 1.5f); // Tự động dọn rác sau 1.5s để tránh nặng máy
-        }
-    }
-
+    // 3. Tất cả các máy cùng đồng bộ việc xóa cây
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_SyncRemoveTree(Vector3 terrainPosition, int treeIndex)
     {
         Terrain targetTerrain = GetTerrainByPosition(terrainPosition);
-        if (targetTerrain == null) return;
+        if (targetTerrain == null) 
+        {
+            Debug.LogError($"[TreeManager] ❌ Máy Client không tìm thấy Terrain tại {terrainPosition} để xóa cây!");
+            return;
+        }
 
         TreeInstance[] trees = targetTerrain.terrainData.treeInstances;
         if (treeIndex < 0 || treeIndex >= trees.Length) return;
 
+        // Tạo mảng mới và loại bỏ cây bị chặt
         List<TreeInstance> treeList = new List<TreeInstance>(trees);
         treeList.RemoveAt(treeIndex);
-
+        
+        // Gán lại mảng cây mới cho Terrain
         targetTerrain.terrainData.treeInstances = treeList.ToArray();
-        targetTerrain.terrainData.SetTreeInstances(treeList.ToArray(), false);
-        targetTerrain.Flush();
 
+        // --- CỰC KỲ QUAN TRỌNG ---
+        // BƯỚC 1: CẬP NHẬT ĐỒ HỌA: Ép Unity xóa hình ảnh cái cây
+        targetTerrain.terrainData.SetTreeInstances(treeList.ToArray(), false); 
+        targetTerrain.Flush(); 
+
+        // BƯỚC 2: CẬP NHẬT VẬT LÝ (FIX LỖI KẸT COLLIDER): 
+        // Tắt và bật lại TerrainCollider để ép Unity dọn dẹp va chạm của cây cũ
         TerrainCollider terrainCollider = targetTerrain.GetComponent<TerrainCollider>();
         if (terrainCollider != null)
         {
             terrainCollider.enabled = false;
             terrainCollider.enabled = true;
         }
+
+        Debug.Log($"[TreeManager] 🌲 Đã xóa cây #{treeIndex} và dọn sạch Collider trên máy tính này!");
     }
 
     private int GetClosestTreeIndexOnTerrain(Terrain targetTerrain, Vector3 worldPos)
@@ -129,6 +114,8 @@ public class TreeManager : NetworkBehaviour
         for (int i = 0; i < trees.Length; i++)
         {
             Vector3 treeWorld = TreeToWorld(targetTerrain, trees[i]);
+
+            // Chỉ so sánh mặt phẳng XZ (bỏ qua độ cao Y để check bán kính chính xác hơn)
             float dist = Vector2.Distance(
                 new Vector2(worldPos.x, worldPos.z),
                 new Vector2(treeWorld.x, treeWorld.z)
@@ -144,6 +131,7 @@ public class TreeManager : NetworkBehaviour
         return closestDist <= chopRadius ? closestIndex : -1;
     }
 
+    // Hàm tiện ích: Tính tọa độ World của một cây dựa trên Terrain chứa nó
     private Vector3 TreeToWorld(Terrain terrain, TreeInstance tree)
     {
         TerrainData td = terrain.terrainData;
@@ -155,6 +143,7 @@ public class TreeManager : NetworkBehaviour
         );
     }
 
+    // Hàm tiện ích: Tìm Terrain dựa trên tọa độ (Khắc phục lỗi sai số thập phân qua mạng)
     private Terrain GetTerrainByPosition(Vector3 position)
     {
         Terrain closestTerrain = null;
@@ -169,7 +158,10 @@ public class TreeManager : NetworkBehaviour
                 closestTerrain = t;
             }
         }
+
+        // Nếu khoảng cách sai số dưới 5m thì chấp nhận đó chính là Terrain cần tìm
         if (minDistance <= 5.0f) return closestTerrain;
+        
         return null;
     }
 }

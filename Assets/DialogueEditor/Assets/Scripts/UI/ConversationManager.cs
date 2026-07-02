@@ -39,10 +39,6 @@ namespace DialogueEditor
         public bool OptionImageSliced;
         public bool AllowMouseInteraction;
 
-
-        [Header("Danh Sách UI Cần Ẩn Khi Chat")]
-        public List<GameObject> danhSachUI_CanAn;
-
         // Non-User facing 
         // Not exposed via custom inspector
         // 
@@ -644,16 +640,6 @@ namespace DialogueEditor
             }
 
             NpcIcon.sprite = BlankSprite;
-
-            // ---- BÒ THÊM ĐOẠN NÀY VÀO CUỐI HÀM TurnOnUI ----
-            if (danhSachUI_CanAn != null)
-            {
-                for (int i = 0; i < danhSachUI_CanAn.Count; i++)
-                {
-                    if (danhSachUI_CanAn[i] != null) danhSachUI_CanAn[i].SetActive(false);
-                }
-            }
-            // ------------------------------------------------
         }
 
         private void TurnOffUI()
@@ -661,17 +647,6 @@ namespace DialogueEditor
             DialoguePanel.gameObject.SetActive(false);
             OptionsPanel.gameObject.SetActive(false);
             SetState(eState.Off);
-
-            // ---- BÒ THÊM ĐOẠN NÀY VÀO ĐÂY ----
-            if (danhSachUI_CanAn != null)
-            {
-                for (int i = 0; i < danhSachUI_CanAn.Count; i++)
-                {
-                    if (danhSachUI_CanAn[i] != null) danhSachUI_CanAn[i].SetActive(true);
-                }
-            }
-            // ----------------------------------
-
 #if UNITY_EDITOR
             // Debug.Log("[ConversationManager]: Conversation UI off.");
 #endif

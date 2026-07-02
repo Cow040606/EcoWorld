@@ -21,6 +21,6 @@ public class Player_Data : NetworkBehaviour
     public void RPC_SetPlayerName(string tenMoi)
     {
         tenTrenMang = tenMoi;
-        //Debug.Log("Server đã nhận tên mới: " + tenMoi);
+        Debug.Log("Server đã nhận tên mới: " + tenMoi);
     }
 }

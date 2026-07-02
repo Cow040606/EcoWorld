@@ -1,5 +1,5 @@
 using System;
-using Fusion; // Thêm thư viện Fusion
+using UnityEditor;
 using UnityEngine;
 
 namespace ithappy.Animals_FREE
@@ -7,19 +7,27 @@ namespace ithappy.Animals_FREE
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
     [DisallowMultipleComponent]
-    public class CreatureMover : NetworkBehaviour // Kế thừa NetworkBehaviour thay vì MonoBehaviour
+    public class CreatureMover : MonoBehaviour
     {
         [Header("Movement")]
-        [SerializeField] private float m_WalkSpeed = 1f;
-        [SerializeField] private float m_RunSpeed = 4f;
-        [SerializeField, Range(0f, 360f)] private float m_RotateSpeed = 90f;
-        [SerializeField] private Space m_Space = Space.Self;
-        [SerializeField] private float m_JumpHeight = 5f;
+        [SerializeField]
+        private float m_WalkSpeed = 1f;
+        [SerializeField]
+        private float m_RunSpeed = 4f;
+        [SerializeField, Range(0f, 360f)]
+        private float m_RotateSpeed = 90f;
+        [SerializeField]
+        private Space m_Space = Space.Self;
+        [SerializeField]
+        private float m_JumpHeight = 5f;
 
         [Header("Animator")]
-        [SerializeField] private string m_VerticalID = "Vert";
-        [SerializeField] private string m_StateID = "State";
-        [SerializeField] private LookWeight m_LookWeight = new(1f, 0.3f, 0.7f, 1f);
+        [SerializeField]
+        private string m_VerticalID = "Vert";
+        [SerializeField]
+        private string m_StateID = "State";
+        [SerializeField]
+        private LookWeight m_LookWeight = new(1f, 0.3f, 0.7f, 1f);
 
         private Transform m_Transform;
         private CharacterController m_Controller;
@@ -28,12 +36,11 @@ namespace ithappy.Animals_FREE
         private MovementHandler m_Movement;
         private AnimationHandler m_Animation;
 
-        // --- CHUYỂN CÁC BIẾN THÀNH NETWORKED ĐỂ ĐỒNG BỘ ANIMATION CHO MỌI CLIENT ---
-        [Networked] private Vector2 m_Axis { get; set; }
-        [Networked] private Vector3 m_Target { get; set; }
-        [Networked] private NetworkBool m_IsRun { get; set; }
-        [Networked] private NetworkBool m_IsMoving { get; set; }
-        [Networked] private Vector2 m_NetAnimAxis { get; set; } // Trục animation đồng bộ
+        private Vector2 m_Axis;
+        private Vector3 m_Target;
+        private bool m_IsRun;
+
+        private bool m_IsMoving;
 
         public Vector2 Axis => m_Axis;
         public Vector3 Target => m_Target;
@@ -57,40 +64,19 @@ namespace ithappy.Animals_FREE
             m_Animation = new AnimationHandler(m_Animator, m_VerticalID, m_StateID);
         }
 
-        // ĐỔI UPDATE THÀNH HÀM CỦA FUSION
-        public override void FixedUpdateNetwork()
+        private void Update()
         {
-            // 1. Chỉ Host/Server mới có quyền tính toán di chuyển vật lý (tránh giật lag)
-            if (HasStateAuthority)
-            {
-                // Tạo biến local để truyền vào (do thuộc tính [Networked] không dùng chung với từ khóa 'in' được)
-                Vector2 currentAxis = m_Axis;
-                Vector3 currentTarget = m_Target;
-                bool isRun = m_IsRun;
-                bool isMoving = m_IsMoving;
-
-                m_Movement.Move(Runner.DeltaTime, in currentAxis, in currentTarget, isRun, isMoving, out var animAxis, out var isAir);
-                
-                // Lưu lại thông số animation để phát cho Client
-                m_NetAnimAxis = animAxis;
-            }
-
-            // 2. Chạy Animation trên TẤT CẢ các máy (Server + Clients)
-            Vector2 netAnim = m_NetAnimAxis;
-            m_Animation.Animate(in netAnim, m_IsRun ? 1f : 0f, Runner.DeltaTime);
+            m_Movement.Move(Time.deltaTime, in m_Axis, in m_Target, m_IsRun, m_IsMoving, out var animAxis, out var isAir);
+            m_Animation.Animate(in animAxis, m_IsRun ? 1f : 0f, Time.deltaTime);
         }
 
         private void OnAnimatorIK()
         {
-            Vector3 target = m_Target;
-            m_Animation.AnimateIK(in target, m_LookWeight);
+            m_Animation.AnimateIK(in m_Target, m_LookWeight);
         }
 
-        // Cập nhật hàm SetInput (AI gọi hàm này)
-        public void SetInput(Vector2 axis, Vector3 target, bool isRun, bool isJump)
+        public void SetInput(in Vector2 axis, in Vector3 target, in bool isRun, in bool isJump)
         {
-            if (!HasStateAuthority) return; // Chỉ Server mới được phép đổi Input
-
             m_Axis = axis;
             m_Target = target;
             m_IsRun = isRun;
@@ -133,7 +119,6 @@ namespace ithappy.Animals_FREE
         }
 
         #region Handlers
-        // (Phần Handlers giữ nguyên như code cũ của bạn, không cần thay đổi logic bên trong)
         private class MovementHandler
         {
             private readonly CharacterController m_Controller;
@@ -142,13 +127,17 @@ namespace ithappy.Animals_FREE
             private float m_WalkSpeed;
             private float m_RunSpeed;
             private float m_RotateSpeed;
+
             private Space m_Space;
+
             private readonly float m_Luft = 75f;
+
             private float m_TargetAngle;
             private bool m_IsRotating = false;
 
             private Vector3 m_Normal;
             private Vector3 m_GravityAcelleration = Physics.gravity;
+
             private float m_jumpTimer;
             private Vector3 m_LastForward;
 
@@ -156,9 +145,11 @@ namespace ithappy.Animals_FREE
             {
                 m_Controller = controller;
                 m_Transform = transform;
+
                 m_WalkSpeed = walkSpeed;
                 m_RunSpeed = runSpeed;
                 m_RotateSpeed = rotateSpeed;
+
                 m_Space = space;
             }
 
@@ -167,6 +158,7 @@ namespace ithappy.Animals_FREE
                 m_WalkSpeed = walkSpeed;
                 m_RunSpeed = runSpeed;
                 m_RotateSpeed = rotateSpeed;
+
                 m_Space = space;
             }
 
@@ -230,10 +222,12 @@ namespace ithappy.Animals_FREE
                 {
                     m_GravityAcelleration = Physics.gravity;
                     isAir = false;
+
                     return;
                 }
 
                 isAir = true;
+
                 m_GravityAcelleration += Physics.gravity * deltaTime;
                 return;
             }
@@ -270,7 +264,10 @@ namespace ithappy.Animals_FREE
 
             private void UpdateRotation(float deltaTime)
             {
-                if(!m_IsRotating) return;
+                if(!m_IsRotating)
+                {
+                    return;
+                }
 
                 var rotDelta = m_RotateSpeed * deltaTime;
                 if (rotDelta + Mathf.PI * 2f + Mathf.Epsilon >= Mathf.Abs(m_TargetAngle))
@@ -292,7 +289,9 @@ namespace ithappy.Animals_FREE
             private readonly Animator m_Animator;
             private readonly string m_VerticalID;
             private readonly string m_StateID;
+
             private readonly float k_InputFlow = 4.5f;
+
             private float m_FlowState;
             private Vector2 m_FlowAxis;
 

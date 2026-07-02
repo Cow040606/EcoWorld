@@ -41,6 +41,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public int level = 0;
     public float expToLevelUp = 100f;
 
+
     [Header("Hiệu ứng Câu cá")]
     public GameObject iconCamThan;
 
@@ -53,9 +54,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private float mouseXLocalAcc;
     public LayerMask layerVaChamCamera;
 
-    public float fovBinhThuong = 60f;
-    public float fovChayNhanh = 75f;
-    public float tocDoZoom = 5f;
+    public float fovBinhThuong = 60f;  // Góc nhìn lúc đi bộ/đứng im
+    public float fovChayNhanh = 75f;   // Góc nhìn lúc chạy nước rút (càng to nhìn càng xa)
+    public float tocDoZoom = 5f;       // Tốc độ chuyển đổi cho mượt (không bị giật cục)
 
     [Header("Nhặt vật phẩm")]
     public float banKinhNhat = 5f;
@@ -70,7 +71,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Networked] public int Gold { get; set; }
     [Networked] public int Gem { get; set; }
     [Networked, Capacity(20)] public NetworkArray<O_VatPham> TuiDo { get; }
-    [Networked, Capacity(4)] public NetworkArray<int> HotbarIDs { get; }
+    [Networked, Capacity(4)]  public NetworkArray<int> HotbarIDs { get; }
 
     [Header("Animation")]
     [Networked] private NetworkBool isrun { get; set; }
@@ -85,7 +86,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Header("Tương Tác - Chặt Cây & Nhặt Đồ")]
     public Camera playerCamera;
     public float interactRange = 10f;
+
+    [Tooltip("Layer cho Item, NPC,... (KHÔNG cần chứa Terrain)")]
     public LayerMask interactLayer;
+
+    [Tooltip("Layer của Terrain. Nếu để trống sẽ Raycast tất cả layer rồi lọc bằng TerrainCollider.")]
     public LayerMask chopLayer;
 
     [Header("Tấn Công Thú")]
@@ -97,38 +102,34 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private Vector3 _lastRayDir;
     private bool _lastRayHit;
     private Vector3 _lastRayHitPoint;
-
+    
     [Header("Đào Khoáng Sản")]
     public LayerMask rockLayer;
 
     [Header("Câu cá")]
     public LayerMask waterLayer;
-    public GameObject Phaocauca;
+    public GameObject Phaocauca; 
     private GameObject currentphaocauca;
-    private Coroutine cauCaCoroutine;
-    public float khoangCachDutDay = 10f;
+    private Coroutine cauCaCoroutine; // Quản lý tiến trình thời gian
+    public float khoangCachDutDay = 10f; // Khoảng cách tối đa trước khi thu mồi (Bò tự chỉnh nhé)
 
     public enum FishState { Idle, Casting, Waiting, Giatca }
     public FishState currentState = FishState.Idle;
 
+    // --- CẤY GHÉP NÔNG TRẠI VÀO ĐÂY ---
     [Header("Chức năng Nông Trại")]
     public LayerMask farmlandLayer;
     public TextMeshProUGUI hintText;
     private FarmPlot currentLookedPlot;
+    // ----------------------------------
 
     [Header("Debug")]
-    public bool showDebugRay = true;
-    private Vector3 debugRayOrigin;
-    private Vector3 debugRayDirection;
-    private float debugRayDistance;
-    private bool didRayHit;
-    private Vector3 rayHitPoint;
-
-    [Header("Trạng thái Hành Động (Chặt/Đào)")]
-    [Networked] public NetworkBool isDoingAction { get; set; }
-    [Networked] public TickTimer actionTimer { get; set; }
-    [Networked] public TickTimer hitTimer { get; set; }
-    [Networked] public int pendingActionType { get; set; } // 1: Chặt cây, 2: Đập đá
+    public bool showDebugRay = true; // Ô tick để Bò bật/tắt tia Debug ở Inspector
+    private Vector3 debugRayOrigin; // Điểm bắt đầu của tia
+    private Vector3 debugRayDirection; // Hướng của tia
+    private float debugRayDistance; // Độ dài của tia
+    private bool didRayHit; // Tia có đụng trúng cái gì không
+    private Vector3 rayHitPoint; // Điểm mà tia đụng trúng
 
     #endregion
 
@@ -139,8 +140,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         animator = GetComponent<Animator>();
         CurrentHealth = 100;
         ExpCurrent = 0;
-
-        if (hintText != null) hintText.text = "";
+        
+        if (hintText != null) hintText.text = ""; // Ẩn chữ nông trại khi mới vào
 
         if (!HasStateAuthority && !HasInputAuthority)
         {
@@ -158,7 +159,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             if (playerCamera == null)
                 Debug.LogError("[Player_Controller] ❌ 'Player Camera' chưa được gán trong Inspector!");
-
+            
             if (TreeManager.Instance == null)
                 Debug.LogError("[Player_Controller] ❌ Không tìm thấy TreeManager trong scene!");
         }
@@ -187,30 +188,31 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             bool dangGoPhim = EventSystem.current != null &&
                               EventSystem.current.currentSelectedGameObject != null &&
                               EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
-
+            
             if (ChatSystem.IsChatting || dangGoPhim) return;
 
-            bool baloDangMo = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
-            bool ishopopen = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
-            bool questDangMo = (QuestManager.instance != null && QuestManager.instance.isQuest_Open);
-            bool IsChatAct = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
-            bool ESCDangMo = (ESC.instance != null && ESC.instance.isESC_Open);
-            bool ismapOpen = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
+            bool baloDangMo   = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
+            bool ishopopen    = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
+            bool questDangMo  = (QuestManager.instance != null && QuestManager.instance.isQuest_Open);
+            bool IsChatAct    = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
+            bool ESCDangMo    = (ESC.instance != null && ESC.instance.isESC_Open);
+            bool ismapOpen     = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
 
             if (baloDangMo || ESCDangMo || ishopopen || IsChatAct || questDangMo || ismapOpen)
             {
                 Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-                if (hintText != null) hintText.text = "";
+                Cursor.visible   = true;
+                if (hintText != null) hintText.text = ""; // Ẩn chữ nông trại khi mở UI
             }
             else
             {
                 Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+                Cursor.visible   = false;
                 yRotation += Mouse.current.delta.x.ReadValue() * mouseSensitivity;
                 xRotation -= Mouse.current.delta.y.ReadValue() * mouseSensitivity;
-                xRotation = Mathf.Clamp(xRotation, -60f, 60f);
-
+                xRotation  = Mathf.Clamp(xRotation, -60f, 60f);
+                
+                // MỞ CON MẮT DÒ TÌM NÔNG TRẠI
                 UpdateFarmingUI(idDangCam);
             }
 
@@ -219,7 +221,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 TatToanBoUI();
                 if (ESC.instance != null) ESC.instance.BatTatESC();
             }
-
+            
             if (Keyboard.current.cKey.wasPressedThisFrame) RPC_TakeDame(10);
             if (Keyboard.current.vKey.wasPressedThisFrame) RPC_TakeDame(-10);
 
@@ -257,18 +259,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 if (dangBam4) RPC_EquipTool(3);
             }
 
+            // Xử lý phím E: Tích hợp thu hoạch nông trại
             if (Keyboard.current.eKey.wasPressedThisFrame)
             {
                 if (currentLookedPlot != null && currentLookedPlot.CurrentState == FarmPlot.PlotState.CayLon)
                 {
-                    currentLookedPlot.RPC_ThuHoach(Runner.LocalPlayer);
+                    currentLookedPlot.RPC_ThuHoach(Runner.LocalPlayer); // Nhổ cây nông trại
                 }
                 else
                 {
                     bool daNhatBangTia = HandlePickup();
-                    if (!daNhatBangTia)
+                    if (!daNhatBangTia) 
                     {
-                        RPC_YeuCauNhatRac();
+                        RPC_YeuCauNhatRac(); // Quét diện rộng nhặt đồ
                     }
                 }
             }
@@ -303,13 +306,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 switch (idDangCam)
                 {
                     case 4:
-                        HandleAttackAnimal();
-                        break;
+                        HandleAttackAnimal(); // sword
+                        break; 
                     case 5:
-                        HandleChopping();
+                        HandleChopping(); // axe
                         break;
                     case 6:
-                        HandleMining();
+                        HandleMining(); // pickaxe
                         break;
                     case 8:
                         if (Mouse.current.rightButton.wasPressedThisFrame)
@@ -320,7 +323,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                         }
                         break;
                     case 10:
-                        HandleFarmingPlantLogic();
+                        HandleFarmingPlantLogic(); // NÔNG TRẠI: Cầm hạt giống (ID 10)
                         break;
                 }
             }
@@ -331,10 +334,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (HasInputAuthority && cameraTransform != null)
         {
-            Quaternion camRotation = Quaternion.Euler(xRotation, yRotation, 0f);
-            Vector3 diemNhin = transform.position + Vector3.up * 1.5f;
-            Vector3 huongCamera = -(camRotation * Vector3.forward);
-            Vector3 viTriDuKien = diemNhin + huongCamera * khoangCachCamera;
+            Quaternion camRotation  = Quaternion.Euler(xRotation, yRotation, 0f);
+            Vector3 diemNhin        = transform.position + Vector3.up * 1.5f;
+            Vector3 huongCamera     = -(camRotation * Vector3.forward);
+            Vector3 viTriDuKien     = diemNhin + huongCamera * khoangCachCamera;
 
             if (Physics.Raycast(diemNhin, huongCamera, out RaycastHit hit, khoangCachCamera, layerVaChamCamera))
                 cameraTransform.position = hit.point + hit.normal * 0.1f;
@@ -356,10 +359,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     // =========================================================================
     private void UpdateFarmingUI(int idDangCam)
     {
+        // Lu ít đổi sang dùng tia ngắm bắn từ tâm màn hình Camera cho chuẩn xác 100%!
         if (BanTiaTuTamManHinh(interactRange, farmlandLayer, out RaycastHit hit))
         {
             currentLookedPlot = hit.collider.GetComponentInParent<FarmPlot>();
-
+            
             if (currentLookedPlot != null && hintText != null)
             {
                 hintText.transform.position = currentLookedPlot.transform.position + (Vector3.up * 1.5f);
@@ -370,9 +374,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
                 switch (currentLookedPlot.CurrentState)
                 {
-                    case FarmPlot.PlotState.DatTrong:
-                        if (idDangCam == 10) hintText.text = "[Chuột Phải] Gieo hạt";
-                        else hintText.text = "Cầm hạt giống (ID: 10) để trồng!";
+                    case FarmPlot.PlotState.DatTrong: 
+                        if (idDangCam == 10) hintText.text = "[Chuột Phải] Gieo hạt"; 
+                        else hintText.text = "Cầm hạt giống (ID: 10) để trồng!"; 
                         break;
                     case FarmPlot.PlotState.CayCon: hintText.text = "Cây đang lớn..."; break;
                     case FarmPlot.PlotState.CayLon: hintText.text = "[E] Thu hoạch"; break;
@@ -382,7 +386,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         else
         {
             currentLookedPlot = null;
-            if (hintText != null) hintText.text = "";
+            if (hintText != null) hintText.text = ""; 
         }
     }
 
@@ -392,44 +396,31 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             if (currentLookedPlot != null && currentLookedPlot.CurrentState == FarmPlot.PlotState.DatTrong)
             {
-                currentLookedPlot.RPC_GieoHat();
-                RPC_TruVatPham(10, 1);
+                currentLookedPlot.RPC_GieoHat(); 
+                RPC_TruVatPham(10, 1); // Trừ 1 hạt giống
             }
         }
     }
     // =========================================================================
-
+    
     private void HandleChopping()
     {
         if (playerCamera == null) return;
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
 
-        // Báo hiệu khóa di chuyển, chạy anim 1.5s, tính va chạm ở giây 0.6
-        RPC_BaoHieuBatDauAction(1, 1.5f, 0.6f);
-    }
+        RPC_AnimChatCay();
 
-    private void HandleMining()
-    {
-        if (!Mouse.current.leftButton.wasPressedThisFrame) return;
-
-        // Báo hiệu khóa di chuyển, chạy anim 1.5s, tính va chạm ở giây 0.6
-        RPC_BaoHieuBatDauAction(2, 1.5f, 0.6f);
-    }
-
-    private void ThucHienXetVaChamChop()
-    {
-        if (playerCamera == null) return;
         Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
         Ray ray = playerCamera.ScreenPointToRay(screenCenter);
 
         _lastRayOrigin = ray.origin;
-        _lastRayDir = ray.direction;
+        _lastRayDir    = ray.direction;
 
         LayerMask maskDung = (chopLayer.value != 0) ? chopLayer : Physics.DefaultRaycastLayers;
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactRange, maskDung))
         {
-            _lastRayHit = true;
+            _lastRayHit      = true;
             _lastRayHitPoint = hit.point;
 
             Terrain hitTerrain = hit.collider.GetComponent<Terrain>();
@@ -449,15 +440,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         else
         {
             _lastRayHit = false;
-        }
-    }
-
-    private void ThucHienXetVaChamMine()
-    {
-        if (BanTiaTuTamManHinh(interactRange, rockLayer, out RaycastHit hit))
-        {
-            RockScript cucDa = hit.collider.GetComponent<RockScript>();
-            if (cucDa != null) cucDa.RPC_NhanSatThuongCuoc(25f);
         }
     }
 
@@ -501,20 +483,20 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
 
         data.isJumpPressed = jumpPressedLocal;
-
+        
         bool baloDangMo = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
-        bool ESCDangMo = (ESC.instance != null && ESC.instance.isESC_Open);
-        bool ishopopen = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
-        bool IsChat = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
-        bool isMapOpen = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
-
-        bool dangCauCa = (currentState != FishState.Idle);
+        bool ESCDangMo  = (ESC.instance != null && ESC.instance.isESC_Open);
+        bool ishopopen  = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
+        bool IsChat     = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
+        bool isMapOpen  = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
+        
+        bool dangCauCa  = (currentState != FishState.Idle); 
 
         if (baloDangMo || ESCDangMo || ishopopen || IsChat || isMapOpen || dangCauCa)
         {
-            data.moveInput = Vector2.zero;
+            data.moveInput     = Vector2.zero;
             data.isJumpPressed = false;
-            data.mouseX = 0f;
+            data.mouseX        = 0f;
         }
         else
         {
@@ -522,18 +504,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (cameraTransform != null)
             {
                 Vector3 camForward = cameraTransform.forward;
-                Vector3 camRight = cameraTransform.right;
+                Vector3 camRight   = cameraTransform.right;
                 camForward.y = 0; camRight.y = 0;
                 camForward.Normalize(); camRight.Normalize();
                 huongChuanBiGui = camForward * moveInputLocal.y + camRight * moveInputLocal.x;
             }
-            data.moveInput = new Vector2(huongChuanBiGui.x, huongChuanBiGui.z);
-            data.isRunfast = sprintPressedLocal;
+            data.moveInput  = new Vector2(huongChuanBiGui.x, huongChuanBiGui.z);
+            data.isRunfast  = sprintPressedLocal;
         }
 
         input.Set(data);
         jumpPressedLocal = false;
-        mouseXLocalAcc = 0f;
+        mouseXLocalAcc   = 0f;
     }
 
     public void OnMove(InputValue value)
@@ -556,39 +538,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (ChatSystem.IsChatting || dangGoPhim)
         {
             character.Move(Vector3.zero);
-            isrun = false;
+            isrun       = false;
             isSprinting = false;
-            isJumping = false;
+            isJumping   = false;
             return;
         }
-
-        // --- KHÓA DI CHUYỂN & XỬ LÝ VA CHẠM KHI CHẶT CÂY/ĐẬP ĐÁ ---
-        if (isDoingAction)
-        {
-            character.Move(Vector3.zero); // Ép nhân vật đứng im
-            isrun = false;
-            isSprinting = false;
-            isJumping = false;
-
-            // Kiểm tra khoảnh khắc va chạm (lưỡi rìu đập vào cây)
-            if (hitTimer.Expired(Runner))
-            {
-                hitTimer = TickTimer.None;
-                if (pendingActionType == 1) ThucHienXetVaChamChop();
-                else if (pendingActionType == 2) ThucHienXetVaChamMine();
-            }
-
-            // Kiểm tra kết thúc toàn bộ animation để mở khóa di chuyển
-            if (actionTimer.Expired(Runner))
-            {
-                isDoingAction = false;
-                pendingActionType = 0;
-                actionTimer = TickTimer.None;
-            }
-
-            return; // Dừng lại ở đây, không nhận Input di chuyển nữa
-        }
-        // ------------------------------------------------------------
 
         if (GetInput(out DuLieuInput data))
         {
@@ -597,7 +551,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 if (dongHoChoNhay.ExpiredOrNotRunning(Runner))
                 {
                     character.Jump();
-                    isJumping = true;
+                    isJumping     = true;
                     dongHoChoNhay = TickTimer.CreateFromSeconds(Runner, thoiGianHoiNhay);
                 }
             }
@@ -606,10 +560,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 isJumping = false;
             }
 
-            Vector3 huongDiChuyen = new Vector3(data.moveInput.x, 0f, data.moveInput.y);
-            float tocDoHienTai = data.isRunfast ? runfast : speed;
+            Vector3 huongDiChuyen   = new Vector3(data.moveInput.x, 0f, data.moveInput.y);
+            float tocDoHienTai      = data.isRunfast ? runfast : speed;
 
-            isrun = data.moveInput.magnitude > 0.1f;
+            isrun       = data.moveInput.magnitude > 0.1f;
             isSprinting = isrun && data.isRunfast;
 
             if (huongDiChuyen.magnitude >= 0.1f)
@@ -637,7 +591,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (isJumping)
             {
                 isSprinting = false;
-                isrun = false;
+                isrun       = false;
                 animator.SetBool("isJump", isJumping);
             }
             else
@@ -666,7 +620,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (idDangCam > 0 && InventoryManager.instance != null)
         {
             Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
-
+            
             if (thongTinItem != null && thongTinItem.model3DPrefab != null && viTriCamVuKhi != null)
             {
                 vuKhiDangCamThucTe = Instantiate(thongTinItem.model3DPrefab, viTriCamVuKhi);
@@ -699,9 +653,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         debugRayDistance = khoangCach;
 
         LayerMask maskCuoi = (layerDich.value != 0) ? layerDich : Physics.DefaultRaycastLayers;
-
+        
         didRayHit = Physics.Raycast(ray, out hit, khoangCach, maskCuoi);
-
+        
         if (didRayHit) rayHitPoint = hit.point;
 
         return didRayHit;
@@ -713,12 +667,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private void BatDauCauCa()
     {
-        currentState = FishState.Casting;
+        currentState = FishState.Casting; 
         Debug.Log("<color=blue>Đã quăng cần! Chờ phao rơi xuống...</color>");
 
         Vector3 diemBatDau = cameraTransform.position + cameraTransform.forward * 1.5f;
-        float lucNem = 12f;
-        Vector3 huongNem = cameraTransform.forward * lucNem + Vector3.up * 2f;
+        float lucNem = 12f; 
+        Vector3 huongNem = cameraTransform.forward * lucNem + Vector3.up * 2f; 
 
         RPC_QuangPhaoVatLy(diemBatDau, huongNem);
     }
@@ -738,12 +692,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (logic == null) logic = currentphaocauca.AddComponent<PhaoCauCa_Logic>();
 
             logic.chuSohuu = this;
-            logic.isLocal = HasInputAuthority;
+            logic.isLocal = HasInputAuthority; 
         }
 
         if (animator != null)
         {
-            animator.SetTrigger("QuangCan");
+            animator.SetTrigger("QuangCan"); 
         }
     }
 
@@ -767,7 +721,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         currentState = FishState.Giatca;
         Debug.Log("<color=yellow>Cá cắn câu!!! BẤM CHUỘT PHẢI ĐỂ GIẬT NGAY!</color>");
-
+        
         if (iconCamThan != null) iconCamThan.SetActive(true);
 
         yield return new WaitForSeconds(1.5f);
@@ -781,19 +735,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         Debug.Log("<color=green>Giật thành công! Lên cá!!!</color>");
         if (cauCaCoroutine != null) StopCoroutine(cauCaCoroutine);
-
-        ThemDoVaoTui(9, 1);
-        ThuCanCau("Hoàn tất câu cá, cất cần vào túi!", false);
+        
+        ThemDoVaoTui(9, 1); 
+        ThuCanCau("Hoàn tất câu cá, cất cần vào túi!", false); 
     }
 
     private void ThuCanCau(string lyDo, bool laHuy = true)
     {
         Debug.Log(lyDo);
-        currentState = FishState.Idle;
-
+        currentState = FishState.Idle; 
+        
         if (iconCamThan != null) iconCamThan.SetActive(false);
 
-        RPC_ThuPhao(laHuy);
+        RPC_ThuPhao(laHuy); 
 
         if (cauCaCoroutine != null) StopCoroutine(cauCaCoroutine);
     }
@@ -805,11 +759,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (laHuy)
         {
-            animator.SetTrigger("HuyCau");
+            animator.SetTrigger("HuyCau"); 
         }
         else
         {
-            animator.SetTrigger("GiatCan");
+            animator.SetTrigger("GiatCan"); 
         }
     }
 
@@ -827,22 +781,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #region HỆ THỐNG GỌI HÀM TỪ XA (RPC)
 
-    // Hàm báo hiệu bắt đầu hành động
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_BaoHieuBatDauAction(int actionType, float totalAnimTime, float timeToHit)
-    {
-        isDoingAction = true;
-        pendingActionType = actionType;
-
-        // Cài đặt đồng hồ đếm ngược
-        actionTimer = TickTimer.CreateFromSeconds(Runner, totalAnimTime);
-        hitTimer = TickTimer.CreateFromSeconds(Runner, timeToHit);
-
-        // Chạy Animation cho tất cả client
-        if (actionType == 1) RPC_AnimChatCay();
-        else if (actionType == 2) RPC_AnimDapDa();
-    }
-
+    // CẤY GHÉP HÀM TRỪ VẬT PHẨM VÀO ĐÂY LUÔN
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_TruVatPham(int idVatPham, int soLuongCanTru)
     {
@@ -855,7 +794,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 int soLuongCoTheTru = Mathf.Min(doVat.SoLuong, soLuongCanTru - soLuongDaTru);
                 doVat.SoLuong -= soLuongCoTheTru;
                 soLuongDaTru += soLuongCoTheTru;
-
+                
                 if (doVat.SoLuong <= 0) doVat.ItemID = 0;
                 TuiDo.Set(i, doVat);
                 if (soLuongDaTru >= soLuongCanTru) break;
@@ -879,13 +818,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             if (Obj.CompareTag("Items"))
             {
-                NetworkObject nObj = Obj.GetComponent<NetworkObject>();
-                XuLyItem theCanCuoc = Obj.GetComponent<XuLyItem>();
+                NetworkObject nObj      = Obj.GetComponent<NetworkObject>();
+                XuLyItem theCanCuoc     = Obj.GetComponent<XuLyItem>();
 
                 if (nObj != null && nObj.IsValid && theCanCuoc != null && theCanCuoc.thongTinDoVat != null)
                 {
                     int idThucTe = theCanCuoc.thongTinDoVat.itemID;
-                    bool daNhat = false;
+                    bool daNhat  = false;
                     bool isstack = true;
                     if (InventoryManager.instance != null)
                     {
@@ -978,7 +917,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (theCanCuoc == null || theCanCuoc.thongTinDoVat == null) return;
 
         int idThucTe = theCanCuoc.thongTinDoVat.itemID;
-        bool daNhat = ThemDoVaoTui(idThucTe, 1);
+        bool daNhat  = ThemDoVaoTui(idThucTe, 1);
         if (daNhat) RPC_XoaRacKhapBanDo(nObj);
     }
 
@@ -1084,8 +1023,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 var doVat = TuiDo[i];
                 int soLuongCoTheTru = Mathf.Min(doVat.SoLuong, soLuongCanTru - soLuongDaTru);
-                doVat.SoLuong -= soLuongCoTheTru;
-                soLuongDaTru += soLuongCoTheTru;
+                doVat.SoLuong      -= soLuongCoTheTru;
+                soLuongDaTru       += soLuongCoTheTru;
                 if (doVat.SoLuong <= 0) doVat.ItemID = 0;
                 TuiDo.Set(i, doVat);
                 if (soLuongDaTru >= soLuongCanTru) break;
@@ -1130,10 +1069,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             ExpCurrent = 0;
             level++;
-            expToLevelUp *= 1.1f;
+            expToLevelUp *= 1.1f; 
         }
     }
-
+    
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_AnimChatCay()
     {
@@ -1142,13 +1081,15 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             animator.SetTrigger("Chatcay");
         }
     }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    public void RPC_AnimDapDa()
+    
+    private void HandleMining()
     {
-        if (animator != null)
+        if (!Mouse.current.leftButton.wasPressedThisFrame) return;
+
+        if (BanTiaTuTamManHinh(interactRange, rockLayer, out RaycastHit hit))
         {
-            animator.SetTrigger("dapda");
+            RockScript cucDa = hit.collider.GetComponent<RockScript>();
+            if (cucDa != null) cucDa.RPC_NhanSatThuongCuoc(25f); 
         }
     }
 
@@ -1162,7 +1103,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (didRayHit)
         {
             Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(rayHitPoint, 0.2f);
+            Gizmos.DrawSphere(rayHitPoint, 0.2f); 
         }
     }
 
@@ -1170,7 +1111,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #region CÁC HÀM TIỆN ÍCH & XỬ LÝ GIAO DIỆN CỤC BỘ
 
-
+    
     public void ThucHienDichChuyen(Vector3 toaDoMoi)
     {
         if (Object.HasStateAuthority)
@@ -1198,7 +1139,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private void TatToanBoUI()
     {
-        if (MapManager.Instance != null && MapManager.Instance.dangMoMap) MapManager.Instance.DongMap();
+        if(MapManager.Instance != null && MapManager.Instance.dangMoMap) MapManager.Instance.DongMap();
         if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo)
             InventoryManager.instance.BatTatBalo(TuiDo, this);
 
@@ -1207,8 +1148,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (ShopUIController.instance != null && ShopUIController.instance.isShopOpen)
         {
-            ShopUIController.instance.isShopOpen = false;
-            ShopUIController.instance.dangmoshop = false;
+            ShopUIController.instance.isShopOpen   = false;
+            ShopUIController.instance.dangmoshop    = false;
             ShopUIController.instance.khungShop.SetActive(false);
         }
 
