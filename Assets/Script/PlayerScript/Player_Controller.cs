@@ -88,8 +88,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public LayerMask interactLayer;
     public LayerMask chopLayer;
 
-    [Header("Tấn Công Thú")]
+    [Header("Tấn Công Thú & Quái")]
     public float attackDamageToAnimal = 25f;
+    private bool isAttacking = false; // Biến kiểm soát spam chém
 
     [Header("Debug - Chặt Cây")]
     public bool showChopDebug = true;
@@ -128,7 +129,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Networked] public NetworkBool isDoingAction { get; set; }
     [Networked] public TickTimer actionTimer { get; set; }
     [Networked] public TickTimer hitTimer { get; set; }
-    [Networked] public int pendingActionType { get; set; } // 1: Chặt cây, 2: Đập đá
+    [Networked] public int pendingActionType { get; set; }
 
     #endregion
 
@@ -303,7 +304,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 switch (idDangCam)
                 {
                     case 4:
-                        HandleAttackAnimal();
+                        HandleMeleeAttack();
                         break;
                     case 5:
                         HandleChopping();
@@ -352,8 +353,38 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     }
 
     // =========================================================================
-    // HÀM LOGIC NÔNG TRẠI GHÉP VÀO
+    // HÀM GÂY SÁT THƯƠNG TỪ ANIMATION EVENT
     // =========================================================================
+    public void PlayerDoDamage()
+    {
+        if (BanTiaTuTamManHinh(interactRange, 0, out RaycastHit hit))
+        {
+            var enemyAI = hit.collider.GetComponent<EnemyAIOrc>();
+            if (enemyAI != null) enemyAI.RPC_TakeDamageFromPlayer(25);
+
+            var animalAI = hit.collider.GetComponent<ithappy.Animals_FREE.AnimalAI_Controller>();
+            if (animalAI != null) animalAI.RPC_AnimalTakeDamage(attackDamageToAnimal, Runner.LocalPlayer);
+        }
+    }
+
+    private void HandleMeleeAttack()
+    {
+        if (isAttacking || !Mouse.current.leftButton.wasPressedThisFrame) return;
+
+        StartCoroutine(AttackCooldownRoutine());
+    }
+
+    private System.Collections.IEnumerator AttackCooldownRoutine()
+    {
+        isAttacking = true;
+        RPC_AnimSlash();
+
+        yield return new WaitForSeconds(1.0f); // Cooldown 1 giây tránh spam
+
+        isAttacking = false;
+    }
+    // =========================================================================
+
     private void UpdateFarmingUI(int idDangCam)
     {
         if (BanTiaTuTamManHinh(interactRange, farmlandLayer, out RaycastHit hit))
@@ -397,14 +428,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
     }
-    // =========================================================================
 
     private void HandleChopping()
     {
         if (playerCamera == null) return;
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
 
-        // Báo hiệu khóa di chuyển, chạy anim 1.5s, tính va chạm ở giây 0.6
         RPC_BaoHieuBatDauAction(1, 1.5f, 0.6f);
     }
 
@@ -412,7 +441,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
 
-        // Báo hiệu khóa di chuyển, chạy anim 1.5s, tính va chạm ở giây 0.6
         RPC_BaoHieuBatDauAction(2, 1.5f, 0.6f);
     }
 
@@ -472,17 +500,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
         return false;
-    }
-
-    private void HandleAttackAnimal()
-    {
-        if (!Mouse.current.leftButton.wasPressedThisFrame) return;
-
-        if (BanTiaTuTamManHinh(interactRange, 0, out RaycastHit hit))
-        {
-            var animalAI = hit.collider.GetComponent<ithappy.Animals_FREE.AnimalAI_Controller>();
-            if (animalAI != null) animalAI.RPC_AnimalTakeDamage(attackDamageToAnimal, Runner.LocalPlayer);
-        }
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
@@ -562,15 +579,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             return;
         }
 
-        // --- KHÓA DI CHUYỂN & XỬ LÝ VA CHẠM KHI CHẶT CÂY/ĐẬP ĐÁ ---
         if (isDoingAction)
         {
-            character.Move(Vector3.zero); // Ép nhân vật đứng im
+            character.Move(Vector3.zero);
             isrun = false;
             isSprinting = false;
             isJumping = false;
 
-            // Kiểm tra khoảnh khắc va chạm (lưỡi rìu đập vào cây)
             if (hitTimer.Expired(Runner))
             {
                 hitTimer = TickTimer.None;
@@ -578,7 +593,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 else if (pendingActionType == 2) ThucHienXetVaChamMine();
             }
 
-            // Kiểm tra kết thúc toàn bộ animation để mở khóa di chuyển
             if (actionTimer.Expired(Runner))
             {
                 isDoingAction = false;
@@ -586,9 +600,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 actionTimer = TickTimer.None;
             }
 
-            return; // Dừng lại ở đây, không nhận Input di chuyển nữa
+            return;
         }
-        // ------------------------------------------------------------
 
         if (GetInput(out DuLieuInput data))
         {
@@ -827,18 +840,24 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #region HỆ THỐNG GỌI HÀM TỪ XA (RPC)
 
-    // Hàm báo hiệu bắt đầu hành động
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_AnimSlash()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("slash");
+        }
+    }
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_BaoHieuBatDauAction(int actionType, float totalAnimTime, float timeToHit)
     {
         isDoingAction = true;
         pendingActionType = actionType;
 
-        // Cài đặt đồng hồ đếm ngược
         actionTimer = TickTimer.CreateFromSeconds(Runner, totalAnimTime);
         hitTimer = TickTimer.CreateFromSeconds(Runner, timeToHit);
 
-        // Chạy Animation cho tất cả client
         if (actionType == 1) RPC_AnimChatCay();
         else if (actionType == 2) RPC_AnimDapDa();
     }
@@ -964,7 +983,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
 
-        Debug.LogWarning("[Player_Controller] Balo đã đầy, không thể nhặt thêm!");
         return false;
     }
 
@@ -1170,7 +1188,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #region CÁC HÀM TIỆN ÍCH & XỬ LÝ GIAO DIỆN CỤC BỘ
 
-
     public void ThucHienDichChuyen(Vector3 toaDoMoi)
     {
         if (Object.HasStateAuthority)
@@ -1194,7 +1211,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             character.Teleport(toaDoMoi);
         }
     }
-
 
     private void TatToanBoUI()
     {
