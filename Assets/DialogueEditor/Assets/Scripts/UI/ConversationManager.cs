@@ -45,7 +45,6 @@ namespace DialogueEditor
         // Base panels
         public RectTransform DialoguePanel;
         public RectTransform OptionsPanel;
-
         [Header("Danh Sách UI Cần Ẩn Khi Chat")] 
         public List<GameObject> UIElementsToHide;
 
@@ -632,6 +631,8 @@ namespace DialogueEditor
         {
             DialoguePanel.gameObject.SetActive(true);
             OptionsPanel.gameObject.SetActive(true);
+
+            // ⚠️ THÊM ĐOẠN NÀY ĐỂ TẮT CÁC UI TRONG DANH SÁCH:
             if (UIElementsToHide != null)
             {
                 for (int i = 0; i < UIElementsToHide.Count; i++)
@@ -658,6 +659,8 @@ namespace DialogueEditor
         {
             DialoguePanel.gameObject.SetActive(false);
             OptionsPanel.gameObject.SetActive(false);
+
+            // ⚠️ THÊM ĐOẠN NÀY ĐỂ BẬT LẠI UI SAU KHI CHAT XONG:
             if (UIElementsToHide != null)
             {
                 for (int i = 0; i < UIElementsToHide.Count; i++)

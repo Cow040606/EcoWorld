@@ -450,10 +450,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
         RPC_BaoHieuBatDauAction(2, 1.5f, 0.6f);
-
         if (BanTiaTuTamManHinh(interactRange, rockLayer, out RaycastHit hit))
         {
             RockScript cucDa = hit.collider.GetComponent<RockScript>();
+            // Nếu trúng đá, truyền sát thương ngay lập tức
             if (cucDa != null) cucDa.RPC_NhanSatThuongCuoc(25f); 
         }
     }
@@ -1224,6 +1224,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             character.Teleport(toaDoMoi);
         }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_ThayDoiGem(int soGem)
+    {
+        // Cộng (hoặc trừ) Gem, giới hạn không cho Gem rớt xuống số âm
+        Gem = Mathf.Max(0, Gem + soGem);
     }
 
     private void TatToanBoUI()

@@ -25,17 +25,19 @@ public class ChatSystem : NetworkBehaviour
 
     public override void Spawned()
     {
+        // Yêu cầu của Bò: Bật lại kiểm tra quyền điều khiển
         //if (HasInputAuthority)
         //{
-            ChatSys.SetActive(true);
             LocalInstance = this; // Khẳng định: Đây là UI trên màn hình của mình!
             IsChatting = false;
 
             ChatSys = GameObject.Find("ChatPanel");
             
-            // TỰ ĐỘNG THÊM CANVAS GROUP (Vũ khí làm mờ UI)
             if (ChatSys != null)
             {
+                ChatSys.SetActive(true); // Yêu cầu: Bật lên lúc bắt đầu Spawn
+
+                // TỰ ĐỘNG THÊM CANVAS GROUP (Vũ khí làm mờ UI)
                 chatCanvasGroup = ChatSys.GetComponent<CanvasGroup>();
                 if (chatCanvasGroup == null) chatCanvasGroup = ChatSys.AddComponent<CanvasGroup>();
             }
@@ -46,17 +48,21 @@ public class ChatSystem : NetworkBehaviour
 
             buttonSend.onClick.AddListener(SendMessageChat);
 
-            // Bắt đầu game: Chỉ TẮT Ô NHẬP LIỆU để không che màn hình, nhưng KHÔNG TẮT PANEL
+            // Bắt đầu game: Chỉ TẮT Ô NHẬP LIỆU để không che màn hình
             inputFieldMessage.gameObject.SetActive(false);
             buttonSend.gameObject.SetActive(false);
             
             // Ép tàng hình khung chat ngay từ đầu
             if (chatCanvasGroup != null) chatCanvasGroup.alpha = 0f; 
-        //}
-    }
+
+            // Yêu cầu: Tắt ChatSys hoàn toàn khi hết Spawn
+            if (ChatSys != null) ChatSys.SetActive(false);
+        }
+    //}
 
     void Update()
     {
+        // Yêu cầu của Bò: Bật lại kiểm tra quyền
         //if (!HasInputAuthority) return;
 
         // Bật chat (/)
@@ -99,9 +105,11 @@ public class ChatSystem : NetworkBehaviour
 
     void OpenChat()
     {
-        ChatSys.SetActive(true);
         IsChatting = true;
         
+        // Yêu cầu: Bật hoàn toàn ChatSys khi Open
+        if (ChatSys != null) ChatSys.SetActive(true);
+
         // Sáng 100% ngay lập tức
         if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
         if (chatCanvasGroup != null) chatCanvasGroup.alpha = 1f;
@@ -120,7 +128,7 @@ public class ChatSystem : NetworkBehaviour
         IsChatting = false;
         inputFieldMessage.text = ""; 
 
-        // CHỈ ẨN 2 Ô NHẬP LIỆU - Giữ nguyên ChatPanel để đọc chữ
+        // CHỈ ẨN 2 Ô NHẬP LIỆU
         inputFieldMessage.gameObject.SetActive(false);
         buttonSend.gameObject.SetActive(false);
         
@@ -132,7 +140,7 @@ public class ChatSystem : NetworkBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Kích hoạt đồng hồ đếm ngược 4s
+        // Kích hoạt đồng hồ đếm ngược 4s (Nó sẽ tự tắt ChatSys hoàn toàn sau khi mờ xong)
         WakeUpChatUI();
     }
 
@@ -143,8 +151,6 @@ public class ChatSystem : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.All)]
     public void RpcChat(string message)
     {
-        // Khi Server gửi lệnh này về mọi máy, ta nhờ LocalInstance trên mỗi máy tự in ra màn hình
-        // Điều này ngăn chặn việc 1 tin nhắn bị in ra 10 lần nếu có 10 người chơi
         if (LocalInstance != null && LocalInstance.textMessage != null)
         {
             LocalInstance.textMessage.text += message + "\n";
@@ -152,9 +158,11 @@ public class ChatSystem : NetworkBehaviour
         }
     }
 
-    // Hàm gọi khung chat sáng lên rồi tự mờ
     public void WakeUpChatUI()
     {
+        // Khi có tin nhắn tới, phải đảm bảo ChatSys đang bật để nhìn thấy
+        if (ChatSys != null) ChatSys.SetActive(true);
+
         // Sáng rực rỡ
         if (chatCanvasGroup != null) chatCanvasGroup.alpha = 1f;
 
@@ -166,7 +174,6 @@ public class ChatSystem : NetworkBehaviour
         }
     }
 
-    // Luồng thời gian song song (Coroutine)
     private IEnumerator FadeOutRoutine()
     {
         // Đứng chờ 4 giây cho người ta đọc tin nhắn
@@ -181,14 +188,14 @@ public class ChatSystem : NetworkBehaviour
             time += Time.deltaTime;
             if (chatCanvasGroup != null)
             {
-                // Lerp giúp giảm số đều và mượt mà
                 chatCanvasGroup.alpha = Mathf.Lerp(1f, 0f, time / duration);
             }
-            yield return null; // Đợi khung hình tiếp theo
+            yield return null; 
         }
 
-        // Chốt hạ tàng hình 100%
         if (chatCanvasGroup != null) chatCanvasGroup.alpha = 0f;
-        ChatSys.SetActive(false);
+        
+        // Yêu cầu: Tắt hoàn toàn ChatSys khi Close (Thực hiện sau khi mờ xong)
+        if (ChatSys != null) ChatSys.SetActive(false);
     }
 }

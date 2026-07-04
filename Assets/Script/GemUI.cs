@@ -3,17 +3,18 @@ using TMPro;
 
 public class GemUI : MonoBehaviour
 {
-    public TextMeshProUGUI[] txtGem;
+    public TextMeshProUGUI[] txtGold;
 
     void Update()
     {
         if (Player_Controller.localPlayer != null)
         {
-            for (int i = 0; i < txtGem.Length; i++)
+            // ⚠️ Lặp qua từng ô text trong mảng để cập nhật
+            for (int i = 0; i < txtGold.Length; i++)
             {
-                if (txtGem[i] != null)
+                if (txtGold[i] != null)
                 {
-                    txtGem[i].text = ": " + Player_Controller.localPlayer.Gem.ToString();
+                    txtGold[i].text = ": " + Player_Controller.localPlayer.Gold.ToString();
                 }
             }
         }
