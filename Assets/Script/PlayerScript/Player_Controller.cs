@@ -32,14 +32,35 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private Vector2 moveInputLocal;
     private bool sprintPressedLocal;
 
-    [Header("Chỉ số nhân vật")]
-    public float CurrentHealth { get; set; }
-    public float MaxHealth = 100f;
-    public float CurrentStamina { get; set; }
-    public float MaxStamina = 100f;
+    [Header("Chỉ số nhân vật (GỐC & TỔNG)")]
+    
+    // --- CHỈ SỐ GỐC (Làm mốc khi cởi truồng) ---
+    public float baseMaxHealth = 100f;
+    public float baseMaxStamina = 100f;
+    public float baseMaxArmor = 0f;
+    public float baseSpeed = 5f;
+    public float baseDamage = 25f;
+
+    // --- CHỈ SỐ TỔNG (Hiện tại) ---
+    [Networked] public float CurrentHealth { get; set; }
+    [Networked] public float MaxHealth { get; set; }
+    [Networked] public float CurrentStamina { get; set; }
+    [Networked] public float MaxStamina { get; set; }
+    [Networked] public float CurrentArmor { get; set; }
+    [Networked] public float MaxArmor { get; set; }
+    public float tocDoTut = 20f; 
+    public float tocDoHoi = 15f; 
+    [HideInInspector] public bool dangChayNhanh = false;
+    public float thoiGianDelayHoi = 2f;
+    private float dongHoDelayHoi = 0f;
+
     public float ExpCurrent { get; set; }
     public int level = 0;
     public float expToLevelUp = 100f;
+
+    [Header("Trạng Thái Tiêu Hao")]
+    private bool dangSuDungVatPham = false;
+    private Coroutine tienTrinhDungItem;
 
 
     [Header("Hiệu ứng Câu cá")]
@@ -71,7 +92,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Networked] public int Gold { get; set; }
     [Networked] public int Gem { get; set; }
     [Networked, Capacity(20)] public NetworkArray<O_VatPham> TuiDo { get; }
-    [Networked, Capacity(4)]  public NetworkArray<int> HotbarIDs { get; }
+    [Networked, Capacity(6)]  public NetworkArray<int> HotbarIDs { get; }
 
     [Header("Animation")]
     [Networked] private NetworkBool isrun { get; set; }
@@ -183,6 +204,53 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             AudioListener listener = GetComponentInChildren<AudioListener>();
             if (listener != null) listener.enabled = false;
         }
+        if (HasStateAuthority)
+        {
+            MaxHealth = baseMaxHealth;
+            MaxStamina = baseMaxStamina;
+            speed = baseSpeed;
+            attackDamageToAnimal = baseDamage;
+            MaxArmor = baseMaxArmor; CurrentArmor = MaxArmor;
+
+            // Bơm đầy máu và thể lực
+            CurrentHealth = MaxHealth;
+            CurrentStamina = MaxStamina;
+        }
+    }
+
+    private void XuLyTheLuc()
+    {
+        // Phải đang đè Shift, ĐANG DI CHUYỂN, và còn thể lực thì mới cho chạy nhanh
+        if (sprintPressedLocal && moveInputLocal.magnitude > 0.1f && CurrentStamina > 0)
+        {
+            dangChayNhanh = true;
+            CurrentStamina -= tocDoTut * Time.deltaTime; // Trừ thể lực
+            
+            // CỨ CÒN ĐANG CHẠY LÀ KHÓA CHẶT ĐỒNG HỒ Ở MỐC 2 GIÂY
+            dongHoDelayHoi = thoiGianDelayHoi;
+        }
+        else
+        {
+            dangChayNhanh = false;
+            
+            // Nếu thể lực chưa đầy thì tính toán việc hồi
+            if (CurrentStamina < MaxStamina)
+            {
+                // Nếu đồng hồ chờ vẫn còn giờ -> Giảm dần thời gian chờ (CHƯA HỒI)
+                if (dongHoDelayHoi > 0)
+                {
+                    dongHoDelayHoi -= Time.deltaTime;
+                }
+                else 
+                {
+                    // Khi đồng hồ đếm về 0 (Đã đứng im đủ 2 giây) -> Bắt đầu bơm thể lực lên!
+                    CurrentStamina += tocDoHoi * Time.deltaTime;
+                }
+            }
+        }
+        
+        // Khóa không cho thể lực âm hoặc lố 100
+        CurrentStamina = Mathf.Clamp(CurrentStamina, 0, MaxStamina);
     }
 
     #endregion
@@ -287,6 +355,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
 
             sprintPressedLocal = Keyboard.current.leftShiftKey.isPressed;
+            XuLyTheLuc();
             if (Keyboard.current.spaceKey.wasPressedThisFrame) jumpPressedLocal = true;
             float trucX = Keyboard.current.dKey.isPressed ? 1f : (Keyboard.current.aKey.isPressed ? -1f : 0f);
             float trucY = Keyboard.current.wKey.isPressed ? 1f : (Keyboard.current.sKey.isPressed ? -1f : 0f);
@@ -337,6 +406,21 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                     case 10:
                         HandleFarmingPlantLogic(); // NÔNG TRẠI: Cầm hạt giống (ID 10)
                         break;
+                    // Vật phẩm tiêu hao
+                    default: 
+                        if (idDangCam > 0 && InventoryManager.instance != null)
+                        {
+                            Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
+                            // Nếu đây là đồ tiêu hao và đang không dùng món nào khác
+                            if (thongTinItem != null && thongTinItem.loaiTieuHao != Item.LoaiTieuHao.KhongPhai)
+                            {
+                                if (Mouse.current.rightButton.wasPressedThisFrame && !dangSuDungVatPham)
+                                {
+                                    tienTrinhDungItem = StartCoroutine(TienTrinhSuDungItem(thongTinItem));
+                                }
+                            }
+                        }
+                        break;
                 }
             }
         }
@@ -352,7 +436,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             Vector3 viTriDuKien     = diemNhin + huongCamera * khoangCachCamera;
 
             if (Physics.Raycast(diemNhin, huongCamera, out RaycastHit hit, khoangCachCamera, layerVaChamCamera))
-                cameraTransform.position = hit.point + hit.normal * 0.1f;
+                cameraTransform.position = hit.point + hit.normal * 0.4f;
             else
                 cameraTransform.position = viTriDuKien;
 
@@ -551,7 +635,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 huongChuanBiGui = camForward * moveInputLocal.y + camRight * moveInputLocal.x;
             }
             data.moveInput  = new Vector2(huongChuanBiGui.x, huongChuanBiGui.z);
-            data.isRunfast  = sprintPressedLocal;
+            data.isRunfast  = dangChayNhanh;
         }
 
         input.Set(data);
@@ -644,6 +728,79 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 character.Move(Vector3.zero);
             }
+        }
+    }
+
+
+    private System.Collections.IEnumerator TienTrinhSuDungItem(Item thongTinItem)
+    {
+        dangSuDungVatPham = true;
+        float thoiGianConLai = thongTinItem.thoiGianDung;
+
+        while (thoiGianConLai > 0)
+        {
+            thoiGianConLai -= Time.deltaTime;
+            
+            // Ép UI vẽ vòng tròn giảm dần
+            if (UI_TienTrinhDung.instance != null)
+            {
+                UI_TienTrinhDung.instance.CapNhatUI(thoiGianConLai, thongTinItem.thoiGianDung);
+            }
+
+            // MẸO SINH TỒN: Nếu đang đứng băng bó mà bấm Chuột Trái hoặc chạy nhanh thì HỦY!
+            if (Mouse.current.leftButton.wasPressedThisFrame || isSprinting)
+            {
+                Debug.Log("<color=orange>Đã hủy dùng vật phẩm!</color>");
+                if (UI_TienTrinhDung.instance != null) UI_TienTrinhDung.instance.AnUI();
+                dangSuDungVatPham = false;
+                yield break; 
+            }
+
+            yield return null;
+        }
+
+        // --- DÙNG THÀNH CÔNG SAU KHI CHỜ HẾT GIÂY ---
+        if (UI_TienTrinhDung.instance != null) UI_TienTrinhDung.instance.AnUI();
+        dangSuDungVatPham = false;
+
+        // Báo cho Server biết để bơm máu/giáp và trừ đồ trong Balo
+        RPC_HoanThanhDungVatPham(thongTinItem.itemID);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_HoanThanhDungVatPham(int idVatPhamXai)
+    {
+        // 1. Quét tìm và trừ 1 món đồ đó đi
+        bool daTruThanhCong = false;
+        for (int i = 0; i < TuiDo.Length; i++)
+        {
+            if (TuiDo[i].ItemID == idVatPhamXai && TuiDo[i].SoLuong > 0)
+            {
+                var doVat = TuiDo[i];
+                doVat.SoLuong -= 1;
+                if (doVat.SoLuong <= 0) doVat.ItemID = 0;
+                TuiDo.Set(i, doVat);
+                daTruThanhCong = true;
+                break;
+            }
+        }
+
+        if (!daTruThanhCong) return; // Không có đồ thì không bơm
+
+        KiemTraDonDepHotbar(); // Dọn dẹp túi rác nếu xài hết bình máu
+
+        // 2. Bơm chỉ số tương ứng theo Loại
+        Item thongTin = InventoryManager.instance.TraCuuItem(idVatPhamXai);
+        if (thongTin != null)
+        {
+            if (thongTin.loaiTieuHao == Item.LoaiTieuHao.SuaGiap)
+                CurrentArmor = Mathf.Clamp(CurrentArmor + thongTin.luongHoiPhuc, 0, MaxArmor);
+            else if (thongTin.loaiTieuHao == Item.LoaiTieuHao.HoiMau)
+                CurrentHealth = Mathf.Clamp(CurrentHealth + thongTin.luongHoiPhuc, 0, MaxHealth);
+            else if (thongTin.loaiTieuHao == Item.LoaiTieuHao.HoiTheLuc)
+                CurrentStamina = Mathf.Clamp(CurrentStamina + thongTin.luongHoiPhuc, 0, MaxStamina);
+            
+            Debug.Log($"<color=blue>Đã sử dụng thành công: {thongTin.itemName}</color>");
         }
     }
 
@@ -896,8 +1053,28 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_TakeDame(float Dame)
     {
-        CurrentHealth = Mathf.Clamp(CurrentHealth - Dame, 0, MaxHealth);
-        if (CurrentHealth <= 0) { /* Die */ }
+        if (Dame > 0) // TRƯỜNG HỢP NHẬN SÁT THƯƠNG
+        {
+            if (CurrentArmor >= Dame)
+            {
+                // Giáp đủ cứng để gánh TOÀN BỘ sát thương
+                CurrentArmor -= Dame;
+            }
+            else
+            {
+                // Giáp bị vỡ, phần sát thương dư tràn qua máu
+                float satThuongDu = Dame - CurrentArmor; 
+                CurrentArmor = 0; // Hết giáp
+                
+                CurrentHealth = Mathf.Clamp(CurrentHealth - satThuongDu, 0, MaxHealth); // Trừ máu
+            }
+        }
+        else // TRƯỜNG HỢP HỒI MÁU (Dame âm)
+        {
+            CurrentHealth = Mathf.Clamp(CurrentHealth - Dame, 0, MaxHealth);
+        }
+
+        if (CurrentHealth <= 0) { /* Die - Xử lý chết ở đây */ }
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -1177,6 +1354,46 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             animator.SetTrigger("dapda");
         }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_CapNhatChiSoTrangBi(int[] idNhungMonDangMac)
+    {
+        float bonusHealth = 0f;
+        float bonusStamina = 0f;
+        float bonusSpeed = 0f;
+        float bonusDamage = 0f; 
+        float bonusArmor = 0f; // <--- Biến tạm đếm giáp
+
+        foreach (int id in idNhungMonDangMac)
+        {
+            if (id > 0 && InventoryManager.instance != null)
+            {
+                Item thongTin = InventoryManager.instance.TraCuuItem(id);
+                if (thongTin != null)
+                {
+                    bonusHealth += thongTin.congThemMau;
+                    bonusStamina += thongTin.congThemStamina;
+                    bonusSpeed += thongTin.congThemTocDo;
+                    bonusArmor += thongTin.congThemGiap; // <--- Cộng dồn giáp
+                }
+            }
+        }
+
+        float oldMaxArmor = MaxArmor; // Nhớ lại giáp cũ trước khi mặc/tháo
+
+        MaxHealth = baseMaxHealth + bonusHealth;
+        MaxStamina = baseMaxStamina + bonusStamina;
+        MaxArmor = baseMaxArmor + bonusArmor;
+        speed = baseSpeed + bonusSpeed;
+        attackDamageToAnimal = baseDamage + bonusDamage;
+
+
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
+        CurrentStamina = Mathf.Clamp(CurrentStamina, 0, MaxStamina);
+        CurrentArmor = Mathf.Clamp(CurrentArmor, 0, MaxArmor);
+        
+        Debug.Log($"<color=green>Chỉ số: Máu {MaxHealth} | Giáp {MaxArmor}</color>");
     }
     
 

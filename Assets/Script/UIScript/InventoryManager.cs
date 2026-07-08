@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Fusion; // Phải có thư viện mạng để đọc NetworkArray
+using System.Collections.Generic;
 
 public class InventoryManager : MonoBehaviour 
 {
@@ -17,6 +18,51 @@ public class InventoryManager : MonoBehaviour
 
     [Header("Từ Điển Vật Phẩm")]
     public Item[] khoDuLieu; 
+    [Header("Các ô trang bị trên UI (Kéo thả từ Inspector)")]
+    public LoCamDo slotMu;
+    public LoCamDo slotAo;
+    public LoCamDo slotQuan; 
+    public LoCamDo slotVuKhi;
+    
+    // THÊM 3 Ô MỚI NÀY VÀO ĐỂ HỨNG ĐỒ CỦA BÒ NÈ:
+    public LoCamDo slotDayChuyen;
+    public LoCamDo slotGiay;
+    public LoCamDo slotNhan;
+
+    // Hàm gọi cập nhật chỉ số
+    public void CapNhatLaiToanBoChiSo()
+    {
+        // 1. Lấy ID từ TẤT CẢ các lỗ cắm đồ (Lỗ nào trống nó tự ra số 0)
+        int idMu = slotMu != null ? slotMu.LayIDTrangBiHienTai() : 0;
+        int idAo = slotAo != null ? slotAo.LayIDTrangBiHienTai() : 0;
+        int idQuan = slotQuan != null ? slotQuan.LayIDTrangBiHienTai() : 0;
+        int idVuKhi = slotVuKhi != null ? slotVuKhi.LayIDTrangBiHienTai() : 0;
+        
+        int idDayChuyen = slotDayChuyen != null ? slotDayChuyen.LayIDTrangBiHienTai() : 0;
+        int idGiay = slotGiay != null ? slotGiay.LayIDTrangBiHienTai() : 0;
+        int idNhan = slotNhan != null ? slotNhan.LayIDTrangBiHienTai() : 0;
+
+        // 2. Gom TẤT CẢ vào 1 mảng
+        int[] danhSachDoDangMac = new int[] 
+        { 
+            idMu, idAo, idQuan, idVuKhi, idDayChuyen, idGiay, idNhan 
+        };
+
+        // 3. Quăng cái mảng cho Player tính toán
+        if (Player_Controller.localPlayer != null)
+        {
+            Player_Controller.localPlayer.RPC_CapNhatChiSoTrangBi(danhSachDoDangMac);
+        }
+    }
+
+    [Header("Danh sách UI cần ẩn khi mở Balo")]
+    public GameObject[] danhSachUI_CanAn; 
+    private Dictionary<GameObject, bool> triNhoUI = new Dictionary<GameObject, bool>();
+    public enum TabBalo { TrangBi, NguyenLieu, CongCu }
+
+    // 2. Gắn Header vào đúng cái biến sẽ hiển thị ra Inspector
+    [Header("Phân loại Tab Balo")]
+    public TabBalo tabHienTai = TabBalo.NguyenLieu;
 
     void Awake()
     {
@@ -30,52 +76,68 @@ public class InventoryManager : MonoBehaviour
 
     public void VeBaloRaManHinh(NetworkArray<O_VatPham> tuiDoCuaPlayer)
     {
-        // 1. Xóa sạch sẽ các ô cũ đang có trên màn hình
-        foreach (Transform child in itemHolder) { 
-            Destroy(child.gameObject); 
-        }
+        // Xóa sạch sẽ các ô cũ đang hiển thị
+        foreach (Transform child in itemHolder) { Destroy(child.gameObject); }
 
-        // 2. Quét qua 20 ngăn trong cái túi mạng của Player
         for (int i = 0; i < tuiDoCuaPlayer.Length; i++)
         {
-            if (tuiDoCuaPlayer[i].ItemID != 0) // Á chà, ngăn này có đồ!
+            if (tuiDoCuaPlayer[i].ItemID != 0)
             {
-                // Tra từ điển xem ID này là món gì
                 Item thongTinMonDo = TraCuuItem(tuiDoCuaPlayer[i].ItemID);
-                
                 if (thongTinMonDo != null)
                 {
-                    // 3. Đẻ ra 1 cái ô UI mới và nhét nó vào khung itemHolder
-                    GameObject oMoi = Instantiate(itemPrefab, itemHolder);
-                    
-                    // 4. Tìm mấy cái Text và Image trong cái ô đó để thay đổi
-                    TextMeshProUGUI itemName = oMoi.transform.Find("ItemName").GetComponent<TextMeshProUGUI>();
-                    TextMeshProUGUI itemCountText = oMoi.transform.Find("stack").GetComponent<TextMeshProUGUI>();
-                    Image itemIMG = oMoi.transform.Find("ItemIcon").GetComponent<Image>();
-                                      
-                    // 5. Đắp dữ liệu từ Từ điển và Mạng lên UI
-                    itemName.text = thongTinMonDo.itemName;
-                    itemIMG.sprite = thongTinMonDo.icon;
-                    
-                    if (tuiDoCuaPlayer[i].SoLuong > 1) {
-                        itemCountText.text = "x" + tuiDoCuaPlayer[i].SoLuong.ToString();
-                    } else {
-                        itemCountText.text = ""; // 1 cục thì ẩn số đi cho đẹp
+                    // =======================================
+                    // BỘ LỌC PHÂN LOẠI TỰ ĐỘNG
+                    // =======================================
+                    bool duocPhepHienThi = false;
+
+                    if (tabHienTai == TabBalo.NguyenLieu && thongTinMonDo.loaiTrangBi == Item.LoaiTrangBi.KhongPhai) 
+                    {
+                        duocPhepHienThi = true; // Tab Nguyên liệu chỉ hiện đồ KhongPhai
+                    }
+                    else if (tabHienTai == TabBalo.CongCu && thongTinMonDo.loaiTrangBi == Item.LoaiTrangBi.VuKhi_CongCu) 
+                    {
+                        duocPhepHienThi = true; // Tab Công cụ chỉ hiện VuKhi_CongCu
+                    }
+                    else if (tabHienTai == TabBalo.TrangBi && 
+                            (thongTinMonDo.loaiTrangBi == Item.LoaiTrangBi.Non || 
+                             thongTinMonDo.loaiTrangBi == Item.LoaiTrangBi.Ao || 
+                             thongTinMonDo.loaiTrangBi == Item.LoaiTrangBi.Giay || 
+                             thongTinMonDo.loaiTrangBi == Item.LoaiTrangBi.DayChuyen || 
+                             thongTinMonDo.loaiTrangBi == Item.LoaiTrangBi.Nhan)) 
+                    {
+                        duocPhepHienThi = true; // Tab Trang bị hiện các món giáp/trang sức
                     }
 
-                    // =======================================================
-                    // 6. GẮN MẮT THẦN (TOOLTIP) - Bơm cả Thông tin lẫn Số lượng
-                    // =======================================================
-                    ItemHover camBien = oMoi.GetComponent<ItemHover>();
-                    if (camBien != null)
+                    // ĐÚNG TAB THÌ MỚI ĐƯỢC VẼ RA NGOÀI!
+                    if (duocPhepHienThi)
                     {
-                        camBien.thongTinMonDo = thongTinMonDo;
+                        // (Mấy dòng code cũ đẻ Prefab và gán dữ liệu của Bò nhét hết vào trong hàm if này nhé)
+                        GameObject oMoi = Instantiate(itemPrefab, itemHolder);
+                        oMoi.GetComponent<SlotItemUI>().SetData(thongTinMonDo, tuiDoCuaPlayer[i].SoLuong);
                         
-                        // Lấy đúng số lượng của cái ô thứ [i] truyền vào đây:
-                        camBien.soLuongDangCo = tuiDoCuaPlayer[i].SoLuong; 
+                        ItemHover camBien = oMoi.GetComponent<ItemHover>();
+                        KeoThaItem cucKeoTha = oMoi.GetComponent<KeoThaItem>();
+                        if (cucKeoTha != null) cucKeoTha.idMonDoDangKeo = thongTinMonDo.itemID;
+                        if (camBien != null)
+                        {
+                            camBien.thongTinMonDo = thongTinMonDo;
+                            camBien.soLuongDangCo = tuiDoCuaPlayer[i].SoLuong; 
+                        }
                     }
                 }
             }
+        }
+    }
+
+    public void BamChuyenTab(int idTab)
+    {
+        tabHienTai = (TabBalo)idTab;
+        
+        // Nếu Balo đang mở thì load lại hình ảnh ngay lập tức
+        if (trangThaiBalo && chuSoHuuBalo != null)
+        {
+            VeBaloRaManHinh(chuSoHuuBalo.TuiDo);
         }
     }
 
@@ -93,23 +155,40 @@ public class InventoryManager : MonoBehaviour
 
     public void BatTatBalo(NetworkArray<O_VatPham> tuiDoCuaPlayer, Player_Controller player)
     {
-        chuSoHuuBalo = player; // Lưu lại để tí nữa biết ai bán đồ
+        chuSoHuuBalo = player; 
         trangThaiBalo = !trangThaiBalo;
-
-        // 🚨 MÁY PHÁT HIỆN NÓI DỐI
-        if (khungBalo != null) 
-        {
-            khungBalo.SetActive(trangThaiBalo);
-            //Debug.Log("<color=yellow>Đã ra lệnh SetActive thành: " + trangThaiBalo + " | Đối tượng bị bật/tắt là: [" + khungBalo.name + "]</color>");
-        }
-        else
-        {
-            //Debug.Log("<color=red>BÁO ĐỘNG ĐỎ: Ô khungBalo đang TRỐNG (Null). Chưa kéo giao diện vào!</color>");
-        }
 
         if (trangThaiBalo)
         {
+            // --- 1. KHI MỞ BALO LÊN ---
+            // Ghi nhớ trạng thái và tắt các UI vướng víu
+            triNhoUI.Clear();
+            foreach (GameObject ui in danhSachUI_CanAn)
+            {
+                if (ui != null)
+                {
+                    triNhoUI[ui] = ui.activeSelf; // Nhớ xem nó đang bật hay tắt
+                    ui.SetActive(false);          // Ép nó tắt đi
+                }
+            }
+            
+            // Vẽ đồ trong Balo ra
             VeBaloRaManHinh(tuiDoCuaPlayer);
         }
+        else
+        {
+            // --- 2. KHI ĐÓNG BALO LẠI ---
+            // Trả lại trạng thái cũ cho các UI
+            foreach (GameObject ui in danhSachUI_CanAn)
+            {
+                if (ui != null && triNhoUI.ContainsKey(ui))
+                {
+                    ui.SetActive(triNhoUI[ui]); 
+                }
+            }
+        }
+
+        // Bật/tắt cái khung Balo
+        if (khungBalo != null) khungBalo.SetActive(trangThaiBalo);
     }
 }

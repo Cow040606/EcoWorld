@@ -373,7 +373,7 @@ GameObject:
   - component: {fileID: 8272481790431223185}
   - component: {fileID: 2042484136180435446}
   - component: {fileID: 622638298194623595}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -426,7 +426,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -698,7 +698,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
@@ -912,7 +912,7 @@ MonoBehaviour:
   khoangCachCamera: 3
   layerVaChamCamera:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1535
   fovBinhThuong: 60
   fovChayNhanh: 70
   tocDoZoom: 5
@@ -946,7 +946,7 @@ MonoBehaviour:
   currentState: 0
   farmlandLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   hintText: {fileID: 0}
   showDebugRay: 1
   _isDoingAction:

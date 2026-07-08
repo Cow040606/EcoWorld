@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5081504582798228955}
   - component: {fileID: 1307942283207098939}
+  - component: {fileID: 1672566474384419347}
+  - component: {fileID: 9195271572253193851}
   m_Layer: 5
   m_Name: ItemSlot
   m_TagString: Untagged
@@ -54,6 +56,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemHover
   thongTinMonDo: {fileID: 0}
   soLuongDangCo: 0
+--- !u!114 &1672566474384419347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947997932705012632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97391032e2444614f81d81500da884ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  canvasGoc: {fileID: 0}
+  idMonDoDangKeo: 0
+--- !u!114 &9195271572253193851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947997932705012632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1846e1366a9c3e46a15bb64d8603858, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  itemName: {fileID: 2486257657720924430}
+  itemCount: {fileID: 1770700321682505363}
+  itemIcon: {fileID: 5540562518117957763}
 --- !u!1 &3135076824070338011
 GameObject:
   m_ObjectHideFlags: 0
