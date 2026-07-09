@@ -360,7 +360,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dc532203741694428eb9f5b7d3d23cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LimitCamera
-  Player: {fileID: 2468779152711149797}
+  Player: {fileID: 2956909077282468447}
+  Height: 30
 --- !u!1 &8673096975454500310
 GameObject:
   m_ObjectHideFlags: 0
@@ -514,17 +515,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 380.26706
+      value: 375.03653
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.7999995
+      value: 1.8000009
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 194.44527
+      value: 206.74562
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
@@ -902,8 +903,21 @@ MonoBehaviour:
   character: {fileID: 1979389992108088245}
   speed: 3
   runfast: 8
-  MaxHealth: 100
-  MaxStamina: 100
+  baseMaxHealth: 100
+  baseMaxStamina: 100
+  baseMaxArmor: 0
+  baseSpeed: 5
+  baseDamage: 25
+  _CurrentHealth: 0
+  _MaxHealth: 0
+  _CurrentStamina: 0
+  _MaxStamina: 0
+  _CurrentArmor: 0
+  _MaxArmor: 0
+  tocDoTut: 20
+  tocDoHoi: 15
+  dangChayNhanh: 0
+  thoiGianDelayHoi: 2
   level: 0
   expToLevelUp: 100
   iconCamThan: {fileID: 1961696949314537915}
