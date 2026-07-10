@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
-using UnityEngine.UI; // BẮT BUỘC THÊM CÁI NÀY ĐỂ ĐIỀU KHIỂN ĐỘ MỜ HÌNH ẢNH
+using UnityEngine.UI; 
+using TMPro; 
 
-public class LoCamDo : MonoBehaviour, IDropHandler
+public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler 
 {
     public static List<LoCamDo> danhSachTatCaCacLo = new List<LoCamDo>();
 
@@ -17,16 +18,16 @@ public class LoCamDo : MonoBehaviour, IDropHandler
     [Header("Cài đặt Nhấp Nháy")]
     public float tocDo = 3f;           
     public float doMoThapNhat = 0.2f;  
-    private Image anhVien; // Lưu lại cái component Image của khung sáng
-    [Header("Hiển thị hình ảnh")]
+    private Image anhVien; 
+
+    [Header("Hiển thị hình ảnh & Số lượng")]
     public Image anhIcon;
+    public TextMeshProUGUI txtSoLuong; 
     public int idDangMac = 0;
 
     void Awake()
     {
         if (!danhSachTatCaCacLo.Contains(this)) danhSachTatCaCacLo.Add(this);
-        
-        // Lấy component Image từ cái khung sáng (nếu Bò đã kéo khungSang vào)
         if (khungSang != null) anhVien = khungSang.GetComponent<Image>();
     }
 
@@ -35,12 +36,8 @@ public class LoCamDo : MonoBehaviour, IDropHandler
         if (danhSachTatCaCacLo.Contains(this)) danhSachTatCaCacLo.Remove(this);
     }
 
-    // ==========================================
-    // HÀM UPDATE NÀY SẼ LÀM KHUNG NHẤP NHÁY
-    // ==========================================
     void Update()
     {
-        // Chỉ nhấp nháy khi khung đang được bật (SetActive = true)
         if (khungSang != null && khungSang.activeSelf && anhVien != null)
         {
             Color mau = anhVien.color;
@@ -53,6 +50,10 @@ public class LoCamDo : MonoBehaviour, IDropHandler
     public bool KiemTraHopLe(Item thongTinItem)
     {
         if (thongTinItem == null) return false;
+        
+        // ========================================================
+        // Đã tháo chốt chặn! Cứ là ô chế tạo thì cho phép thả đồ vào
+        // ========================================================
         if (loaiCuaO == LoaiLo.NguyenLieuCheTao) return true;
 
         if (loaiCuaO == LoaiLo.Hotbar && (thongTinItem.loaiTrangBi == Item.LoaiTrangBi.VuKhi_CongCu || thongTinItem.loaiTrangBi == Item.LoaiTrangBi.KhongPhai))
@@ -68,25 +69,15 @@ public class LoCamDo : MonoBehaviour, IDropHandler
         else if (loaiCuaO == LoaiLo.Nhan && thongTinItem.loaiTrangBi == Item.LoaiTrangBi.Nhan)
             return true;
 
-        return false; // Nếu không lọt vào các điều kiện trên thì từ chối!
+        return false; 
     }
 
-    // ==========================================
-    // 2. KHI DI CHUỘT QUA -> XÉT DUYỆT ĐỂ BẬT ĐÈN
-    // ==========================================
     public void KiemTraHopLeVaBatSang(Item thongTinItem)
     {
         if (khungSang == null) return;
-        
-        if (KiemTraHopLe(thongTinItem)) 
-        {
-            khungSang.SetActive(true);
-        }
+        if (KiemTraHopLe(thongTinItem)) khungSang.SetActive(true);
     }
 
-    // ==========================================
-    // 3. KHI THẢ CHUỘT -> XÉT DUYỆT LẦN CUỐI RỒI MỚI NHẬN ĐỒ
-    // ==========================================
     public void OnDrop(PointerEventData eventData)
     {
         if (eventData.pointerDrag != null)
@@ -97,7 +88,6 @@ public class LoCamDo : MonoBehaviour, IDropHandler
                 int idDoVat = doBiKeo.idMonDoDangKeo;
                 Item thongTin = InventoryManager.instance.TraCuuItem(idDoVat);
 
-                // CHẶN NGAY TẠI ĐÂY: Có hợp lệ mới cho chạy hàm gán đồ!
                 if (KiemTraHopLe(thongTin))
                 {
                     XuLyGanDo(idDoVat);
@@ -105,7 +95,7 @@ public class LoCamDo : MonoBehaviour, IDropHandler
                 }
                 else
                 {
-                    Debug.Log("<color=red>Sai lỗ rồi Bò ơi! Không nhét vào đây được!</color>");
+                    Debug.Log("<color=red>Sai loại ô rồi Bò ơi!</color>");
                 }
             }
         }
@@ -121,7 +111,22 @@ public class LoCamDo : MonoBehaviour, IDropHandler
         }
         else 
         {
-            // --- XỬ LÝ CẬP NHẬT HÌNH ẢNH TRANG BỊ TẠI CHỖ ---
+            // ========================================================
+            // TÌM VÀ XÓA ĐỒ Ở Ô CŨ TRƯỚC KHI GẮN VÀO Ô MỚI
+            // ========================================================
+            if (loaiCuaO == LoaiLo.NguyenLieuCheTao)
+            {
+                foreach (var lo in danhSachTatCaCacLo)
+                {
+                    // Nếu thấy một lỗ khác (cũng là lỗ chế tạo) đang cầm món đồ này -> Tẩy trắng nó!
+                    if (lo != this && lo.loaiCuaO == LoaiLo.NguyenLieuCheTao && lo.idDangMac == idDoVat)
+                    {
+                        lo.XoaDoKhoiO(); 
+                    }
+                }
+            }
+
+            // Tiến hành gắn đồ vào ô hiện tại
             if (anhIcon != null && InventoryManager.instance != null)
             {
                 Item thongTin = InventoryManager.instance.TraCuuItem(idDoVat);
@@ -133,27 +138,81 @@ public class LoCamDo : MonoBehaviour, IDropHandler
                     mauHienTai.a = 1f; 
                     anhIcon.color = mauHienTai;
                     
-                    idDangMac = idDoVat; // <--- CHÈN DÒNG NÀY ĐỂ LƯU LẠI ID
+                    idDangMac = idDoVat; 
+
+                    if (txtSoLuong != null)
+                    {
+                        int soLuongHienCo = Player_Controller.localPlayer.DemSoLuongVatPham(idDoVat);
+                        if (loaiCuaO == LoaiLo.NguyenLieuCheTao)
+                        {
+                            txtSoLuong.text = $"Soluong: {soLuongHienCo}";
+                        }
+                        else
+                        {
+                            txtSoLuong.text = ""; 
+                        }
+                    }
                 }
             }
         }
         
-        
-        // --- CHÈN THÊM ĐOẠN NÀY VÀO CUỐI HÀM NÈ BÒ ---
-        // Báo cho InventoryManager tính lại chỉ số mỗi khi Bò mặc 1 món đồ mới vào
         if (loaiCuaO != LoaiLo.Hotbar && InventoryManager.instance != null)
         {
             InventoryManager.instance.CapNhatLaiToanBoChiSo();
         }
     }
+
     public int LayIDTrangBiHienTai()
     {
         return idDangMac; 
     }
 
-
     public void TatSang()
     {
         if (khungSang != null) khungSang.SetActive(false);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        // Nhận diện cú click chuột phải để gỡ đồ
+        if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            if (loaiCuaO == LoaiLo.NguyenLieuCheTao && idDangMac != 0)
+            {
+                XoaDoKhoiO();
+            }
+        }
+    }
+
+    public void XoaDoKhoiO()
+    {
+        idDangMac = 0; 
+        
+        if (anhIcon != null)
+        {
+            anhIcon.sprite = null;
+            Color mauTrongSuot = anhIcon.color;
+            mauTrongSuot.a = 0f; 
+            anhIcon.color = mauTrongSuot;
+        }
+
+        if (txtSoLuong != null)
+        {
+            txtSoLuong.text = ""; 
+        }
+    }
+
+    public static void CapNhatToanBoSoLuongTrenTramCheTao()
+    {
+        if (Player_Controller.localPlayer == null) return;
+        
+        foreach (var lo in danhSachTatCaCacLo)
+        {
+            if (lo.loaiCuaO == LoaiLo.NguyenLieuCheTao && lo.txtSoLuong != null && lo.idDangMac > 0)
+            {
+                int soLuongMoi = Player_Controller.localPlayer.DemSoLuongVatPham(lo.idDangMac);
+                lo.txtSoLuong.text = $"Soluong: {soLuongMoi}";
+            }
+        }
     }
 }

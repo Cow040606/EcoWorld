@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 public class UI_TramCheTao : MonoBehaviour
 {
+    public static UI_TramCheTao instance; 
+    public GameObject khungGiaoDien; 
+    public bool dangMoCraft = false;
     [Header("1. Bỏ tất cả Công Thức của game vào đây")]
     public CraftingRecipe[] khoCongThuc;
 
@@ -14,6 +17,10 @@ public class UI_TramCheTao : MonoBehaviour
     public GameObject prefabMotCongThuc; 
 
     private int idCu1, idCu2, idCu3; // Dùng để theo dõi xem người chơi có đổi đồ trong lỗ không
+    void Awake()
+    {
+        if (instance == null) instance = this;
+    }
 
     void Update()
     {
@@ -67,5 +74,13 @@ public class UI_TramCheTao : MonoBehaviour
             if (nl.monDo != null && nl.monDo.itemID == idNL) return true;
         }
         return false;
+    }
+    public void BatTatCraft()
+    {
+        dangMoCraft = !dangMoCraft;
+        if (khungGiaoDien != null)
+        {
+            khungGiaoDien.SetActive(dangMoCraft);
+        }
     }
 }

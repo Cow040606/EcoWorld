@@ -1,9 +1,19 @@
 using UnityEngine;
+using UnityEngine.UI; // Bắt buộc phải có cái này để dùng Image
 using TMPro;
 
 public class UI_MotCongThuc : MonoBehaviour
 {
-    public TextMeshProUGUI txtTenVaNguyenLieu;
+    [Header("Thông tin kết quả")]
+    public TextMeshProUGUI txtTenMonDo;
+    public Image imgKetQua;
+    public TextMeshProUGUI txtGiaTien; // Dành cho xu (nếu có, không có cứ để trống ngoài Inspector)
+
+    [Header("Danh sách 3 ô nguyên liệu")]
+    public GameObject[] khungNguyenLieu = new GameObject[3]; // Dùng để Bật/Tắt nguyên cụm (hình + chữ)
+    public Image[] imgNguyenLieu = new Image[3];             // Nơi truyền hình icon nguyên liệu vào
+    public TextMeshProUGUI[] txtSoLuongNL = new TextMeshProUGUI[3]; // Truyền chữ x2, x3...
+
     private CraftingRecipe congThucHienTai;
 
     // Trạm chế tạo sẽ gọi hàm này để đổ dữ liệu vào UI
@@ -12,22 +22,44 @@ public class UI_MotCongThuc : MonoBehaviour
         congThucHienTai = ct;
         if (ct == null || ct.monDoThuDuoc == null) return;
 
-        // Xây dựng chuỗi chữ. Ví dụ: "Rìu Sắt (Cần: 3 Gỗ, 2 Sắt)"
-        string chuoi = $"{ct.monDoThuDuoc.itemName} (Cần: ";
-        
-        foreach (var nl in ct.danhSachNguyenLieu)
+        // 1. Gán Tên và Hình ảnh món đồ thu được
+        if (txtTenMonDo != null) txtTenMonDo.text = ct.monDoThuDuoc.itemName;
+        if (imgKetQua != null) imgKetQua.sprite = ct.monDoThuDuoc.icon;
+
+        // 2. Hiển thị Tiền xu (nếu công thức có yêu cầu)
+        if (txtGiaTien != null)
         {
-            if (nl.monDo != null && nl.soLuongCan > 0)
+            txtGiaTien.gameObject.SetActive(ct.giaTienXu > 0);
+            txtGiaTien.text = ct.giaTienXu + " Xu";
+        }
+
+        // 3. TẮT SẠCH 3 ô nguyên liệu đi trước 
+        // (Để xíu nữa công thức cần mấy món thì chỉ bật bấy nhiêu ô)
+        for (int i = 0; i < 3; i++)
+        {
+            if (khungNguyenLieu[i] != null) khungNguyenLieu[i].SetActive(false);
+        }
+
+        // 4. Duyệt qua nguyên liệu của công thức và BẬT đúng số ô lên
+        if (ct.danhSachNguyenLieu != null)
+        {
+            for (int i = 0; i < ct.danhSachNguyenLieu.Length; i++)
             {
-                chuoi += $"{nl.soLuongCan} {nl.monDo.itemName}, ";
+                if (i >= 3) break; // Khung UI của bò chỉ hỗ trợ tối đa 3 nguyên liệu
+                
+                var nl = ct.danhSachNguyenLieu[i];
+
+                if (nl.monDo != null && nl.soLuongCan > 0)
+                {
+                    // Bật ô UI lên
+                    if (khungNguyenLieu[i] != null) khungNguyenLieu[i].SetActive(true);
+                    
+                    // Gán hình ảnh và số lượng
+                    if (imgNguyenLieu[i] != null) imgNguyenLieu[i].sprite = nl.monDo.icon;
+                    if (txtSoLuongNL[i] != null) txtSoLuongNL[i].text = "x" + nl.soLuongCan;
+                }
             }
         }
-        
-        if (ct.giaTienXu > 0) chuoi += $"{ct.giaTienXu} Xu, ";
-
-        // Cắt bỏ dấu phẩy bị dư ở cuối chuỗi
-        chuoi = chuoi.TrimEnd(',', ' ') + ")";
-        txtTenVaNguyenLieu.text = chuoi;
     }
 
     // Gắn hàm này vào sự kiện OnClick() của cái Nút Chế Tạo

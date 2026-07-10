@@ -201,8 +201,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             bool isChatActive = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
             bool isEscOpen    = (ESC.instance != null && ESC.instance.isESC_Open);
             bool isMapOpen    = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
+            bool isCraftOpen  = (UI_TramCheTao.instance != null && UI_TramCheTao.instance.dangMoCraft); 
 
-            bool batKyUI_NaoDangMo = isBaloOpen || isEscOpen || isShopOpen || isChatActive || isQuestOpen || isMapOpen;
+            // CẬP NHẬT DÒNG NÀY (Thêm isCraftOpen vào cuối cùng):
+            bool batKyUI_NaoDangMo = isBaloOpen || isEscOpen || isShopOpen || isChatActive || isQuestOpen || isMapOpen || isCraftOpen;  
 
             // 3. QUẢN LÝ CON TRỎ CHUỘT VÀ TIA NHÌN
             if (batKyUI_NaoDangMo)
@@ -380,16 +382,25 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (ESC.instance != null) ESC.instance.BatTatESC();
         }
 
+        // Chỉ cần 1 khối if (!isChatActive && !isShopOpen) là đủ gom hết các phím vào rồi Bò nha!
         if (!isChatActive && !isShopOpen)
         {
+            // Phím B - Balo
             if (Keyboard.current.bKey.wasPressedThisFrame && InventoryManager.instance != null)
             {
                 InventoryManager.instance.BatTatBalo(TuiDo, this);
             }
 
+            // Phím Tab - Nhiệm vụ
             if (Keyboard.current.tabKey.wasPressedThisFrame && QuestManager.instance != null)
             {
                 QuestManager.instance.Battatbangnhiemvu();
+            }
+
+            // Phím E - Chế Tạo
+            if (Keyboard.current.eKey.wasPressedThisFrame && UI_TramCheTao.instance != null)
+            {
+                UI_TramCheTao.instance.BatTatCraft();
             }
         }
     }
@@ -923,6 +934,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive)
             DialogueEditor.ConversationManager.Instance.EndConversation();
+        if (UI_TramCheTao.instance != null && UI_TramCheTao.instance.dangMoCraft)
+        {
+            UI_TramCheTao.instance.BatTatCraft();
+        }
     }
 
     public void CapNhatUIHotbarLocal(int slotIndex, int itemID)
@@ -994,6 +1009,24 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         KiemTraDonDepHotbar();
         ThemDoVatVaoTui(idTaoRa, slTaoRa);
+
+        // --- GỌI TÍN HIỆU CẬP NHẬT UI Ở ĐÂY ---
+        RPC_BaoClientVeLaiUI(); 
+    }
+
+    // Server gọi hàm này để ra lệnh cho máy khách (Client) vẽ lại giao diện
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_BaoClientVeLaiUI()
+    {
+        LoCamDo.CapNhatToanBoSoLuongTrenTramCheTao();
+
+        if (InventoryManager.instance != null)
+        {
+            if (InventoryManager.instance.trangThaiBalo)
+            {
+                InventoryManager.instance.VeBaloRaManHinh(this.TuiDo);
+            }
+        }
     }
 
     private void TruNguyenLieuCheTao(int idVatPham, int soLuongCanTru)
