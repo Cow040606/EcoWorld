@@ -7,7 +7,7 @@ public class LoCamDo : MonoBehaviour, IDropHandler
 {
     public static List<LoCamDo> danhSachTatCaCacLo = new List<LoCamDo>();
 
-    public enum LoaiLo { Hotbar, Non, DayChuyen, Ao, Giay, Nhan, VuKhi_CongCu }
+    public enum LoaiLo { Hotbar, Non, DayChuyen, Ao, Giay, Nhan, VuKhi_CongCu, NguyenLieuCheTao }
     public LoaiLo loaiCuaO; 
     public int slotIndex;   
 
@@ -53,6 +53,7 @@ public class LoCamDo : MonoBehaviour, IDropHandler
     public bool KiemTraHopLe(Item thongTinItem)
     {
         if (thongTinItem == null) return false;
+        if (loaiCuaO == LoaiLo.NguyenLieuCheTao) return true;
 
         if (loaiCuaO == LoaiLo.Hotbar && (thongTinItem.loaiTrangBi == Item.LoaiTrangBi.VuKhi_CongCu || thongTinItem.loaiTrangBi == Item.LoaiTrangBi.KhongPhai))
             return true;
