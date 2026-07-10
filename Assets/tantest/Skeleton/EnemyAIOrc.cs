@@ -12,6 +12,9 @@ public class EnemyAIOrc : NetworkBehaviour
     [Networked]
     public int Health { get; set; }
 
+    [Networked]
+    public TickTimer despawnTimer { get; set; } // Bộ đếm thời gian xóa xác
+
     [Header("AI Settings")]
     public float patrolRadius = 10f;
     public float detectionRadius = 8f;
@@ -26,7 +29,10 @@ public class EnemyAIOrc : NetworkBehaviour
     private Animator animator;
     private Vector3 startPosition;
     private float stateTimer = 0f;
+
+    // TỐI ƯU CACHE DỮ LIỆU ĐỂ TRÁNH LAG KHI TẤN CÔNG
     private Transform targetPlayer;
+    private Player_Controller targetPlayerController;
 
     public override void Spawned()
     {
@@ -48,7 +54,17 @@ public class EnemyAIOrc : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (!HasStateAuthority || CurrentState == EnemyState.Dead) return;
+        // Nếu quái đã chết, tiến hành đếm ngược 5 giây rồi xóa xác khỏi mạng
+        if (CurrentState == EnemyState.Dead)
+        {
+            if (HasStateAuthority && despawnTimer.Expired(Runner))
+            {
+                Runner.Despawn(Object);
+            }
+            return; // Dừng toàn bộ logic AI bên dưới nếu đã chết
+        }
+
+        if (!HasStateAuthority) return;
 
         switch (CurrentState)
         {
@@ -91,7 +107,7 @@ public class EnemyAIOrc : NetworkBehaviour
                     }
                     else if (distanceToPlayer > loseRadius)
                     {
-                        targetPlayer = null;
+                        ClearTarget();
                         CurrentState = EnemyState.Return;
                         if (IsAgentValid()) agent.SetDestination(startPosition);
                     }
@@ -146,20 +162,17 @@ public class EnemyAIOrc : NetworkBehaviour
     }
 
     // =========================================================================
-    // HÀM GÂY SÁT THƯƠNG TỪ ANIMATION EVENT CỦA QUÁI VẬT
+    // HÀM GÂY SÁT THƯƠNG TỪ ANIMATION EVENT CỦA QUÁI VẬT (ĐÃ TỐI ƯU)
     // =========================================================================
     public void EnemyDoDamage()
     {
-        if (targetPlayer != null)
+        // Sử dụng biến targetPlayerController đã cache thay vì dùng GetComponent liên tục gây tốn tài nguyên
+        if (targetPlayer != null && targetPlayerController != null)
         {
             float dist = Vector3.Distance(transform.position, targetPlayer.position);
             if (dist <= attackRadius + 1f)
             {
-                Player_Controller player = targetPlayer.GetComponent<Player_Controller>();
-                if (player != null)
-                {
-                    player.RPC_TakeDame(15f);
-                }
+                targetPlayerController.RPC_TakeDame(15f);
             }
         }
     }
@@ -189,13 +202,21 @@ public class EnemyAIOrc : NetworkBehaviour
             if (hit.CompareTag("Player"))
             {
                 targetPlayer = hit.transform;
+                targetPlayerController = hit.GetComponent<Player_Controller>(); // LƯU CACHE TẠI ĐÂY
+
                 CurrentState = EnemyState.Scream;
                 stateTimer = 0f;
                 if (IsAgentValid()) agent.ResetPath();
                 transform.LookAt(new Vector3(targetPlayer.position.x, transform.position.y, targetPlayer.position.z));
-                break;
+                break; // Thoát vòng lặp ngay khi đã tìm thấy 1 mục tiêu
             }
         }
+    }
+
+    private void ClearTarget()
+    {
+        targetPlayer = null;
+        targetPlayerController = null;
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -209,6 +230,9 @@ public class EnemyAIOrc : NetworkBehaviour
         {
             CurrentState = EnemyState.Dead;
             if (IsAgentValid()) agent.ResetPath();
+
+            // Bắt đầu đếm ngược 5 giây để xóa xác khỏi bản đồ
+            despawnTimer = TickTimer.CreateFromSeconds(Runner, 5f);
         }
         else
         {
