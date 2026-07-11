@@ -248,6 +248,7 @@ public class EnemyAIOrc : NetworkBehaviour
                 animator.SetTrigger("death");
                 Collider col = GetComponent<Collider>();
                 if (col != null) col.enabled = false;
+                Destroy (gameObject, 5f);
                 break;
         }
     }
