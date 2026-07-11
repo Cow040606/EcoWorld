@@ -2,11 +2,10 @@ using UnityEngine;
 
 public class LimitCamera : MonoBehaviour
 {
-    public Transform Player;
-    public float Height = 30f;
+    public GameObject Player;
 
     private void LateUpdate()
     {
-        transform.position = Player.position + Vector3.up * Height;
+        transform.position = new Vector3(Player.transform.position.x, 15, Player.transform.position.z);
     }
 }
