@@ -20,6 +20,8 @@ public class UI_TramCheTao : MonoBehaviour
     void Awake()
     {
         if (instance == null) instance = this;
+        khungGiaoDien.SetActive(true);
+        khungGiaoDien.SetActive(false);
     }
 
     void Update()
