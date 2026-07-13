@@ -104,7 +104,7 @@ public class TimeManager : MonoBehaviour
         // 2. Phím U: Đè giữ để TUA NHANH thời gian gấp 10 lần
         else if (Input.GetKey(KeyCode.U))
         {
-            timeSettings.timeMultiplier = baseMultiplier * 10f;
+            timeSettings.timeMultiplier = baseMultiplier * 1000f;
         }
         // 3. Khôi phục lại tốc độ cố định mặc định khi không bấm gì
         else
