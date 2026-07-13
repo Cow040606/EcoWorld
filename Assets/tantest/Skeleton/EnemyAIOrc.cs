@@ -1,3 +1,4 @@
+using System.Collections.Generic; // Bắt buộc phải có để dùng List
 using Fusion;
 using UnityEngine;
 using UnityEngine.AI;
@@ -21,6 +22,14 @@ public class EnemyAIOrc : NetworkBehaviour
     public float screamDuration = 2f;
     public float attackCooldown = 1.5f;
     public int maxHealth = 100;
+
+    [Header("Drop Settings")]
+    [Tooltip("Danh sách các vật phẩm có thể rớt (Bắt buộc phải có component NetworkObject)")]
+    public List<GameObject> dropItems; // Đã đổi sang List
+
+    [Tooltip("Tỉ lệ rớt đồ (0 đến 100%)")]
+    [Range(0f, 100f)]
+    public float dropChance = 100f;
 
     private NavMeshAgent agent;
     private Animator animator;
@@ -145,9 +154,6 @@ public class EnemyAIOrc : NetworkBehaviour
         }
     }
 
-    // =========================================================================
-    // HÀM GÂY SÁT THƯƠNG TỪ ANIMATION EVENT CỦA QUÁI VẬT
-    // =========================================================================
     public void EnemyDoDamage()
     {
         if (targetPlayer != null)
@@ -163,7 +169,6 @@ public class EnemyAIOrc : NetworkBehaviour
             }
         }
     }
-    // =========================================================================
 
     private void StartPatrol()
     {
@@ -209,12 +214,52 @@ public class EnemyAIOrc : NetworkBehaviour
         {
             CurrentState = EnemyState.Dead;
             if (IsAgentValid()) agent.ResetPath();
+
+            DropItem();
         }
         else
         {
             RPC_PlayTakeDamageAnim();
         }
     }
+
+    // =========================================================================
+    // HÀM XỬ LÝ RỚT ĐỒ TỪ LIST
+    // =========================================================================
+    private void DropItem()
+    {
+        // Kiểm tra List có tồn tại và có phần tử nào không
+        if (dropItems != null && dropItems.Count > 0)
+        {
+            float randomValue = Random.Range(0f, 100f);
+
+            // Nếu trúng tỉ lệ rớt
+            if (randomValue <= dropChance)
+            {
+                // Chọn ngẫu nhiên 1 index trong List
+                int randomIndex = Random.Range(0, dropItems.Count);
+                GameObject itemToDrop = dropItems[randomIndex];
+
+                // Kiểm tra xem item được chọn có null không
+                if (itemToDrop != null)
+                {
+                    // Lấy component NetworkObject để Spawn qua Fusion
+                    NetworkObject netObj = itemToDrop.GetComponent<NetworkObject>();
+
+                    if (netObj != null)
+                    {
+                        Vector3 spawnPosition = transform.position + Vector3.up * 1f;
+                        Runner.Spawn(netObj, spawnPosition, Quaternion.identity);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[EnemyAIOrc] GameObject '{itemToDrop.name}' trong danh sách dropItems không có component NetworkObject! Không thể spawn qua mạng.");
+                    }
+                }
+            }
+        }
+    }
+    // =========================================================================
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_PlayTakeDamageAnim()
@@ -248,7 +293,7 @@ public class EnemyAIOrc : NetworkBehaviour
                 animator.SetTrigger("death");
                 Collider col = GetComponent<Collider>();
                 if (col != null) col.enabled = false;
-                Destroy (gameObject, 5f);
+                Destroy(gameObject, 5f);
                 break;
         }
     }
