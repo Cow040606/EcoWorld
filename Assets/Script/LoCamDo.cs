@@ -211,7 +211,7 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
             if (lo.loaiCuaO == LoaiLo.NguyenLieuCheTao && lo.txtSoLuong != null && lo.idDangMac > 0)
             {
                 int soLuongMoi = Player_Controller.localPlayer.DemSoLuongVatPham(lo.idDangMac);
-                lo.txtSoLuong.text = $"Soluong: {soLuongMoi}";
+                lo.txtSoLuong.text = $"Sl: {soLuongMoi}x";
             }
         }
     }
