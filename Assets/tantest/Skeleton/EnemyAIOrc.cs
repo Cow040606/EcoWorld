@@ -41,6 +41,17 @@ public class EnemyAIOrc : NetworkBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+
+        // =========================================================
+        // SỬA LỖI VĂNG RA RÌA MAP KHI SPAWN
+        // Ép NavMeshAgent cập nhật đúng vị trí do hệ thống mạng chỉ định
+        if (agent != null)
+        {
+            agent.Warp(transform.position);
+            agent.enabled = true; // Bật lại Agent sau khi đã bế nó tới đúng chỗ
+        }
+        // =========================================================
+
         startPosition = transform.position;
 
         if (HasStateAuthority)

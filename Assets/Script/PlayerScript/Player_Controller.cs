@@ -573,25 +573,32 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (!HasInputAuthority) return;
 
-        if (BanTiaTuTamManHinh(interactRange, attackLayer, out RaycastHit hit))
+        // 1. Tạo một tâm quét nằm ở phía trước mặt nhân vật một chút (cách 1 unit)
+        Vector3 tamQuet = transform.position + transform.forward * 1f;
+
+        // 2. Bán kính chém (Bạn có thể tinh chỉnh số 3f này cho phù hợp với tầm vũ khí)
+        float banKinhChem = 3f;
+
+        // 3. Lấy TẤT CẢ các mục tiêu nằm trong vùng quét và thuộc Layer Va Chạm (attackLayer)
+        Collider[] hitColliders = Physics.OverlapSphere(tamQuet, banKinhChem, attackLayer);
+
+        foreach (var hitCollider in hitColliders)
         {
-            // TỐI ƯU: Sử dụng GetComponentInParent để không bị hụt mục tiêu khi tia Raycast đâm trúng Collider con
-            var animalAI = hit.collider.GetComponentInParent<ithappy.Animals_FREE.AnimalAI_Controller>();
+            // --- KIỂM TRA TRÚNG THÚ ---
+            var animalAI = hitCollider.GetComponentInParent<ithappy.Animals_FREE.AnimalAI_Controller>();
             if (animalAI != null)
             {
                 animalAI.RPC_AnimalTakeDamage(attackDamageToAnimal, Runner.LocalPlayer);
-                return;
             }
 
-            var enemyOrc = hit.collider.GetComponentInParent<EnemyAIOrc>();
+            // --- KIỂM TRA TRÚNG QUÁI ORC ---
+            var enemyOrc = hitCollider.GetComponentInParent<EnemyAIOrc>();
             if (enemyOrc != null)
             {
                 enemyOrc.RPC_TakeDamageFromPlayer((int)attackDamageToAnimal);
-                return;
             }
         }
     }
-
     private void HandleChopping()
     {
         if (playerCamera == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
