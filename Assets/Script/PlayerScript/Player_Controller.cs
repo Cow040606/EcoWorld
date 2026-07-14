@@ -24,6 +24,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public static Player_Controller localPlayer;
 
     #region 1. KHAI BÁO BIẾN (VARIABLES)
+    [Header("Quán tính")]
+    [Networked] public float currentSpeedSmooth { get; set; }
+    public float giaToc = 8f;    
+    public float giamToc = 12f;  
+    public float tocDoXoay = 15f;
 
     [Header("Di chuyển")]
     public NetworkCharacterController character;
@@ -53,6 +58,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Networked] public float MaxArmor { get; set; }
     public float tocDoTut = 20f;
     public float tocDoHoi = 15f;
+
+    [Header("Hệ Thống Phân Bổ Điểm")]
+    [Networked] public int AvailablePoints { get; set; } 
+    [Networked] public int DiemSucManh { get; set; }     
+    [Networked] public int DiemTheLuc { get; set; }     
+    [Networked] public int DiemNhanhNhen { get; set; }
+    [Networked] public int DiemMau { get; set; }
+
     [HideInInspector] public bool dangChayNhanh = false;
     public float thoiGianDelayHoi = 2f;
     private float dongHoDelayHoi = 0f;
@@ -72,6 +85,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private float xRotation = 0f;
     private float yRotation = 0f;
     public float khoangCachCamera = 4f;
+    // --- BỔ SUNG BIẾN ZOOM CAMERA ---
+    public float khoangCachMin = 1.5f; 
+    public float khoangCachMax = 10f;  
+    public float tocDoZoomChuot = 0.5f; 
+    private float khoangCachMucTieu;    
+    // --------------------------------
     private float mouseXLocalAcc;
     public LayerMask layerVaChamCamera;
     public float fovBinhThuong = 60f;
@@ -155,12 +174,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             localPlayer = this;
             Runner.AddCallbacks(this);
             Runner.SetPlayerObject(Runner.LocalPlayer, Object);
+            
+            // --- KHỞI TẠO ĐỒNG BỘ ZOOM LÚC MỚI VÀO GAME ---
+            khoangCachMucTieu = khoangCachCamera; 
 
-            // --- THÊM 2 DÒNG NÀY ĐỂ TỰ ĐỘNG TÌM TEXT HINT NGOÀI GIAO DIỆN ---
             GameObject objHint = GameObject.Find("Text_Hint");
             if (objHint != null) hintText = objHint.GetComponent<TextMeshProUGUI>();
 
             if (cameraTransform == null && Camera.main != null) cameraTransform = Camera.main.transform;
+            
+            if (cameraTransform != null) cameraTransform.SetParent(null); 
+            
             if (playerCamera == null) Debug.LogError("[Player_Controller] ❌ 'Player Camera' chưa được gán!");
             if (TreeManager.Instance == null) Debug.LogError("[Player_Controller] ❌ Không tìm thấy TreeManager!");
         }
@@ -192,22 +216,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             RPC_AddExp(0.1f);
 
-            // 1. NGĂN CHẶN THAO TÁC KHI ĐANG CHAT
             if (KiemTraDangGoPhimChat()) return;
 
-            // 2. KIỂM TRA TRẠNG THÁI CÁC BẢNG UI
             bool isBaloOpen = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
             bool isShopOpen = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
             bool isQuestOpen = (QuestManager.instance != null && QuestManager.instance.isQuest_Open);
             bool isChatActive = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
             bool isEscOpen = (ESC.instance != null && ESC.instance.isESC_Open);
             bool isMapOpen = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
-            bool isCraftOpen = (UI_TramCheTao.instance != null && UI_TramCheTao.instance.dangMoCraft);
+            bool isCraftOpen = (ShopUIController.instance != null && ShopUIController.instance.dangMoCraft);
 
-            // CẬP NHẬT DÒNG NÀY (Thêm isCraftOpen vào cuối cùng):
             bool batKyUI_NaoDangMo = isBaloOpen || isEscOpen || isShopOpen || isChatActive || isQuestOpen || isMapOpen || isCraftOpen;
 
-            // 3. QUẢN LÝ CON TRỎ CHUỘT VÀ TIA NHÌN
             if (batKyUI_NaoDangMo)
             {
                 Cursor.lockState = CursorLockMode.None;
@@ -222,11 +242,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 xRotation -= Mouse.current.delta.y.ReadValue() * mouseSensitivity;
                 xRotation = Mathf.Clamp(xRotation, -60f, 60f);
 
+                // --- BẮT SỰ KIỆN LĂN CHUỘT ---
+                float scrollValue = Mouse.current.scroll.y.ReadValue();
+                if (scrollValue != 0)
+                {
+                    khoangCachMucTieu -= Mathf.Sign(scrollValue) * tocDoZoomChuot;
+                    khoangCachMucTieu = Mathf.Clamp(khoangCachMucTieu, khoangCachMin, khoangCachMax);
+                }
+
                 int idDangCam = (CurrentToolIndex >= 0) ? HotbarIDs[CurrentToolIndex] : 0;
                 UpdateFarmingUI(idDangCam);
             }
 
-            // 4. XỬ LÝ NHẬP LIỆU BÀN PHÍM CHUNG
             HandleUIGlobalInput(isChatActive, isShopOpen);
             HandleHotbarInput(isBaloOpen, isShopOpen, isChatActive, isEscOpen, isQuestOpen);
 
@@ -235,14 +262,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (Keyboard.current.kKey.wasPressedThisFrame) RPC_ThayDoiTien(5);
             if (Keyboard.current.lKey.wasPressedThisFrame) RPC_ThayDoiTien(-5);
 
-            // 5. XỬ LÝ TƯƠNG TÁC (Khi không mở UI)
             if (!batKyUI_NaoDangMo)
             {
                 int idDangCam = (CurrentToolIndex >= 0) ? HotbarIDs[CurrentToolIndex] : 0;
                 HandleGameplayInteraction(idDangCam);
             }
 
-            // 6. XỬ LÝ DI CHUYỂN
             sprintPressedLocal = Keyboard.current.leftShiftKey.isPressed;
             XuLyTheLuc();
             if (Keyboard.current.spaceKey.wasPressedThisFrame) jumpPressedLocal = true;
@@ -250,30 +275,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             float trucX = Keyboard.current.dKey.isPressed ? 1f : (Keyboard.current.aKey.isPressed ? -1f : 0f);
             float trucY = Keyboard.current.wKey.isPressed ? 1f : (Keyboard.current.sKey.isPressed ? -1f : 0f);
             moveInputLocal = new Vector2(trucX, trucY).normalized;
-        }
-    }
-
-    void LateUpdate()
-    {
-        if (HasInputAuthority && cameraTransform != null)
-        {
-            Quaternion camRotation = Quaternion.Euler(xRotation, yRotation, 0f);
-            Vector3 diemNhin = transform.position + Vector3.up * 1.5f;
-            Vector3 huongCamera = -(camRotation * Vector3.forward);
-            Vector3 viTriDuKien = diemNhin + huongCamera * khoangCachCamera;
-
-            if (Physics.Raycast(diemNhin, huongCamera, out RaycastHit hit, khoangCachCamera, layerVaChamCamera))
-                cameraTransform.position = hit.point + hit.normal * 0.4f;
-            else
-                cameraTransform.position = viTriDuKien;
-
-            cameraTransform.rotation = camRotation;
-
-            if (playerCamera != null)
-            {
-                float fovMucTieu = isSprinting ? fovChayNhanh : fovBinhThuong;
-                playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, fovMucTieu, Runner.DeltaTime * tocDoZoom);
-            }
         }
     }
 
@@ -297,7 +298,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 hitTimer = TickTimer.None;
                 if (pendingActionType == 1) ThucHienXetVaChamChop();
-                // BỔ SUNG CODE: Thực hiện đập đá đúng nhịp hành động
                 else if (pendingActionType == 2) ThucHienXetVaChamMine();
             }
 
@@ -327,17 +327,34 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
 
             Vector3 huongDiChuyen = new Vector3(data.moveInput.x, 0f, data.moveInput.y);
-            float tocDoHienTai = data.isRunfast ? runfast : speed;
+            bool dangBampi = huongDiChuyen.magnitude > 0.1f;
 
-            isrun = data.moveInput.magnitude > 0.1f;
+            isrun = dangBampi;
             isSprinting = isrun && data.isRunfast;
 
-            if (huongDiChuyen.magnitude >= 0.1f)
+            float targetSpeed = 0f;
+            if (dangBampi) targetSpeed = isSprinting ? runfast : speed;
+
+            if (dangBampi) {
+                currentSpeedSmooth = Mathf.Lerp(currentSpeedSmooth, targetSpeed, Runner.DeltaTime * giaToc);
+            } else {
+                currentSpeedSmooth = Mathf.Lerp(currentSpeedSmooth, 0f, Runner.DeltaTime * giamToc);
+            }
+
+            character.maxSpeed = currentSpeedSmooth;
+
+            if (currentSpeedSmooth > 0.1f)
             {
-                character.maxSpeed = tocDoHienTai;
-                character.Move(huongDiChuyen.normalized);
-                Quaternion huongMucTieu = Quaternion.LookRotation(huongDiChuyen);
-                transform.rotation = Quaternion.Slerp(transform.rotation, huongMucTieu, Runner.DeltaTime * 15f);
+                if (dangBampi)
+                {
+                    character.Move(huongDiChuyen.normalized);
+                    Quaternion huongMucTieu = Quaternion.LookRotation(huongDiChuyen);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, huongMucTieu, Runner.DeltaTime * tocDoXoay);
+                }
+                else
+                {
+                    character.Move(transform.forward);
+                }
             }
             else
             {
@@ -363,6 +380,33 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             animator.SetBool("isRunning", isrun);
             animator.SetBool("isRunFast", isSprinting);
         }
+
+        if (HasInputAuthority && cameraTransform != null)
+        {
+            // --- KÉO DÂY THUN KHOẢNG CÁCH CAMERA (LÀM MƯỢT ZOOM) ---
+            khoangCachCamera = Mathf.Lerp(khoangCachCamera, khoangCachMucTieu, Time.deltaTime * 10f);
+
+            Quaternion camRotationMucTieu = Quaternion.Euler(xRotation, yRotation, 0f);
+            cameraTransform.rotation = Quaternion.Slerp(cameraTransform.rotation, camRotationMucTieu, Time.deltaTime * 25f);
+
+            Vector3 diemNhin = transform.position + Vector3.up * 1.5f;
+            Vector3 huongCamera = -(cameraTransform.rotation * Vector3.forward); 
+            Vector3 viTriDuKien = diemNhin + huongCamera * khoangCachCamera;
+
+            Vector3 viTriCuoiCung;
+            if (Physics.Raycast(diemNhin, huongCamera, out RaycastHit hit, khoangCachCamera, layerVaChamCamera))
+                viTriCuoiCung = hit.point + hit.normal * 0.4f;
+            else
+                viTriCuoiCung = viTriDuKien;
+
+            cameraTransform.position = viTriCuoiCung;
+
+            if (playerCamera != null)
+            {
+                float fovMucTieu = isSprinting ? fovChayNhanh : fovBinhThuong;
+                playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, fovMucTieu, Time.deltaTime * tocDoZoom);
+            }
+        }
     }
 
     #endregion
@@ -387,22 +431,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (!isChatActive && !isShopOpen)
         {
-            // Phím B - Balo
             if (Keyboard.current.bKey.wasPressedThisFrame && InventoryManager.instance != null)
             {
                 InventoryManager.instance.BatTatBalo(TuiDo, this);
             }
 
-            // Phím Tab - Nhiệm vụ
             if (Keyboard.current.tabKey.wasPressedThisFrame && QuestManager.instance != null)
             {
                 QuestManager.instance.Battatbangnhiemvu();
             }
 
-            // Phím E - Chế Tạo
             if (Keyboard.current.eKey.wasPressedThisFrame && UI_TramCheTao.instance != null)
             {
-                UI_TramCheTao.instance.BatTatCraft();
+                ShopUIController.instance.BatTatCraft();
             }
         }
     }
@@ -494,7 +535,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private void HandleGameplayInteraction(int idDangCam)
     {
-        // 1. NÚT F: TƯƠNG TÁC THEO PHẠM VI 
         if (Keyboard.current.fKey.wasPressedThisFrame)
         {
             Collider[] cacVatTheGan = Physics.OverlapSphere(transform.position, banKinhNhat, farmlandLayer | interactLayer);
@@ -502,7 +542,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             foreach (var col in cacVatTheGan)
             {
-                // Ưu tiên 1: Cây trồng đã chín -> Nhổ
                 FarmPlot plot = col.GetComponentInParent<FarmPlot>();
                 if (plot != null && plot.CurrentState == FarmPlot.PlotState.CayLon)
                 {
@@ -511,7 +550,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                     break;
                 }
 
-                // Ưu tiên 2: NPC
                 if (col.CompareTag("NPC"))
                 {
                     daTuongTacXong = true;
@@ -519,14 +557,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 }
             }
 
-            // Ưu tiên 3: Nếu không đứng gần cây chín hay NPC nào -> Quét hút rác
             if (!daTuongTacXong)
             {
                 RPC_YeuCauNhatRac();
             }
         }
 
-        // 2. CHUỘT TRÁI: CÔNG CỤ (Tool/Vũ khí)
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             switch (idDangCam)
@@ -537,7 +573,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
 
-        // 3. CHUỘT PHẢI: VẬT PHẨM TIÊU HAO & CÂU CÁ
         if (Mouse.current.rightButton.wasPressedThisFrame)
         {
             if (idDangCam == 8)
@@ -564,34 +599,25 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void HandleAttackAnimal()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
-        // SỬA LỖI: Đồng bộ hoạt ảnh vung kiếm chém thay vì nổ sát thương tức thì (Instant Hit)
         RPC_AnimSlash();
     }
 
-    // BỔ SUNG CODE: Hàm nổ sát thương này bắt buộc được gọi từ Animation Event của clip "slash"
     public void PlayerDoDamage()
     {
         if (!HasInputAuthority) return;
 
-        // 1. Tạo một tâm quét nằm ở phía trước mặt nhân vật một chút (cách 1 unit)
         Vector3 tamQuet = transform.position + transform.forward * 1f;
-
-        // 2. Bán kính chém (Bạn có thể tinh chỉnh số 3f này cho phù hợp với tầm vũ khí)
         float banKinhChem = 3f;
-
-        // 3. Lấy TẤT CẢ các mục tiêu nằm trong vùng quét và thuộc Layer Va Chạm (attackLayer)
         Collider[] hitColliders = Physics.OverlapSphere(tamQuet, banKinhChem, attackLayer);
 
         foreach (var hitCollider in hitColliders)
         {
-            // --- KIỂM TRA TRÚNG THÚ ---
             var animalAI = hitCollider.GetComponentInParent<ithappy.Animals_FREE.AnimalAI_Controller>();
             if (animalAI != null)
             {
                 animalAI.RPC_AnimalTakeDamage(attackDamageToAnimal, Runner.LocalPlayer);
             }
 
-            // --- KIỂM TRA TRÚNG QUÁI ORC ---
             var enemyOrc = hitCollider.GetComponentInParent<EnemyAIOrc>();
             if (enemyOrc != null)
             {
@@ -609,7 +635,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void HandleMining()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
-        RPC_AnimDapDa(); // BỔ SUNG CODE: Đồng bộ hoạt ảnh cuốc đá qua mạng
+        RPC_AnimDapDa(); 
         RPC_BaoHieuBatDauAction(2, 1.5f, 0.6f);
     }
 
@@ -639,7 +665,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         else _lastRayHit = false;
     }
 
-    // BỔ SUNG CODE: Thực hiện quét va chạm đập đá đồng bộ nhịp Animation
     private void ThucHienXetVaChamMine()
     {
         if (BanTiaTuTamManHinh(interactRange, rockLayer, out RaycastHit hit))
@@ -711,9 +736,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void UpdateFarmingUI(int idDangCam)
     {
         if (hintText == null) return;
-        string chuChuoiUI = ""; // Chuỗi này sẽ cộng dồn các hướng dẫn lại với nhau
+        string chuChuoiUI = ""; 
 
-        // --- 1. TIA NGẮM (Chỉ dành riêng cho việc Gieo Hạt / Xem tiến độ cây) ---
         if (BanTiaTuTamManHinh(interactRange, farmlandLayer, out RaycastHit hit))
         {
             currentLookedPlot = hit.collider.GetComponentInParent<FarmPlot>();
@@ -730,7 +754,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             currentLookedPlot = null;
         }
 
-        // --- 2. PHẠM VI XUNG QUANH (Thu hoạch, NPC, Lụm đồ) ---
         Collider[] cacVatTheGan = Physics.OverlapSphere(transform.position, banKinhNhat, farmlandLayer | interactLayer);
         float khoangCachNganNhat = float.MaxValue;
         Collider mucTieuGanNhat = null;
@@ -774,7 +797,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
 
-        // --- 3. ĐỒ TIÊU HAO ĐANG CẦM TRÊN TAY ---
         if (idDangCam > 0 && InventoryManager.instance != null)
         {
             Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
@@ -966,9 +988,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive)
             DialogueEditor.ConversationManager.Instance.EndConversation();
-        if (UI_TramCheTao.instance != null && UI_TramCheTao.instance.dangMoCraft)
+        if (ShopUIController.instance != null && ShopUIController.instance.dangMoCraft)
         {
-            UI_TramCheTao.instance.BatTatCraft();
+            ShopUIController.instance.BatTatCraft();
         }
     }
 
@@ -1118,7 +1140,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_CapNhatChiSoTrangBi(int[] idNhungMonDangMac)
     {
-        float bonusHealth = 0f, bonusStamina = 0f, bonusSpeed = 0f, bonusDamage = 0f, bonusArmor = 0f;
+        float bonusHealth = DiemMau * 10f;       
+        float bonusStamina = DiemTheLuc * 5f;    
+        float bonusDamage = DiemSucManh * 2f;    
+        float bonusSpeed = DiemNhanhNhen * 0.2f; 
+        float bonusArmor = 0f;
 
         foreach (int id in idNhungMonDangMac)
         {
@@ -1144,6 +1170,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
         CurrentStamina = Mathf.Clamp(CurrentStamina, 0, MaxStamina);
         CurrentArmor = Mathf.Clamp(CurrentArmor, 0, MaxArmor);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_CongDiemTiemNang(int loaiChiSo)
+    {
+        if (AvailablePoints <= 0) return; 
+        
+        AvailablePoints--;
+        
+        if (loaiChiSo == 1) DiemSucManh++;
+        else if (loaiChiSo == 2) DiemTheLuc++;
+        else if (loaiChiSo == 3) DiemNhanhNhen++;
+        else if (loaiChiSo == 4) DiemMau++;
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -1185,8 +1224,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         ExpCurrent += exp;
         while (ExpCurrent >= expToLevelUp)
         {
-            ExpCurrent = 0;
+            ExpCurrent -= expToLevelUp; 
             level++;
+            AvailablePoints += 3;       
             expToLevelUp *= 1.1f;
         }
     }
@@ -1388,7 +1428,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_CapNhatUIHotbarKhach(int slotIndex, int itemID)
     {
-        // SỬA LỖI: Gọi trực tiếp hàm xử lý cục bộ khi Client nhận tín hiệu từ Server
         CapNhatUIHotbarLocal(slotIndex, itemID);
     }
 

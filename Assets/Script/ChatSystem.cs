@@ -31,11 +31,10 @@ public class ChatSystem : NetworkBehaviour
             LocalInstance = this; // Khẳng định: Đây là UI trên màn hình của mình!
             IsChatting = false;
 
-            ChatSys = GameObject.Find("ChatPanel");
             
             if (ChatSys != null)
             {
-                ChatSys.SetActive(true); // Yêu cầu: Bật lên lúc bắt đầu Spawn
+                ChatSys.SetActive(true); 
 
                 // TỰ ĐỘNG THÊM CANVAS GROUP (Vũ khí làm mờ UI)
                 chatCanvasGroup = ChatSys.GetComponent<CanvasGroup>();
