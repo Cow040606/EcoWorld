@@ -1,6 +1,7 @@
 using UnityEngine;
 using Fusion;
 using System.Collections;
+using System.Collections.Generic; // Bắt buộc để dùng List
 
 namespace ithappy.Animals_FREE
 {
@@ -29,6 +30,13 @@ namespace ithappy.Animals_FREE
         public float wanderInterval = 3f;      // Cứ bao giây đổi hướng lang thang
         public float thinkInterval = 0.2f;     // Cứ bao giây AI "suy nghĩ" lại
 
+        [Header("Drop Settings")]
+        [Tooltip("Danh sách các vật phẩm có thể rớt (Bắt buộc phải có component NetworkObject)")]
+        public List<GameObject> dropItems;
+        [Tooltip("Tỉ lệ rớt đồ (0 đến 100%)")]
+        [Range(0f, 100f)]
+        public float dropChance = 100f;
+
         // --- Networked State ---
         [Networked] private AnimalState _state { get; set; }
         [Networked] private Vector3 _targetPosition { get; set; }
@@ -53,8 +61,6 @@ namespace ithappy.Animals_FREE
             _spawnPosition = _transform.position;
             CurrentHealth = maxHealth;
             _state = AnimalState.Wandering;
-
-            // Chỉ Server/StateAuthority mới chạy AI logic
         }
 
         // -------------------------------------------------------
@@ -98,20 +104,17 @@ namespace ithappy.Animals_FREE
             }
         }
 
-        // THÚ ĂN CỎ: Bình thường lang thang, bị đánh thì CHẠY
         private void UpdateHerbivoreState(Player_Controller player, float dist)
         {
             if (_state == AnimalState.Fleeing)
             {
-                // Đang chạy: kiểm tra đã đủ xa chưa
                 if (dist > fleeDistance || player == null)
                 {
                     _state = AnimalState.Wandering;
                 }
-                return; // Không đổi state khi đang chạy
+                return;
             }
 
-            // Trạng thái bình thường: lang thang
             if (_state != AnimalState.Fleeing)
             {
                 _wanderTimer -= thinkInterval;
@@ -124,7 +127,6 @@ namespace ithappy.Animals_FREE
             }
         }
 
-        // THÚ ĂN THỊT: Phát hiện player trong range thì ĐUỔI & TẤN CÔNG
         private void UpdateCarnivoreState(Player_Controller player, float dist)
         {
             if (player != null && dist <= detectionRange)
@@ -143,7 +145,6 @@ namespace ithappy.Animals_FREE
             }
             else
             {
-                // Không thấy player: lang thang
                 _wanderTimer -= thinkInterval;
                 if (_wanderTimer <= 0f || _state == AnimalState.Chasing)
                 {
@@ -167,32 +168,27 @@ namespace ithappy.Animals_FREE
 
                 case AnimalState.Wandering:
                     MoveTowards(_targetPosition, false);
-                    // Nếu đến nơi rồi thì Idle chờ đổi hướng
                     if (Vector3.Distance(_transform.position, _targetPosition) < 1f)
                         _state = AnimalState.Idle;
                     break;
 
                 case AnimalState.Fleeing:
-                    MoveTowards(_targetPosition, true); // Chạy = true (isRun)
+                    MoveTowards(_targetPosition, true);
                     break;
 
                 case AnimalState.Chasing:
-                    // Cập nhật vị trí player liên tục khi đuổi
                     Player_Controller target = GetTargetPlayer();
                     if (target != null) _targetPosition = target.transform.position;
                     MoveTowards(_targetPosition, true);
                     break;
 
                 case AnimalState.Attacking:
-                    MoveAnimal(Vector2.zero, false); // Đứng yên đánh
+                    MoveAnimal(Vector2.zero, false);
                     TryAttack();
                     break;
             }
         }
 
-        // -------------------------------------------------------
-        // GỌI CreatureMover để di chuyển
-        // -------------------------------------------------------
         private void MoveTowards(Vector3 destination, bool isRun)
         {
             Vector3 direction = (destination - _transform.position);
@@ -205,13 +201,11 @@ namespace ithappy.Animals_FREE
             }
 
             direction.Normalize();
-            // Chuyển sang tọa độ local của con vật
             Vector2 axis = new Vector2(
                 Vector3.Dot(direction, _transform.right),
                 Vector3.Dot(direction, _transform.forward)
             );
 
-            // Target nhìn về phía đang đi
             Vector3 lookTarget = _transform.position + direction * 5f;
             _mover.SetInput(axis, lookTarget, isRun, false);
         }
@@ -221,9 +215,6 @@ namespace ithappy.Animals_FREE
             _mover.SetInput(axis, _transform.position + _transform.forward, isRun, false);
         }
 
-        // -------------------------------------------------------
-        // TẤN CÔNG
-        // -------------------------------------------------------
         private void TryAttack()
         {
             if (_attackTimer > 0f) return;
@@ -240,18 +231,21 @@ namespace ithappy.Animals_FREE
             }
             else
             {
-                // Player chạy ra ngoài tầm, đuổi tiếp
                 _state = AnimalState.Chasing;
             }
         }
 
         // -------------------------------------------------------
-        // NHẬN SÁT THƯƠNG (Được gọi từ bên ngoài khi player đánh)
+        // NHẬN SÁT THƯƠNG
         // -------------------------------------------------------
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         public void RPC_AnimalTakeDamage(float damage, PlayerRef attackerRef)
         {
             if (_state == AnimalState.Dead) return;
+
+            // --- DEBUG KIỂM TRA ĐÁNH TRÚNG ---
+            Debug.Log($"[Hit Confirm] Player {attackerRef} đã đánh trúng {gameObject.name}! Sát thương: {damage}. Máu hiện tại trước khi trừ: {CurrentHealth}");
+            // ---------------------------------
 
             CurrentHealth -= damage;
             CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
@@ -262,10 +256,8 @@ namespace ithappy.Animals_FREE
                 return;
             }
 
-            // PHẢN ỨNG KHI BỊ ĐÁNH
             if (animalType == AnimalType.Herbivore)
             {
-                // Chạy ngược hướng với player tấn công
                 Player_Controller attacker = FindPlayerByRef(attackerRef);
                 if (attacker != null)
                 {
@@ -275,9 +267,8 @@ namespace ithappy.Animals_FREE
                     Debug.Log($"[Animal] {gameObject.name} (Ăn cỏ) bị đánh → CHẠY!");
                 }
             }
-            else // Carnivore
+            else
             {
-                // Đuổi theo kẻ tấn công
                 Player_Controller attacker = FindPlayerByRef(attackerRef);
                 if (attacker != null)
                 {
@@ -293,11 +284,59 @@ namespace ithappy.Animals_FREE
         {
             _state = AnimalState.Dead;
             MoveAnimal(Vector2.zero, false);
-            // TODO: Phát animation chết, drop item, v.v.
-            // Despawn sau 3 giây
-            StartCoroutine(DespawnAfterDelay(3f));
             Debug.Log($"[Animal] {gameObject.name} đã chết!");
+
+            // Gọi hàm rớt đồ ngay khi chết
+            DropItem();
+
+            // BỎ coroutine chờ 3 giây đi. DESPAWN NGAY LẬP TỨC.
+            if (HasStateAuthority)
+            {
+                Runner.Despawn(Object);
+            }
         }
+
+        // =========================================================================
+        // HÀM XỬ LÝ RỚT ĐỒ TỪ LIST
+        // =========================================================================
+        private void DropItem()
+        {
+            // Bảo vệ an toàn: Chỉ máy chủ (StateAuthority) mới được quyền spawn đồ
+            if (!HasStateAuthority) return;
+
+            if (dropItems != null && dropItems.Count > 0)
+            {
+                float randomValue = Random.Range(0f, 100f);
+
+                if (randomValue <= dropChance)
+                {
+                    int randomIndex = Random.Range(0, dropItems.Count);
+                    GameObject itemToDrop = dropItems[randomIndex];
+
+                    if (itemToDrop != null)
+                    {
+                        NetworkObject netObj = itemToDrop.GetComponent<NetworkObject>();
+
+                        if (netObj != null)
+                        {
+                            // Nhấc đồ lên 1 chút khỏi mặt đất để tránh bị lún
+                            Vector3 spawnPosition = transform.position + Vector3.up * 1f;
+                            Runner.Spawn(netObj, spawnPosition, Quaternion.identity);
+                            Debug.Log($"[Drop System] {gameObject.name} đã rớt vật phẩm: {itemToDrop.name}");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"[Drop System] GameObject '{itemToDrop.name}' trong list của {gameObject.name} không có NetworkObject!");
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.Log($"[Drop System] {gameObject.name} xui xẻo, không rớt đồ lần này.");
+                }
+            }
+        }
+        // =========================================================================
 
         private IEnumerator DespawnAfterDelay(float delay)
         {
@@ -306,14 +345,13 @@ namespace ithappy.Animals_FREE
         }
 
         // -------------------------------------------------------
-        // TÌM PLAYER GẦN NHẤT
+        // CÁC HÀM TÌM KIẾM PLAYER
         // -------------------------------------------------------
         private Player_Controller FindNearestPlayer(out float distance)
         {
             Player_Controller nearest = null;
             distance = float.MaxValue;
 
-            // Tìm tất cả player trong scene
             foreach (var playerObj in Runner.ActivePlayers)
             {
                 NetworkObject netObj = Runner.GetPlayerObject(playerObj);
@@ -344,9 +382,6 @@ namespace ithappy.Animals_FREE
             return netObj?.GetComponent<Player_Controller>();
         }
 
-        // -------------------------------------------------------
-        // ĐẶT ĐIỂM LANG THANG NGẪU NHIÊN
-        // -------------------------------------------------------
         private void SetNewWanderTarget()
         {
             Vector2 randomCircle = Random.insideUnitCircle * wanderRadius;
