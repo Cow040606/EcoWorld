@@ -4,9 +4,10 @@ using System.Collections.Generic;
 public class UI_TramCheTao : MonoBehaviour
 {
     public static UI_TramCheTao instance; 
-    public GameObject khungGiaoDien; 
-    public bool dangMoCraft = false;
+    
+    
     [Header("1. Bỏ tất cả Công Thức của game vào đây")]
+    
     public CraftingRecipe[] khoCongThuc;
 
     [Header("2. Kéo 3 ô Lỗ Cắm Đồ vào đây")]
@@ -20,8 +21,7 @@ public class UI_TramCheTao : MonoBehaviour
     void Awake()
     {
         if (instance == null) instance = this;
-        khungGiaoDien.SetActive(true);
-        khungGiaoDien.SetActive(false);
+        
     }
 
     void Update()
@@ -77,12 +77,5 @@ public class UI_TramCheTao : MonoBehaviour
         }
         return false;
     }
-    public void BatTatCraft()
-    {
-        dangMoCraft = !dangMoCraft;
-        if (khungGiaoDien != null)
-        {
-            khungGiaoDien.SetActive(dangMoCraft);
-        }
-    }
+
 }
