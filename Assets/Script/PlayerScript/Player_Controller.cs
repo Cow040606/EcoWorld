@@ -133,6 +133,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private Vector3 _lastRayOrigin, _lastRayDir, _lastRayHitPoint;
     private bool _lastRayHit;
 
+    [Header("Hệ Thống Âm Thanh (Audio)")]
+    public AudioSource footstepSource;
+    public AudioClip[] footstepClips;
+    public AudioSource actionSource;
+    public AudioClip chopClip;
+    public AudioClip mineClip;
+
     #endregion
 
     #region 2. KHỞI TẠO & VÒNG LẶP CHÍNH (SPAWN, UPDATE, FIXED UPDATE, RENDER)
@@ -156,7 +163,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             Runner.AddCallbacks(this);
             Runner.SetPlayerObject(Runner.LocalPlayer, Object);
 
-            // --- THÊM 2 DÒNG NÀY ĐỂ TỰ ĐỘNG TÌM TEXT HINT NGOÀI GIAO DIỆN ---
             GameObject objHint = GameObject.Find("Text_Hint");
             if (objHint != null) hintText = objHint.GetComponent<TextMeshProUGUI>();
 
@@ -192,10 +198,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             RPC_AddExp(0.1f);
 
-            // 1. NGĂN CHẶN THAO TÁC KHI ĐANG CHAT
             if (KiemTraDangGoPhimChat()) return;
 
-            // 2. KIỂM TRA TRẠNG THÁI CÁC BẢNG UI
             bool isBaloOpen = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
             bool isShopOpen = (ShopUIController.instance != null && ShopUIController.instance.isShopOpen);
             bool isQuestOpen = (QuestManager.instance != null && QuestManager.instance.isQuest_Open);
@@ -204,10 +208,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             bool isMapOpen = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
             bool isCraftOpen = (UI_TramCheTao.instance != null && UI_TramCheTao.instance.dangMoCraft);
 
-            // CẬP NHẬT DÒNG NÀY (Thêm isCraftOpen vào cuối cùng):
             bool batKyUI_NaoDangMo = isBaloOpen || isEscOpen || isShopOpen || isChatActive || isQuestOpen || isMapOpen || isCraftOpen;
 
-            // 3. QUẢN LÝ CON TRỎ CHUỘT VÀ TIA NHÌN
             if (batKyUI_NaoDangMo)
             {
                 Cursor.lockState = CursorLockMode.None;
@@ -226,7 +228,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 UpdateFarmingUI(idDangCam);
             }
 
-            // 4. XỬ LÝ NHẬP LIỆU BÀN PHÍM CHUNG
             HandleUIGlobalInput(isChatActive, isShopOpen);
             HandleHotbarInput(isBaloOpen, isShopOpen, isChatActive, isEscOpen, isQuestOpen);
 
@@ -235,14 +236,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (Keyboard.current.kKey.wasPressedThisFrame) RPC_ThayDoiTien(5);
             if (Keyboard.current.lKey.wasPressedThisFrame) RPC_ThayDoiTien(-5);
 
-            // 5. XỬ LÝ TƯƠNG TÁC (Khi không mở UI)
             if (!batKyUI_NaoDangMo)
             {
                 int idDangCam = (CurrentToolIndex >= 0) ? HotbarIDs[CurrentToolIndex] : 0;
                 HandleGameplayInteraction(idDangCam);
             }
 
-            // 6. XỬ LÝ DI CHUYỂN
             sprintPressedLocal = Keyboard.current.leftShiftKey.isPressed;
             XuLyTheLuc();
             if (Keyboard.current.spaceKey.wasPressedThisFrame) jumpPressedLocal = true;
@@ -297,7 +296,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 hitTimer = TickTimer.None;
                 if (pendingActionType == 1) ThucHienXetVaChamChop();
-                // BỔ SUNG CODE: Thực hiện đập đá đúng nhịp hành động
                 else if (pendingActionType == 2) ThucHienXetVaChamMine();
             }
 
@@ -387,19 +385,16 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (!isChatActive && !isShopOpen)
         {
-            // Phím B - Balo
             if (Keyboard.current.bKey.wasPressedThisFrame && InventoryManager.instance != null)
             {
                 InventoryManager.instance.BatTatBalo(TuiDo, this);
             }
 
-            // Phím Tab - Nhiệm vụ
             if (Keyboard.current.tabKey.wasPressedThisFrame && QuestManager.instance != null)
             {
                 QuestManager.instance.Battatbangnhiemvu();
             }
 
-            // Phím E - Chế Tạo
             if (Keyboard.current.eKey.wasPressedThisFrame && UI_TramCheTao.instance != null)
             {
                 UI_TramCheTao.instance.BatTatCraft();
@@ -494,7 +489,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private void HandleGameplayInteraction(int idDangCam)
     {
-        // 1. NÚT F: TƯƠNG TÁC THEO PHẠM VI 
         if (Keyboard.current.fKey.wasPressedThisFrame)
         {
             Collider[] cacVatTheGan = Physics.OverlapSphere(transform.position, banKinhNhat, farmlandLayer | interactLayer);
@@ -502,7 +496,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             foreach (var col in cacVatTheGan)
             {
-                // Ưu tiên 1: Cây trồng đã chín -> Nhổ
                 FarmPlot plot = col.GetComponentInParent<FarmPlot>();
                 if (plot != null && plot.CurrentState == FarmPlot.PlotState.CayLon)
                 {
@@ -511,7 +504,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                     break;
                 }
 
-                // Ưu tiên 2: NPC
                 if (col.CompareTag("NPC"))
                 {
                     daTuongTacXong = true;
@@ -519,14 +511,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 }
             }
 
-            // Ưu tiên 3: Nếu không đứng gần cây chín hay NPC nào -> Quét hút rác
             if (!daTuongTacXong)
             {
                 RPC_YeuCauNhatRac();
             }
         }
 
-        // 2. CHUỘT TRÁI: CÔNG CỤ (Tool/Vũ khí)
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             switch (idDangCam)
@@ -537,7 +527,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
 
-        // 3. CHUỘT PHẢI: VẬT PHẨM TIÊU HAO & CÂU CÁ
         if (Mouse.current.rightButton.wasPressedThisFrame)
         {
             if (idDangCam == 8)
@@ -564,52 +553,49 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void HandleAttackAnimal()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
-        // SỬA LỖI: Đồng bộ hoạt ảnh vung kiếm chém thay vì nổ sát thương tức thì (Instant Hit)
         RPC_AnimSlash();
     }
 
-    // BỔ SUNG CODE: Hàm nổ sát thương này bắt buộc được gọi từ Animation Event của clip "slash"
     public void PlayerDoDamage()
     {
         if (!HasInputAuthority) return;
 
-        // 1. Tạo một tâm quét nằm ở phía trước mặt nhân vật một chút (cách 1 unit)
         Vector3 tamQuet = transform.position + transform.forward * 1f;
-
-        // 2. Bán kính chém (Bạn có thể tinh chỉnh số 3f này cho phù hợp với tầm vũ khí)
         float banKinhChem = 3f;
-
-        // 3. Lấy TẤT CẢ các mục tiêu nằm trong vùng quét và thuộc Layer Va Chạm (attackLayer)
         Collider[] hitColliders = Physics.OverlapSphere(tamQuet, banKinhChem, attackLayer);
 
         foreach (var hitCollider in hitColliders)
         {
-            // --- KIỂM TRA TRÚNG THÚ ---
             var animalAI = hitCollider.GetComponentInParent<ithappy.Animals_FREE.AnimalAI_Controller>();
             if (animalAI != null)
             {
                 animalAI.RPC_AnimalTakeDamage(attackDamageToAnimal, Runner.LocalPlayer);
             }
 
-            // --- KIỂM TRA TRÚNG QUÁI ORC ---
             var enemyOrc = hitCollider.GetComponentInParent<EnemyAIOrc>();
             if (enemyOrc != null)
             {
                 enemyOrc.RPC_TakeDamageFromPlayer((int)attackDamageToAnimal);
             }
+
+            // --- ĐOẠN CODE MỚI THÊM ĐỂ ĐÁNH TRÚNG BOSS ---
+            var boss = hitCollider.GetComponentInParent<BossController>();
+            if (boss != null)
+            {
+                boss.RPC_PlayerHitBoss(attackDamageToAnimal);
+            }
         }
     }
+
     private void HandleChopping()
     {
         if (playerCamera == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
-        RPC_AnimChatCay();
         RPC_BaoHieuBatDauAction(1, 1.5f, 0.6f);
     }
 
     private void HandleMining()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
-        RPC_AnimDapDa(); // BỔ SUNG CODE: Đồng bộ hoạt ảnh cuốc đá qua mạng
         RPC_BaoHieuBatDauAction(2, 1.5f, 0.6f);
     }
 
@@ -634,12 +620,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (hitTerrain != null && TreeManager.Instance != null)
             {
                 TreeManager.Instance.TryChopTree(hitTerrain, hit.point, Runner);
+                PlayActionSound(chopClip);
             }
         }
         else _lastRayHit = false;
     }
 
-    // BỔ SUNG CODE: Thực hiện quét va chạm đập đá đồng bộ nhịp Animation
     private void ThucHienXetVaChamMine()
     {
         if (BanTiaTuTamManHinh(interactRange, rockLayer, out RaycastHit hit))
@@ -648,6 +634,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (cucDa != null)
             {
                 cucDa.RPC_NhanSatThuongCuoc(25f);
+                PlayActionSound(mineClip);
             }
         }
     }
@@ -711,9 +698,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void UpdateFarmingUI(int idDangCam)
     {
         if (hintText == null) return;
-        string chuChuoiUI = ""; // Chuỗi này sẽ cộng dồn các hướng dẫn lại với nhau
+        string chuChuoiUI = "";
 
-        // --- 1. TIA NGẮM (Chỉ dành riêng cho việc Gieo Hạt / Xem tiến độ cây) ---
         if (BanTiaTuTamManHinh(interactRange, farmlandLayer, out RaycastHit hit))
         {
             currentLookedPlot = hit.collider.GetComponentInParent<FarmPlot>();
@@ -730,7 +716,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             currentLookedPlot = null;
         }
 
-        // --- 2. PHẠM VI XUNG QUANH (Thu hoạch, NPC, Lụm đồ) ---
         Collider[] cacVatTheGan = Physics.OverlapSphere(transform.position, banKinhNhat, farmlandLayer | interactLayer);
         float khoangCachNganNhat = float.MaxValue;
         Collider mucTieuGanNhat = null;
@@ -774,7 +759,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
 
-        // --- 3. ĐỒ TIÊU HAO ĐANG CẦM TRÊN TAY ---
         if (idDangCam > 0 && InventoryManager.instance != null)
         {
             Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
@@ -1007,6 +991,23 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
         }
         CurrentStamina = Mathf.Clamp(CurrentStamina, 0, MaxStamina);
+    }
+
+    // --- ĐOẠN CODE MỚI THÊM: SERVER NHẬN SÁT THƯƠNG TỪ BOSS ---
+    public void Server_TakeDamageFromBoss(float damage)
+    {
+        if (!Object.HasStateAuthority) return;
+
+        if (damage > 0)
+        {
+            if (CurrentArmor >= damage) CurrentArmor -= damage;
+            else
+            {
+                float satThuongDu = damage - CurrentArmor;
+                CurrentArmor = 0;
+                CurrentHealth = Mathf.Clamp(CurrentHealth - satThuongDu, 0, MaxHealth);
+            }
+        }
     }
 
     #endregion
@@ -1388,17 +1389,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void RPC_CapNhatUIHotbarKhach(int slotIndex, int itemID)
     {
-        // SỬA LỖI: Gọi trực tiếp hàm xử lý cục bộ khi Client nhận tín hiệu từ Server
         CapNhatUIHotbarLocal(slotIndex, itemID);
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_BaoHieuBatDauAction(int actionType, float totalAnimTime, float timeToHit)
     {
         isDoingAction = true;
         pendingActionType = actionType;
         actionTimer = TickTimer.CreateFromSeconds(Runner, totalAnimTime);
         hitTimer = TickTimer.CreateFromSeconds(Runner, timeToHit);
+
         if (actionType == 1) RPC_AnimChatCay();
         else if (actionType == 2) RPC_AnimDapDa();
     }
@@ -1514,6 +1515,31 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, Fusion.Sockets.ReliableKey key, System.ArraySegment<byte> data) { }
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, Fusion.Sockets.ReliableKey key, float progress) { }
+
+    #endregion
+
+    #region 10. HỆ THỐNG ÂM THANH (AUDIO)
+
+    public void PlayFootstepSound()
+    {
+        if (!HasInputAuthority) return;
+
+        if (footstepSource != null && footstepClips != null && footstepClips.Length > 0)
+        {
+            int randomIndex = Random.Range(0, footstepClips.Length);
+            footstepSource.PlayOneShot(footstepClips[randomIndex]);
+        }
+    }
+
+    public void PlayActionSound(AudioClip clip)
+    {
+        if (!HasInputAuthority) return;
+
+        if (actionSource != null && clip != null)
+        {
+            actionSource.PlayOneShot(clip);
+        }
+    }
 
     #endregion
 }
