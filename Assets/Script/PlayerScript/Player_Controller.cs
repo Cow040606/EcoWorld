@@ -24,6 +24,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public static Player_Controller localPlayer;
 
     #region 1. KHAI BÁO BIẾN (VARIABLES)
+    [Header("Quán tính")]
+    [Networked] public float currentSpeedSmooth { get; set; }
+    public float giaToc = 8f;    
+    public float giamToc = 12f;  
+    public float tocDoXoay = 15f;
 
     [Header("Di chuyển")]
     public NetworkCharacterController character;
@@ -53,6 +58,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Networked] public float MaxArmor { get; set; }
     public float tocDoTut = 20f;
     public float tocDoHoi = 15f;
+
+    [Header("Hệ Thống Phân Bổ Điểm")]
+    [Networked] public int AvailablePoints { get; set; } 
+    [Networked] public int DiemSucManh { get; set; }     
+    [Networked] public int DiemTheLuc { get; set; }     
+    [Networked] public int DiemNhanhNhen { get; set; }
+    [Networked] public int DiemMau { get; set; }
+
     [HideInInspector] public bool dangChayNhanh = false;
     public float thoiGianDelayHoi = 2f;
     private float dongHoDelayHoi = 0f;
@@ -72,6 +85,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private float xRotation = 0f;
     private float yRotation = 0f;
     public float khoangCachCamera = 4f;
+    // --- BỔ SUNG BIẾN ZOOM CAMERA ---
+    public float khoangCachMin = 1.5f; 
+    public float khoangCachMax = 10f;  
+    public float tocDoZoomChuot = 0.5f; 
+    private float khoangCachMucTieu;    
+    // --------------------------------
     private float mouseXLocalAcc;
     public LayerMask layerVaChamCamera;
     public float fovBinhThuong = 60f;
@@ -162,11 +181,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             localPlayer = this;
             Runner.AddCallbacks(this);
             Runner.SetPlayerObject(Runner.LocalPlayer, Object);
+            
+            // --- KHỞI TẠO ĐỒNG BỘ ZOOM LÚC MỚI VÀO GAME ---
+            khoangCachMucTieu = khoangCachCamera; 
 
             GameObject objHint = GameObject.Find("Text_Hint");
             if (objHint != null) hintText = objHint.GetComponent<TextMeshProUGUI>();
 
             if (cameraTransform == null && Camera.main != null) cameraTransform = Camera.main.transform;
+            
+            if (cameraTransform != null) cameraTransform.SetParent(null); 
+            
             if (playerCamera == null) Debug.LogError("[Player_Controller] ❌ 'Player Camera' chưa được gán!");
             if (TreeManager.Instance == null) Debug.LogError("[Player_Controller] ❌ Không tìm thấy TreeManager!");
         }
@@ -206,7 +231,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             bool isChatActive = (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive);
             bool isEscOpen = (ESC.instance != null && ESC.instance.isESC_Open);
             bool isMapOpen = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
-            bool isCraftOpen = (UI_TramCheTao.instance != null && UI_TramCheTao.instance.dangMoCraft);
+            bool isCraftOpen = (ShopUIController.instance != null && ShopUIController.instance.dangMoCraft);
 
             bool batKyUI_NaoDangMo = isBaloOpen || isEscOpen || isShopOpen || isChatActive || isQuestOpen || isMapOpen || isCraftOpen;
 
@@ -223,6 +248,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 yRotation += Mouse.current.delta.x.ReadValue() * mouseSensitivity;
                 xRotation -= Mouse.current.delta.y.ReadValue() * mouseSensitivity;
                 xRotation = Mathf.Clamp(xRotation, -60f, 60f);
+
+                // --- BẮT SỰ KIỆN LĂN CHUỘT ---
+                float scrollValue = Mouse.current.scroll.y.ReadValue();
+                if (scrollValue != 0)
+                {
+                    khoangCachMucTieu -= Mathf.Sign(scrollValue) * tocDoZoomChuot;
+                    khoangCachMucTieu = Mathf.Clamp(khoangCachMucTieu, khoangCachMin, khoangCachMax);
+                }
 
                 int idDangCam = (CurrentToolIndex >= 0) ? HotbarIDs[CurrentToolIndex] : 0;
                 UpdateFarmingUI(idDangCam);
@@ -249,30 +282,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             float trucX = Keyboard.current.dKey.isPressed ? 1f : (Keyboard.current.aKey.isPressed ? -1f : 0f);
             float trucY = Keyboard.current.wKey.isPressed ? 1f : (Keyboard.current.sKey.isPressed ? -1f : 0f);
             moveInputLocal = new Vector2(trucX, trucY).normalized;
-        }
-    }
-
-    void LateUpdate()
-    {
-        if (HasInputAuthority && cameraTransform != null)
-        {
-            Quaternion camRotation = Quaternion.Euler(xRotation, yRotation, 0f);
-            Vector3 diemNhin = transform.position + Vector3.up * 1.5f;
-            Vector3 huongCamera = -(camRotation * Vector3.forward);
-            Vector3 viTriDuKien = diemNhin + huongCamera * khoangCachCamera;
-
-            if (Physics.Raycast(diemNhin, huongCamera, out RaycastHit hit, khoangCachCamera, layerVaChamCamera))
-                cameraTransform.position = hit.point + hit.normal * 0.4f;
-            else
-                cameraTransform.position = viTriDuKien;
-
-            cameraTransform.rotation = camRotation;
-
-            if (playerCamera != null)
-            {
-                float fovMucTieu = isSprinting ? fovChayNhanh : fovBinhThuong;
-                playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, fovMucTieu, Runner.DeltaTime * tocDoZoom);
-            }
         }
     }
 
@@ -325,17 +334,34 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
 
             Vector3 huongDiChuyen = new Vector3(data.moveInput.x, 0f, data.moveInput.y);
-            float tocDoHienTai = data.isRunfast ? runfast : speed;
+            bool dangBampi = huongDiChuyen.magnitude > 0.1f;
 
-            isrun = data.moveInput.magnitude > 0.1f;
+            isrun = dangBampi;
             isSprinting = isrun && data.isRunfast;
 
-            if (huongDiChuyen.magnitude >= 0.1f)
+            float targetSpeed = 0f;
+            if (dangBampi) targetSpeed = isSprinting ? runfast : speed;
+
+            if (dangBampi) {
+                currentSpeedSmooth = Mathf.Lerp(currentSpeedSmooth, targetSpeed, Runner.DeltaTime * giaToc);
+            } else {
+                currentSpeedSmooth = Mathf.Lerp(currentSpeedSmooth, 0f, Runner.DeltaTime * giamToc);
+            }
+
+            character.maxSpeed = currentSpeedSmooth;
+
+            if (currentSpeedSmooth > 0.1f)
             {
-                character.maxSpeed = tocDoHienTai;
-                character.Move(huongDiChuyen.normalized);
-                Quaternion huongMucTieu = Quaternion.LookRotation(huongDiChuyen);
-                transform.rotation = Quaternion.Slerp(transform.rotation, huongMucTieu, Runner.DeltaTime * 15f);
+                if (dangBampi)
+                {
+                    character.Move(huongDiChuyen.normalized);
+                    Quaternion huongMucTieu = Quaternion.LookRotation(huongDiChuyen);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, huongMucTieu, Runner.DeltaTime * tocDoXoay);
+                }
+                else
+                {
+                    character.Move(transform.forward);
+                }
             }
             else
             {
@@ -360,6 +386,33 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
             animator.SetBool("isRunning", isrun);
             animator.SetBool("isRunFast", isSprinting);
+        }
+
+        if (HasInputAuthority && cameraTransform != null)
+        {
+            // --- KÉO DÂY THUN KHOẢNG CÁCH CAMERA (LÀM MƯỢT ZOOM) ---
+            khoangCachCamera = Mathf.Lerp(khoangCachCamera, khoangCachMucTieu, Time.deltaTime * 10f);
+
+            Quaternion camRotationMucTieu = Quaternion.Euler(xRotation, yRotation, 0f);
+            cameraTransform.rotation = Quaternion.Slerp(cameraTransform.rotation, camRotationMucTieu, Time.deltaTime * 25f);
+
+            Vector3 diemNhin = transform.position + Vector3.up * 1.5f;
+            Vector3 huongCamera = -(cameraTransform.rotation * Vector3.forward); 
+            Vector3 viTriDuKien = diemNhin + huongCamera * khoangCachCamera;
+
+            Vector3 viTriCuoiCung;
+            if (Physics.Raycast(diemNhin, huongCamera, out RaycastHit hit, khoangCachCamera, layerVaChamCamera))
+                viTriCuoiCung = hit.point + hit.normal * 0.4f;
+            else
+                viTriCuoiCung = viTriDuKien;
+
+            cameraTransform.position = viTriCuoiCung;
+
+            if (playerCamera != null)
+            {
+                float fovMucTieu = isSprinting ? fovChayNhanh : fovBinhThuong;
+                playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, fovMucTieu, Time.deltaTime * tocDoZoom);
+            }
         }
     }
 
@@ -397,7 +450,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             if (Keyboard.current.eKey.wasPressedThisFrame && UI_TramCheTao.instance != null)
             {
-                UI_TramCheTao.instance.BatTatCraft();
+                ShopUIController.instance.BatTatCraft();
             }
         }
     }
@@ -596,6 +649,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void HandleMining()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
+ HEAD
+
+        RPC_AnimDapDa(); 
+ f2a41b2a598b8fbe5ad1703fd813ecad5b0f7a8d
         RPC_BaoHieuBatDauAction(2, 1.5f, 0.6f);
     }
 
@@ -698,7 +755,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void UpdateFarmingUI(int idDangCam)
     {
         if (hintText == null) return;
+ HEAD
         string chuChuoiUI = "";
+
+        string chuChuoiUI = ""; 
+ f2a41b2a598b8fbe5ad1703fd813ecad5b0f7a8d
 
         if (BanTiaTuTamManHinh(interactRange, farmlandLayer, out RaycastHit hit))
         {
@@ -950,9 +1011,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive)
             DialogueEditor.ConversationManager.Instance.EndConversation();
-        if (UI_TramCheTao.instance != null && UI_TramCheTao.instance.dangMoCraft)
+        if (ShopUIController.instance != null && ShopUIController.instance.dangMoCraft)
         {
-            UI_TramCheTao.instance.BatTatCraft();
+            ShopUIController.instance.BatTatCraft();
         }
     }
 
@@ -1119,7 +1180,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_CapNhatChiSoTrangBi(int[] idNhungMonDangMac)
     {
-        float bonusHealth = 0f, bonusStamina = 0f, bonusSpeed = 0f, bonusDamage = 0f, bonusArmor = 0f;
+        float bonusHealth = DiemMau * 10f;       
+        float bonusStamina = DiemTheLuc * 5f;    
+        float bonusDamage = DiemSucManh * 2f;    
+        float bonusSpeed = DiemNhanhNhen * 0.2f; 
+        float bonusArmor = 0f;
 
         foreach (int id in idNhungMonDangMac)
         {
@@ -1145,6 +1210,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
         CurrentStamina = Mathf.Clamp(CurrentStamina, 0, MaxStamina);
         CurrentArmor = Mathf.Clamp(CurrentArmor, 0, MaxArmor);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_CongDiemTiemNang(int loaiChiSo)
+    {
+        if (AvailablePoints <= 0) return; 
+        
+        AvailablePoints--;
+        
+        if (loaiChiSo == 1) DiemSucManh++;
+        else if (loaiChiSo == 2) DiemTheLuc++;
+        else if (loaiChiSo == 3) DiemNhanhNhen++;
+        else if (loaiChiSo == 4) DiemMau++;
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -1186,8 +1264,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         ExpCurrent += exp;
         while (ExpCurrent >= expToLevelUp)
         {
-            ExpCurrent = 0;
+            ExpCurrent -= expToLevelUp; 
             level++;
+            AvailablePoints += 3;       
             expToLevelUp *= 1.1f;
         }
     }

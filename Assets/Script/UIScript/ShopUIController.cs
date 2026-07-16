@@ -7,9 +7,12 @@ using Fusion;
 public class ShopUIController : MonoBehaviour
 {
     public static ShopUIController instance;
+    public GameObject khungGiaoDien; 
+    public bool dangMoCraft = false;
 
     [Header("UI Shop")]
     public GameObject khungShop; 
+    
     public bool isShopOpen = false;
 
     [Header("Cấu hình Ô UI")]
@@ -31,6 +34,8 @@ public class ShopUIController : MonoBehaviour
     void Start()
     {
         if (khungShop != null) khungShop.SetActive(false);
+        khungGiaoDien.SetActive(true);
+        khungGiaoDien.SetActive(false);
     }
     // HÀM SIÊU TÌM KIẾM: Đảm bảo 1000% tìm ra Local Player
     private Player_Controller TimKhachHangLocal()
@@ -188,5 +193,13 @@ public class ShopUIController : MonoBehaviour
     { 
         isShopOpen = false; 
         khungShop.SetActive(false); 
+    }
+    public void BatTatCraft()
+    {
+        dangMoCraft = !dangMoCraft;
+        if (khungGiaoDien != null)
+        {
+            khungGiaoDien.SetActive(dangMoCraft);
+        }
     }
 }
