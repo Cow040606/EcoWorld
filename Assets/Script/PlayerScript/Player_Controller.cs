@@ -163,6 +163,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private Vector3 _lastRayOrigin, _lastRayDir, _lastRayHitPoint;
     private bool _lastRayHit;
 
+    [Header("Hệ Thống Âm Thanh (Audio)")]
+    public AudioSource footstepSource;
+    public AudioClip[] footstepClips;
+    public AudioSource actionSource;
+    public AudioClip chopClip;
+    public AudioClip mineClip;
+
     #endregion
 
     #region 2. KHỞI TẠO & VÒNG LẶP CHÍNH (SPAWN, UPDATE, FIXED UPDATE, RENDER)
@@ -674,19 +681,29 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 enemyOrc.RPC_TakeDamageFromPlayer((int)attackDamageToAnimal);
             }
+
+            // --- ĐOẠN CODE MỚI THÊM ĐỂ ĐÁNH TRÚNG BOSS ---
+            var boss = hitCollider.GetComponentInParent<BossController>();
+            if (boss != null)
+            {
+                boss.RPC_PlayerHitBoss(attackDamageToAnimal);
+            }
         }
     }
+
     private void HandleChopping()
     {
         if (playerCamera == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
-        RPC_AnimChatCay();
         RPC_BaoHieuBatDauAction(1, 1.5f, 0.6f);
     }
 
     private void HandleMining()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
+ HEAD
+
         RPC_AnimDapDa(); 
+ f2a41b2a598b8fbe5ad1703fd813ecad5b0f7a8d
         RPC_BaoHieuBatDauAction(2, 1.5f, 0.6f);
     }
 
@@ -711,6 +728,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (hitTerrain != null && TreeManager.Instance != null)
             {
                 TreeManager.Instance.TryChopTree(hitTerrain, hit.point, Runner);
+                PlayActionSound(chopClip);
             }
         }
         else _lastRayHit = false;
@@ -724,6 +742,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (cucDa != null)
             {
                 cucDa.RPC_NhanSatThuongCuoc(25f);
+                PlayActionSound(mineClip);
             }
         }
     }
@@ -787,7 +806,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void UpdateFarmingUI(int idDangCam)
     {
         if (hintText == null) return;
+ HEAD
+        string chuChuoiUI = "";
+
         string chuChuoiUI = ""; 
+ f2a41b2a598b8fbe5ad1703fd813ecad5b0f7a8d
 
         if (BanTiaTuTamManHinh(interactRange, farmlandLayer, out RaycastHit hit))
         {
@@ -1113,6 +1136,23 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
         
         CurrentStamina = Mathf.Clamp(CurrentStamina, 0, MaxStamina);
+    }
+
+    // --- ĐOẠN CODE MỚI THÊM: SERVER NHẬN SÁT THƯƠNG TỪ BOSS ---
+    public void Server_TakeDamageFromBoss(float damage)
+    {
+        if (!Object.HasStateAuthority) return;
+
+        if (damage > 0)
+        {
+            if (CurrentArmor >= damage) CurrentArmor -= damage;
+            else
+            {
+                float satThuongDu = damage - CurrentArmor;
+                CurrentArmor = 0;
+                CurrentHealth = Mathf.Clamp(CurrentHealth - satThuongDu, 0, MaxHealth);
+            }
+        }
     }
 
     #endregion
@@ -1516,13 +1556,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         CapNhatUIHotbarLocal(slotIndex, itemID);
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_BaoHieuBatDauAction(int actionType, float totalAnimTime, float timeToHit)
     {
         isDoingAction = true;
         pendingActionType = actionType;
         actionTimer = TickTimer.CreateFromSeconds(Runner, totalAnimTime);
         hitTimer = TickTimer.CreateFromSeconds(Runner, timeToHit);
+
         if (actionType == 1) RPC_AnimChatCay();
         else if (actionType == 2) RPC_AnimDapDa();
     }
@@ -1661,6 +1702,31 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, Fusion.Sockets.ReliableKey key, System.ArraySegment<byte> data) { }
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, Fusion.Sockets.ReliableKey key, float progress) { }
+
+    #endregion
+
+    #region 10. HỆ THỐNG ÂM THANH (AUDIO)
+
+    public void PlayFootstepSound()
+    {
+        if (!HasInputAuthority) return;
+
+        if (footstepSource != null && footstepClips != null && footstepClips.Length > 0)
+        {
+            int randomIndex = Random.Range(0, footstepClips.Length);
+            footstepSource.PlayOneShot(footstepClips[randomIndex]);
+        }
+    }
+
+    public void PlayActionSound(AudioClip clip)
+    {
+        if (!HasInputAuthority) return;
+
+        if (actionSource != null && clip != null)
+        {
+            actionSource.PlayOneShot(clip);
+        }
+    }
 
     #endregion
 }
