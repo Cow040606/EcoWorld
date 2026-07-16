@@ -42,6 +42,15 @@ public class BossController : NetworkBehaviour
         {
             CurrentHP = maxHP;
             currentState = BossState.Patrol;
+
+            if (agent != null && !agent.isOnNavMesh)
+            {
+                if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
+                {
+                    agent.Warp(hit.position);
+                }
+            }
+
             SetRandomPatrolDestination();
         }
     }
@@ -49,6 +58,8 @@ public class BossController : NetworkBehaviour
     public override void FixedUpdateNetwork()
     {
         if (!Object.HasStateAuthority || CurrentHP <= 0) return;
+
+        if (agent == null || !agent.isOnNavMesh || !agent.isActiveAndEnabled) return;
 
         switch (currentState)
         {
@@ -148,6 +159,8 @@ public class BossController : NetworkBehaviour
 
     private void SetRandomPatrolDestination()
     {
+        if (agent == null || !agent.isOnNavMesh || !agent.isActiveAndEnabled) return;
+
         Vector3 randomDir = Random.insideUnitSphere * patrolRadius;
         randomDir += startPos;
         NavMeshHit hit;
@@ -173,7 +186,10 @@ public class BossController : NetworkBehaviour
 
         if (CurrentHP <= 0)
         {
-            agent.isStopped = true;
+            if (agent != null && agent.isOnNavMesh && agent.isActiveAndEnabled)
+            {
+                agent.isStopped = true;
+            }
             Runner.Despawn(Object); // TODO: Chạy Anim chết, rớt đồ trước khi Despawn
         }
     }

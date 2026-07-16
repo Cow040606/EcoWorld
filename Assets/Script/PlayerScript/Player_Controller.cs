@@ -700,10 +700,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void HandleMining()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
- HEAD
 
         RPC_AnimDapDa(); 
- f2a41b2a598b8fbe5ad1703fd813ecad5b0f7a8d
         RPC_BaoHieuBatDauAction(2, 1.5f, 0.6f);
     }
 
@@ -806,11 +804,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void UpdateFarmingUI(int idDangCam)
     {
         if (hintText == null) return;
- HEAD
         string chuChuoiUI = "";
-
-        string chuChuoiUI = ""; 
- f2a41b2a598b8fbe5ad1703fd813ecad5b0f7a8d
 
         if (BanTiaTuTamManHinh(interactRange, farmlandLayer, out RaycastHit hit))
         {
