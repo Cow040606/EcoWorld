@@ -11,6 +11,7 @@ public struct DuLieuInput : INetworkInput
     public NetworkBool isJumpPressed;
     public float mouseX;
     public NetworkBool isRunfast;
+    public NetworkBool isDashPressed;
 }
 
 public struct O_VatPham : INetworkStruct
@@ -42,6 +43,16 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private bool jumpPressedLocal;
     public float thoiGianHoiNhay = 1f;
     [Networked] public TickTimer dongHoChoNhay { get; set; }
+    [Header("Cơ chế Lướt (Dash) & I-Frames")]
+    public float dashSpeed = 18f;           
+    public float thoiGianDash = 0.25f;     
+    public float thoiGianHoiDash = 1.2f;    
+    public float theLucTieuHaoDash = 15f;   
+    [Networked] public NetworkBool isDashing { get; set; }
+    [Networked] public NetworkBool isInvincible { get; set; } 
+    [Networked] public TickTimer dongHoDash { get; set; }
+    [Networked] public TickTimer dongHoHoiDash { get; set; }
+    private bool dashPressedLocal;
 
     [Header("Chỉ số nhân vật (GỐC & TỔNG)")]
     public float baseMaxHealth = 100f;
@@ -271,6 +282,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             sprintPressedLocal = Keyboard.current.leftShiftKey.isPressed;
             XuLyTheLuc();
             if (Keyboard.current.spaceKey.wasPressedThisFrame) jumpPressedLocal = true;
+            if (Keyboard.current.leftCtrlKey.wasPressedThisFrame) dashPressedLocal = true;
 
             float trucX = Keyboard.current.dKey.isPressed ? 1f : (Keyboard.current.aKey.isPressed ? -1f : 0f);
             float trucY = Keyboard.current.wKey.isPressed ? 1f : (Keyboard.current.sKey.isPressed ? -1f : 0f);
@@ -312,6 +324,41 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (GetInput(out DuLieuInput data))
         {
+            if (isDashing)
+            {
+                if (dongHoDash.Expired(Runner))
+                {
+                    // Hết thời gian Dash -> Tắt trạng thái và mất I-frames
+                    isDashing = false;
+                    isInvincible = false; 
+                }
+                else
+                {
+                    // Đang trong lúc Dash -> Ép tốc độ bàn thờ và khóa các nút di chuyển khác
+                    Vector3 huongLuoT = new Vector3(data.moveInput.x, 0f, data.moveInput.y);
+                    if (huongLuoT.magnitude < 0.1f) huongLuoT = transform.forward; // Nếu không bấm phím hướng thì lướt tới trước
+
+                    character.maxSpeed = dashSpeed;
+                    character.Move(huongLuoT.normalized);
+                    
+                    Quaternion huongMucTieu = Quaternion.LookRotation(huongLuoT);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, huongMucTieu, Runner.DeltaTime * tocDoXoay * 2f);
+                    
+                    return; // KHÓA CỨNG: Bỏ qua đoạn code nhảy và chạy bình thường ở dưới
+                }
+            }
+
+            // Kích hoạt Dash nếu bấm Ctrl, chạm đất, hồi chiêu xong và đủ thể lực
+            if (!isDashing && data.isDashPressed && character.Grounded && dongHoHoiDash.ExpiredOrNotRunning(Runner) && CurrentStamina >= theLucTieuHaoDash)
+            {
+                CurrentStamina -= theLucTieuHaoDash; // Trừ thể lực
+                isDashing = true;
+                isInvincible = true; // KÍCH HOẠT VÔ ĐỊCH
+                dongHoDash = TickTimer.CreateFromSeconds(Runner, thoiGianDash);
+                dongHoHoiDash = TickTimer.CreateFromSeconds(Runner, thoiGianHoiDash);
+                RPC_AnimDash(); // Kích hoạt Animation
+                return;
+            }
             if (data.isJumpPressed && character.Grounded)
             {
                 if (dongHoChoNhay.ExpiredOrNotRunning(Runner))
@@ -377,8 +424,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 animator.SetBool("isJump", false);
             }
-            animator.SetBool("isRunning", isrun);
-            animator.SetBool("isRunFast", isSprinting);
+            animator.SetFloat("Speed", currentSpeedSmooth);
         }
 
         if (HasInputAuthority && cameraTransform != null)
@@ -489,6 +535,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
 
         data.isJumpPressed = jumpPressedLocal;
+        data.isDashPressed = dashPressedLocal;
 
         bool baloDangMo = (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo);
         bool ESCDangMo = (ESC.instance != null && ESC.instance.isESC_Open);
@@ -520,6 +567,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         input.Set(data);
         jumpPressedLocal = false;
+        dashPressedLocal = false;
         mouseXLocalAcc = 0f;
     }
 
@@ -577,9 +625,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             if (idDangCam == 8)
             {
-                if (currentState == FishState.Idle) BatDauCauCa();
-                else if (currentState == FishState.Waiting) ThuCanCau("Kéo sớm quá!");
-                else if (currentState == FishState.Giatca) ThanhCongGiatCa();
+                if (currentState == FishState.Idle) 
+                    BatDauCauCa();
+                else if (currentState == FishState.Waiting || currentState == FishState.Casting) 
+                    ThuCanCau("Hủy câu!");
+                else if (currentState == FishState.Giatca) 
+                    ThanhCongGiatCa();
             }
             else if (idDangCam == 10)
             {
@@ -828,19 +879,39 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         float lucNem = 12f;
         Vector3 huongNem = cameraTransform.forward * lucNem + Vector3.up * 2f;
         RPC_QuangPhaoVatLy(diemBatDau, huongNem);
+
+        // BẢO HIỂM CHỐNG KẸT (Rất quan trọng):
+        if (cauCaCoroutine != null) StopCoroutine(cauCaCoroutine);
+        cauCaCoroutine = StartCoroutine(BaoHiemPhaoTrenCan());
+    }
+    private System.Collections.IEnumerator BaoHiemPhaoTrenCan()
+    {
+        // Đếm ngược 1.5 giây, nếu phao không đụng nước thì tự động ép hủy câu!
+        yield return new WaitForSeconds(1.5f);
+        if (currentState == FishState.Casting) 
+        {
+            //Debug.Log("<color=red>🚨 Bảo hiểm kích hoạt: Phao kẹt, ép hủy câu!</color>");
+            PhaoRotTrenCan(); 
+        }
     }
 
     public void PhaoDaChamNuoc()
     {
+        if (cauCaCoroutine != null) StopCoroutine(cauCaCoroutine); 
+        
         currentState = FishState.Waiting;
+
+        // Báo cho Animator biết phao đã chạm nước
+        if (animator != null) animator.SetTrigger("PhaoChamNuoc");
+
         cauCaCoroutine = StartCoroutine(TienTrinhCauCa());
     }
 
     public void PhaoRotTrenCan()
     {
+        //Debug.Log("<color=orange>⚠️ Phao rớt trên cạn! Gọi lệnh ThuCanCau!</color>");
         ThuCanCau("Rớt trên cạn");
     }
-
     private System.Collections.IEnumerator TienTrinhCauCa()
     {
         float thoiGianCho = Random.Range(3f, 6f);
@@ -1013,21 +1084,34 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private void XuLyTheLuc()
     {
+        // 1. KHÓA HỒI THỂ LỰC KHI ĐANG DASH
+        if (isDashing)
+        {
+            dongHoDelayHoi = thoiGianDelayHoi; // Ép hệ thống phải chờ 2 giây sau khi Dash mới được hồi
+            dangChayNhanh = false;
+            return; // Thoát luôn, cấm mọi hành động cộng/trừ thể lực khác
+        }
+
+        // 2. XỬ LÝ CHẠY NHANH BÌNH THƯỜNG (Giữ nguyên)
         if (sprintPressedLocal && moveInputLocal.magnitude > 0.1f && CurrentStamina > 0)
         {
             dangChayNhanh = true;
             CurrentStamina -= tocDoTut * Time.deltaTime;
-            dongHoDelayHoi = thoiGianDelayHoi;
+            dongHoDelayHoi = thoiGianDelayHoi; // Đang chạy thì tiếp tục làm mới thời gian chờ
         }
         else
         {
             dangChayNhanh = false;
+            // Nếu không chạy nhanh, không lướt -> Đếm ngược thời gian delay để hồi
             if (CurrentStamina < MaxStamina)
             {
-                if (dongHoDelayHoi > 0) dongHoDelayHoi -= Time.deltaTime;
-                else CurrentStamina += tocDoHoi * Time.deltaTime;
+                if (dongHoDelayHoi > 0) 
+                    dongHoDelayHoi -= Time.deltaTime;
+                else 
+                    CurrentStamina += tocDoHoi * Time.deltaTime;
             }
         }
+        
         CurrentStamina = Mathf.Clamp(CurrentStamina, 0, MaxStamina);
     }
 
@@ -1121,6 +1205,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_TakeDame(float Dame)
     {
+        if (isInvincible && Dame > 0) return;
         if (Dame > 0)
         {
             if (CurrentArmor >= Dame) CurrentArmor -= Dame;
@@ -1450,10 +1535,20 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_AnimSlash() { if (animator != null) animator.SetTrigger("slash"); }
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_AnimDash() { if (animator != null) animator.SetTrigger("dash"); }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_QuangPhaoVatLy(Vector3 diemBatDau, Vector3 huongNem)
     {
+        if (animator != null) 
+        {
+            animator.ResetTrigger("GiatCan"); 
+            animator.ResetTrigger("HuyCau");  
+            animator.ResetTrigger("PhaoChamNuoc"); // Dọn dẹp trigger cũ
+            animator.SetTrigger("QuangCan"); 
+        }
+        
         if (currentphaocauca != null) Destroy(currentphaocauca);
         if (Phaocauca != null)
         {
@@ -1466,15 +1561,28 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             logic.chuSohuu = this;
             logic.isLocal = HasInputAuthority;
         }
-        if (animator != null) animator.SetTrigger("QuangCan");
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_ThuPhao(bool laHuy)
     {
+        if (animator != null)
+        {
+            animator.ResetTrigger("QuangCan"); 
+            animator.ResetTrigger("PhaoChamNuoc"); 
+        }
+
         if (currentphaocauca != null) Destroy(currentphaocauca);
-        if (laHuy) animator.SetTrigger("HuyCau");
-        else animator.SetTrigger("GiatCan");
+        
+        if (laHuy) 
+        {
+            //Debug.Log("<color=yellow>⚡ Đã bắn Trigger HuyCau vào Animator!</color>");
+            if (animator != null) animator.SetTrigger("HuyCau");
+        }
+        else 
+        {
+            if (animator != null) animator.SetTrigger("GiatCan");
+        }
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]

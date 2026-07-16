@@ -34,18 +34,6 @@ public class UI_HotBar : MonoBehaviour
             // Bật khung sáng cho cái ô đang chọn
             if (danhSachKhungSang[slotIndex] != null) danhSachKhungSang[slotIndex].SetActive(true);
 
-            // // TÀNG HÌNH 3 Ô CÒN LẠI, CHỈ GIỮ LẠI Ô ĐANG CHỌN
-            // if (danhSachO_Hotbar != null && danhSachO_Hotbar.Length > 0)
-            // {
-            //     for (int i = 0; i < danhSachO_Hotbar.Length; i++)
-            //     {
-            //         if (danhSachO_Hotbar[i] != null) 
-            //         {
-            //             // Nếu 'i' bằng với ô đang chọn thì = true (Hiện), khác thì = false (Tàng hình)
-            //             danhSachO_Hotbar[i].SetActive(i == slotIndex);
-            //         }
-            //     }
-            // }
         }
         // 3. NẾU BẤM CẤT VŨ KHÍ ĐI (Tay không: slotIndex = -1)
         else 
