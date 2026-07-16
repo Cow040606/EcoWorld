@@ -79,11 +79,37 @@ public class InventoryManager : MonoBehaviour
         // Xóa sạch sẽ các ô cũ đang hiển thị
         foreach (Transform child in itemHolder) { Destroy(child.gameObject); }
 
+        // Lấy danh sách các món đồ đang được trang bị / cầm trên Hotbar để ẩn đi trong Balo
+        List<int> danhSachDoDaGan = new List<int>();
+        if (chuSoHuuBalo != null)
+        {
+            for (int j = 0; j < chuSoHuuBalo.HotbarIDs.Length; j++)
+            {
+                if (chuSoHuuBalo.HotbarIDs[j] != 0) danhSachDoDaGan.Add(chuSoHuuBalo.HotbarIDs[j]);
+            }
+        }
+        if (slotMu != null && slotMu.idDangMac != 0) danhSachDoDaGan.Add(slotMu.idDangMac);
+        if (slotAo != null && slotAo.idDangMac != 0) danhSachDoDaGan.Add(slotAo.idDangMac);
+        if (slotQuan != null && slotQuan.idDangMac != 0) danhSachDoDaGan.Add(slotQuan.idDangMac);
+        if (slotVuKhi != null && slotVuKhi.idDangMac != 0) danhSachDoDaGan.Add(slotVuKhi.idDangMac);
+        if (slotDayChuyen != null && slotDayChuyen.idDangMac != 0) danhSachDoDaGan.Add(slotDayChuyen.idDangMac);
+        if (slotGiay != null && slotGiay.idDangMac != 0) danhSachDoDaGan.Add(slotGiay.idDangMac);
+        if (slotNhan != null && slotNhan.idDangMac != 0) danhSachDoDaGan.Add(slotNhan.idDangMac);
+
         for (int i = 0; i < tuiDoCuaPlayer.Length; i++)
         {
             if (tuiDoCuaPlayer[i].ItemID != 0)
             {
-                Item thongTinMonDo = TraCuuItem(tuiDoCuaPlayer[i].ItemID);
+                int currentID = tuiDoCuaPlayer[i].ItemID;
+
+                // Nếu món này đã gắn vào người/hotbar, bỏ qua không vẽ để "ẩn" đi, đồng thời xóa khỏi danh sách chờ để lỡ có món thứ 2 giống hệt thì vẫn vẽ
+                if (danhSachDoDaGan.Contains(currentID))
+                {
+                    danhSachDoDaGan.Remove(currentID);
+                    continue; 
+                }
+
+                Item thongTinMonDo = TraCuuItem(currentID);
                 if (thongTinMonDo != null)
                 {
                     // =======================================
@@ -158,34 +184,19 @@ public class InventoryManager : MonoBehaviour
         chuSoHuuBalo = player; 
         trangThaiBalo = !trangThaiBalo;
 
+        // Bật hoặc tắt các UI râu ria dựa theo trạng thái balo
+        foreach (GameObject ui in danhSachUI_CanAn)
+        {
+            if (ui != null)
+            {
+                ui.SetActive(!trangThaiBalo);
+            }
+        }
+
         if (trangThaiBalo)
         {
-            // --- 1. KHI MỞ BALO LÊN ---
-            // Ghi nhớ trạng thái và tắt các UI vướng víu
-            triNhoUI.Clear();
-            foreach (GameObject ui in danhSachUI_CanAn)
-            {
-                if (ui != null)
-                {
-                    triNhoUI[ui] = ui.activeSelf; // Nhớ xem nó đang bật hay tắt
-                    ui.SetActive(false);          // Ép nó tắt đi
-                }
-            }
-            
             // Vẽ đồ trong Balo ra
             VeBaloRaManHinh(tuiDoCuaPlayer);
-        }
-        else
-        {
-            // --- 2. KHI ĐÓNG BALO LẠI ---
-            // Trả lại trạng thái cũ cho các UI
-            foreach (GameObject ui in danhSachUI_CanAn)
-            {
-                if (ui != null && triNhoUI.ContainsKey(ui))
-                {
-                    ui.SetActive(triNhoUI[ui]); 
-                }
-            }
         }
 
         // Bật/tắt cái khung Balo

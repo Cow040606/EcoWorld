@@ -921,6 +921,10 @@ MonoBehaviour:
     _value: 0
   _isInvincible:
     _value: 0
+  _isDead:
+    _value: 0
+  droppedBackpackPrefab: {fileID: 736204043963346399, guid: 4e051ee77a3500748a78730d7b987a3e,
+    type: 3}
   baseMaxHealth: 100
   baseMaxStamina: 100
   baseMaxArmor: 0
@@ -993,6 +997,11 @@ MonoBehaviour:
   hintText: {fileID: 0}
   showChopDebug: 1
   showDebugRay: 1
+  footstepSource: {fileID: 0}
+  footstepClips: []
+  actionSource: {fileID: 0}
+  chopClip: {fileID: 0}
+  mineClip: {fileID: 0}
 --- !u!114 &8037529350765271450
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -54,6 +54,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Networked] public TickTimer dongHoHoiDash { get; set; }
     private bool dashPressedLocal;
 
+    [Header("Trạng Thái Sinh Mệnh")]
+    [Networked] public NetworkBool isDead { get; set; }
+    [Networked] public TickTimer dongHoHoiSinh { get; set; }
+
+    [Header("Balo Rơi Khi Chết")]
+    public GameObject droppedBackpackPrefab;
+
     [Header("Chỉ số nhân vật (GỐC & TỔNG)")]
     public float baseMaxHealth = 100f;
     public float baseMaxStamina = 100f;
@@ -232,6 +239,24 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (HasInputAuthority && Keyboard.current != null && Mouse.current != null)
         {
+            if (isDead)
+            {
+                if (Keyboard.current.escapeKey.wasPressedThisFrame)
+                {
+                    TatToanBoUI();
+                    if (ESC.instance != null) ESC.instance.BatTatESC();
+                }
+
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+
+                moveInputLocal = Vector2.zero;
+                jumpPressedLocal = false;
+                dashPressedLocal = false;
+                sprintPressedLocal = false;
+                return;
+            }
+
             RPC_AddExp(0.1f);
 
             if (KiemTraDangGoPhimChat()) return;
@@ -300,6 +325,39 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority && !HasInputAuthority) return;
+
+        // Kiểm tra chết trên server để spawn balo và đặt isDead = true
+        if (CurrentHealth <= 0 && !isDead)
+        {
+            if (HasStateAuthority)
+            {
+                isDead = true;
+                dongHoHoiSinh = TickTimer.CreateFromSeconds(Runner, 3f); // Chờ 3s rồi hồi sinh
+                DropBackpackOnDeath();
+            }
+        }
+        else if (CurrentHealth > 0 && isDead)
+        {
+            if (HasStateAuthority)
+            {
+                isDead = false;
+            }
+        }
+
+        if (isDead)
+        {
+            character.Move(Vector3.zero);
+            isrun = isSprinting = isJumping = false;
+            
+            // Nếu đã hết thời gian đếm ngược thì hồi sinh
+            if (HasStateAuthority && dongHoHoiSinh.Expired(Runner))
+            {
+                dongHoHoiSinh = TickTimer.None;
+                HoiSinhNhanVat();
+            }
+
+            return;
+        }
 
         if (KiemTraDangGoPhimChat())
         {
@@ -421,17 +479,27 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (animator != null)
         {
-            if (isJumping)
+            if (isDead)
             {
-                isSprinting = false;
-                isrun = false;
-                animator.SetBool("isJump", isJumping);
+                //animator.SetBool("isDead", true);
+                animator.SetFloat("Speed", 0f);
+                animator.SetBool("isJump", false);
             }
             else
             {
-                animator.SetBool("isJump", false);
+                //animator.SetBool("isDead", false);
+                if (isJumping)
+                {
+                    isSprinting = false;
+                    isrun = false;
+                    animator.SetBool("isJump", isJumping);
+                }
+                else
+                {
+                    animator.SetBool("isJump", false);
+                }
+                animator.SetFloat("Speed", currentSpeedSmooth);
             }
-            animator.SetFloat("Speed", currentSpeedSmooth);
         }
 
         if (HasInputAuthority && cameraTransform != null)
@@ -535,6 +603,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         var data = new DuLieuInput();
         if (!HasInputAuthority) return;
 
+        if (isDead)
+        {
+            input.Set(data);
+            return;
+        }
+
         if (KiemTraDangGoPhimChat())
         {
             input.Set(data);
@@ -592,11 +666,21 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (Keyboard.current.fKey.wasPressedThisFrame)
         {
-            Collider[] cacVatTheGan = Physics.OverlapSphere(transform.position, banKinhNhat, farmlandLayer | interactLayer);
+            // Bỏ qua layer mask để quét toàn bộ giống hệt hàm nhặt rác (item)
+            Collider[] cacVatTheGan = Physics.OverlapSphere(transform.position, banKinhNhat);
             bool daTuongTacXong = false;
 
             foreach (var col in cacVatTheGan)
             {
+                // Kiểm tra balo rơi trước
+                DroppedBackpack db = col.GetComponentInParent<DroppedBackpack>();
+                if (db != null)
+                {
+                    db.RPC_YeuCauNhatLaiBalo(this);
+                    daTuongTacXong = true;
+                    break;
+                }
+
                 FarmPlot plot = col.GetComponentInParent<FarmPlot>();
                 if (plot != null && plot.CurrentState == FarmPlot.PlotState.CayLon)
                 {
@@ -822,7 +906,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             currentLookedPlot = null;
         }
 
-        Collider[] cacVatTheGan = Physics.OverlapSphere(transform.position, banKinhNhat, farmlandLayer | interactLayer);
+        // Bỏ qua layer mask để quét toàn bộ giống hệt nhặt item
+        Collider[] cacVatTheGan = Physics.OverlapSphere(transform.position, banKinhNhat);
         float khoangCachNganNhat = float.MaxValue;
         Collider mucTieuGanNhat = null;
 
@@ -832,8 +917,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             bool laCayLon = (plot != null && plot.CurrentState == FarmPlot.PlotState.CayLon);
             bool laNPC = col.CompareTag("NPC");
             bool laItem = col.CompareTag("Items");
+            bool laBalo = (col.GetComponentInParent<DroppedBackpack>() != null);
 
-            if (laCayLon || laNPC || laItem)
+            if (laCayLon || laNPC || laItem || laBalo)
             {
                 float khoangCach = Vector3.Distance(transform.position, col.transform.position);
                 if (khoangCach < khoangCachNganNhat)
@@ -854,6 +940,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             else if (mucTieuGanNhat.CompareTag("NPC"))
             {
                 chuChuoiUI += "[F] Trò chuyện\n";
+            }
+            else if (mucTieuGanNhat.GetComponentInParent<DroppedBackpack>() != null)
+            {
+                chuChuoiUI += "[F] Nhặt lại Balo\n";
             }
             else if (mucTieuGanNhat.CompareTag("Items"))
             {
@@ -1085,13 +1175,26 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void CapNhatUIHotbarLocal(int slotIndex, int itemID)
     {
         if (UI_HotBar.Instance == null) return;
-        if (itemID == 0) { UI_HotBar.Instance.CapNhatHinhAnhSlot(slotIndex, null); return; }
-
-        if (InventoryManager.instance != null)
+        if (itemID == 0) { UI_HotBar.Instance.CapNhatHinhAnhSlot(slotIndex, null); }
+        else if (InventoryManager.instance != null)
         {
             Item thongTinItem = InventoryManager.instance.TraCuuItem(itemID);
             if (thongTinItem != null)
                 UI_HotBar.Instance.CapNhatHinhAnhSlot(slotIndex, thongTinItem.icon);
+        }
+
+        if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo)
+        {
+            // Delay 0.1s chờ State Sync của HotbarIDs về tới Client rồi mới vẽ lại Balo
+            Invoke(nameof(DelayVeBalo), 0.1f);
+        }
+    }
+
+    private void DelayVeBalo()
+    {
+        if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo)
+        {
+            InventoryManager.instance.VeBaloRaManHinh(TuiDo);
         }
     }
 
@@ -1723,4 +1826,98 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     }
 
     #endregion
+
+    private void DropBackpackOnDeath()
+    {
+        if (!Object.HasStateAuthority) return;
+
+        if (droppedBackpackPrefab == null)
+        {
+            Debug.LogWarning("Chưa gán droppedBackpackPrefab trong Player_Controller!");
+            return;
+        }
+
+        bool coDo = false;
+        for (int i = 0; i < TuiDo.Length; i++)
+        {
+            if (TuiDo[i].ItemID != 0 && TuiDo[i].SoLuong > 0)
+            {
+                coDo = true;
+                break;
+            }
+        }
+
+        if (!coDo) return;
+
+        // Xóa sạch Hotbar
+        for (int i = 0; i < HotbarIDs.Length; i++)
+        {
+            HotbarIDs.Set(i, 0);
+            RPC_CapNhatUIHotbarKhach(i, 0);
+        }
+
+        // Cất vũ khí trên tay
+        CurrentToolIndex = -1;
+
+        // Yêu cầu Client xóa đồ trong các ô cắm (Equipment Slots)
+        RPC_XoaToanBoTrangBiLocal();
+
+        var spawnedBackpack = Runner.Spawn(droppedBackpackPrefab, transform.position + Vector3.up * 0.2f, Quaternion.identity, PlayerRef.None);
+        if (spawnedBackpack != null)
+        {
+            DroppedBackpack dbScript = spawnedBackpack.GetComponent<DroppedBackpack>();
+            if (dbScript != null)
+            {
+                for (int i = 0; i < TuiDo.Length; i++)
+                {
+                    dbScript.VatPhamDaRoi.Set(i, TuiDo[i]);
+                }
+
+                for (int i = 0; i < TuiDo.Length; i++)
+                {
+                    TuiDo.Set(i, new O_VatPham { ItemID = 0, SoLuong = 0 });
+                }
+            }
+        }
+    }
+
+    private void HoiSinhNhanVat()
+    {
+        // Phục hồi chỉ số
+        CurrentHealth = MaxHealth;
+        CurrentStamina = MaxStamina;
+        isDead = false;
+
+        // Tìm vị trí SpawnPoint
+        Player_Runner runner = FindObjectOfType<Player_Runner>();
+        if (runner != null && runner.spawn != null)
+        {
+            Vector3 diemHoiSinh = runner.spawn.transform.position;
+            if (character != null)
+            {
+                character.Teleport(diemHoiSinh);
+            }
+            else
+            {
+                transform.position = diemHoiSinh;
+            }
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_XoaToanBoTrangBiLocal()
+    {
+        if (InventoryManager.instance != null)
+        {
+            if (InventoryManager.instance.slotMu != null) InventoryManager.instance.slotMu.XoaDoKhoiO();
+            if (InventoryManager.instance.slotAo != null) InventoryManager.instance.slotAo.XoaDoKhoiO();
+            if (InventoryManager.instance.slotQuan != null) InventoryManager.instance.slotQuan.XoaDoKhoiO();
+            if (InventoryManager.instance.slotVuKhi != null) InventoryManager.instance.slotVuKhi.XoaDoKhoiO();
+            if (InventoryManager.instance.slotDayChuyen != null) InventoryManager.instance.slotDayChuyen.XoaDoKhoiO();
+            if (InventoryManager.instance.slotGiay != null) InventoryManager.instance.slotGiay.XoaDoKhoiO();
+            if (InventoryManager.instance.slotNhan != null) InventoryManager.instance.slotNhan.XoaDoKhoiO();
+            
+            InventoryManager.instance.CapNhatLaiToanBoChiSo();
+        }
+    }
 }

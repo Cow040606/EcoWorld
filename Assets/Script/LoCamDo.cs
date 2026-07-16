@@ -91,7 +91,7 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
                 if (KiemTraHopLe(thongTin))
                 {
                     XuLyGanDo(idDoVat);
-                    doBiKeo.transform.SetParent(doBiKeo.canvasGoc); 
+                    Destroy(doBiKeo.gameObject);
                 }
                 else
                 {
@@ -160,6 +160,12 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
         {
             InventoryManager.instance.CapNhatLaiToanBoChiSo();
         }
+
+        // Tự động load lại Balo để món đồ vừa gắn bị ẩn đi
+        if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo && Player_Controller.localPlayer != null)
+        {
+            InventoryManager.instance.VeBaloRaManHinh(Player_Controller.localPlayer.TuiDo);
+        }
     }
 
     public int LayIDTrangBiHienTai()
@@ -177,9 +183,23 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
         // Nhận diện cú click chuột phải để gỡ đồ
         if (eventData.button == PointerEventData.InputButton.Right)
         {
-            if (loaiCuaO == LoaiLo.NguyenLieuCheTao && idDangMac != 0)
+            if (idDangMac != 0 || loaiCuaO == LoaiLo.Hotbar)
             {
-                XoaDoKhoiO();
+                if (loaiCuaO == LoaiLo.Hotbar && Player_Controller.localPlayer != null)
+                {
+                    Player_Controller.localPlayer.RPC_GanVaoHotbar(slotIndex, 0);
+                }
+                else
+                {
+                    XoaDoKhoiO();
+                    if (InventoryManager.instance != null) InventoryManager.instance.CapNhatLaiToanBoChiSo();
+                }
+
+                // Load lại Balo để đồ hiện lại
+                if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo && Player_Controller.localPlayer != null)
+                {
+                    InventoryManager.instance.VeBaloRaManHinh(Player_Controller.localPlayer.TuiDo);
+                }
             }
         }
     }
