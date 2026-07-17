@@ -2,13 +2,34 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
+[System.Serializable]
+public struct TreeZone
+{
+    public string zoneName;
+    public Vector3 centerPos;
+    public float radius;
+    public int prototypeIndex;
+    public int amount;
+    [Range(0, 90)]
+    public float maxSlope;
+}
+
 public class TreeManager : NetworkBehaviour
 {
     public static TreeManager Instance;
+
+    [Header("Cấu Hình Vật Phẩm Rớt")]
+    [Tooltip("Chỉ cần kéo 1 Prefab Gỗ duy nhất vào đây, cây nào chặt cũng rớt ra cái này")]
     public NetworkPrefabRef woodPrefab;
     public float chopRadius = 3.0f;
 
-    // Lưu trữ dữ liệu gốc của các Terrain để phục hồi khi tắt game (tránh mất cây vĩnh viễn trong file Asset)
+    [Header("Thuật Toán Sinh Cây Theo Vùng")]
+    public bool generateOnStart = true;
+    public List<TreeZone> treeZones = new List<TreeZone>();
+
+    [Networked] public int MapSeed { get; set; }
+    private ChangeDetector _changeDetector;
+
     private Dictionary<Terrain, TreeInstance[]> originalTrees = new Dictionary<Terrain, TreeInstance[]>();
 
     private void Awake()
@@ -16,7 +37,6 @@ public class TreeManager : NetworkBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
-        // Backup toàn bộ cây của mọi Terrain đang có trong Scene
         foreach (Terrain t in Terrain.activeTerrains)
         {
             originalTrees[t] = t.terrainData.treeInstances;
@@ -25,28 +45,105 @@ public class TreeManager : NetworkBehaviour
 
     private void OnApplicationQuit()
     {
-        // Trả lại toàn bộ cây cho Terrain khi thoát game để bảo vệ dữ liệu Asset gốc
         foreach (var kvp in originalTrees)
         {
-            if (kvp.Key != null)
+            if (kvp.Key != null) kvp.Key.terrainData.treeInstances = kvp.Value;
+        }
+    }
+
+    public override void Spawned()
+    {
+        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
+
+        if (HasStateAuthority && generateOnStart)
+        {
+            MapSeed = Random.Range(1, 999999);
+        }
+
+        if (MapSeed != 0)
+        {
+            GenerateTreesLocally(MapSeed);
+        }
+    }
+
+    public override void Render()
+    {
+        foreach (var change in _changeDetector.DetectChanges(this))
+        {
+            if (change == nameof(MapSeed) && MapSeed != 0)
             {
-                kvp.Key.terrainData.treeInstances = kvp.Value;
+                GenerateTreesLocally(MapSeed);
             }
         }
     }
 
+    #region THUẬT TOÁN SINH CÂY THÔNG MINH
+    private void GenerateTreesLocally(int seed)
+    {
+        Random.InitState(seed);
+
+        foreach (Terrain t in Terrain.activeTerrains)
+        {
+            List<TreeInstance> newTrees = new List<TreeInstance>(originalTrees[t]);
+            TerrainData tData = t.terrainData;
+
+            foreach (var zone in treeZones)
+            {
+                int spawned = 0;
+                int attempts = 0;
+
+                while (spawned < zone.amount && attempts < zone.amount * 3)
+                {
+                    attempts++;
+
+                    Vector2 randCircle = Random.insideUnitCircle * zone.radius;
+                    Vector3 worldPos = zone.centerPos + new Vector3(randCircle.x, 0, randCircle.y);
+
+                    Vector3 localPos = t.transform.InverseTransformPoint(worldPos);
+                    Vector3 normPos = new Vector3(localPos.x / tData.size.x, 0, localPos.z / tData.size.z);
+
+                    if (normPos.x < 0 || normPos.x > 1 || normPos.z < 0 || normPos.z > 1) continue;
+
+                    float steepness = tData.GetSteepness(normPos.x, normPos.z);
+                    if (steepness > zone.maxSlope) continue;
+
+                    normPos.y = tData.GetInterpolatedHeight(normPos.x, normPos.z) / tData.size.y;
+
+                    TreeInstance tree = new TreeInstance();
+                    tree.position = normPos;
+                    tree.prototypeIndex = zone.prototypeIndex;
+                    tree.widthScale = 1f;
+                    tree.heightScale = 1f;
+                    tree.color = Color.white;
+                    tree.lightmapColor = Color.white;
+
+                    newTrees.Add(tree);
+                    spawned++;
+                }
+            }
+
+            tData.SetTreeInstances(newTrees.ToArray(), false);
+            t.Flush();
+
+            TerrainCollider tc = t.GetComponent<TerrainCollider>();
+            if (tc != null)
+            {
+                tc.enabled = false;
+                tc.enabled = true;
+            }
+        }
+    }
+    #endregion
+
+    #region HỆ THỐNG CHẶT VÀ RỚT ĐỒ CHUNG 1 LOẠI
     public void TryChopTree(Terrain targetTerrain, Vector3 hitPoint, NetworkRunner runner)
     {
         int treeIndex = GetClosestTreeIndexOnTerrain(targetTerrain, hitPoint);
-        
         if (treeIndex < 0) return;
 
-        Debug.Log($"[TreeManager] ✅ Gửi yêu cầu chặt cây #{treeIndex} lên Server...");
-        // Chỉ người chơi (Input Authority) gọi lệnh này lên Server
         RPC_RequestChopTree(targetTerrain.transform.position, treeIndex, hitPoint, runner.LocalPlayer);
     }
 
-    // 1. Client yêu cầu Server xử lý chặt cây
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     private void RPC_RequestChopTree(Vector3 terrainPosition, int treeIndex, Vector3 hitPoint, PlayerRef chopper)
     {
@@ -56,55 +153,42 @@ public class TreeManager : NetworkBehaviour
         TreeInstance[] trees = targetTerrain.terrainData.treeInstances;
         if (treeIndex < 0 || treeIndex >= trees.Length) return;
 
-        // Tính toán vị trí sinh ra gỗ (cộng thêm 1.5f trục Y để rớt từ trên xuống)
+        // Bỏ kiểm tra phân loại, auto rớt ra đúng 1 loại woodPrefab duy nhất
         Vector3 spawnPos = TreeToWorld(targetTerrain, trees[treeIndex]) + Vector3.up * 1.5f;
-
-        // Sinh gỗ rớt ra (Chỉ Server thực hiện để tránh đẻ ra nhiều cục gỗ trùng lặp)
         if (woodPrefab.IsValid)
+        {
             Runner.Spawn(woodPrefab, spawnPos, Quaternion.identity, chopper);
+        }
 
-        // 2. Server ra lệnh cho TẤT CẢ các máy (bao gồm cả nó) xóa cây đó đi
         RPC_SyncRemoveTree(terrainPosition, treeIndex);
     }
 
-    // 3. Tất cả các máy cùng đồng bộ việc xóa cây
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_SyncRemoveTree(Vector3 terrainPosition, int treeIndex)
     {
         Terrain targetTerrain = GetTerrainByPosition(terrainPosition);
-        if (targetTerrain == null) 
-        {
-            Debug.LogError($"[TreeManager] ❌ Máy Client không tìm thấy Terrain tại {terrainPosition} để xóa cây!");
-            return;
-        }
+        if (targetTerrain == null) return;
 
         TreeInstance[] trees = targetTerrain.terrainData.treeInstances;
         if (treeIndex < 0 || treeIndex >= trees.Length) return;
 
-        // Tạo mảng mới và loại bỏ cây bị chặt
         List<TreeInstance> treeList = new List<TreeInstance>(trees);
         treeList.RemoveAt(treeIndex);
-        
-        // Gán lại mảng cây mới cho Terrain
+
         targetTerrain.terrainData.treeInstances = treeList.ToArray();
+        targetTerrain.terrainData.SetTreeInstances(treeList.ToArray(), false);
+        targetTerrain.Flush();
 
-        // --- CỰC KỲ QUAN TRỌNG ---
-        // BƯỚC 1: CẬP NHẬT ĐỒ HỌA: Ép Unity xóa hình ảnh cái cây
-        targetTerrain.terrainData.SetTreeInstances(treeList.ToArray(), false); 
-        targetTerrain.Flush(); 
-
-        // BƯỚC 2: CẬP NHẬT VẬT LÝ (FIX LỖI KẸT COLLIDER): 
-        // Tắt và bật lại TerrainCollider để ép Unity dọn dẹp va chạm của cây cũ
-        TerrainCollider terrainCollider = targetTerrain.GetComponent<TerrainCollider>();
-        if (terrainCollider != null)
+        TerrainCollider tc = targetTerrain.GetComponent<TerrainCollider>();
+        if (tc != null)
         {
-            terrainCollider.enabled = false;
-            terrainCollider.enabled = true;
+            tc.enabled = false;
+            tc.enabled = true;
         }
-
-        Debug.Log($"[TreeManager] 🌲 Đã xóa cây #{treeIndex} và dọn sạch Collider trên máy tính này!");
     }
+    #endregion
 
+    #region HÀM TIỆN ÍCH
     private int GetClosestTreeIndexOnTerrain(Terrain targetTerrain, Vector3 worldPos)
     {
         int closestIndex = -1;
@@ -114,12 +198,7 @@ public class TreeManager : NetworkBehaviour
         for (int i = 0; i < trees.Length; i++)
         {
             Vector3 treeWorld = TreeToWorld(targetTerrain, trees[i]);
-
-            // Chỉ so sánh mặt phẳng XZ (bỏ qua độ cao Y để check bán kính chính xác hơn)
-            float dist = Vector2.Distance(
-                new Vector2(worldPos.x, worldPos.z),
-                new Vector2(treeWorld.x, treeWorld.z)
-            );
+            float dist = Vector2.Distance(new Vector2(worldPos.x, worldPos.z), new Vector2(treeWorld.x, treeWorld.z));
 
             if (dist < closestDist)
             {
@@ -127,11 +206,9 @@ public class TreeManager : NetworkBehaviour
                 closestIndex = i;
             }
         }
-
         return closestDist <= chopRadius ? closestIndex : -1;
     }
 
-    // Hàm tiện ích: Tính tọa độ World của một cây dựa trên Terrain chứa nó
     private Vector3 TreeToWorld(Terrain terrain, TreeInstance tree)
     {
         TerrainData td = terrain.terrainData;
@@ -143,7 +220,6 @@ public class TreeManager : NetworkBehaviour
         );
     }
 
-    // Hàm tiện ích: Tìm Terrain dựa trên tọa độ (Khắc phục lỗi sai số thập phân qua mạng)
     private Terrain GetTerrainByPosition(Vector3 position)
     {
         Terrain closestTerrain = null;
@@ -158,10 +234,7 @@ public class TreeManager : NetworkBehaviour
                 closestTerrain = t;
             }
         }
-
-        // Nếu khoảng cách sai số dưới 5m thì chấp nhận đó chính là Terrain cần tìm
-        if (minDistance <= 5.0f) return closestTerrain;
-        
-        return null;
+        return minDistance <= 5.0f ? closestTerrain : null;
     }
+    #endregion
 }
