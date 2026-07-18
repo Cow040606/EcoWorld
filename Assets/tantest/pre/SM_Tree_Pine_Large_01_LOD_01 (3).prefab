@@ -12,7 +12,9 @@ GameObject:
   - component: {fileID: 6075433284578677028}
   - component: {fileID: 67142527361328087}
   - component: {fileID: 8283876918609953686}
-  m_Layer: 0
+  - component: {fileID: 8378112879419207865}
+  - component: {fileID: -9181456801098766590}
+  m_Layer: 17
   m_Name: SM_Tree_Pine_Large_01_LOD_01 (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -115,3 +117,43 @@ CapsuleCollider:
   m_Height: 4.9934764
   m_Direction: 1
   m_Center: {x: 0.08, y: 1.7368538, z: 0}
+--- !u!114 &8378112879419207865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6719406744329608175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44747bb0f391a264fbe15318213a1fac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TreeScript
+  maxHP: 100
+  thoiGianHoiSinh: 30
+  _HP: 0
+  _IsActive:
+    _value: 0
+  woodPrefab:
+    RawGuidValue: 68cec0b9ecb54254eb3dc29e0214454c
+  treeVisual: {fileID: 0}
+  treeCollider: {fileID: 8283876918609953686}
+--- !u!114 &-9181456801098766590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6719406744329608175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+  SortKey: 3962832035
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 8378112879419207865}
+  ForceRemoteRenderTimeframe: 0
