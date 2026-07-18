@@ -332,7 +332,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (HasStateAuthority)
             {
                 isDead = true;
-                dongHoHoiSinh = TickTimer.CreateFromSeconds(Runner, 3f); // Chờ 3s rồi hồi sinh
+                dongHoHoiSinh = TickTimer.CreateFromSeconds(Runner, 7f); 
                 DropBackpackOnDeath();
             }
         }
@@ -481,13 +481,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             if (isDead)
             {
-                //animator.SetBool("isDead", true);
+                animator.SetBool("isDead", true);
                 animator.SetFloat("Speed", 0f);
                 animator.SetBool("isJump", false);
             }
             else
             {
-                //animator.SetBool("isDead", false);
+                animator.SetBool("isDead", false);
                 if (isJumping)
                 {
                     isSprinting = false;
