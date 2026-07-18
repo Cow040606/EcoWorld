@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7133280947559675536}
   - component: {fileID: 1830722086091451978}
   - component: {fileID: 3535568557993923547}
+  - component: {fileID: 5808242465589248621}
   m_Layer: 0
   m_Name: SM_Tree_Swamp_02 (8)
   m_TagString: Untagged
@@ -113,3 +114,26 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 554970ff3a447a64abec221ee9bd69bb, type: 3}
+--- !u!136 &5808242465589248621
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1547865287583749755}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.41
+  m_Height: 4.9934764
+  m_Direction: 1
+  m_Center: {x: 0.08, y: 1.7368538, z: 0}
