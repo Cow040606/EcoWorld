@@ -119,7 +119,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Networked] public int Gold { get; set; }
     [Networked] public int Gem { get; set; }
     [Networked, Capacity(20)] public NetworkArray<O_VatPham> TuiDo { get; }
-    [Networked, Capacity(6)] public NetworkArray<int> HotbarIDs { get; }
+    [Networked, OnChangedRender(nameof(OnHotbarChanged)), Capacity(6)] public NetworkArray<int> HotbarIDs { get; }
+
+    private void OnHotbarChanged()
+    {
+        OnToolChanged();
+    }
 
     [Header("Animation & Vũ Khí")]
     [Networked] private NetworkBool isrun { get; set; }
@@ -138,7 +143,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float attackDamageToAnimal = 25f;
     public LayerMask attackLayer;
 
+    [Header("Hệ thống chém Combo")]
+    public float minAttackCooldown = 0.5f; // Khoảng thời gian nhỏ nhất giữa 2 lần chém (chống spam)
+    public float comboResetTime = 0.7f;
+    public float comboFinishCooldown = 1f; // Thời gian delay (nghỉ) sau khi tung xong combo 3 hit
+    private int currentComboStep = 0;
+    private float lastAttackTime = 0f;
+    private float comboCooldownEndTime = 0f;
+
     [Header("Trạng thái Hành Động (Chặt/Đào)")]
+    public float actionDelay = 0.8f;
+    private float lastActionTime = 0f;
+    public float hitboxOffset = 1.5f;
+    public float hitboxRadius = 1.5f;
     [Networked] public NetworkBool isDoingAction { get; set; }
     [Networked] public TickTimer actionTimer { get; set; }
     [Networked] public TickTimer hitTimer { get; set; }
@@ -499,6 +516,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                     animator.SetBool("isJump", false);
                 }
                 animator.SetFloat("Speed", currentSpeedSmooth);
+
+                // --- XỬ LÝ ANIMATION CẦM CÔNG CỤ (KIẾM, RÌU, CÚP, CẦN CÂU) ---
+                int idDangCam = (CurrentToolIndex >= 0 && CurrentToolIndex <= 5) ? HotbarIDs[CurrentToolIndex] : 0;
+                bool isTool = (idDangCam == 4 || idDangCam == 5 || idDangCam == 6 || idDangCam == 8);
+
+                if (isTool && !isJumping)
+                {
+                    animator.SetBool("isHoldingTool", true);
+                }
+                else
+                {
+                    animator.SetBool("isHoldingTool", false);
+                }
             }
         }
 
@@ -704,6 +734,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
+            // Bỏ thanh kiếm (id 4) ra khỏi actionDelay chung để hệ thống combo hoạt động mượt mà
+            if (idDangCam == 5 || idDangCam == 6)
+            {
+                if (Time.time - lastActionTime < actionDelay) return;
+                lastActionTime = Time.time;
+            }
+
             switch (idDangCam)
             {
                 case 4: HandleAttackAnimal(); break;
@@ -741,7 +778,36 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void HandleAttackAnimal()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
-        RPC_AnimSlash();
+
+        // Bị khóa không cho chém vì đang trong thời gian nghỉ 1 giây sau combo 3 hit
+        if (Time.time < comboCooldownEndTime) return;
+
+        // Bỏ qua nếu người chơi bấm quá nhanh (chưa hết thời gian hồi đòn - vd: 30 frames)
+        if (lastAttackTime != 0f && Time.time - lastAttackTime < minAttackCooldown) return;
+
+        if (Time.time - lastAttackTime > comboResetTime)
+        {
+            currentComboStep = 0;
+        }
+
+        currentComboStep++;
+
+        if (currentComboStep > 3)
+        {
+            currentComboStep = 1;
+        }
+
+        lastAttackTime = Time.time;
+        RPC_AnimSlash(currentComboStep);
+
+        // Gọi hàm gây sát thương NGAY LẬP TỨC để fix lỗi không có dame (bỏ qua Animation Event)
+        PlayerDoDamage();
+
+        // Thiết lập thời gian nghỉ 1 giây sau khi chém hit 3
+        if (currentComboStep == 3)
+        {
+            comboCooldownEndTime = Time.time + comboFinishCooldown;
+        }
     }
 
     public void PlayerDoDamage()
@@ -752,25 +818,32 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         float banKinhChem = 3f;
         Collider[] hitColliders = Physics.OverlapSphere(tamQuet, banKinhChem, attackLayer);
 
+        // Tính toán sát thương theo combo (Hit 1: x1, Hit 2: x1.2, Hit 3: x1.5)
+        float heSoCombo = 1f;
+        if (currentComboStep == 2) heSoCombo = 1.2f;
+        else if (currentComboStep == 3) heSoCombo = 1.5f;
+
+        float satThuongThucTe = attackDamageToAnimal * heSoCombo;
+
         foreach (var hitCollider in hitColliders)
         {
             var animalAI = hitCollider.GetComponentInParent<ithappy.Animals_FREE.AnimalAI_Controller>();
             if (animalAI != null)
             {
-                animalAI.RPC_AnimalTakeDamage(attackDamageToAnimal, Runner.LocalPlayer);
+                animalAI.RPC_AnimalTakeDamage(satThuongThucTe, Runner.LocalPlayer);
             }
 
             var enemyOrc = hitCollider.GetComponentInParent<EnemyAIOrc>();
             if (enemyOrc != null)
             {
-                enemyOrc.RPC_TakeDamageFromPlayer((int)attackDamageToAnimal);
+                enemyOrc.RPC_TakeDamageFromPlayer((int)satThuongThucTe);
             }
 
             // --- ĐOẠN CODE MỚI THÊM ĐỂ ĐÁNH TRÚNG BOSS ---
             var boss = hitCollider.GetComponentInParent<BossController>();
             if (boss != null)
             {
-                boss.RPC_PlayerHitBoss(attackDamageToAnimal);
+                boss.RPC_PlayerHitBoss(satThuongThucTe);
             }
         }
     }
@@ -791,41 +864,45 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private void ThucHienXetVaChamChop()
     {
-        if (playerCamera == null) return;
-
-        Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
-        Ray ray = playerCamera.ScreenPointToRay(screenCenter);
-
-        _lastRayOrigin = ray.origin;
-        _lastRayDir = ray.direction;
-
+        Vector3 hitboxCenter = transform.position + transform.forward * hitboxOffset;
+        
         LayerMask maskDung = (chopLayer.value != 0) ? chopLayer : Physics.DefaultRaycastLayers;
+        Terrain hitTerrain = null;
 
-        if (Physics.Raycast(ray, out RaycastHit hit, interactRange, maskDung))
+        // Bắn 1 tia ngắn xuống dưới để chắc chắn lấy đúng Terrain (đề phòng có nhiều Terrain)
+        if (Physics.Raycast(hitboxCenter + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 10f, maskDung))
         {
-            _lastRayHit = true;
-            _lastRayHitPoint = hit.point;
-
-            Terrain hitTerrain = hit.collider.GetComponent<Terrain>();
-            if (hitTerrain != null && TreeManager.Instance != null)
-            {
-                TreeManager.Instance.TryChopTree(hitTerrain, hit.point, Runner);
-                PlayActionSound(chopClip);
-            }
+            hitTerrain = hit.collider.GetComponent<Terrain>();
         }
-        else _lastRayHit = false;
+
+        if (hitTerrain == null) hitTerrain = Terrain.activeTerrain;
+
+        if (hitTerrain != null && TreeManager.Instance != null)
+        {
+            TreeManager.Instance.TryChopTree(hitTerrain, hitboxCenter, Runner);
+            PlayActionSound(chopClip);
+        }
     }
 
     private void ThucHienXetVaChamMine()
     {
-        if (BanTiaTuTamManHinh(interactRange, rockLayer, out RaycastHit hit))
+        Vector3 hitboxCenter = transform.position + transform.forward * hitboxOffset + Vector3.up * 1f;
+        Collider[] hits = Physics.OverlapSphere(hitboxCenter, hitboxRadius, rockLayer);
+        
+        bool daTrung = false;
+        foreach (var col in hits)
         {
-            RockScript cucDa = hit.collider.GetComponent<RockScript>();
+            RockScript cucDa = col.GetComponent<RockScript>();
             if (cucDa != null)
             {
                 cucDa.RPC_NhanSatThuongCuoc(25f);
-                PlayActionSound(mineClip);
+                daTrung = true;
             }
+        }
+
+        if (daTrung)
+        {
+            PlayActionSound(mineClip);
         }
     }
 
@@ -1050,10 +1127,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #region 6. TÚI ĐỒ & GIAO DIỆN (INVENTORY & UI)
 
+    private int _lastEquippedID = -1;
+
     private void OnToolChanged()
     {
         if (HasInputAuthority && UI_HotBar.Instance != null)
             UI_HotBar.Instance.HighlightSlot(CurrentToolIndex);
+
+        int idDangCam = (CurrentToolIndex >= 0 && CurrentToolIndex <= 5) ? HotbarIDs[CurrentToolIndex] : 0;
+        
+        // Tránh load lại model nếu ID giống hệt nhau (chống nhấp nháy)
+        if (idDangCam == _lastEquippedID) return;
+        _lastEquippedID = idDangCam;
 
         if (vuKhiDangCamThucTe != null)
         {
@@ -1063,27 +1148,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (CurrentToolIndex < 0 || CurrentToolIndex > 5) return;
 
-        int idDangCam = HotbarIDs[CurrentToolIndex];
         if (idDangCam > 0 && InventoryManager.instance != null)
         {
             Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
 
             if (thongTinItem != null && thongTinItem.model3DPrefab != null && viTriCamVuKhi != null)
             {
+                // 1. Sinh ra vũ khí và làm con trực tiếp của viTriCamVuKhi[cite: 2]
                 vuKhiDangCamThucTe = Instantiate(thongTinItem.model3DPrefab, viTriCamVuKhi);
+                
+                vuKhiDangCamThucTe.transform.localPosition = thongTinItem.viTriCamOffset;
+                vuKhiDangCamThucTe.transform.localRotation = Quaternion.Euler(thongTinItem.gocXoayOffset);
                 vuKhiDangCamThucTe.transform.localScale = thongTinItem.scaleTrenTay;
-                Transform vitriCamModel = vuKhiDangCamThucTe.transform.Find("vitricam");
-
-                if (vitriCamModel != null)
-                {
-                    vuKhiDangCamThucTe.transform.localPosition = -vitriCamModel.localPosition;
-                    vuKhiDangCamThucTe.transform.localRotation = Quaternion.Inverse(vitriCamModel.localRotation);
-                }
-                else
-                {
-                    vuKhiDangCamThucTe.transform.localPosition = Vector3.zero;
-                    vuKhiDangCamThucTe.transform.localRotation = Quaternion.identity;
-                }
             }
         }
     }
@@ -1672,7 +1748,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void RPC_AnimDapDa() { if (animator != null) animator.SetTrigger("dapda"); }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    public void RPC_AnimSlash() { if (animator != null) animator.SetTrigger("slash"); }
+    public void RPC_AnimSlash(int comboStep) 
+    { 
+        if (animator != null) 
+        {
+            animator.SetInteger("ComboStep", comboStep);
+            animator.SetTrigger("slash"); 
+        }
+    }
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_AnimDash() { if (animator != null) animator.SetTrigger("dash"); }
 
