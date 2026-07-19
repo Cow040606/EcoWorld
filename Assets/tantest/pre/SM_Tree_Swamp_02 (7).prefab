@@ -12,10 +12,7 @@ GameObject:
   - component: {fileID: 6378652324369071808}
   - component: {fileID: 8755227875768165807}
   - component: {fileID: 5944946671015038737}
-  - component: {fileID: 8715909638315796412}
-  - component: {fileID: -2750687302262921445}
-  - component: {fileID: -89968855999073111}
-  m_Layer: 17
+  m_Layer: 0
   m_Name: SM_Tree_Swamp_02 (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -116,66 +113,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 554970ff3a447a64abec221ee9bd69bb, type: 3}
---- !u!136 &8715909638315796412
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8651970920358422911}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.41
-  m_Height: 4.9934764
-  m_Direction: 1
-  m_Center: {x: 0.08, y: 1.7368538, z: 0}
---- !u!114 &-2750687302262921445
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8651970920358422911}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44747bb0f391a264fbe15318213a1fac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TreeScript
-  maxHP: 100
-  thoiGianHoiSinh: 30
-  _HP: 0
-  _IsActive:
-    _value: 0
-  woodPrefab:
-    RawGuidValue: 68cec0b9ecb54254eb3dc29e0214454c
-  treeVisual: {fileID: 8651970920358422911}
-  treeCollider: {fileID: 8715909638315796412}
---- !u!114 &-89968855999073111
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8651970920358422911}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
-  SortKey: 1061759728
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: -2750687302262921445}
-  ForceRemoteRenderTimeframe: 0

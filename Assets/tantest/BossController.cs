@@ -171,7 +171,7 @@ public class BossController : NetworkBehaviour
     }
 
     // Nhận sát thương từ Player (gọi qua RPC để đẩy từ Client lên Server)
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_PlayerHitBoss(float damage)
     {
         if (CurrentHP <= 0) return;

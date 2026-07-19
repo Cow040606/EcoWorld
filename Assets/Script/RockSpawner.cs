@@ -60,7 +60,7 @@ public class RockSpawner : NetworkBehaviour
                         validPosition = hit.point;
                         foundPosition = true;
                         break;
-                    } 
+                    }
                 }
             }
 

@@ -136,13 +136,12 @@ public class TreeManager : NetworkBehaviour
     #endregion
 
     #region HỆ THỐNG CHẶT VÀ RỚT ĐỒ CHUNG 1 LOẠI
-    public bool TryChopTree(Terrain targetTerrain, Vector3 hitPoint, NetworkRunner runner)
+    public void TryChopTree(Terrain targetTerrain, Vector3 hitPoint, NetworkRunner runner)
     {
         int treeIndex = GetClosestTreeIndexOnTerrain(targetTerrain, hitPoint);
-        if (treeIndex < 0) return false;
+        if (treeIndex < 0) return;
 
         RPC_RequestChopTree(targetTerrain.transform.position, treeIndex, hitPoint, runner.LocalPlayer);
-        return true;
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

@@ -46,12 +46,7 @@ public class Item : ScriptableObject
     [Header("Mô hình 3D khi cầm trên tay")]
     public GameObject model3DPrefab;
 
-    [Tooltip("Dịch chuyển vị trí của món đồ so với tay nhân vật")]
-    public Vector3 viTriCamOffset = Vector3.zero; 
-    
-    [Tooltip("Xoay món đồ sao cho khớp với lòng bàn tay")]
-    public Vector3 gocXoayOffset = Vector3.zero;  
-    
-    [Tooltip("Kích thước của món đồ")]
-    public Vector3 scaleTrenTay = Vector3.one;
+    [Header("Tùy chỉnh Kích thước (X, Y, Z)")]
+    // Vector3.one mặc định là (1, 1, 1) để model không bị teo nhỏ
+    public Vector3 scaleTrenTay = Vector3.one; 
 }
