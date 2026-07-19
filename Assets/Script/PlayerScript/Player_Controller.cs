@@ -119,7 +119,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Networked] public int Gold { get; set; }
     [Networked] public int Gem { get; set; }
     [Networked, Capacity(20)] public NetworkArray<O_VatPham> TuiDo { get; }
-    [Networked, Capacity(6)] public NetworkArray<int> HotbarIDs { get; }
+    [Networked, OnChangedRender(nameof(OnHotbarChanged)), Capacity(6)] public NetworkArray<int> HotbarIDs { get; }
+
+    private void OnHotbarChanged()
+    {
+        OnToolChanged();
+    }
 
     [Header("Animation & Vũ Khí")]
     [Networked] private NetworkBool isrun { get; set; }
@@ -488,6 +493,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 animator.SetBool("isDead", true);
                 animator.SetFloat("Speed", 0f);
                 animator.SetBool("isJump", false);
+                animator.SetBool("isHoldingTool", false);
             }
             else
             {
@@ -503,6 +509,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                     animator.SetBool("isJump", false);
                 }
                 animator.SetFloat("Speed", currentSpeedSmooth);
+
+                // --- XỬ LÝ ANIMATION CẦM CÔNG CỤ (KIẾM, RÌU, CÚP, CẦN CÂU) ---
+                int idDangCam = (CurrentToolIndex >= 0 && CurrentToolIndex <= 5) ? HotbarIDs[CurrentToolIndex] : 0;
+                bool isTool = (idDangCam == 4 || idDangCam == 5 || idDangCam == 6 || idDangCam == 8);
+
+                if (isTool && !isJumping)
+                {
+                    animator.SetBool("isHoldingTool", true);
+                }
+                else
+                {
+                    animator.SetBool("isHoldingTool", false);
+                }
             }
         }
 
@@ -1067,10 +1086,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #region 6. TÚI ĐỒ & GIAO DIỆN (INVENTORY & UI)
 
+    private int _lastEquippedID = -1;
+
     private void OnToolChanged()
     {
         if (HasInputAuthority && UI_HotBar.Instance != null)
             UI_HotBar.Instance.HighlightSlot(CurrentToolIndex);
+
+        int idDangCam = (CurrentToolIndex >= 0 && CurrentToolIndex <= 5) ? HotbarIDs[CurrentToolIndex] : 0;
+        
+        // Tránh load lại model nếu ID giống hệt nhau (chống nhấp nháy)
+        if (idDangCam == _lastEquippedID) return;
+        _lastEquippedID = idDangCam;
 
         if (vuKhiDangCamThucTe != null)
         {
@@ -1080,27 +1107,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (CurrentToolIndex < 0 || CurrentToolIndex > 5) return;
 
-        int idDangCam = HotbarIDs[CurrentToolIndex];
         if (idDangCam > 0 && InventoryManager.instance != null)
         {
             Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
 
             if (thongTinItem != null && thongTinItem.model3DPrefab != null && viTriCamVuKhi != null)
             {
+                // 1. Sinh ra vũ khí và làm con trực tiếp của viTriCamVuKhi[cite: 2]
                 vuKhiDangCamThucTe = Instantiate(thongTinItem.model3DPrefab, viTriCamVuKhi);
+                
+                vuKhiDangCamThucTe.transform.localPosition = thongTinItem.viTriCamOffset;
+                vuKhiDangCamThucTe.transform.localRotation = Quaternion.Euler(thongTinItem.gocXoayOffset);
                 vuKhiDangCamThucTe.transform.localScale = thongTinItem.scaleTrenTay;
-                Transform vitriCamModel = vuKhiDangCamThucTe.transform.Find("vitricam");
-
-                if (vitriCamModel != null)
-                {
-                    vuKhiDangCamThucTe.transform.localPosition = -vitriCamModel.localPosition;
-                    vuKhiDangCamThucTe.transform.localRotation = Quaternion.Inverse(vitriCamModel.localRotation);
-                }
-                else
-                {
-                    vuKhiDangCamThucTe.transform.localPosition = Vector3.zero;
-                    vuKhiDangCamThucTe.transform.localRotation = Quaternion.identity;
-                }
             }
         }
     }
