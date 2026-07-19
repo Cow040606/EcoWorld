@@ -12,7 +12,9 @@ GameObject:
   - component: {fileID: 3950012819590918644}
   - component: {fileID: 7576496814652992938}
   - component: {fileID: 2901241840163649960}
-  m_Layer: 0
+  - component: {fileID: 2328488751532283544}
+  - component: {fileID: -3450094701123596579}
+  m_Layer: 17
   m_Name: SM_Tree_Willow_Medium_01_LOD_01 (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -31,7 +33,8 @@ Transform:
   m_LocalPosition: {x: 68.64331, y: -0.19000626, z: -45.746094}
   m_LocalScale: {x: 1.10414, y: 1.1041399, z: 1.10414}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 6315618628630016993}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3950012819590918644
@@ -114,3 +117,75 @@ CapsuleCollider:
   m_Height: 4.9934764
   m_Direction: 1
   m_Center: {x: 0.08, y: 1.7368538, z: 0}
+--- !u!114 &2328488751532283544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 998950145772787419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44747bb0f391a264fbe15318213a1fac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TreeScript
+  maxHP: 100
+  thoiGianHoiSinh: 30
+  _HP: 0
+  _IsActive:
+    _value: 0
+  woodPrefab:
+    RawGuidValue: 00000000000000000000000000000000
+  treeVisual: {fileID: 998950145772787419}
+  treeCollider: {fileID: 2901241840163649960}
+--- !u!114 &-3450094701123596579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 998950145772787419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+  SortKey: 177078069
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 2328488751532283544}
+  ForceRemoteRenderTimeframe: 0
+--- !u!1 &2389792816847794337
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6315618628630016993}
+  m_Layer: 0
+  m_Name: Visual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6315618628630016993
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2389792816847794337}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.000000007450581, y: -0.97835076, z: -0.0000000037252903,
+    w: 0.20695394}
+  m_LocalPosition: {x: 0.4899969, y: 2.5895417, z: 0.000048341655}
+  m_LocalScale: {x: 0.9056818, y: 0.9056823, z: 0.9056818}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5477380276696472050}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
