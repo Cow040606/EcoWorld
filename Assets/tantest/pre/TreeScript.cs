@@ -5,7 +5,7 @@ public class TreeScript : NetworkBehaviour
 {
     [Header("Thông số Cây")]
     public float maxHP = 100f;
-    public float thoiGianHoiSinh = 30f; // Chặt xong 30s sau mọc lại
+    public float thoiGianHoiSinh = 30f;
 
     [Networked] public float HP { get; set; }
     [Networked] public NetworkBool IsActive { get; set; }
@@ -15,8 +15,27 @@ public class TreeScript : NetworkBehaviour
     public NetworkPrefabRef woodPrefab;
 
     [Header("Hình Ảnh & Va Chạm")]
-    public GameObject treeVisual;  // Kéo Object Visual (con) vào đây
-    public Collider treeCollider;  // Kéo CapsuleCollider vào đây
+    [Tooltip("Không cần kéo thủ công nữa, code sẽ tự tìm!")]
+    public GameObject treeVisual;
+    public Collider treeCollider;
+
+    // Hàm Awake chạy ngay khi Prefab xuất hiện trong game
+    private void Awake()
+    {
+        // Tự động tìm object con có tên chính xác là "Visual"
+        if (treeVisual == null)
+        {
+            Transform visualTransform = transform.Find("Visual");
+            if (visualTransform != null)
+            {
+                treeVisual = visualTransform.gameObject;
+            }
+            else
+            {
+                Debug.LogError($"<color=red>[LỖI]</color> Cây {gameObject.name} chưa có object con nào tên là 'Visual'. Hãy tạo ngay!");
+            }
+        }
+    }
 
     public override void Spawned()
     {
@@ -24,6 +43,7 @@ public class TreeScript : NetworkBehaviour
         {
             HP = maxHP;
             IsActive = true;
+            Debug.Log($"[TreeScript] Cây {gameObject.name} đã sẵn sàng.");
         }
     }
 
@@ -31,12 +51,12 @@ public class TreeScript : NetworkBehaviour
     {
         if (!HasStateAuthority) return;
 
-        // Logic hồi sinh cây
         if (!IsActive && RespawnTimer.Expired(Runner))
         {
             HP = maxHP;
             IsActive = true;
             RespawnTimer = TickTimer.None;
+            Debug.Log($"[TreeScript] Cây {gameObject.name} đã hồi sinh!");
         }
     }
 
@@ -44,12 +64,10 @@ public class TreeScript : NetworkBehaviour
     {
         if (treeVisual == null) return;
 
-        // Cập nhật hiển thị và va chạm dựa trên trạng thái IsActive
-        bool activeState = IsActive;
-        if (treeVisual.activeSelf != activeState)
+        if (treeVisual.activeSelf != IsActive)
         {
-            treeVisual.SetActive(activeState);
-            if (treeCollider != null) treeCollider.enabled = activeState;
+            treeVisual.SetActive(IsActive);
+            if (treeCollider != null) treeCollider.enabled = IsActive;
         }
     }
 
@@ -59,12 +77,14 @@ public class TreeScript : NetworkBehaviour
         if (!IsActive) return;
 
         HP -= damage;
+        Debug.Log($"[TreeScript] Cây bị chém! Máu còn: {HP}");
+
         if (HP <= 0)
         {
-            IsActive = false; // Ẩn cây
+            IsActive = false;
             RespawnTimer = TickTimer.CreateFromSeconds(Runner, thoiGianHoiSinh);
+            Debug.Log($"[TreeScript] Cây đã đổ. Hồi sinh sau {thoiGianHoiSinh}s.");
 
-            // Rớt vật phẩm
             if (woodPrefab.IsValid)
             {
                 Runner.Spawn(woodPrefab, transform.position + Vector3.up * 1.5f, Quaternion.identity);
