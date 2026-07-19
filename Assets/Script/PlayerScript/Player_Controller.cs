@@ -27,8 +27,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     #region 1. KHAI BÁO BIẾN (VARIABLES)
     [Header("Quán tính")]
     [Networked] public float currentSpeedSmooth { get; set; }
-    public float giaToc = 8f;    
-    public float giamToc = 12f;  
+    public float giaToc = 8f;
+    public float giamToc = 12f;
     public float tocDoXoay = 15f;
 
     [Header("Di chuyển")]
@@ -43,13 +43,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private bool jumpPressedLocal;
     public float thoiGianHoiNhay = 1f;
     [Networked] public TickTimer dongHoChoNhay { get; set; }
+
     [Header("Cơ chế Lướt (Dash) & I-Frames")]
-    public float dashSpeed = 18f;           
-    public float thoiGianDash = 0.25f;     
-    public float thoiGianHoiDash = 1.2f;    
-    public float theLucTieuHaoDash = 15f;   
+    public float dashSpeed = 18f;
+    public float thoiGianDash = 0.25f;
+    public float thoiGianHoiDash = 1.2f;
+    public float theLucTieuHaoDash = 15f;
     [Networked] public NetworkBool isDashing { get; set; }
-    [Networked] public NetworkBool isInvincible { get; set; } 
+    [Networked] public NetworkBool isInvincible { get; set; }
     [Networked] public TickTimer dongHoDash { get; set; }
     [Networked] public TickTimer dongHoHoiDash { get; set; }
     private bool dashPressedLocal;
@@ -78,9 +79,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float tocDoHoi = 15f;
 
     [Header("Hệ Thống Phân Bổ Điểm")]
-    [Networked] public int AvailablePoints { get; set; } 
-    [Networked] public int DiemSucManh { get; set; }     
-    [Networked] public int DiemTheLuc { get; set; }     
+    [Networked] public int AvailablePoints { get; set; }
+    [Networked] public int DiemSucManh { get; set; }
+    [Networked] public int DiemTheLuc { get; set; }
     [Networked] public int DiemNhanhNhen { get; set; }
     [Networked] public int DiemMau { get; set; }
 
@@ -104,10 +105,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private float yRotation = 0f;
     public float khoangCachCamera = 4f;
     // --- BỔ SUNG BIẾN ZOOM CAMERA ---
-    public float khoangCachMin = 1.5f; 
-    public float khoangCachMax = 10f;  
-    public float tocDoZoomChuot = 0.5f; 
-    private float khoangCachMucTieu;    
+    public float khoangCachMin = 1.5f;
+    public float khoangCachMax = 10f;
+    public float tocDoZoomChuot = 0.5f;
+    private float khoangCachMucTieu;
     // --------------------------------
     private float mouseXLocalAcc;
     public LayerMask layerVaChamCamera;
@@ -216,19 +217,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             localPlayer = this;
             Runner.AddCallbacks(this);
             Runner.SetPlayerObject(Runner.LocalPlayer, Object);
-            
+
             // --- KHỞI TẠO ĐỒNG BỘ ZOOM LÚC MỚI VÀO GAME ---
-            khoangCachMucTieu = khoangCachCamera; 
+            khoangCachMucTieu = khoangCachCamera;
 
             GameObject objHint = GameObject.Find("Text_Hint");
             if (objHint != null) hintText = objHint.GetComponent<TextMeshProUGUI>();
 
             if (cameraTransform == null && Camera.main != null) cameraTransform = Camera.main.transform;
-            
-            if (cameraTransform != null) cameraTransform.SetParent(null); 
-            
+
+            if (cameraTransform != null) cameraTransform.SetParent(null);
+
             if (playerCamera == null) Debug.LogError("[Player_Controller] ❌ 'Player Camera' chưa được gán!");
-            if (TreeManager.Instance == null) Debug.LogError("[Player_Controller] ❌ Không tìm thấy TreeManager!");
+           
         }
         else
         {
@@ -365,7 +366,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             character.Move(Vector3.zero);
             isrun = isSprinting = isJumping = false;
-            
+
             // Nếu đã hết thời gian đếm ngược thì hồi sinh
             if (HasStateAuthority && dongHoHoiSinh.Expired(Runner))
             {
@@ -412,7 +413,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 {
                     // Hết thời gian Dash -> Tắt trạng thái và mất I-frames
                     isDashing = false;
-                    isInvincible = false; 
+                    isInvincible = false;
                 }
                 else
                 {
@@ -422,10 +423,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
                     character.maxSpeed = dashSpeed;
                     character.Move(huongLuoT.normalized);
-                    
+
                     Quaternion huongMucTieu = Quaternion.LookRotation(huongLuoT);
                     transform.rotation = Quaternion.Slerp(transform.rotation, huongMucTieu, Runner.DeltaTime * tocDoXoay * 2f);
-                    
+
                     return; // KHÓA CỨNG: Bỏ qua đoạn code nhảy và chạy bình thường ở dưới
                 }
             }
@@ -464,9 +465,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             float targetSpeed = 0f;
             if (dangBampi) targetSpeed = isSprinting ? runfast : speed;
 
-            if (dangBampi) {
+            if (dangBampi)
+            {
                 currentSpeedSmooth = Mathf.Lerp(currentSpeedSmooth, targetSpeed, Runner.DeltaTime * giaToc);
-            } else {
+            }
+            else
+            {
                 currentSpeedSmooth = Mathf.Lerp(currentSpeedSmooth, 0f, Runner.DeltaTime * giamToc);
             }
 
@@ -541,7 +545,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             cameraTransform.rotation = Quaternion.Slerp(cameraTransform.rotation, camRotationMucTieu, Time.deltaTime * 25f);
 
             Vector3 diemNhin = transform.position + Vector3.up * 1.5f;
-            Vector3 huongCamera = -(cameraTransform.rotation * Vector3.forward); 
+            Vector3 huongCamera = -(cameraTransform.rotation * Vector3.forward);
             Vector3 viTriDuKien = diemNhin + huongCamera * khoangCachCamera;
 
             Vector3 viTriCuoiCung;
@@ -753,11 +757,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             if (idDangCam == 8)
             {
-                if (currentState == FishState.Idle) 
+                if (currentState == FishState.Idle)
                     BatDauCauCa();
-                else if (currentState == FishState.Waiting || currentState == FishState.Casting) 
+                else if (currentState == FishState.Waiting || currentState == FishState.Casting)
                     ThuCanCau("Hủy câu!");
-                else if (currentState == FishState.Giatca) 
+                else if (currentState == FishState.Giatca)
                     ThanhCongGiatCa();
             }
             else if (idDangCam == 10)
@@ -858,10 +862,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
 
-        RPC_AnimDapDa(); 
+        RPC_AnimDapDa();
         RPC_BaoHieuBatDauAction(2, 1.5f, 0.6f);
     }
 
+    // ====
+    // 🛠 ĐÂY LÀ HÀM ĐÃ ĐƯỢC SỬA LỖI CHẶT CÂY HOÀN CHỈNH
+    // ====
     private void ThucHienXetVaChamChop()
     {
         Vector3 hitboxCenter = transform.position + transform.forward * hitboxOffset;
@@ -872,6 +879,32 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         // Bắn 1 tia ngắn xuống dưới để chắc chắn lấy đúng Terrain (đề phòng có nhiều Terrain)
         if (Physics.Raycast(hitboxCenter + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 10f, maskDung))
         {
+ HEAD
+            _lastRayHit = true;
+            _lastRayHitPoint = hit.point;
+
+            // 1. TÌM VÀ CHẶT CÂY THỰC TẾ (SỬ DỤNG TREESCRIPT)
+            TreeScript cayMucTieu = hit.collider.GetComponentInParent<TreeScript>();
+            if (cayMucTieu != null)
+            {
+                cayMucTieu.RPC_TakeDamage(baseDamage);
+                PlayActionSound(chopClip);
+                return; // Đã chém trúng cây thật thì kết thúc luôn
+            }
+
+            // 2. CHẶT CÂY TRÊN TERRAIN (Giữ nguyên cho các cây cũ)
+            Terrain hitTerrain = hit.collider.GetComponent<Terrain>();
+            if (hitTerrain != null && TreeManager.Instance != null)
+            {
+                TreeManager.Instance.TryChopTree(hitTerrain, hit.point, Runner);
+                PlayActionSound(chopClip);
+            }
+        }
+        else
+        {
+            _lastRayHit = false;
+        }
+
             hitTerrain = hit.collider.GetComponent<Terrain>();
         }
 
@@ -882,6 +915,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             TreeManager.Instance.TryChopTree(hitTerrain, hitboxCenter, Runner);
             PlayActionSound(chopClip);
         }
+ 0f25b6b0207484ea13fc0f9f78bef64ce83b8e33
     }
 
     private void ThucHienXetVaChamMine()
@@ -1072,17 +1106,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         // Đếm ngược 1.5 giây, nếu phao không đụng nước thì tự động ép hủy câu!
         yield return new WaitForSeconds(1.5f);
-        if (currentState == FishState.Casting) 
+        if (currentState == FishState.Casting)
         {
             //Debug.Log("<color=red>🚨 Bảo hiểm kích hoạt: Phao kẹt, ép hủy câu!</color>");
-            PhaoRotTrenCan(); 
+            PhaoRotTrenCan();
         }
     }
 
     public void PhaoDaChamNuoc()
     {
-        if (cauCaCoroutine != null) StopCoroutine(cauCaCoroutine); 
-        
+        if (cauCaCoroutine != null) StopCoroutine(cauCaCoroutine);
+
         currentState = FishState.Waiting;
 
         // Báo cho Animator biết phao đã chạm nước
@@ -1301,13 +1335,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             // Nếu không chạy nhanh, không lướt -> Đếm ngược thời gian delay để hồi
             if (CurrentStamina < MaxStamina)
             {
-                if (dongHoDelayHoi > 0) 
+                if (dongHoDelayHoi > 0)
                     dongHoDelayHoi -= Time.deltaTime;
-                else 
+                else
                     CurrentStamina += tocDoHoi * Time.deltaTime;
             }
         }
-        
+
         CurrentStamina = Mathf.Clamp(CurrentStamina, 0, MaxStamina);
     }
 
@@ -1438,10 +1472,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_CapNhatChiSoTrangBi(int[] idNhungMonDangMac)
     {
-        float bonusHealth = DiemMau * 10f;       
-        float bonusStamina = DiemTheLuc * 5f;    
-        float bonusDamage = DiemSucManh * 2f;    
-        float bonusSpeed = DiemNhanhNhen * 0.2f; 
+        float bonusHealth = DiemMau * 10f;
+        float bonusStamina = DiemTheLuc * 5f;
+        float bonusDamage = DiemSucManh * 2f;
+        float bonusSpeed = DiemNhanhNhen * 0.2f;
         float bonusArmor = 0f;
 
         foreach (int id in idNhungMonDangMac)
@@ -1473,10 +1507,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_CongDiemTiemNang(int loaiChiSo)
     {
-        if (AvailablePoints <= 0) return; 
-        
+        if (AvailablePoints <= 0) return;
+
         AvailablePoints--;
-        
+
         if (loaiChiSo == 1) DiemSucManh++;
         else if (loaiChiSo == 2) DiemTheLuc++;
         else if (loaiChiSo == 3) DiemNhanhNhen++;
@@ -1522,9 +1556,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         ExpCurrent += exp;
         while (ExpCurrent >= expToLevelUp)
         {
-            ExpCurrent -= expToLevelUp; 
+            ExpCurrent -= expToLevelUp;
             level++;
-            AvailablePoints += 3;       
+            AvailablePoints += 3;
             expToLevelUp *= 1.1f;
         }
     }
@@ -1762,14 +1796,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_QuangPhaoVatLy(Vector3 diemBatDau, Vector3 huongNem)
     {
-        if (animator != null) 
+        if (animator != null)
         {
-            animator.ResetTrigger("GiatCan"); 
-            animator.ResetTrigger("HuyCau");  
+            animator.ResetTrigger("GiatCan");
+            animator.ResetTrigger("HuyCau");
             animator.ResetTrigger("PhaoChamNuoc"); // Dọn dẹp trigger cũ
-            animator.SetTrigger("QuangCan"); 
+            animator.SetTrigger("QuangCan");
         }
-        
+
         if (currentphaocauca != null) Destroy(currentphaocauca);
         if (Phaocauca != null)
         {
@@ -1789,18 +1823,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (animator != null)
         {
-            animator.ResetTrigger("QuangCan"); 
-            animator.ResetTrigger("PhaoChamNuoc"); 
+            animator.ResetTrigger("QuangCan");
+            animator.ResetTrigger("PhaoChamNuoc");
         }
 
         if (currentphaocauca != null) Destroy(currentphaocauca);
-        
-        if (laHuy) 
+
+        if (laHuy)
         {
             //Debug.Log("<color=yellow>⚡ Đã bắn Trigger HuyCau vào Animator!</color>");
             if (animator != null) animator.SetTrigger("HuyCau");
         }
-        else 
+        else
         {
             if (animator != null) animator.SetTrigger("GiatCan");
         }
@@ -1999,7 +2033,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (InventoryManager.instance.slotDayChuyen != null) InventoryManager.instance.slotDayChuyen.XoaDoKhoiO();
             if (InventoryManager.instance.slotGiay != null) InventoryManager.instance.slotGiay.XoaDoKhoiO();
             if (InventoryManager.instance.slotNhan != null) InventoryManager.instance.slotNhan.XoaDoKhoiO();
-            
+
             InventoryManager.instance.CapNhatLaiToanBoChiSo();
         }
     }
