@@ -119,7 +119,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Networked] public int Gold { get; set; }
     [Networked] public int Gem { get; set; }
     [Networked, Capacity(20)] public NetworkArray<O_VatPham> TuiDo { get; }
-    [Networked, Capacity(6)] public NetworkArray<int> HotbarIDs { get; }
+    [Networked, OnChangedRender(nameof(OnHotbarChanged)), Capacity(6)] public NetworkArray<int> HotbarIDs { get; }
+
+    private void OnHotbarChanged()
+    {
+        OnToolChanged();
+    }
 
     [Header("Animation & Vũ Khí")]
     [Networked] private NetworkBool isrun { get; set; }
@@ -139,6 +144,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public LayerMask attackLayer;
 
     [Header("Trạng thái Hành Động (Chặt/Đào)")]
+    public float actionDelay = 0.8f;
+    private float lastActionTime = 0f;
+    public float hitboxOffset = 1.5f;
+    public float hitboxRadius = 1.5f;
     [Networked] public NetworkBool isDoingAction { get; set; }
     [Networked] public TickTimer actionTimer { get; set; }
     [Networked] public TickTimer hitTimer { get; set; }
@@ -332,7 +341,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (HasStateAuthority)
             {
                 isDead = true;
-                dongHoHoiSinh = TickTimer.CreateFromSeconds(Runner, 3f); // Chờ 3s rồi hồi sinh
+                dongHoHoiSinh = TickTimer.CreateFromSeconds(Runner, 7f); 
                 DropBackpackOnDeath();
             }
         }
@@ -481,13 +490,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             if (isDead)
             {
-                //animator.SetBool("isDead", true);
+                animator.SetBool("isDead", true);
                 animator.SetFloat("Speed", 0f);
                 animator.SetBool("isJump", false);
+                animator.SetBool("isHoldingTool", false);
             }
             else
             {
-                //animator.SetBool("isDead", false);
+                animator.SetBool("isDead", false);
                 if (isJumping)
                 {
                     isSprinting = false;
@@ -499,6 +509,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                     animator.SetBool("isJump", false);
                 }
                 animator.SetFloat("Speed", currentSpeedSmooth);
+
+                // --- XỬ LÝ ANIMATION CẦM CÔNG CỤ (KIẾM, RÌU, CÚP, CẦN CÂU) ---
+                int idDangCam = (CurrentToolIndex >= 0 && CurrentToolIndex <= 5) ? HotbarIDs[CurrentToolIndex] : 0;
+                bool isTool = (idDangCam == 4 || idDangCam == 5 || idDangCam == 6 || idDangCam == 8);
+
+                if (isTool && !isJumping)
+                {
+                    animator.SetBool("isHoldingTool", true);
+                }
+                else
+                {
+                    animator.SetBool("isHoldingTool", false);
+                }
             }
         }
 
@@ -704,6 +727,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
+            if (idDangCam == 4 || idDangCam == 5 || idDangCam == 6)
+            {
+                if (Time.time - lastActionTime < actionDelay) return;
+                lastActionTime = Time.time;
+            }
+
             switch (idDangCam)
             {
                 case 4: HandleAttackAnimal(); break;
@@ -791,41 +820,48 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private void ThucHienXetVaChamChop()
     {
-        if (playerCamera == null) return;
-
-        Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
-        Ray ray = playerCamera.ScreenPointToRay(screenCenter);
-
-        _lastRayOrigin = ray.origin;
-        _lastRayDir = ray.direction;
-
+        Vector3 hitboxCenter = transform.position + transform.forward * hitboxOffset;
+        
         LayerMask maskDung = (chopLayer.value != 0) ? chopLayer : Physics.DefaultRaycastLayers;
+        Terrain hitTerrain = null;
 
-        if (Physics.Raycast(ray, out RaycastHit hit, interactRange, maskDung))
+        // Bắn 1 tia ngắn xuống dưới để chắc chắn lấy đúng Terrain (đề phòng có nhiều Terrain)
+        if (Physics.Raycast(hitboxCenter + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 10f, maskDung))
         {
-            _lastRayHit = true;
-            _lastRayHitPoint = hit.point;
+            hitTerrain = hit.collider.GetComponent<Terrain>();
+        }
 
-            Terrain hitTerrain = hit.collider.GetComponent<Terrain>();
-            if (hitTerrain != null && TreeManager.Instance != null)
+        if (hitTerrain == null) hitTerrain = Terrain.activeTerrain;
+
+        if (hitTerrain != null && TreeManager.Instance != null)
+        {
+            bool success = TreeManager.Instance.TryChopTree(hitTerrain, hitboxCenter, Runner);
+            if (success)
             {
-                TreeManager.Instance.TryChopTree(hitTerrain, hit.point, Runner);
                 PlayActionSound(chopClip);
             }
         }
-        else _lastRayHit = false;
     }
 
     private void ThucHienXetVaChamMine()
     {
-        if (BanTiaTuTamManHinh(interactRange, rockLayer, out RaycastHit hit))
+        Vector3 hitboxCenter = transform.position + transform.forward * hitboxOffset + Vector3.up * 1f;
+        Collider[] hits = Physics.OverlapSphere(hitboxCenter, hitboxRadius, rockLayer);
+        
+        bool daTrung = false;
+        foreach (var col in hits)
         {
-            RockScript cucDa = hit.collider.GetComponent<RockScript>();
+            RockScript cucDa = col.GetComponent<RockScript>();
             if (cucDa != null)
             {
                 cucDa.RPC_NhanSatThuongCuoc(25f);
-                PlayActionSound(mineClip);
+                daTrung = true;
             }
+        }
+
+        if (daTrung)
+        {
+            PlayActionSound(mineClip);
         }
     }
 
@@ -1050,10 +1086,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #region 6. TÚI ĐỒ & GIAO DIỆN (INVENTORY & UI)
 
+    private int _lastEquippedID = -1;
+
     private void OnToolChanged()
     {
         if (HasInputAuthority && UI_HotBar.Instance != null)
             UI_HotBar.Instance.HighlightSlot(CurrentToolIndex);
+
+        int idDangCam = (CurrentToolIndex >= 0 && CurrentToolIndex <= 5) ? HotbarIDs[CurrentToolIndex] : 0;
+        
+        // Tránh load lại model nếu ID giống hệt nhau (chống nhấp nháy)
+        if (idDangCam == _lastEquippedID) return;
+        _lastEquippedID = idDangCam;
 
         if (vuKhiDangCamThucTe != null)
         {
@@ -1063,27 +1107,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (CurrentToolIndex < 0 || CurrentToolIndex > 5) return;
 
-        int idDangCam = HotbarIDs[CurrentToolIndex];
         if (idDangCam > 0 && InventoryManager.instance != null)
         {
             Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
 
             if (thongTinItem != null && thongTinItem.model3DPrefab != null && viTriCamVuKhi != null)
             {
+                // 1. Sinh ra vũ khí và làm con trực tiếp của viTriCamVuKhi[cite: 2]
                 vuKhiDangCamThucTe = Instantiate(thongTinItem.model3DPrefab, viTriCamVuKhi);
+                
+                vuKhiDangCamThucTe.transform.localPosition = thongTinItem.viTriCamOffset;
+                vuKhiDangCamThucTe.transform.localRotation = Quaternion.Euler(thongTinItem.gocXoayOffset);
                 vuKhiDangCamThucTe.transform.localScale = thongTinItem.scaleTrenTay;
-                Transform vitriCamModel = vuKhiDangCamThucTe.transform.Find("vitricam");
-
-                if (vitriCamModel != null)
-                {
-                    vuKhiDangCamThucTe.transform.localPosition = -vitriCamModel.localPosition;
-                    vuKhiDangCamThucTe.transform.localRotation = Quaternion.Inverse(vitriCamModel.localRotation);
-                }
-                else
-                {
-                    vuKhiDangCamThucTe.transform.localPosition = Vector3.zero;
-                    vuKhiDangCamThucTe.transform.localRotation = Quaternion.identity;
-                }
             }
         }
     }
@@ -1916,7 +1951,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (InventoryManager.instance.slotDayChuyen != null) InventoryManager.instance.slotDayChuyen.XoaDoKhoiO();
             if (InventoryManager.instance.slotGiay != null) InventoryManager.instance.slotGiay.XoaDoKhoiO();
             if (InventoryManager.instance.slotNhan != null) InventoryManager.instance.slotNhan.XoaDoKhoiO();
-            
             InventoryManager.instance.CapNhatLaiToanBoChiSo();
         }
     }
