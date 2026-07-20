@@ -653,17 +653,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 369.4356
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.7999996
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 186.8607
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
@@ -1112,13 +1112,13 @@ MonoBehaviour:
   _CurrentToolIndex: 0
   viTriCamVuKhi: {fileID: 8957791581018679868}
   banKinhNhat: 3
-  interactRange: 5
+  interactRange: 2
   interactLayer:
     serializedVersion: 2
     m_Bits: 1
   chopLayer:
     serializedVersion: 2
-    m_Bits: 131072
+    m_Bits: 0
   rockLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -1126,21 +1126,12 @@ MonoBehaviour:
   attackLayer:
     serializedVersion: 2
     m_Bits: 24576
-
   minAttackCooldown: 0.7
   comboResetTime: 1
   comboFinishCooldown: 2
-
-
-
-  minAttackCooldown: 0.5
-  comboResetTime: 0.7
-  comboFinishCooldown: 1
-
   actionDelay: 0.8
   hitboxOffset: 1.5
   hitboxRadius: 1.5
- 0f25b6b0207484ea13fc0f9f78bef64ce83b8e33
   _isDoingAction:
     _value: 0
   _pendingActionType: 0
