@@ -13,22 +13,13 @@ public class TimeManager : MonoBehaviour
     [Header("Lighting & Skybox")]
     [SerializeField] Light sun;
     [SerializeField] Light moon;
-    
-    [Tooltip("Trục X là thời gian (0 đến 24h). Trục Y là độ sáng (0 = Đêm, 1 = Ngày)")]
-    [SerializeField] AnimationCurve dayNightCurve; // Curve mới thay thế curve cũ
-    
+    [SerializeField] AnimationCurve lightIntensityCurve;
     [SerializeField] float maxSunIntensity = 1;
     [SerializeField] float maxMoonIntensity = 0.5f;
-
-    [Header("Colors (Màu sắc)")]
     [SerializeField] Color dayAmbientLight;
     [SerializeField] Color nightAmbientLight;
-    [Tooltip("Màu của mặt trời ban ngày (thường là Trắng/Vàng nhạt)")]
-    [SerializeField] Color daySunColor = Color.white;
-    [Tooltip("Màu của mặt trời ban đêm (thường là Xanh dương đậm)")]
-    [SerializeField] Color nightSunColor = new Color(0.1f, 0.2f, 0.4f);
 
-    [Header("Volume & Material")]
+    [Header("Volume & Material (Shared Mode)")]
     [SerializeField] Volume volume;
     [SerializeField] Material skyboxMaterial;
 
@@ -39,42 +30,41 @@ public class TimeManager : MonoBehaviour
     ColorAdjustments colorAdjustments;
     TimeService service;
 
+    // Lưu trữ giá trị gốc để reset khi tắt game (bảo vệ Asset trong Editor)
     private Color originalAmbientColor;
     private float originalSkyBlend;
-    private float baseMultiplier;
+    private float baseMultiplier; // Lưu lại tốc độ gốc (12) để khôi phục khi thả phím
 
     public event Action OnSunrise
     {
-        add { if (service != null) service.OnSunrise += value; }
-        remove { if (service != null) service.OnSunrise -= value; }
+        add => service.OnSunrise += value;
+        remove => service.OnSunrise -= value;
     }
 
     public event Action OnSunset
     {
-        add { if (service != null) service.OnSunset += value; }
-        remove { if (service != null) service.OnSunset -= value; }
+        add => service.OnSunset += value;
+        remove => service.OnSunset -= value;
     }
 
     public event Action OnHourChange
     {
-        add { if (service != null) service.OnHourChange += value; }
-        remove { if (service != null) service.OnHourChange -= value; }
-    }
-
-    void Awake()
-    {
-        if (timeSettings != null)
-        {
-            service = new TimeService(timeSettings);
-            baseMultiplier = timeSettings.timeMultiplier;
-        }
+        add => service.OnHourChange += value;
+        remove => service.OnHourChange -= value;
     }
 
     void Start()
     {
-        if (volume != null && volume.profile != null)
+        service = new TimeService(timeSettings);
+
+        // Lưu lại hệ số tốc độ gốc khi bắt đầu game
+        baseMultiplier = timeSettings.timeMultiplier;
+
+        // SỬ DỤNG SHARED PROFILE THAY VÌ PROFILE (Tối ưu Unity 6)
+        if (volume != null && volume.sharedProfile != null)
         {
-            if (volume.profile.TryGet(out colorAdjustments))
+            volume.sharedProfile.TryGet(out colorAdjustments);
+            if (colorAdjustments != null)
             {
                 originalAmbientColor = colorAdjustments.colorFilter.value;
             }
@@ -85,6 +75,10 @@ public class TimeManager : MonoBehaviour
             originalSkyBlend = skyboxMaterial.GetFloat("_Blend");
         }
 
+        OnSunrise += () => Debug.Log("Sunrise");
+        OnSunset += () => Debug.Log("Sunset");
+        OnHourChange += () => Debug.Log("Hour change");
+
         if (dial != null)
         {
             initialDialRotation = dial.rotation.eulerAngles.z;
@@ -93,72 +87,70 @@ public class TimeManager : MonoBehaviour
 
     void Update()
     {
-        if (service == null) return;
-
         HandleDebugControls();
         UpdateTimeOfDay();
-        UpdateLightingAndColors(); // Gom chung hàm tính toán ánh sáng
+        RotateSun();
+        UpdateLightSettings();
+        UpdateSkyBlend();
     }
 
     void HandleDebugControls()
     {
-        if (timeSettings == null) return;
-
+        // 1. Phím LeftShift: Đè giữ để DỪNG thời gian
         if (Input.GetKey(KeyCode.LeftShift))
         {
             timeSettings.timeMultiplier = 0f;
         }
+        // 2. Phím U: Đè giữ để TUA NHANH thời gian gấp 10 lần
         else if (Input.GetKey(KeyCode.U))
         {
             timeSettings.timeMultiplier = baseMultiplier * 1000f;
         }
+        // 3. Khôi phục lại tốc độ cố định mặc định khi không bấm gì
         else
         {
             timeSettings.timeMultiplier = baseMultiplier;
         }
     }
 
-    void UpdateLightingAndColors()
+    void UpdateSkyBlend()
     {
-        // 1. Lấy giờ hiện tại quy ra số thập phân (Ví dụ 12h30 -> 12.5)
-        float currentHour = service.CurrentTime.Hour + (service.CurrentTime.Minute / 60f);
+        if (skyboxMaterial == null || sun == null) return;
 
-        // 2. Tra đồ thị Curve để biết thời điểm này ánh sáng là bao nhiêu (0 -> 1)
-        float lightFactor = dayNightCurve.Evaluate(currentHour);
+        float dotProduct = Vector3.Dot(sun.transform.forward, Vector3.up);
+        float blend = Mathf.Lerp(0, 1, lightIntensityCurve.Evaluate(dotProduct));
 
-        // 3. Đổi độ sáng Mặt trời & Mặt trăng
-        if (sun != null)
-        {
-            sun.intensity = Mathf.Lerp(0, maxSunIntensity, lightFactor);
-            // Đổi luôn màu của mặt trời (Ngày thì vàng, đêm thì xanh mờ)
-            sun.color = Color.Lerp(nightSunColor, daySunColor, lightFactor); 
-        }
+        // Modifying shared material directly
+        skyboxMaterial.SetFloat("_Blend", blend);
+    }
 
-        if (moon != null)
-        {
-            moon.intensity = Mathf.Lerp(maxMoonIntensity, 0, lightFactor);
-        }
+    void UpdateLightSettings()
+    {
+        if (sun == null || moon == null) return;
 
-        // 4. Đổi màu Volume (Môi trường)
+        float dotProduct = Vector3.Dot(sun.transform.forward, Vector3.down);
+        float lightIntensity = lightIntensityCurve.Evaluate(Mathf.Clamp01(dotProduct));
+
+        sun.intensity = Mathf.Lerp(0, maxSunIntensity, lightIntensity);
+        moon.intensity = Mathf.Lerp(maxMoonIntensity, 0, lightIntensity);
+
         if (colorAdjustments != null)
         {
-            colorAdjustments.colorFilter.value = Color.Lerp(nightAmbientLight, dayAmbientLight, lightFactor);
+            colorAdjustments.colorFilter.value = Color.Lerp(nightAmbientLight, dayAmbientLight, lightIntensity);
         }
+    }
 
-        // 5. Đổi Skybox
-        if (skyboxMaterial != null)
-        {
-            // Đảo ngược giá trị: Ngày (1) biến thành 0, Đêm (0) biến thành 1
-            skyboxMaterial.SetFloat("_Blend", 1f - lightFactor); 
-        }
+    void RotateSun()
+    {
+        if (sun == null) return;
 
-        // 6. Xoay UI đồng hồ (xoay 360 độ theo chu kỳ 24h)
+        float rotation = service.CalculateSunAngle();
+        sun.transform.rotation = Quaternion.AngleAxis(rotation, Vector3.right);
+
         if (dial != null)
         {
-            float dialAngle = (currentHour / 24f) * 360f;
-            dial.rotation = Quaternion.Euler(0, 0, -dialAngle + initialDialRotation);
+            dial.rotation = Quaternion.Euler(0, 0, rotation + initialDialRotation);
         }
-        RenderSettings.ambientLight = Color.Lerp(nightAmbientLight, dayAmbientLight, lightFactor);
     }
 
     void UpdateTimeOfDay()
@@ -166,17 +158,23 @@ public class TimeManager : MonoBehaviour
         service.UpdateTime(Time.deltaTime);
         if (timeText != null)
         {
-            timeText.text = service.CurrentTime.ToString("HH:mm");
+            timeText.text = service.CurrentTime.ToString("HH:mm"); // Dùng HH:mm để chuẩn định dạng 24h
         }
     }
 
+    // RESET DỮ LIỆU KHI TẮT GAME (Rất quan trọng khi dùng Shared Mode để bảo vệ asset asset)
     private void OnDestroy()
     {
+        // Khôi phục lại tốc độ chuẩn trong ScriptableObject tránh bị lưu đè trong Editor
         if (timeSettings != null)
         {
             timeSettings.timeMultiplier = baseMultiplier;
         }
 
+        if (colorAdjustments != null)
+        {
+            colorAdjustments.colorFilter.value = originalAmbientColor;
+        }
         if (skyboxMaterial != null)
         {
             skyboxMaterial.SetFloat("_Blend", originalSkyBlend);
