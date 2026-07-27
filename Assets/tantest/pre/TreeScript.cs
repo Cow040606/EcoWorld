@@ -5,7 +5,7 @@ public class TreeScript : NetworkBehaviour
 {
     [Header("Thông số Cây")]
     public float maxHP = 100f;
-    public float thoiGianHoiSinh = 120f; // Đúng 2 phút
+    public float thoiGianHoiSinh = 30f;
 
     [Networked] public float HP { get; set; }
     [Networked] public NetworkBool IsActive { get; set; }
@@ -14,17 +14,27 @@ public class TreeScript : NetworkBehaviour
     [Header("Vật Phẩm Rớt")]
     public NetworkPrefabRef woodPrefab;
 
-    // Bộ 3 sát thủ: Bắt gọn Hình ảnh, Va chạm và LOD
-    private Renderer[] cacHinhAnh;
-    private Collider[] cacVaCham;
-    private LODGroup[] cacLOD;
+    [Header("Hình Ảnh & Va Chạm")]
+    [Tooltip("Không cần kéo thủ công nữa, code sẽ tự tìm!")]
+    public GameObject treeVisual;
+    public Collider treeCollider;
 
+    // Hàm Awake chạy ngay khi Prefab xuất hiện trong game
     private void Awake()
     {
-        // Quét toàn bộ component bên trong Prefab (dù nó lồng ghép cỡ nào)
-        cacHinhAnh = GetComponentsInChildren<Renderer>();
-        cacVaCham = GetComponentsInChildren<Collider>();
-        cacLOD = GetComponentsInChildren<LODGroup>(); // Bắt thủ phạm LOD
+        // Tự động tìm object con có tên chính xác là "Visual"
+        if (treeVisual == null)
+        {
+            Transform visualTransform = transform.Find("Visual");
+            if (visualTransform != null)
+            {
+                treeVisual = visualTransform.gameObject;
+            }
+            else
+            {
+                Debug.LogError($"<color=red>[LỖI]</color> Cây {gameObject.name} chưa có object con nào tên là 'Visual'. Hãy tạo ngay!");
+            }
+        }
     }
 
     public override void Spawned()
@@ -33,55 +43,31 @@ public class TreeScript : NetworkBehaviour
         {
             HP = maxHP;
             IsActive = true;
+            Debug.Log($"[TreeScript] Cây {gameObject.name} đã sẵn sàng.");
         }
-        CapNhatHienThi(IsActive);
     }
 
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority) return;
 
-        // Cây mọc lại sau 2 phút
         if (!IsActive && RespawnTimer.Expired(Runner))
         {
             HP = maxHP;
             IsActive = true;
             RespawnTimer = TickTimer.None;
+            Debug.Log($"[TreeScript] Cây {gameObject.name} đã hồi sinh!");
         }
     }
 
     public override void Render()
     {
-        CapNhatHienThi(IsActive);
-    }
+        if (treeVisual == null) return;
 
-    private void CapNhatHienThi(bool trangThai)
-    {
-        // 1. TẮT LOD GROUP TRƯỚC (Rất quan trọng, trị tận gốc bệnh không tàng hình)
-        if (cacLOD != null)
+        if (treeVisual.activeSelf != IsActive)
         {
-            foreach (var lod in cacLOD)
-            {
-                if (lod != null && lod.enabled != trangThai) lod.enabled = trangThai;
-            }
-        }
-
-        // 2. TẮT RENDERER
-        if (cacHinhAnh != null)
-        {
-            foreach (var anh in cacHinhAnh)
-            {
-                if (anh != null && anh.enabled != trangThai) anh.enabled = trangThai;
-            }
-        }
-
-        // 3. TẮT COLLIDER
-        if (cacVaCham != null)
-        {
-            foreach (var vc in cacVaCham)
-            {
-                if (vc != null && vc.enabled != trangThai) vc.enabled = trangThai;
-            }
+            treeVisual.SetActive(IsActive);
+            if (treeCollider != null) treeCollider.enabled = IsActive;
         }
     }
 
@@ -91,23 +77,17 @@ public class TreeScript : NetworkBehaviour
         if (!IsActive) return;
 
         HP -= damage;
+        Debug.Log($"[TreeScript] Cây bị chém! Máu còn: {HP}");
 
         if (HP <= 0)
         {
             IsActive = false;
             RespawnTimer = TickTimer.CreateFromSeconds(Runner, thoiGianHoiSinh);
-
-            // Ép tắt toàn bộ cây trên Server NGAY LẬP TỨC
-            CapNhatHienThi(false);
+            Debug.Log($"[TreeScript] Cây đã đổ. Hồi sinh sau {thoiGianHoiSinh}s.");
 
             if (woodPrefab.IsValid)
             {
-                // FIX LỖI GỖ BAY: Sinh gỗ cao 2.5 mét (vượt qua đầu nhân vật) 
-                // và xích ra ngẫu nhiên 1 chút xíu để tránh rớt trúng đầu.
-                Vector2 lechNgauNhien = Random.insideUnitCircle * 1.5f;
-                Vector3 viTriAnToan = transform.position + new Vector3(lechNgauNhien.x, 2.5f, lechNgauNhien.y);
-
-                Runner.Spawn(woodPrefab, viTriAnToan, Quaternion.identity);
+                Runner.Spawn(woodPrefab, transform.position + Vector3.up * 1.5f, Quaternion.identity);
             }
         }
     }
