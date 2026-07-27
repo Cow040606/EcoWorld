@@ -2,14 +2,20 @@ using UnityEngine;
 
 public class Billboard : MonoBehaviour
 {
-    // Cứ để public để Bò kéo thả trong Inspector như Bò đã làm
-    public Camera mainCamera; 
+    // Đổi thành private vì giờ mình để code tự tìm, không cần kéo thả nữa
+    private Camera mainCamera; 
 
     void LateUpdate()
     {
-        if (mainCamera == null) return;
+        // Nếu chưa có camera (do nhân vật chưa kịp Spawn), tự động đi tìm
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+
+            if (mainCamera == null) return; 
+        }
         
-        // Ép xoay mặt theo Camera
+        // Đã tìm thấy camera thì ép xoay mặt theo nó
         transform.forward = mainCamera.transform.forward;
     }
 }
