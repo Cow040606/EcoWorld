@@ -6,10 +6,12 @@ using TMPro;
 using Fusion.Photon.Realtime;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class Menu_Fusion : MonoBehaviour
 {
     private NetworkRunner runner;
+    private Dictionary<GameObject, Vector3> originalScales = new Dictionary<GameObject, Vector3>();
 
     [Header("UI References")]
     public GameObject nutTaoTenPhong;    // Kéo cái Nút "Tạo Tên Phòng" vào đây
@@ -18,7 +20,7 @@ public class Menu_Fusion : MonoBehaviour
     public GameObject menu;
 
     [Header("UI Hover Settings")]
-    public Color hoverColor = Color.lightYellow;
+    public Color hoverColor = new Color(1f, 0.95f, 0.6f);
     private Color normalColor = Color.black;
 
     void Start()
@@ -109,12 +111,21 @@ public class Menu_Fusion : MonoBehaviour
     // --- LOGIC HIỆU ỨNG DI CHUỘT (HOVER) ---
     public void DiChuotVao(GameObject buttonObj)
     {
+        // Lưu kích thước ban đầu của Button (chỉ lưu 1 lần)
+        if (!originalScales.ContainsKey(buttonObj))
+        {
+            originalScales.Add(buttonObj, buttonObj.transform.localScale);
+        }
+
+        // Đổi màu
         Image img = buttonObj.GetComponent<Image>();
         if (img != null)
         {
             img.color = hoverColor;
         }
-        buttonObj.transform.localScale = Vector3.one * 1.1f;
+
+        // Phóng to 10%
+        buttonObj.transform.localScale = originalScales[buttonObj] * 1.1f;
     }
 
     public void DiChuotRa(GameObject buttonObj)
@@ -122,10 +133,14 @@ public class Menu_Fusion : MonoBehaviour
         Image img = buttonObj.GetComponent<Image>();
         if (img != null)
         {
-            // Trả về màu trắng để giữ nguyên màu gốc của Sprite vẽ tay
-            img.color = Color.black;
+            img.color = Color.white; // Hoặc màu gốc của Button
         }
-        buttonObj.transform.localScale = Vector3.one;
+
+        // Trả về kích thước ban đầu
+        if (originalScales.ContainsKey(buttonObj))
+        {
+            buttonObj.transform.localScale = originalScales[buttonObj];
+        }
     }
 }
 
