@@ -93,6 +93,21 @@ public class TimeManager : MonoBehaviour
         UpdateLightSettings();
         UpdateSkyBlend();
     }
+    public void ForceNightTimeForCutscene()
+    {
+        // Gọi hàm SetTime bên TimeService để ép về 20h
+        service.SetTime(20); 
+        
+        // Đóng băng thời gian để không bị nhảy sang 21h lúc đang chiếu Cutscene
+        timeSettings.timeMultiplier = 0f; 
+    }
+
+    // 2. Hàm gọi lúc KẾT THÚC Cutscene
+    public void EndCutsceneTime()
+    {
+        // Trả lại tốc độ thời gian chạy bình thường
+        timeSettings.timeMultiplier = baseMultiplier;
+    }
 
     void HandleDebugControls()
     {
