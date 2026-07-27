@@ -34,7 +34,11 @@ public class TimeService {
         isDayTime.Value = IsDayTime();
         currentHour.Value = currentTime.Hour;
     }
-    
+    public void SetTime(int targetHour) {
+        currentTime = currentTime.Date + TimeSpan.FromHours(targetHour);
+        isDayTime.Value = IsDayTime();
+        currentHour.Value = currentTime.Hour;
+    }
     public float CalculateSunAngle() {
         bool isDay = IsDayTime();
         float startDegree = isDay ? 0 : 180;
