@@ -39,17 +39,46 @@ public class TimeService {
         isDayTime.Value = IsDayTime();
         currentHour.Value = currentTime.Hour;
     }
-    public float CalculateSunAngle() {
-        bool isDay = IsDayTime();
-        float startDegree = isDay ? 0 : 180;
-        TimeSpan start = isDay ? sunriseTime : sunsetTime;
-        TimeSpan end = isDay ? sunsetTime : sunriseTime;
-        
-        TimeSpan totalTime = CalculateDifference(start, end);
-        TimeSpan elapsedTime = CalculateDifference(start, currentTime.TimeOfDay);
+    public float GetDayFactor() {
+        float timeInHours = (float)currentTime.TimeOfDay.TotalHours;
+        float sunrise = settings.sunriseHour;
+        float sunset = settings.sunsetHour;
+        float trans = settings.transitionDuration;
 
-        double percentage = elapsedTime.TotalMinutes / totalTime.TotalMinutes;
-        return Mathf.Lerp(startDegree, startDegree + 180, (float) percentage);
+        if (trans <= 0f)
+        {
+            return IsDayTime() ? 1f : 0f;
+        }
+
+        float halfTrans = trans / 2f;
+
+        float sunriseStart = sunrise - halfTrans;
+        float sunriseEnd = sunrise + halfTrans;
+
+        float sunsetStart = sunset - halfTrans;
+        float sunsetEnd = sunset + halfTrans;
+
+        if (timeInHours >= sunriseStart && timeInHours <= sunriseEnd)
+        {
+            return Mathf.Clamp01((timeInHours - sunriseStart) / trans);
+        }
+        else if (timeInHours > sunriseEnd && timeInHours < sunsetStart)
+        {
+            return 1f;
+        }
+        else if (timeInHours >= sunsetStart && timeInHours <= sunsetEnd)
+        {
+            return Mathf.Clamp01(1f - (timeInHours - sunsetStart) / trans);
+        }
+        else
+        {
+            return 0f;
+        }
+    }
+
+    public float CalculateSunAngle() {
+        double percentage = currentTime.TimeOfDay.TotalHours / 24.0;
+        return (float)(percentage * 360.0);
     }
 
     // ĐÃ SỬA: Thêm ">=" để tránh lọt khung hình tại thời điểm chuyển giao
