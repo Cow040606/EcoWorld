@@ -30,12 +30,8 @@ public class TimeManager : MonoBehaviour
     [Header("UI Dial")]
     [SerializeField] RectTransform dial;
 
-<<<<<<< HEAD
     // Biến cờ để ngăn xung đột thời gian khi đang chạy Cutscene
     public bool isCutscenePlaying = false; 
-
-=======
->>>>>>> 3971dcbf4efa1040c1de966a1a334662468cb8b5
     float initialDialRotation;
     ColorAdjustments colorAdjustments;
     TimeService service;
@@ -97,28 +93,28 @@ public class TimeManager : MonoBehaviour
 
     void Update()
     {
-<<<<<<< HEAD
+
         // Chỉ cho phép dùng phím tua thời gian khi KHÔNG có Cutscene
         if (!isCutscenePlaying)
         {
             HandleDebugControls();
         }
         
-=======
+
         HandleDebugControls();
->>>>>>> 3971dcbf4efa1040c1de966a1a334662468cb8b5
+
         UpdateTimeOfDay();
         RotateSun();
         UpdateLightSettings();
         UpdateSkyBlend();
     }
-<<<<<<< HEAD
+
 
     // ==========================================
     // HÀM DÀNH CHO TIMELINE (CUTSCENE)
     // ==========================================
-=======
->>>>>>> 3971dcbf4efa1040c1de966a1a334662468cb8b5
+
+
     public void ForceNightTimeForCutscene()
     {
         isCutscenePlaying = true; // Bật cờ khóa nút Debug
@@ -152,7 +148,7 @@ public class TimeManager : MonoBehaviour
         }
     }
 
-<<<<<<< HEAD
+
     float GetLightFactor()
     {
         if (service == null) return 1f;
@@ -181,7 +177,7 @@ public class TimeManager : MonoBehaviour
     {
         float lightFactor = GetLightFactor();
         float blend = Mathf.Lerp(1f, 0f, lightFactor); // 0 = Ban Ngày, 1 = Ban Đêm
-=======
+
     void UpdateSkyBlend()
     {
         if (skyboxMaterial == null || sun == null) return;
@@ -208,7 +204,7 @@ public class TimeManager : MonoBehaviour
             colorAdjustments.colorFilter.value = Color.Lerp(nightAmbientLight, dayAmbientLight, lightIntensity);
         }
     }
->>>>>>> 3971dcbf4efa1040c1de966a1a334662468cb8b5
+
 
     void RotateSun()
     {
@@ -219,7 +215,7 @@ public class TimeManager : MonoBehaviour
 
         if (dial != null)
         {
-<<<<<<< HEAD
+
             skyboxMaterial.SetFloat("_Blend", blend);
         }
 
@@ -269,9 +265,9 @@ public class TimeManager : MonoBehaviour
         {
             float rotation = service.CalculateSunAngle();
             dial.rotation = Quaternion.Euler(0, 0, -rotation + initialDialRotation);
-=======
+
             dial.rotation = Quaternion.Euler(0, 0, rotation + initialDialRotation);
->>>>>>> 3971dcbf4efa1040c1de966a1a334662468cb8b5
+
         }
     }
 
@@ -302,4 +298,3 @@ public class TimeManager : MonoBehaviour
             skyboxMaterial.SetFloat("_Blend", originalSkyBlend);
         }
     }
-}
