@@ -23,6 +23,10 @@ public class TimeManager : MonoBehaviour
     [SerializeField] Volume volume;
     [SerializeField] Material skyboxMaterial;
 
+    [Header("UI Dial")]
+    [SerializeField] RectTransform dial;
+
+    float initialDialRotation;
     ColorAdjustments colorAdjustments;
     TimeService service;
 
@@ -74,34 +78,20 @@ public class TimeManager : MonoBehaviour
         OnSunrise += () => Debug.Log("Sunrise");
         OnSunset += () => Debug.Log("Sunset");
         OnHourChange += () => Debug.Log("Hour change");
+
+        if (dial != null)
+        {
+            initialDialRotation = dial.rotation.eulerAngles.z;
+        }
     }
 
     void Update()
     {
-        // Chỉ cho phép can thiệp thời gian bằng phím khi không có Cutscene
-        if (!isCutscenePlaying) 
-        {
-            HandleDebugControls();
-        }
-        
+        HandleDebugControls();
         UpdateTimeOfDay();
+        RotateSun();
         UpdateLightSettings();
-    }
-    private bool isCutscenePlaying = false;
-    public void ForceNightTimeForCutscene()
-    {
-        // Gọi hàm SetTime bên TimeService để ép về 20h
-        service.SetTime(20); 
-        
-        // Đóng băng thời gian để không bị nhảy sang 21h lúc đang chiếu Cutscene
-        timeSettings.timeMultiplier = 0f; 
-    }
-
-    // 2. Hàm gọi lúc KẾT THÚC Cutscene
-    public void EndCutsceneTime()
-    {
-        // Trả lại tốc độ thời gian chạy bình thường
-        timeSettings.timeMultiplier = baseMultiplier;
+        UpdateSkyBlend();
     }
     public void ForceNightTimeForCutscene()
     {
@@ -138,55 +128,43 @@ public class TimeManager : MonoBehaviour
         }
     }
 
+    void UpdateSkyBlend()
+    {
+        if (skyboxMaterial == null || sun == null) return;
+
+        float dotProduct = Vector3.Dot(sun.transform.forward, Vector3.up);
+        float blend = Mathf.Lerp(0, 1, lightIntensityCurve.Evaluate(dotProduct));
+
+        // Modifying shared material directly
+        skyboxMaterial.SetFloat("_Blend", blend);
+    }
+
     void UpdateLightSettings()
     {
-        if (service == null || timeSettings == null) return;
+        if (sun == null || moon == null) return;
 
-        float currentHour = (float)service.CurrentTime.TimeOfDay.TotalHours;
+        float dotProduct = Vector3.Dot(sun.transform.forward, Vector3.down);
+        float lightIntensity = lightIntensityCurve.Evaluate(Mathf.Clamp01(dotProduct));
 
-        float daylightFactor;
-
-        // Nếu có Curve trong Inspector (trục X là khung giờ 0..24h)
-        if (lightIntensityCurve != null && lightIntensityCurve.length > 0)
-        {
-            daylightFactor = Mathf.Clamp01(lightIntensityCurve.Evaluate(currentHour));
-        }
-        else
-        {
-            // Dự phòng nếu chưa thiết lập Curve
-            float sunriseHour = timeSettings.sunriseHour;
-            float sunsetHour = timeSettings.sunsetHour;
-
-            if (currentHour >= sunriseHour && currentHour < sunsetHour)
-            {
-                float dayDuration = sunsetHour - sunriseHour;
-                float dayProgress = (currentHour - sunriseHour) / dayDuration;
-                daylightFactor = Mathf.Sin(dayProgress * Mathf.PI);
-            }
-            else
-            {
-                daylightFactor = 0f;
-            }
-        }
-
-        if (sun != null)
-        {
-            sun.intensity = Mathf.Lerp(0, maxSunIntensity, daylightFactor);
-        }
-
-        if (moon != null)
-        {
-            moon.intensity = Mathf.Lerp(maxMoonIntensity, 0, daylightFactor);
-        }
+        sun.intensity = Mathf.Lerp(0, maxSunIntensity, lightIntensity);
+        moon.intensity = Mathf.Lerp(maxMoonIntensity, 0, lightIntensity);
 
         if (colorAdjustments != null)
         {
-            colorAdjustments.colorFilter.value = Color.Lerp(nightAmbientLight, dayAmbientLight, daylightFactor);
+            colorAdjustments.colorFilter.value = Color.Lerp(nightAmbientLight, dayAmbientLight, lightIntensity);
         }
+    }
 
-        if (skyboxMaterial != null)
+    void RotateSun()
+    {
+        if (sun == null) return;
+
+        float rotation = service.CalculateSunAngle();
+        sun.transform.rotation = Quaternion.AngleAxis(rotation, Vector3.right);
+
+        if (dial != null)
         {
-            skyboxMaterial.SetFloat("_Blend", 1f - daylightFactor);
+            dial.rotation = Quaternion.Euler(0, 0, rotation + initialDialRotation);
         }
     }
 
