@@ -19,6 +19,10 @@ public class TimeManager : MonoBehaviour
     [SerializeField] Color dayAmbientLight;
     [SerializeField] Color nightAmbientLight;
 
+    [Header("Sun & Moon Rotation Settings")]
+    [SerializeField] Vector3 daySunEuler = new Vector3(50f, -30f, 0f);
+    [SerializeField] Vector3 nightSunEuler = new Vector3(-50f, -30f, 0f);
+
     [Header("Volume & Material (Shared Mode)")]
     [SerializeField] Volume volume;
     [SerializeField] Material skyboxMaterial;
@@ -26,6 +30,8 @@ public class TimeManager : MonoBehaviour
     [Header("UI Dial")]
     [SerializeField] RectTransform dial;
 
+    // Biến cờ để ngăn xung đột thời gian khi đang chạy Cutscene
+    public bool isCutscenePlaying = false; 
     float initialDialRotation;
     ColorAdjustments colorAdjustments;
     TimeService service;
@@ -58,7 +64,10 @@ public class TimeManager : MonoBehaviour
         service = new TimeService(timeSettings);
 
         // Lưu lại hệ số tốc độ gốc khi bắt đầu game
-        baseMultiplier = timeSettings.timeMultiplier;
+        if (timeSettings != null)
+        {
+            baseMultiplier = timeSettings.timeMultiplier;
+        }
 
         // SỬ DỤNG SHARED PROFILE THAY VÌ PROFILE (Tối ưu Unity 6)
         if (volume != null && volume.sharedProfile != null)
@@ -87,21 +96,48 @@ public class TimeManager : MonoBehaviour
 
     void Update()
     {
-        HandleDebugControls();
+        // Chỉ cho phép dùng phím tua thời gian khi KHÔNG có Cutscene
+        if (!isCutscenePlaying)
+        {
+            HandleDebugControls();
+        }
+
         UpdateTimeOfDay();
         RotateSun();
         UpdateLightSettings();
         UpdateSkyBlend();
     }
 
+
+    // ==========================================
+    // HÀM DÀNH CHO TIMELINE (CUTSCENE)
+    // ==========================================
+
+
+    public void ForceNightTimeForCutscene()
+    {
+        isCutscenePlaying = true; // Bật cờ khóa nút Debug
+        if (service != null) service.SetTime(20);      // Ép về 20h
+        if (timeSettings != null) timeSettings.timeMultiplier = 0f; // Đóng băng thời gian
+    }
+
+    public void EndCutsceneTime()
+    {
+        isCutscenePlaying = false; // Tắt cờ, cho phép dùng nút Debug lại
+        if (timeSettings != null) timeSettings.timeMultiplier = baseMultiplier; // Trả lại tốc độ bình thường
+    }
+    // ==========================================
+
     void HandleDebugControls()
     {
+        if (timeSettings == null) return;
+
         // 1. Phím LeftShift: Đè giữ để DỪNG thời gian
         if (Input.GetKey(KeyCode.LeftShift))
         {
             timeSettings.timeMultiplier = 0f;
         }
-        // 2. Phím U: Đè giữ để TUA NHANH thời gian gấp 10 lần
+        // 2. Phím U: Đè giữ để TUA NHANH thời gian gấp 1000 lần
         else if (Input.GetKey(KeyCode.U))
         {
             timeSettings.timeMultiplier = baseMultiplier * 1000f;
@@ -113,48 +149,101 @@ public class TimeManager : MonoBehaviour
         }
     }
 
+
+    float GetLightFactor()
+    {
+        if (service == null) return 1f;
+
+        if (lightIntensityCurve != null && lightIntensityCurve.keys != null && lightIntensityCurve.keys.Length > 0)
+        {
+            float maxKeyTime = lightIntensityCurve.keys[lightIntensityCurve.keys.Length - 1].time;
+            if (maxKeyTime > 1.1f)
+            {
+                // Đường cong được vẽ theo mốc thời gian 24 giờ (0 - 24) trong Inspector
+                float timeInHours = (float)service.CurrentTime.TimeOfDay.TotalHours;
+                return Mathf.Clamp01(lightIntensityCurve.Evaluate(timeInHours));
+            }
+            else
+            {
+                // Đường cong chuẩn hóa từ 0.0 đến 1.0
+                float dayFactor = service.GetDayFactor();
+                return Mathf.Clamp01(lightIntensityCurve.Evaluate(dayFactor));
+            }
+        }
+
+        return service.GetDayFactor();
+    }
+
     void UpdateSkyBlend()
     {
-        if (skyboxMaterial == null || sun == null) return;
+        float lightFactor = GetLightFactor();
+        float blend = Mathf.Lerp(1f, 0f, lightFactor); // 0 = Ban Ngày, 1 = Ban Đêm
 
-        float dotProduct = Vector3.Dot(sun.transform.forward, Vector3.up);
-        float blend = Mathf.Lerp(0, 1, lightIntensityCurve.Evaluate(dotProduct));
+        if (skyboxMaterial != null)
+        {
+            skyboxMaterial.SetFloat("_Blend", blend);
+        }
 
-        // Modifying shared material directly
-        skyboxMaterial.SetFloat("_Blend", blend);
+        if (RenderSettings.skybox != null)
+        {
+            if (RenderSettings.skybox.HasProperty("_Blend"))
+            {
+                RenderSettings.skybox.SetFloat("_Blend", blend);
+            }
+            if (RenderSettings.skybox.HasProperty("_Blendvaluelerp"))
+            {
+                RenderSettings.skybox.SetFloat("_Blendvaluelerp", blend);
+            }
+        }
     }
 
     void UpdateLightSettings()
     {
-        if (sun == null || moon == null) return;
+        float lightFactor = GetLightFactor();
 
-        float dotProduct = Vector3.Dot(sun.transform.forward, Vector3.down);
-        float lightIntensity = lightIntensityCurve.Evaluate(Mathf.Clamp01(dotProduct));
-
-        sun.intensity = Mathf.Lerp(0, maxSunIntensity, lightIntensity);
-        moon.intensity = Mathf.Lerp(maxMoonIntensity, 0, lightIntensity);
+        if (sun != null)
+        {
+            sun.intensity = Mathf.Lerp(0, maxSunIntensity, lightFactor);
+        }
+        if (moon != null)
+        {
+            moon.intensity = Mathf.Lerp(maxMoonIntensity, 0, lightFactor);
+        }
 
         if (colorAdjustments != null)
         {
-            colorAdjustments.colorFilter.value = Color.Lerp(nightAmbientLight, dayAmbientLight, lightIntensity);
+            colorAdjustments.colorFilter.value = Color.Lerp(nightAmbientLight, dayAmbientLight, lightFactor);
         }
+
+        // THÊM DÒNG NÀY: Để chỉnh ánh sáng môi trường (Ambient) tối đi khi đêm xuống
+        RenderSettings.ambientLight = Color.Lerp(nightAmbientLight, dayAmbientLight, lightFactor);
     }
 
     void RotateSun()
     {
-        if (sun == null) return;
+        float lightFactor = GetLightFactor();
 
-        float rotation = service.CalculateSunAngle();
-        sun.transform.rotation = Quaternion.AngleAxis(rotation, Vector3.right);
-
-        if (dial != null)
+        if (sun != null)
         {
-            dial.rotation = Quaternion.Euler(0, 0, rotation + initialDialRotation);
+            // Lerp hướng chiếu của Mặt trời giữa Ban Đêm và Ban Ngày thay vì tự xoay 360 độ liên tục
+            sun.transform.rotation = Quaternion.Lerp(
+                Quaternion.Euler(nightSunEuler),
+                Quaternion.Euler(daySunEuler),
+                lightFactor
+            );
+        }
+
+        if (dial != null && service != null)
+        {
+            float rotation = service.CalculateSunAngle();
+            dial.rotation = Quaternion.Euler(0, 0, -rotation + initialDialRotation);
         }
     }
 
     void UpdateTimeOfDay()
     {
+        if (service == null) return;
+
         service.UpdateTime(Time.deltaTime);
         if (timeText != null)
         {
