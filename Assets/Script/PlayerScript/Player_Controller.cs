@@ -228,7 +228,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (cameraTransform != null) cameraTransform.SetParent(null); 
             
             if (playerCamera == null) Debug.LogError("[Player_Controller] ❌ 'Player Camera' chưa được gán!");
-            if (TreeManager.Instance == null) Debug.LogError("[Player_Controller] ❌ Không tìm thấy TreeManager!");
+          
         }
         else
         {
