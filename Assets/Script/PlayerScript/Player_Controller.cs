@@ -145,6 +145,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     [Header("Hệ thống chém Combo")]
     public float minAttackCooldown = 0.5f; // Khoảng thời gian nhỏ nhất giữa 2 lần chém (chống spam)
+    public float slashLockDuration = 0.5f; // Thời gian đứng yên (không di chuyển/nhảy) khi chém
     public float comboResetTime = 0.7f;
     public float comboFinishCooldown = 1f; // Thời gian delay (nghỉ) sau khi tung xong combo 3 hit
     private int currentComboStep = 0;
@@ -186,13 +187,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private Vector3 rayHitPoint;
     private Vector3 _lastRayOrigin, _lastRayDir, _lastRayHitPoint;
     private bool _lastRayHit;
-
-    [Header("Hệ Thống Âm Thanh (Audio)")]
-    public AudioSource footstepSource;
-    public AudioClip[] footstepClips;
-    public AudioSource actionSource;
-    public AudioClip chopClip;
-    public AudioClip mineClip;
 
     #endregion
 
@@ -779,10 +773,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
 
-        // Bị khóa không cho chém vì đang trong thời gian nghỉ 1 giây sau combo 3 hit
-        if (Time.time < comboCooldownEndTime) return;
+        // Bị khóa không cho chém vì đang làm hành động khác hoặc đang trong thời gian nghỉ 1s sau combo 3 hit
+        if (isDoingAction || Time.time < comboCooldownEndTime) return;
 
-        // Bỏ qua nếu người chơi bấm quá nhanh (chưa hết thời gian hồi đòn - vd: 30 frames)
+        // Bỏ qua nếu người chơi bấm quá nhanh (chưa hết thời gian hồi đòn)
         if (lastAttackTime != 0f && Time.time - lastAttackTime < minAttackCooldown) return;
 
         if (Time.time - lastAttackTime > comboResetTime)
@@ -799,6 +793,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         lastAttackTime = Time.time;
         RPC_AnimSlash(currentComboStep);
+
+        // Kích hoạt trạng thái khóa di chuyển và nhảy trong thời gian chém
+        RPC_BaoHieuBatDauAction(3, slashLockDuration, 0f);
 
         // Gọi hàm gây sát thương NGAY LẬP TỨC để fix lỗi không có dame (bỏ qua Animation Event)
         PlayerDoDamage();
@@ -880,7 +877,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (hitTerrain != null && TreeManager.Instance != null)
         {
             TreeManager.Instance.TryChopTree(hitTerrain, hitboxCenter, Runner);
-            PlayActionSound(chopClip);
         }
     }
 
@@ -889,20 +885,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         Vector3 hitboxCenter = transform.position + transform.forward * hitboxOffset + Vector3.up * 1f;
         Collider[] hits = Physics.OverlapSphere(hitboxCenter, hitboxRadius, rockLayer);
         
-        bool daTrung = false;
         foreach (var col in hits)
         {
             RockScript cucDa = col.GetComponent<RockScript>();
             if (cucDa != null)
             {
                 cucDa.RPC_NhanSatThuongCuoc(25f);
-                daTrung = true;
             }
-        }
-
-        if (daTrung)
-        {
-            PlayActionSound(mineClip);
         }
     }
 
@@ -1735,7 +1724,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         isDoingAction = true;
         pendingActionType = actionType;
         actionTimer = TickTimer.CreateFromSeconds(Runner, totalAnimTime);
-        hitTimer = TickTimer.CreateFromSeconds(Runner, timeToHit);
+        if (timeToHit > 0)
+        {
+            hitTimer = TickTimer.CreateFromSeconds(Runner, timeToHit);
+        }
+        else
+        {
+            hitTimer = TickTimer.None;
+        }
 
         if (actionType == 1) RPC_AnimChatCay();
         else if (actionType == 2) RPC_AnimDapDa();
@@ -1882,31 +1878,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, Fusion.Sockets.ReliableKey key, System.ArraySegment<byte> data) { }
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, Fusion.Sockets.ReliableKey key, float progress) { }
-
-    #endregion
-
-    #region 10. HỆ THỐNG ÂM THANH (AUDIO)
-
-    public void PlayFootstepSound()
-    {
-        if (!HasInputAuthority) return;
-
-        if (footstepSource != null && footstepClips != null && footstepClips.Length > 0)
-        {
-            int randomIndex = Random.Range(0, footstepClips.Length);
-            footstepSource.PlayOneShot(footstepClips[randomIndex]);
-        }
-    }
-
-    public void PlayActionSound(AudioClip clip)
-    {
-        if (!HasInputAuthority) return;
-
-        if (actionSource != null && clip != null)
-        {
-            actionSource.PlayOneShot(clip);
-        }
-    }
 
     #endregion
 
