@@ -72,9 +72,6 @@ public class PlayerAudioManager : MonoBehaviour
             case "DaoKhoang":
                 if (tiengDaoKhoang != null) loaNhanVat.PlayOneShot(tiengDaoKhoang);
                 break;
-            case "ChatCay":
-                PhatTiengChatCay();
-                break;
             default:
                 Debug.LogWarning("Chưa có âm thanh cho hành động: " + tenHanhDong);
                 break;
