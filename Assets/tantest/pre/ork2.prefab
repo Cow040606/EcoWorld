@@ -2638,10 +2638,10 @@ GameObject:
   - component: {fileID: 3825976221061746750}
   - component: {fileID: 2635991003498360591}
   - component: {fileID: 5233338941220087928}
-  - component: {fileID: 2813501452900510845}
   - component: {fileID: 9165428654418851066}
   - component: {fileID: 263220378961751111}
   - component: {fileID: 6579975210419360141}
+  - component: {fileID: 4249025384427147439}
   m_Layer: 13
   m_Name: ork2
   m_TagString: Untagged
@@ -2715,33 +2715,9 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 2813501452900510845}
   - {fileID: 9165428654418851066}
+  - {fileID: 4249025384427147439}
   ForceRemoteRenderTimeframe: 0
---- !u!114 &2813501452900510845
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7871687526714136464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcfb34fe8c185c34dada05f8ba7621d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BossController
-  maxHealth: 100
-  _CurrentHealth: 100
-  tocDoTuanTra: 1.5
-  tocDoDuoiTheo: 2
-  banKinhTuanTra: 15
-  banKinhPhatHien: 20
-  banKinhTanCong: 3
-  attackDamage: 1
-  thoiGianHoiDon: 2
-  khoangCachHienThanhMau: 20
-  healthBarUI: {fileID: 0}
-  _currentState: 0
 --- !u!114 &9165428654418851066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2804,6 +2780,38 @@ CapsuleCollider:
   m_Height: 2.327651
   m_Direction: 1
   m_Center: {x: 0, y: 1.1442621, z: 0}
+--- !u!114 &4249025384427147439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7871687526714136464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcfb34fe8c185c34dada05f8ba7621d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossController
+  tenBoss: "Qu\u1EF7 Kh\u1ED5ng L\u1ED3"
+  avatarBoss: {fileID: 0}
+  maxHealth: 1000
+  _CurrentHealth: 0
+  tocDoTuanTra: 1.5
+  tocDoDuoiTheo: 2
+  banKinhTuanTra: 15
+  banKinhPhatHien: 20
+  banKinhTanCong: 3
+  attackDamage: 30
+  thoiGianHoiDon: 2
+  soDonDeTungSkill: 3
+  skillDamage: 80
+  thoiGianHoiSkill: 3.5
+  thoiGianChoang: 1
+  thoiGianMienChoang: 2
+  khoangCachHienThanhMau: 25
+  healthBarUI: {fileID: 0}
+  thoiGianBienMat: 4
+  _currentState: 0
 --- !u!1 &7904211976777061374
 GameObject:
   m_ObjectHideFlags: 0
