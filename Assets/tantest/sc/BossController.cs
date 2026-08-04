@@ -26,13 +26,13 @@ public class BossController : NetworkBehaviour
 
     [Header("Kỹ Năng Boss (Skill)")]
     public int soDonDeTungSkill = 3; // Đánh 3 hit thường sẽ ra 1 skill
-    public float skillDamage = 80f;  // Dame to hơn
+    public float skillDamage = 80f;  // Sát thương của chiêu đặc biệt
     public float thoiGianHoiSkill = 3.5f; // Ra skill xong phải đứng thở lâu hơn
     [Networked] private int hitCount { get; set; } // Đếm số hit đã đánh
 
     [Header("Bị Đánh & Kháng Choáng (Chống Spam)")]
-    public float thoiGianChoang = 1f; // Độ dài animation Hit
-    public float thoiGianMienChoang = 2f; // Sau khi bị choáng, có 2 giây kháng choáng
+    public float thoiGianChoang = 1f; // Độ dài animation Hit (td1)
+    public float thoiGianMienChoang = 2f; // Kháng choáng trong 2 giây sau khi bị đơ
     [Networked] private TickTimer stunTimer { get; set; }
     [Networked] private TickTimer mienChoangTimer { get; set; }
 
@@ -55,7 +55,7 @@ public class BossController : NetworkBehaviour
 
     private readonly int hashSpeed = Animator.StringToHash("Speed");
     private readonly int hashAttack = Animator.StringToHash("Attack");
-    private readonly int hashSkill = Animator.StringToHash("Skill"); // Hash mới cho skill
+    private readonly int hashSkill = Animator.StringToHash("Skill");
     private readonly int hashIsDead = Animator.StringToHash("isDead");
     private readonly int hashHit = Animator.StringToHash("Hit");
 
@@ -72,7 +72,7 @@ public class BossController : NetworkBehaviour
         {
             CurrentHealth = maxHealth;
             currentState = BossState.TuanTra;
-            hitCount = 0; // Khởi tạo bộ đếm đòn đánh
+            hitCount = 0;
             PhatSinhDiemTuanTraMoi();
         }
 
@@ -254,30 +254,28 @@ public class BossController : NetworkBehaviour
     private void DongBoAnimation()
     {
         if (animator == null) return;
+        // Sử dụng dampTime = 0.1f để vận tốc chuyển đổi mượt mà, giúp nhân vật không bị khựng cứng
         animator.SetFloat(hashSpeed, agent.velocity.magnitude, 0.1f, Runner.DeltaTime);
     }
 
-    // --- CẬP NHẬT LOGIC ĐÁNH & SKILL ---
     private void ThucHienDanhPlayer()
     {
-        hitCount++; // Tăng bộ đếm đòn đánh
+        hitCount++;
 
         if (hitCount >= soDonDeTungSkill)
         {
-            // Đã đủ điểm cộng dồn -> Tung Skill
             RPC_AnimSkill();
             if (mucTieuHienTai != null) mucTieuHienTai.Server_TakeDamageFromBoss(skillDamage);
 
-            hitCount = 0; // Reset bộ đếm
-            attackTimer = TickTimer.CreateFromSeconds(Runner, thoiGianHoiSkill); // Thời gian chờ của skill
+            hitCount = 0;
+            attackTimer = TickTimer.CreateFromSeconds(Runner, thoiGianHoiSkill);
         }
         else
         {
-            // Đánh thường
             RPC_AnimAttack();
             if (mucTieuHienTai != null) mucTieuHienTai.Server_TakeDamageFromBoss(attackDamage);
 
-            attackTimer = TickTimer.CreateFromSeconds(Runner, thoiGianHoiDon); // Thời gian chờ đòn thường
+            attackTimer = TickTimer.CreateFromSeconds(Runner, thoiGianHoiDon);
         }
     }
 
@@ -302,20 +300,17 @@ public class BossController : NetworkBehaviour
         }
         else
         {
-            // LỚP GIÁP SUPER ARMOR: Chỉ bị choáng nếu đã hết thời gian miễn choáng
+            // Kiểm tra bộ đếm Miễn Choáng
             if (mienChoangTimer.ExpiredOrNotRunning(Runner))
             {
                 currentState = BossState.BiDanh;
                 agent.isStopped = true;
 
                 stunTimer = TickTimer.CreateFromSeconds(Runner, thoiGianChoang);
-
-                // Khởi động đồng hồ miễn choáng (Thời gian đơ + Thời gian chống bị đơ lại)
                 mienChoangTimer = TickTimer.CreateFromSeconds(Runner, thoiGianChoang + thoiGianMienChoang);
 
                 RPC_AnimHurt();
             }
-            // Nếu đánh vào lúc Boss đang có Super Armor -> Chỉ trừ máu, Boss vẫn lầm lỳ lao lên chém!
         }
     }
 
@@ -323,7 +318,7 @@ public class BossController : NetworkBehaviour
     private void RPC_AnimAttack() { if (animator != null) animator.SetTrigger(hashAttack); }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_AnimSkill() { if (animator != null) animator.SetTrigger(hashSkill); } // Gọi Animation Skill
+    private void RPC_AnimSkill() { if (animator != null) animator.SetTrigger(hashSkill); }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_AnimHurt() { if (animator != null) animator.SetTrigger(hashHit); }
