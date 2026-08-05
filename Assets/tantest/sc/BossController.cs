@@ -68,6 +68,24 @@ public class BossController : NetworkBehaviour
         animator = GetComponentInChildren<Animator>();
         viTriGoc = transform.position;
 
+        // --- CODE TỰ ĐỘNG NHẬN DIỆN UI THANH MÁU ---
+        if (healthBarUI == null)
+        {
+            // Tìm đối tượng có tên exat là "Slider" trong Scene
+            GameObject thanhMauTìmĐược = GameObject.Find("Slider");
+
+            if (thanhMauTìmĐược != null)
+            {
+                // Lấy component HealthBar gắn vào biến
+                healthBarUI = thanhMauTìmĐược.GetComponent<HealthBar>();
+            }
+            else
+            {
+                Debug.LogWarning("Boss không tìm thấy UI nào tên là 'Slider' trong Scene!");
+            }
+        }
+        // ------------------------------------------
+
         if (HasStateAuthority)
         {
             CurrentHealth = maxHealth;
