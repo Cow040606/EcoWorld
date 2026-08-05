@@ -36,7 +36,10 @@ public class QuestManager : MonoBehaviour
         }
         if (isQuest_Open)
         {
-            Debug.Log("Đang mở bảng lên! Chạy code vẽ item trong Balo ra đây...");
+            if (Player_QuestManager.localQuest != null)
+            {
+                Player_QuestManager.localQuest.KiemTraTienDo();
+            }
         }
     }
 }

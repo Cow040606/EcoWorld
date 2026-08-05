@@ -14,52 +14,53 @@ public class NhiemVuDangLam
 
 public class Player_QuestManager : NetworkBehaviour
 {
-    public static Player_QuestManager localQuest; // Để NPC dễ gọi (Giống vụ Player_Controller)
+    public static Player_QuestManager localQuest; // Để NPC / Script khác dễ gọi
 
     [Header("Danh sách nhiệm vụ đang làm")]
     public List<NhiemVuDangLam> danhSachNhiemVu = new List<NhiemVuDangLam>();
     
     [Header("Gắn UI bảng nhiệm vụ vào đây")]
-    
     public TextMeshProUGUI txtBangNhiemVu; 
 
     public override void Spawned()
     {
         if (HasInputAuthority)
         {
-            
             localQuest = this;
-            KiemTraTienDo();
-            GameObject uiObj = QuestManager.instance.txtBangNhiemVu; 
-            //Debug.Log("quest text");
-
+            GameObject uiObj = QuestManager.instance != null ? QuestManager.instance.txtBangNhiemVu : null; 
             
             if (uiObj != null) 
             {
                 txtBangNhiemVu = uiObj.GetComponent<TextMeshProUGUI>();
-                //Debug.Log("tìm thấy quest text");
             }
-            else {//Debug.Log("không tìm thấy quest text");
-            }
+            KiemTraTienDo();
         }
     }
 
     // --- 1. NHẬN NHIỆM VỤ MỚI ---
     public void NhanNhiemVu(QuestSO questMoi)
     {
+        if (questMoi == null) return;
         // Kiểm tra xem đã nhận quest này chưa để khỏi nhận trùng
-        if (danhSachNhiemVu.Exists(x => x.duLieuQuest.idNhiemVu == questMoi.idNhiemVu)) return;
+        if (danhSachNhiemVu.Exists(x => x.duLieuQuest != null && x.duLieuQuest.idNhiemVu == questMoi.idNhiemVu)) return;
 
         NhiemVuDangLam nvMoi = new NhiemVuDangLam();
         nvMoi.duLieuQuest = questMoi;
+        nvMoi.soLuongHienTai = 0;
+        nvMoi.daDatYeuCau = false;
         danhSachNhiemVu.Add(nvMoi);
-        //Debug.Log("da nhan nhiem vu");
-        KiemTraTienDo(); // Quét túi đồ xem có sẵn đồ chưa
+
+        KiemTraTienDo(); // Quét ngay tiến độ ban đầu
     }
 
-    // --- 2. CẬP NHẬT TIẾN ĐỘ & VẼ LÊN CANVAS ---
+    // --- 2. CẬP NHẬT TIẾN ĐỘ, ICON BẢN ĐỒ & VẼ LÊN CANVAS ---
     public void KiemTraTienDo()
     {
+        if (txtBangNhiemVu == null && QuestManager.instance != null && QuestManager.instance.txtBangNhiemVu != null)
+        {
+            txtBangNhiemVu = QuestManager.instance.txtBangNhiemVu.GetComponent<TextMeshProUGUI>();
+        }
+
         if (Player_Controller.localPlayer == null) return;
 
         string noiDungBang = "";
@@ -68,18 +69,35 @@ public class Player_QuestManager : NetworkBehaviour
         for (int j = danhSachNhiemVu.Count - 1; j >= 0; j--)
         {
             var nv = danhSachNhiemVu[j];
-            int dem = 0;
+            if (nv.duLieuQuest == null) continue;
 
-            // Lục trong Balo (TuiDo) xem có bao nhiêu cục đồ
-            for (int i = 0; i < Player_Controller.localPlayer.TuiDo.Length; i++)
+            // Xử lý đếm theo loại nhiệm vụ
+            switch (nv.duLieuQuest.loaiNhiemVu)
             {
-                if (Player_Controller.localPlayer.TuiDo[i].ItemID == nv.duLieuQuest.idVatPhamCanTim)
-                {
-                    dem += Player_Controller.localPlayer.TuiDo[i].SoLuong;
-                }
+                case LoaiNhiemVu.GiaoVatPham:
+                    int demVatPham = 0;
+                    for (int i = 0; i < Player_Controller.localPlayer.TuiDo.Length; i++)
+                    {
+                        if (Player_Controller.localPlayer.TuiDo[i].ItemID == nv.duLieuQuest.targetID)
+                        {
+                            demVatPham += Player_Controller.localPlayer.TuiDo[i].SoLuong;
+                        }
+                    }
+                    nv.soLuongHienTai = demVatPham;
+                    break;
+
+                case LoaiNhiemVu.TichLuyTien:
+                    nv.soLuongHienTai = Player_Controller.localPlayer.Gold;
+                    break;
+
+                case LoaiNhiemVu.TieuDietQuai:
+                case LoaiNhiemVu.CauCa:
+                case LoaiNhiemVu.ThuHoach:
+                case LoaiNhiemVu.TroChuyenNPC:
+                case LoaiNhiemVu.CheTao:
+                    break;
             }
 
-            nv.soLuongHienTai = dem;
             nv.daDatYeuCau = (nv.soLuongHienTai >= nv.duLieuQuest.soLuongCan);
 
             // Viết dòng chữ cho Nhiệm vụ này
@@ -87,7 +105,6 @@ public class Player_QuestManager : NetworkBehaviour
             
             if (nv.daDatYeuCau) 
             {
-                // Thêm chữ màu vàng cực nổi bật
                 dong += " <color=yellow>(Đã đạt yêu cầu)</color>";
             }
 
@@ -96,19 +113,113 @@ public class Player_QuestManager : NetworkBehaviour
 
         // Bắn dòng chữ lên Canvas
         if (txtBangNhiemVu != null) txtBangNhiemVu.text = noiDungBang;
+
+        // Cập nhật các icon ! trên đầu NPC / Map
+        CapNhatTatCaIconNPC();
     }
 
-    // --- 3. TRẢ NHIỆM VỤ ---
+    // --- 3. HÀM CỘNG TIẾN ĐỘ NHIỆM VỤ THÔNG THƯỜNG ---
+    public void TangTienDoNhiemVu(LoaiNhiemVu loai, int targetID, int soLuong = 1)
+    {
+        bool coThayDoi = false;
+
+        foreach (var nv in danhSachNhiemVu)
+        {
+            if (nv.duLieuQuest == null) continue;
+
+            if (nv.duLieuQuest.loaiNhiemVu == loai)
+            {
+                if (nv.duLieuQuest.targetID == 0 || nv.duLieuQuest.targetID == targetID)
+                {
+                    if (!nv.daDatYeuCau)
+                    {
+                        nv.soLuongHienTai = Mathf.Min(nv.duLieuQuest.soLuongCan, nv.soLuongHienTai + soLuong);
+                        coThayDoi = true;
+                    }
+                }
+            }
+        }
+
+        if (coThayDoi)
+        {
+            KiemTraTienDo();
+        }
+    }
+
+    // --- 4. TỰ ĐỘNG HOÀN THÀNH & NHẬN THƯỞNG NHIỆM VỤ NÓI CHUYỆN NPC ---
+    public void HoanThanhNhiemVuNPC(int npcID)
+    {
+        NhiemVuDangLam nvNPC = danhSachNhiemVu.Find(x => 
+            x.duLieuQuest != null && 
+            x.duLieuQuest.loaiNhiemVu == LoaiNhiemVu.TroChuyenNPC && 
+            (x.duLieuQuest.targetID == 0 || x.duLieuQuest.targetID == npcID)
+        );
+
+        if (nvNPC != null)
+        {
+            nvNPC.soLuongHienTai = nvNPC.duLieuQuest.soLuongCan;
+            nvNPC.daDatYeuCau = true;
+
+            // Tự động trao thưởng ngay lập tức
+            TraNhiemVu(nvNPC.duLieuQuest);
+        }
+    }
+
+    // --- 6. CẬP NHẬT ICON (!) CHO TẤT CẢ NPC TRONG SCENE ---
+    // Bật dấu ! trên đầu NPC nếu player ĐANG NHẬN bất kỳ nhiệm vụ nào liên quan đến NPC đó
+    public void CapNhatTatCaIconNPC()
+    {
+        NPC_DialogueTrigger[] danhSachNPC = FindObjectsOfType<NPC_DialogueTrigger>();
+
+        foreach (var npc in danhSachNPC)
+        {
+            if (npc.npcID <= 0)
+            {
+                npc.CapNhatIconNhiemVu(false);
+                continue;
+            }
+
+            // Kiểm tra xem player có ĐANG NHẬN bất kỳ nhiệm vụ nào liên quan đến NPC này không
+            bool coNhiemVuLienQuan = danhSachNhiemVu.Exists(x => 
+                x.duLieuQuest != null && 
+                (
+                    // 1. Trường npcID trong QuestSO chỉ định NPC này
+                    x.duLieuQuest.npcID == npc.npcID ||
+                    // 2. Hoặc nhiệm vụ dạng Trò chuyện NPC có targetID trùng npcID (hoặc = 0)
+                    (x.duLieuQuest.loaiNhiemVu == LoaiNhiemVu.TroChuyenNPC && (x.duLieuQuest.targetID == 0 || x.duLieuQuest.targetID == npc.npcID))
+                )
+            );
+
+            npc.CapNhatIconNhiemVu(coNhiemVuLienQuan);
+        }
+    }
+
+    // --- 7. TRẢ NHIỆM VỤ ---
     public void TraNhiemVu(QuestSO questCanTra)
     {
+        if (questCanTra == null) return;
         NhiemVuDangLam nv = danhSachNhiemVu.Find(x => x.duLieuQuest == questCanTra);
 
         if (nv != null && nv.daDatYeuCau)
         {
-            // (1) Gọi Server trừ đồ và cộng tiền (Bò cần viết thêm hàm RPC bên Player_Controller giống hàm Bán đồ nhé)
-            Player_Controller.localPlayer.RPC_HoanThanhQuest(questCanTra.idVatPhamCanTim, questCanTra.soLuongCan, questCanTra.tienThuong);
+            // Chỉ trừ đồ nếu nhiệm vụ thuộc loại GiaoVatPham
+            int idVatPhamCanTru = (questCanTra.loaiNhiemVu == LoaiNhiemVu.GiaoVatPham) ? questCanTra.targetID : 0;
+            int soLuongCanTru = (questCanTra.loaiNhiemVu == LoaiNhiemVu.GiaoVatPham) ? questCanTra.soLuongCan : 0;
 
-            // (2) Xóa khỏi danh sách & UI biến mất
+            // Gọi Server trao thưởng & trừ đồ (nếu có)
+            if (Player_Controller.localPlayer != null)
+            {
+                Player_Controller.localPlayer.RPC_HoanThanhQuest(
+                    idVatPhamCanTru,
+                    soLuongCanTru,
+                    questCanTra.tienThuong,
+                    questCanTra.gemThuong,
+                    questCanTra.idVatPhamThuong,
+                    questCanTra.soLuongVatPhamThuong
+                );
+            }
+
+            // Xóa khỏi danh sách & cập nhật UI
             danhSachNhiemVu.Remove(nv);
             KiemTraTienDo(); 
         }

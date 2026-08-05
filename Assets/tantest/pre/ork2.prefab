@@ -2642,6 +2642,7 @@ GameObject:
   - component: {fileID: 263220378961751111}
   - component: {fileID: 6579975210419360141}
   - component: {fileID: 4249025384427147439}
+  - component: {fileID: -89245394125939566}
   m_Layer: 13
   m_Name: ork2
   m_TagString: Untagged
@@ -2659,7 +2660,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -1.05}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 3.355, y: 3.355, z: 3.355}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 522772519392364646}
@@ -2812,6 +2813,20 @@ MonoBehaviour:
   healthBarUI: {fileID: 0}
   thoiGianBienMat: 4
   _currentState: 0
+--- !u!114 &-89245394125939566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7871687526714136464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1541381998, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObjectPrefabData
+  Guid:
+    RawGuidValue: bf7fbf42a1876a84c938275e4a811fd0
 --- !u!1 &7904211976777061374
 GameObject:
   m_ObjectHideFlags: 0
