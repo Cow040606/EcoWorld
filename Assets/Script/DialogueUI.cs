@@ -3,43 +3,44 @@ using UnityEngine;
 
 public class DialogueUI : MonoBehaviour
 {
+    [Header("UI")]
     public GameObject panel;
     public TMP_Text nameText;
     public TMP_Text dialogueText;
 
     private int index = 0;
 
-    private readonly string[] speakers =
-    {
-        "Husband",
-        "Wife",
-        "Husband",
-        "Wife",
-        "Husband",
-        "Wife",
-        "Husband"
-    };
+    private string[] speakers;
+    private string[] dialogues;
 
-    private readonly string[] dialogues =
+    private void Start()
     {
-        "Morning.",
-        "Morning. You're finally awake.",
-        "Smells good. What's for breakfast?",
-        "Just the usual.",
-        "After breakfast, I'll go chop some wood.",
-        "Don't stay out too late.",
-        "I won't."
-    };
+        panel.SetActive(false);
+    }
 
+    // Load hội thoại mới
+    public void LoadDialogue(string[] newSpeakers, string[] newDialogues)
+    {
+        speakers = newSpeakers;
+        dialogues = newDialogues;
+
+        index = 0;
+        panel.SetActive(false);
+    }
+
+    // Hiện câu tiếp theo
     public void ShowNextDialogue()
     {
-        panel.SetActive(true);
+        if (speakers == null || dialogues == null)
+            return;
 
         if (index >= dialogues.Length)
         {
-            panel.SetActive(false);
+            HideDialogue();
             return;
         }
+
+        panel.SetActive(true);
 
         nameText.text = speakers[index];
         dialogueText.text = dialogues[index];
@@ -47,14 +48,14 @@ public class DialogueUI : MonoBehaviour
         index++;
     }
 
+    public void HideDialogue()
+    {
+        panel.SetActive(false);
+    }
+
     public void ResetDialogue()
     {
         index = 0;
-        panel.SetActive(false);
-    }
-    
-    public void HideDialogue()
-    {
         panel.SetActive(false);
     }
 }
