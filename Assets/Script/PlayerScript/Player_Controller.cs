@@ -1391,6 +1391,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 O_VatPham doVat = TuiDo[i];
                 doVat.SoLuong += soLuongCanThem;
                 TuiDo.Set(i, doVat);
+                if (Player_QuestManager.localQuest != null) Player_QuestManager.localQuest.KiemTraTienDo();
                 return;
             }
         }
@@ -1399,6 +1400,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (TuiDo[i].ItemID == 0)
             {
                 TuiDo.Set(i, new O_VatPham { ItemID = idCanThem, SoLuong = soLuongCanThem });
+                if (Player_QuestManager.localQuest != null) Player_QuestManager.localQuest.KiemTraTienDo();
                 return;
             }
         }
@@ -1560,12 +1562,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
     public void Rpc_NotifyPickupClient(int itemID_ServerGui, int soLuong_ServerGui)
     {
+        if (Player_QuestManager.localQuest != null) Player_QuestManager.localQuest.KiemTraTienDo();
+
         if (InventoryManager.instance == null) return;
         Item thongTinItem = InventoryManager.instance.TraCuuItem(itemID_ServerGui);
         if (thongTinItem == null || ItemNotifyManager.Instance == null) return;
 
         ItemNotifyManager.Instance.ShowNotify(thongTinItem.itemName, soLuong_ServerGui, thongTinItem.icon);
-        if (Player_QuestManager.localQuest != null) Player_QuestManager.localQuest.KiemTraTienDo();
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
@@ -1671,23 +1674,33 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void RPC_ThayDoiGem(int soGem) { Gem = Mathf.Max(0, Gem + soGem); }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_HoanThanhQuest(int idVatPham, int soLuongCanTru, int tienThuong)
+    public void RPC_HoanThanhQuest(int idVatPham, int soLuongCanTru, int tienThuong, int gemThuong = 0, int idVatPhamThuong = 0, int soLuongVatPhamThuong = 1)
     {
-        int soLuongDaTru = 0;
-        for (int i = 0; i < TuiDo.Length; i++)
+        if (idVatPham > 0 && soLuongCanTru > 0)
         {
-            if (TuiDo[i].ItemID == idVatPham && TuiDo[i].SoLuong > 0)
+            int soLuongDaTru = 0;
+            for (int i = 0; i < TuiDo.Length; i++)
             {
-                var doVat = TuiDo[i];
-                int soLuongCoTheTru = Mathf.Min(doVat.SoLuong, soLuongCanTru - soLuongDaTru);
-                doVat.SoLuong -= soLuongCoTheTru;
-                soLuongDaTru += soLuongCoTheTru;
-                if (doVat.SoLuong <= 0) doVat.ItemID = 0;
-                TuiDo.Set(i, doVat);
-                if (soLuongDaTru >= soLuongCanTru) break;
+                if (TuiDo[i].ItemID == idVatPham && TuiDo[i].SoLuong > 0)
+                {
+                    var doVat = TuiDo[i];
+                    int soLuongCoTheTru = Mathf.Min(doVat.SoLuong, soLuongCanTru - soLuongDaTru);
+                    doVat.SoLuong -= soLuongCoTheTru;
+                    soLuongDaTru += soLuongCoTheTru;
+                    if (doVat.SoLuong <= 0) doVat.ItemID = 0;
+                    TuiDo.Set(i, doVat);
+                    if (soLuongDaTru >= soLuongCanTru) break;
+                }
             }
         }
-        Gold += tienThuong;
+
+        if (tienThuong > 0) Gold += tienThuong;
+        if (gemThuong > 0) Gem += gemThuong;
+        if (idVatPhamThuong > 0 && soLuongVatPhamThuong > 0)
+        {
+            ThemDoVatVaoTui(idVatPhamThuong, soLuongVatPhamThuong);
+        }
+
         KiemTraDonDepHotbar();
     }
 
