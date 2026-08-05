@@ -1,8 +1,3 @@
- HEAD
-version https://git-lfs.github.com/spec/v1
-oid sha256:3c08a24765fe60a7c2d719ac1fa2b47c9b7086396d6b44047d8f98d423b5b19c
-size 12790802
-
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!29 &1
@@ -45698,6 +45693,79 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 351667101}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &266455504
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5475684274995961684, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: m_Name
+      value: ork1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6443896642951593970, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: SortKey
+      value: 1799599392
+      objectReference: {fileID: 0}
+    - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 395.98196
+      objectReference: {fileID: 0}
+    - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.8000007
+      objectReference: {fileID: 0}
+    - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 156.01067
+      objectReference: {fileID: 0}
+    - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b784161688fde4b4bbf3873dba861153, type: 3}
 --- !u!1 &267537731
 GameObject:
   m_ObjectHideFlags: 0
@@ -210792,6 +210860,11 @@ PrefabInstance:
         type: 3}
       propertyPath: dropChance
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3828852843446347586, guid: 9b0653f121e0b7a49a7b89f758ddaeec,
+        type: 3}
+      propertyPath: attackCooldown
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3828852843446347586, guid: 9b0653f121e0b7a49a7b89f758ddaeec,
         type: 3}
@@ -508789,4 +508862,4 @@ SceneRoots:
   - {fileID: 1066691777}
   - {fileID: 1775368349}
   - {fileID: 416018926}
- cbb527dfb6850d153c56b0206827b3cae5d06310
+  - {fileID: 266455504}

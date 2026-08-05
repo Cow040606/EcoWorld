@@ -1,4 +1,4 @@
-using System.Collections.Generic; // Bắt buộc phải có để dùng List
+using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 using UnityEngine.AI;
@@ -20,12 +20,14 @@ public class EnemyAIOrc : NetworkBehaviour
     public float attackRadius = 2f;
     public float idleWaitTime = 5f;
     public float screamDuration = 2f;
-    public float attackCooldown = 1.5f;
+
+    // Đã giảm thời gian hồi đánh từ 1.5f xuống 1.0f (bạn có thể chỉnh thấp hơn nữa tùy ý)
+    public float attackCooldown = 1.0f;
     public int maxHealth = 100;
 
     [Header("Drop Settings")]
     [Tooltip("Danh sách các vật phẩm có thể rớt (Bắt buộc phải có component NetworkObject)")]
-    public List<GameObject> dropItems; // Đã đổi sang List
+    public List<GameObject> dropItems;
 
     [Tooltip("Tỉ lệ rớt đồ (0 đến 100%)")]
     [Range(0f, 100f)]
@@ -42,15 +44,12 @@ public class EnemyAIOrc : NetworkBehaviour
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
 
-        // =========================================================
-        // SỬA LỖI VĂNG RA RÌA MAP KHI SPAWN
         // Ép NavMeshAgent cập nhật đúng vị trí do hệ thống mạng chỉ định
         if (agent != null)
         {
             agent.Warp(transform.position);
-            agent.enabled = true; // Bật lại Agent sau khi đã bế nó tới đúng chỗ
+            agent.enabled = true;
         }
-        // =========================================================
 
         startPosition = transform.position;
 
@@ -108,6 +107,9 @@ public class EnemyAIOrc : NetworkBehaviour
                         CurrentState = EnemyState.Attack;
                         stateTimer = 0f;
                         if (IsAgentValid()) agent.ResetPath();
+
+                        // Gọi đánh ngay lần đầu tiên áp sát
+                        RPC_PlayAttackAnim();
                     }
                     else if (distanceToPlayer > loseRadius)
                     {
@@ -142,9 +144,9 @@ public class EnemyAIOrc : NetworkBehaviour
                         }
                         else
                         {
-                            CurrentState = EnemyState.Idle;
-                            CurrentState = EnemyState.Attack;
+                            // Nếu Player vẫn đứng yên trong tầm, reset timer và GỌI RPC ĐÁNH TIẾP
                             stateTimer = 0f;
+                            RPC_PlayAttackAnim();
                         }
                     }
                 }
@@ -225,7 +227,6 @@ public class EnemyAIOrc : NetworkBehaviour
         {
             CurrentState = EnemyState.Dead;
             if (IsAgentValid()) agent.ResetPath();
-
             DropItem();
         }
         else
@@ -234,29 +235,19 @@ public class EnemyAIOrc : NetworkBehaviour
         }
     }
 
-    // =========================================================================
-    // HÀM XỬ LÝ RỚT ĐỒ TỪ LIST
-    // =========================================================================
     private void DropItem()
     {
-        // Kiểm tra List có tồn tại và có phần tử nào không
         if (dropItems != null && dropItems.Count > 0)
         {
             float randomValue = Random.Range(0f, 100f);
-
-            // Nếu trúng tỉ lệ rớt
             if (randomValue <= dropChance)
             {
-                // Chọn ngẫu nhiên 1 index trong List
                 int randomIndex = Random.Range(0, dropItems.Count);
                 GameObject itemToDrop = dropItems[randomIndex];
 
-                // Kiểm tra xem item được chọn có null không
                 if (itemToDrop != null)
                 {
-                    // Lấy component NetworkObject để Spawn qua Fusion
                     NetworkObject netObj = itemToDrop.GetComponent<NetworkObject>();
-
                     if (netObj != null)
                     {
                         Vector3 spawnPosition = transform.position + Vector3.up * 1f;
@@ -270,12 +261,20 @@ public class EnemyAIOrc : NetworkBehaviour
             }
         }
     }
-    // =========================================================================
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_PlayTakeDamageAnim()
     {
-        animator.SetTrigger("takedame");
+        if (animator != null) animator.SetTrigger("takedame");
+    }
+
+    // =========================================================================
+    // HÀM RPC ĐỂ GỌI ANIMATION ĐÁNH DÀNH CHO TẤT CẢ CLIENT
+    // =========================================================================
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_PlayAttackAnim()
+    {
+        if (animator != null) animator.SetTrigger("slash");
     }
 
     public void OnStateChanged()
@@ -297,9 +296,7 @@ public class EnemyAIOrc : NetworkBehaviour
             case EnemyState.Scream:
                 animator.SetTrigger("scream");
                 break;
-            case EnemyState.Attack:
-                animator.SetTrigger("slash");
-                break;
+            // Xóa case Attack ở đây đi vì ta đã dùng RPC_PlayAttackAnim() để gọi trực tiếp
             case EnemyState.Dead:
                 animator.SetTrigger("death");
                 Collider col = GetComponent<Collider>();
