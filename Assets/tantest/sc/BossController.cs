@@ -21,24 +21,24 @@ public class BossController : NetworkBehaviour
 
     [Header("Sát Thương & Tấn Công")]
     public float attackDamage = 30f;
-    public float thoiGianHoiDon = 2f; // Thời gian nghỉ giữa 2 lần đánh thường
+    public float thoiGianHoiDon = 2f;
     [Networked] private TickTimer attackTimer { get; set; }
 
     [Header("Kỹ Năng Boss (Skill)")]
-    public int soDonDeTungSkill = 3; // Đánh 3 hit thường sẽ ra 1 skill
-    public float skillDamage = 80f;  // Sát thương của chiêu đặc biệt
-    public float thoiGianHoiSkill = 3.5f; // Ra skill xong phải đứng thở lâu hơn
-    [Networked] private int hitCount { get; set; } // Đếm số hit đã đánh
+    public int soDonDeTungSkill = 3;
+    public float skillDamage = 80f;
+    public float thoiGianHoiSkill = 3.5f;
+    [Networked] private int hitCount { get; set; }
 
     [Header("Bị Đánh & Kháng Choáng (Chống Spam)")]
-    public float thoiGianChoang = 1f; // Độ dài animation Hit (td1)
-    public float thoiGianMienChoang = 2f; // Kháng choáng trong 2 giây sau khi bị đơ
+    public float thoiGianChoang = 1f;
+    public float thoiGianMienChoang = 2f;
     [Networked] private TickTimer stunTimer { get; set; }
     [Networked] private TickTimer mienChoangTimer { get; set; }
 
     [Header("Giao diện (UI Thanh Máu)")]
     public float khoangCachHienThanhMau = 25f;
-    public HealthBar healthBarUI;
+    public static BossController currentActiveBoss; // Trọng tài tĩnh quản lý UI
 
     [Header("Cài Đặt Despawn")]
     public float thoiGianBienMat = 4f;
@@ -49,6 +49,8 @@ public class BossController : NetworkBehaviour
     private Animator animator;
     private Vector3 viTriGoc;
     private Player_Controller mucTieuHienTai;
+
+    private float heSoScale = 1f; // Hệ số tự động nhận diện mô hình to/nhỏ
 
     private TickTimer scanTargetTimer;
     private TickTimer updatePathTimer;
@@ -68,23 +70,8 @@ public class BossController : NetworkBehaviour
         animator = GetComponentInChildren<Animator>();
         viTriGoc = transform.position;
 
-        // --- CODE TỰ ĐỘNG NHẬN DIỆN UI THANH MÁU ---
-        if (healthBarUI == null)
-        {
-            // Tìm đối tượng có tên exat là "Slider" trong Scene
-            GameObject thanhMauTìmĐược = GameObject.Find("Slider");
-
-            if (thanhMauTìmĐược != null)
-            {
-                // Lấy component HealthBar gắn vào biến
-                healthBarUI = thanhMauTìmĐược.GetComponent<HealthBar>();
-            }
-            else
-            {
-                Debug.LogWarning("Boss không tìm thấy UI nào tên là 'Slider' trong Scene!");
-            }
-        }
-        // ------------------------------------------
+        // Tự động lấy hệ số Scale lớn nhất để nhân rộng tầm AI
+        heSoScale = Mathf.Max(transform.lossyScale.x, transform.lossyScale.z);
 
         if (HasStateAuthority)
         {
@@ -94,11 +81,11 @@ public class BossController : NetworkBehaviour
             PhatSinhDiemTuanTraMoi();
         }
 
-        if (healthBarUI != null)
+        // Tắt UI thông qua Singleton khi Boss mới sinh ra
+        if (HealthBar.Instance != null)
         {
-            healthBarUI.CapNhatTenBoss(tenBoss);
-            healthBarUI.ResetHealthBar();
-            healthBarUI.gameObject.SetActive(false);
+            HealthBar.Instance.ResetHealthBar();
+            HealthBar.Instance.gameObject.SetActive(false);
         }
     }
 
@@ -122,28 +109,53 @@ public class BossController : NetworkBehaviour
 
     void Update()
     {
-        if (Player_Controller.localPlayer != null && healthBarUI != null)
+        if (Player_Controller.localPlayer == null || HealthBar.Instance == null) return;
+
+        if (currentState == BossState.Chet)
         {
-            GameObject thanhMauObj = healthBarUI.gameObject;
-
-            float binhPhuongKhoangCach = (transform.position - Player_Controller.localPlayer.transform.position).sqrMagnitude;
-            float binhPhuongKhoangCachChoPhep = khoangCachHienThanhMau * khoangCachHienThanhMau;
-
-            if (binhPhuongKhoangCach <= binhPhuongKhoangCachChoPhep)
+            if (currentActiveBoss == this)
             {
-                thanhMauObj.SetActive(true);
-                healthBarUI.UpdateHealthBar(CurrentHealth, maxHealth);
+                HealthBar.Instance.gameObject.SetActive(false);
+                currentActiveBoss = null;
+            }
+            return;
+        }
 
-                if (currentState == BossState.Chet && healthBarUI.lazySlider.value <= 0.01f)
-                {
-                    thanhMauObj.SetActive(false);
-                }
+        float khoangCachToiPlayer = Vector3.Distance(transform.position, Player_Controller.localPlayer.transform.position);
+        float tamHienThiThucTe = khoangCachHienThanhMau * heSoScale;
+
+        if (khoangCachToiPlayer <= tamHienThiThucTe)
+        {
+            if (currentActiveBoss == null || currentActiveBoss == this)
+            {
+                HienThiThongTinLenUI();
             }
             else
             {
-                thanhMauObj.SetActive(false);
+                float khoangCachBossKia = Vector3.Distance(currentActiveBoss.transform.position, Player_Controller.localPlayer.transform.position);
+
+                if (khoangCachToiPlayer < khoangCachBossKia)
+                {
+                    HienThiThongTinLenUI();
+                }
             }
         }
+        else
+        {
+            if (currentActiveBoss == this)
+            {
+                HealthBar.Instance.gameObject.SetActive(false);
+                currentActiveBoss = null;
+            }
+        }
+    }
+
+    private void HienThiThongTinLenUI()
+    {
+        currentActiveBoss = this;
+        HealthBar.Instance.gameObject.SetActive(true);
+        HealthBar.Instance.CapNhatTenBoss(tenBoss);
+        HealthBar.Instance.UpdateHealthBar(CurrentHealth, maxHealth);
     }
 
     #region LOGIC AI
@@ -190,7 +202,9 @@ public class BossController : NetworkBehaviour
                     }
 
                     float khoangCachToiPlayer = Vector3.Distance(transform.position, mucTieuHienTai.transform.position);
-                    if (khoangCachToiPlayer <= banKinhTanCong)
+                    float tamTanCongThucTe = banKinhTanCong * heSoScale;
+
+                    if (khoangCachToiPlayer <= tamTanCongThucTe)
                     {
                         currentState = BossState.TanCong;
                         agent.isStopped = true;
@@ -199,7 +213,9 @@ public class BossController : NetworkBehaviour
                 break;
 
             case BossState.TanCong:
-                if (mucTieuHienTai == null || Vector3.Distance(transform.position, mucTieuHienTai.transform.position) > banKinhTanCong)
+                float tanCongHienTai = banKinhTanCong * heSoScale;
+
+                if (mucTieuHienTai == null || Vector3.Distance(transform.position, mucTieuHienTai.transform.position) > tanCongHienTai)
                 {
                     currentState = BossState.DiTheo;
                     agent.isStopped = false;
@@ -225,9 +241,11 @@ public class BossController : NetworkBehaviour
         if (!scanTargetTimer.ExpiredOrNotRunning(Runner)) return;
         scanTargetTimer = TickTimer.CreateFromSeconds(Runner, 0.5f);
 
+        float tamPhatHienThucTe = banKinhPhatHien * heSoScale;
+
         if (mucTieuHienTai != null)
         {
-            if (mucTieuHienTai.isDead || Vector3.Distance(transform.position, mucTieuHienTai.transform.position) > banKinhPhatHien)
+            if (mucTieuHienTai.isDead || Vector3.Distance(transform.position, mucTieuHienTai.transform.position) > tamPhatHienThucTe)
             {
                 mucTieuHienTai = null;
             }
@@ -235,7 +253,7 @@ public class BossController : NetworkBehaviour
 
         if (mucTieuHienTai == null)
         {
-            Collider[] hits = Physics.OverlapSphere(transform.position, banKinhPhatHien);
+            Collider[] hits = Physics.OverlapSphere(transform.position, tamPhatHienThucTe);
             float khoangCachNganNhat = Mathf.Infinity;
 
             foreach (var hit in hits)
@@ -256,10 +274,11 @@ public class BossController : NetworkBehaviour
 
     private void PhatSinhDiemTuanTraMoi()
     {
-        Vector3 diemRandom = viTriGoc + Random.insideUnitSphere * banKinhTuanTra;
+        float tamTuanTraThucTe = banKinhTuanTra * heSoScale;
+        Vector3 diemRandom = viTriGoc + Random.insideUnitSphere * tamTuanTraThucTe;
         NavMeshHit navHit;
 
-        if (NavMesh.SamplePosition(diemRandom, out navHit, banKinhTuanTra, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(diemRandom, out navHit, tamTuanTraThucTe, NavMesh.AllAreas))
         {
             agent.SetDestination(navHit.position);
         }
@@ -272,7 +291,6 @@ public class BossController : NetworkBehaviour
     private void DongBoAnimation()
     {
         if (animator == null) return;
-        // Sử dụng dampTime = 0.1f để vận tốc chuyển đổi mượt mà, giúp nhân vật không bị khựng cứng
         animator.SetFloat(hashSpeed, agent.velocity.magnitude, 0.1f, Runner.DeltaTime);
     }
 
@@ -318,7 +336,6 @@ public class BossController : NetworkBehaviour
         }
         else
         {
-            // Kiểm tra bộ đếm Miễn Choáng
             if (mienChoangTimer.ExpiredOrNotRunning(Runner))
             {
                 currentState = BossState.BiDanh;
@@ -348,11 +365,13 @@ public class BossController : NetworkBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        float tiLe = Application.isPlaying ? heSoScale : Mathf.Max(transform.lossyScale.x, transform.lossyScale.z);
+
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(Application.isPlaying ? viTriGoc : transform.position, banKinhTuanTra);
+        Gizmos.DrawWireSphere(Application.isPlaying ? viTriGoc : transform.position, banKinhTuanTra * tiLe);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, banKinhPhatHien);
+        Gizmos.DrawWireSphere(transform.position, banKinhPhatHien * tiLe);
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, banKinhTanCong);
+        Gizmos.DrawWireSphere(transform.position, banKinhTanCong * tiLe);
     }
 }
