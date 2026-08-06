@@ -14,7 +14,7 @@ public class StaminaUI : MonoBehaviour
     void Update()
     {
         // Kiểm tra xem nhân vật đã xuất hiện chưa
-        if (Player_Controller.localPlayer != null)
+        if (Player_Controller.localPlayer != null && Player_Controller.localPlayer.Object != null && Player_Controller.localPlayer.Object.IsValid)
         {
             float hienTai = Player_Controller.localPlayer.CurrentStamina;
             float toiDa = Player_Controller.localPlayer.MaxStamina;

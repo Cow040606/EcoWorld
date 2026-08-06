@@ -7,7 +7,7 @@ public class MoneyUI : MonoBehaviour
 
     void Update()
     {
-        if (Player_Controller.localPlayer != null)
+        if (Player_Controller.localPlayer != null && Player_Controller.localPlayer.Object != null && Player_Controller.localPlayer.Object.IsValid)
         {
             for (int i = 0; i < txtGold.Length; i++)
             {

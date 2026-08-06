@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -327,8 +327,11 @@ namespace DialogueEditor
 
         private Conversation ConstructConversationObject(EditableConversation ec)
         {
+            if (ec == null) return null;
+
             // Create a conversation object
             Conversation conversation = new Conversation();
+            if (conversation.Parameters == null) conversation.Parameters = new List<Parameter>();
 
             // Construct the parameters
             CreateParameters(ec, conversation);
@@ -364,19 +367,30 @@ namespace DialogueEditor
 
         private void CreateParameters(EditableConversation ec, Conversation conversation)
         {
+            if (ec == null || conversation == null || ec.Parameters == null) return;
+            if (conversation.Parameters == null) conversation.Parameters = new List<Parameter>();
+
             for (int i = 0; i < ec.Parameters.Count; i++)
             {
+                if (ec.Parameters[i] == null) continue;
+
                 if (ec.Parameters[i].ParameterType == EditableParameter.eParamType.Bool)
                 {
                     EditableBoolParameter editableParam = ec.Parameters[i] as EditableBoolParameter;
-                    BoolParameter boolParam = new BoolParameter(editableParam.ParameterName, editableParam.BoolValue);
-                    conversation.Parameters.Add(boolParam);
+                    if (editableParam != null)
+                    {
+                        BoolParameter boolParam = new BoolParameter(editableParam.ParameterName, editableParam.BoolValue);
+                        conversation.Parameters.Add(boolParam);
+                    }
                 }
                 else if (ec.Parameters[i].ParameterType == EditableParameter.eParamType.Int)
                 {
                     EditableIntParameter editableParam = ec.Parameters[i] as EditableIntParameter;
-                    IntParameter intParam = new IntParameter(editableParam.ParameterName, editableParam.IntValue);
-                    conversation.Parameters.Add(intParam);
+                    if (editableParam != null)
+                    {
+                        IntParameter intParam = new IntParameter(editableParam.ParameterName, editableParam.IntValue);
+                        conversation.Parameters.Add(intParam);
+                    }
                 }
             }
         }

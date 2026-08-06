@@ -11,7 +11,7 @@ public class Hp_Manager : MonoBehaviour
     {
         Player_Controller myPlayer = Player_Controller.localPlayer;
 
-        if(sliderhp != null && myPlayer != null) 
+        if(sliderhp != null && myPlayer != null && myPlayer.Object != null && myPlayer.Object.IsValid) 
         {
             sliderhp.value = myPlayer.CurrentHealth / myPlayer.MaxHealth;
             HpText.text = myPlayer.CurrentHealth +" / " + myPlayer.MaxHealth ;

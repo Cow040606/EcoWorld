@@ -6,6 +6,14 @@ using UnityEngine.Rendering.Universal;
 
 public class TimeManager : MonoBehaviour
 {
+    public static TimeManager Instance;
+    public TimeService Service => service;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+    }
+
     [Header("UI & Dependencies")]
     [SerializeField] TextMeshProUGUI timeText;
     [SerializeField] TimeSettings timeSettings;
@@ -64,10 +72,15 @@ public class TimeManager : MonoBehaviour
         service = new TimeService(timeSettings);
 
         // Lưu lại hệ số tốc độ gốc khi bắt đầu game
-        if (timeSettings != null)
+        if (timeSettings != null && timeSettings.timeMultiplier > 0)
         {
             baseMultiplier = timeSettings.timeMultiplier;
         }
+        else
+        {
+            baseMultiplier = 12f;
+        }
+        isCutscenePlaying = false;
 
         // SỬ DỤNG SHARED PROFILE THAY VÌ PROFILE (Tối ưu Unity 6)
         if (volume != null && volume.sharedProfile != null)
@@ -132,20 +145,36 @@ public class TimeManager : MonoBehaviour
     {
         if (timeSettings == null) return;
 
+        bool isPressingU = false;
+        bool isPressingShift = false;
+
+        // Kiểm tra cả New Input System lẫn Legacy Input
+        if (UnityEngine.InputSystem.Keyboard.current != null)
+        {
+            isPressingU = UnityEngine.InputSystem.Keyboard.current.uKey.isPressed;
+            isPressingShift = UnityEngine.InputSystem.Keyboard.current.leftShiftKey.isPressed;
+        }
+        else
+        {
+            isPressingU = Input.GetKey(KeyCode.U);
+            isPressingShift = Input.GetKey(KeyCode.LeftShift);
+        }
+
         // 1. Phím LeftShift: Đè giữ để DỪNG thời gian
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (isPressingShift)
         {
             timeSettings.timeMultiplier = 0f;
         }
-        // 2. Phím U: Đè giữ để TUA NHANH thời gian gấp 1000 lần
-        else if (Input.GetKey(KeyCode.U))
+        // 2. Phím U: Đè giữ để TUA NHANH thời gian (gấp 1000 lần tốc độ gốc, hoặc 3600s/s)
+        else if (isPressingU)
         {
-            timeSettings.timeMultiplier = baseMultiplier * 1000f;
+            float targetSpeed = baseMultiplier > 0 ? baseMultiplier * 1000f : 3600f;
+            timeSettings.timeMultiplier = targetSpeed;
         }
-        // 3. Khôi phục lại tốc độ cố định mặc định khi không bấm gì
+        // 3. Khôi phục lại tốc độ bình thường khi thả phím
         else
         {
-            timeSettings.timeMultiplier = baseMultiplier;
+            timeSettings.timeMultiplier = baseMultiplier > 0 ? baseMultiplier : 12f;
         }
     }
 

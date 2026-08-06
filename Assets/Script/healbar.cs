@@ -1,13 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // Bắt buộc phải có để dùng TextMeshPro
+using TMPro;
 
 public class HealthBar : MonoBehaviour
 {
+    // Cầu nối tĩnh (Singleton) giúp các Boss tự gọi UI mà không cần lệnh Find nặng nề
+    public static HealthBar Instance;
+
     [Header("Giao diện UI")]
     public Slider healthSlider;
     public Slider lazySlider;
-    public TextMeshProUGUI txtTenBoss; // Biến chứa text tên Boss
+    public TextMeshProUGUI txtTenBoss;
 
     [Header("Cài đặt hiệu ứng")]
     public float lazyDelay = 0.5f;
@@ -15,7 +18,19 @@ public class HealthBar : MonoBehaviour
 
     private float lazyCatchupTime;
 
-    // Hàm nhận tên từ BossController và in ra UI
+    private void Awake()
+    {
+        // Khởi tạo Singleton
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject); // Đảm bảo chỉ có 1 thanh máu duy nhất tồn tại
+        }
+    }
+
     public void CapNhatTenBoss(string ten)
     {
         if (txtTenBoss != null)

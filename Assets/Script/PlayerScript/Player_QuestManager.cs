@@ -224,4 +224,49 @@ public class Player_QuestManager : NetworkBehaviour
             KiemTraTienDo(); 
         }
     }
+
+    // --- 8. EXPORT DỮ LIỆU SAVE NHIỆM VỤ ---
+    public List<QuestSaveData> ExportQuestSaveData()
+    {
+        List<QuestSaveData> list = new List<QuestSaveData>();
+        foreach (var nv in danhSachNhiemVu)
+        {
+            if (nv.duLieuQuest != null)
+            {
+                list.Add(new QuestSaveData
+                {
+                    idNhiemVu = nv.duLieuQuest.idNhiemVu,
+                    soLuongHienTai = nv.soLuongHienTai,
+                    daDatYeuCau = nv.daDatYeuCau
+                });
+            }
+        }
+        return list;
+    }
+
+    // --- 9. IMPORT DỮ LIỆU SAVE NHIỆM VỤ ---
+    public void ImportQuestSaveData(List<QuestSaveData> saveList)
+    {
+        if (saveList == null) return;
+        danhSachNhiemVu.Clear();
+
+        QuestSO[] tatCaQuestSO = Resources.FindObjectsOfTypeAll<QuestSO>();
+
+        foreach (var itemSave in saveList)
+        {
+            QuestSO questSO = System.Array.Find(tatCaQuestSO, q => q.idNhiemVu == itemSave.idNhiemVu);
+            if (questSO != null)
+            {
+                NhiemVuDangLam nv = new NhiemVuDangLam
+                {
+                    duLieuQuest = questSO,
+                    soLuongHienTai = itemSave.soLuongHienTai,
+                    daDatYeuCau = itemSave.daDatYeuCau
+                };
+                danhSachNhiemVu.Add(nv);
+            }
+        }
+
+        KiemTraTienDo();
+    }
 }
