@@ -47594,22 +47594,22 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 7859ac55f0d6b6e4ba1f37a0090ef759,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -46.563293
+      value: 2161.7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7859ac55f0d6b6e4ba1f37a0090ef759,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.08000004
+      value: 70.76
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7859ac55f0d6b6e4ba1f37a0090ef759,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.6006622
+      value: -2190.5732
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7859ac55f0d6b6e4ba1f37a0090ef759,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.5183434
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7859ac55f0d6b6e4ba1f37a0090ef759,
         type: 3}
@@ -47619,7 +47619,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 7859ac55f0d6b6e4ba1f37a0090ef759,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: -0.85517263
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7859ac55f0d6b6e4ba1f37a0090ef759,
         type: 3}
@@ -47634,7 +47634,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 7859ac55f0d6b6e4ba1f37a0090ef759,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -117.558
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7859ac55f0d6b6e4ba1f37a0090ef759,
         type: 3}
@@ -126477,7 +126477,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 592146174}
           m_TargetAssemblyTypeName: DialogueDatabase, Assembly-CSharp
-          m_MethodName: LoadCutscene2
+          m_MethodName: LoadCutscene1
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -163900,6 +163900,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 11400000, guid: 2e297751542ca264d9139a4c28f2cb49,
             type: 2}
           m_ObjectArgumentAssemblyTypeName: QuestSO, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7381083910897420810}
+        m_TargetAssemblyTypeName: NPC_DialogueTrigger, Assembly-CSharp
+        m_MethodName: ChayCutsceneCuThe
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1775368350}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -355365,8 +355377,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPC_RandomMovement
   waypoints:
   - {fileID: 1875094956}
-  - {fileID: 40990460}
-  - {fileID: 419702356}
   waitTime: 10
   animator: {fileID: 1443082656}
   isWalkingParameter: isWalkingParameter
@@ -385588,7 +385598,7 @@ Transform:
   m_GameObject: {fileID: 1645006143}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 379.5, y: 2.87, z: 211.7}
+  m_LocalPosition: {x: 2579.04, y: 72.13, z: -2017.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -410806,6 +410816,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d5e804a058118254fa5029683ed36e8c, type: 3}
+--- !u!1 &1775368350 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2696676666489561544, guid: d5e804a058118254fa5029683ed36e8c,
+    type: 3}
+  m_PrefabInstance: {fileID: 1775368349}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1776420363
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -418262,7 +418278,7 @@ Transform:
   m_GameObject: {fileID: 1875094955}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -47.963318, y: 0, z: 10.408279}
+  m_LocalPosition: {x: 2161.7, y: 70.76, z: -2190.5732}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -517771,11 +517787,16 @@ PrefabInstance:
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
@@ -517785,18 +517806,38 @@ PrefabInstance:
       objectReference: {fileID: 466306655}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 7381083910897420810}
+    - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ThuHoiViecTuPlayer
+      value: GiaoViecChoPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: ChayCutsceneCuThe
       objectReference: {fileID: 0}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: NPC_QuestBridge, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: NPC_DialogueTrigger, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
@@ -517806,28 +517847,38 @@ PrefabInstance:
         type: 2}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 1775368350}
+    - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: QuestSO, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.GameObject, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7040151391589251020, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 390.889
+      value: 2572.91
       objectReference: {fileID: 0}
     - target: {fileID: 7040151391589251020, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.8000003
+      value: 73.41
       objectReference: {fileID: 0}
     - target: {fileID: 7040151391589251020, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 163.058
+      value: -1961.23
       objectReference: {fileID: 0}
     - target: {fileID: 7040151391589251020, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9865953
+      value: 0.20138036
       objectReference: {fileID: 0}
     - target: {fileID: 7040151391589251020, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
@@ -517837,7 +517888,7 @@ PrefabInstance:
     - target: {fileID: 7040151391589251020, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.1631862
+      value: 0.97951317
       objectReference: {fileID: 0}
     - target: {fileID: 7040151391589251020, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
@@ -517852,7 +517903,7 @@ PrefabInstance:
     - target: {fileID: 7040151391589251020, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -18.784
+      value: 156.765
       objectReference: {fileID: 0}
     - target: {fileID: 7040151391589251020, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
@@ -517881,6 +517932,18 @@ PrefabInstance:
       addedObject: {fileID: 654026386}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: da9c55adf8e0da744be9528231193c59, type: 3}
+--- !u!114 &7381083910897420810 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1962923911489737215, guid: da9c55adf8e0da744be9528231193c59,
+    type: 3}
+  m_PrefabInstance: {fileID: 7381083910897420809}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ec9f29a5f4894d46b8864644b5e492c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPC_DialogueTrigger
 --- !u!1 &7393125110655529810
 GameObject:
   m_ObjectHideFlags: 0
@@ -523366,6 +523429,36 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 1239910727}
+    - target: {fileID: 4997298272006074686, guid: 4fd1c569898f4c44d822a3aec5adab20,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 4.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 4997298272006074686, guid: 4fd1c569898f4c44d822a3aec5adab20,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.4767418
+      objectReference: {fileID: 0}
+    - target: {fileID: 4997298272006074686, guid: 4fd1c569898f4c44d822a3aec5adab20,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -3.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 4997298272006074686, guid: 4fd1c569898f4c44d822a3aec5adab20,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.122121304
+      objectReference: {fileID: 0}
+    - target: {fileID: 4997298272006074686, guid: 4fd1c569898f4c44d822a3aec5adab20,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.9925152
+      objectReference: {fileID: 0}
+    - target: {fileID: 4997298272006074686, guid: 4fd1c569898f4c44d822a3aec5adab20,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -165.971
+      objectReference: {fileID: 0}
     - target: {fileID: 5033108250049967840, guid: 4fd1c569898f4c44d822a3aec5adab20,
         type: 3}
       propertyPath: playerCamera
@@ -524013,6 +524106,9 @@ SceneRoots:
   - {fileID: 1664971044}
   - {fileID: 107131914}
   - {fileID: 46179336}
+
   - {fileID: 766776645}
   - {fileID: 2064748234}
   - {fileID: 282306680}
+
+ 7f8c5d731af5bcc57bafba3ff74c5ee7b80cf48c
