@@ -1,8 +1,7 @@
 using Fusion;
-using System.Collections;
 using UnityEngine;
 
-public class WeatherController : NetworkBehaviour 
+public class WeatherController : NetworkBehaviour
 {
     [Header("Cài đặt đối tượng")]
     [Tooltip("Không cần kéo thả bằng tay nữa, code sẽ tự tìm!")]
@@ -10,78 +9,115 @@ public class WeatherController : NetworkBehaviour
     public ParticleSystem rainParticle;
 
     [Header("Cài đặt vị trí")]
-    public float heightOffset = 15f; 
+    public float heightOffset = 15f;
 
-    [Header("Cài đặt thời gian (Tính bằng giây)")]
-    [Tooltip("Tối thiểu 40 phút (40 * 60)")]
-    public float minTimeBetweenRain = 2400f; 
-    [Tooltip("Tối đa 60 phút (60 * 60) -> TB là 50p")]
-    public float maxTimeBetweenRain = 3600f; 
-    [Tooltip("Kéo dài 2 phút (2 * 60)")]
-    public float rainDuration = 120f;        
+    [Header("Cài đặt thời gian nắng chờ mưa (Tính bằng giây)")]
+    public float minTimeBetweenRain = 2400f;
+    public float maxTimeBetweenRain = 3600f;
+
+    [Header("Cài đặt thời gian mưa (Tính bằng giây)")]
+    public float minRainDuration = 60f;
+    public float maxRainDuration = 180f;
+
+    // --- BIẾN ĐỒNG BỘ MẠNG (Chỉ Host mới được sửa, Client tự động cập nhật theo) ---
+    [Networked]
+    public NetworkBool IsRaining { get; set; }
+
+    [Networked]
+    public TickTimer WeatherTimer { get; set; }
+
+    // Biến nội bộ để kiểm tra xem state vừa thay đổi hay không
+    private bool _wasRaining;
 
     public override void Spawned()
     {
-        // Tắt mưa lúc mới vào game
+        // Tắt mưa lúc mới vào game trên mọi máy
         if (rainParticle != null) rainParticle.Stop();
+        _wasRaining = false;
 
-        // Khởi động luồng thời tiết
-        StartCoroutine(WeatherRoutine());
-    }
-
-    private void LateUpdate()
-    {
-        // Nếu đã có Player thì đám mây luôn đi theo trên đầu
-        if (playerTransform != null)
+        // CHỈ HOST (State Authority) mới được quyền khởi tạo thời tiết ban đầu
+        if (HasStateAuthority)
         {
-            transform.position = new Vector3(playerTransform.position.x, playerTransform.position.y + heightOffset, playerTransform.position.z);
+            IsRaining = false;
+            float waitTime = Random.Range(minTimeBetweenRain, maxTimeBetweenRain);
+            WeatherTimer = TickTimer.CreateFromSeconds(Runner, waitTime); // Đặt giờ nắng
+            Debug.Log($"[Host] Trời nắng. Cơn mưa tiếp theo sẽ đến sau: {waitTime / 60f} phút.");
         }
     }
 
-    private IEnumerator WeatherRoutine()
+    public override void FixedUpdateNetwork()
     {
-        // 1. TỰ ĐỘNG TÌM PLAYER (Vòng lặp này sẽ chạy cho đến khi tìm thấy)
-        Debug.Log("Đang chờ Player spawn...");
-        while (playerTransform == null)
+        // CHỈ HOST mới chạy logic đếm thời gian
+        if (HasStateAuthority)
         {
-            // Tìm object có tên là "Player_Character(Clone)" trên Scene
+            // Kiểm tra xem bộ đếm thời gian đã chạy hết chưa
+            if (WeatherTimer.Expired(Runner))
+            {
+                if (IsRaining)
+                {
+                    // Đang mưa -> Chuyển sang Nắng
+                    IsRaining = false;
+                    float waitTime = Random.Range(minTimeBetweenRain, maxTimeBetweenRain);
+                    WeatherTimer = TickTimer.CreateFromSeconds(Runner, waitTime);
+                    Debug.Log($"[Host] Đã tạnh mưa. Nắng trong {waitTime / 60f} phút.");
+                }
+                else
+                {
+                    // Đang nắng -> Chuyển sang Mưa
+                    IsRaining = true;
+                    float rainTime = Random.Range(minRainDuration, maxRainDuration);
+                    WeatherTimer = TickTimer.CreateFromSeconds(Runner, rainTime);
+                    Debug.Log($"[Host] Bắt đầu mưa. Mưa kéo dài trong {rainTime / 60f} phút.");
+                }
+            }
+        }
+    }
+
+    public override void Render()
+    {
+        // 1. Máy nào cũng tự tìm Player và gắn mây trên đầu (Logic local)
+        UpdateCloudPosition();
+
+        // 2. Bật/Tắt hiệu ứng mưa dựa trên biến đồng bộ mạng của Host
+        if (IsRaining != _wasRaining)
+        {
+            _wasRaining = IsRaining; // Cập nhật lại state hiện tại
+
+            if (IsRaining)
+            {
+                if (rainParticle != null)
+                {
+                    rainParticle.gameObject.SetActive(true);
+                    rainParticle.Clear();
+                    rainParticle.Play(true);
+                }
+            }
+            else
+            {
+                if (rainParticle != null)
+                {
+                    rainParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                }
+            }
+        }
+    }
+
+    private void UpdateCloudPosition()
+    {
+        // Liên tục tìm Player nếu chưa thấy
+        if (playerTransform == null)
+        {
             GameObject playerObj = GameObject.Find("Player_Character(Clone)");
-            
             if (playerObj != null)
             {
                 playerTransform = playerObj.transform;
-                Debug.Log("Đã gắp thành công Player: " + playerObj.name);
             }
-            
-            // Đợi 0.5s rồi tìm lại để không làm lag game
-            yield return new WaitForSeconds(0.5f); 
         }
 
-        // 2. TÌM THẤY PLAYER XONG LÀ MƯA LUÔN LẦN ĐẦU
-        while (true)
+        // Cập nhật vị trí mây
+        if (playerTransform != null)
         {
-            Debug.Log("Bắt đầu mưa!");
-            if (rainParticle != null)
-            {
-                rainParticle.gameObject.SetActive(true); 
-                rainParticle.Clear(); 
-                rainParticle.Play(true); 
-            }
-
-            // 3. Chờ hết thời gian mưa (120s = 2 phút)
-            yield return new WaitForSeconds(rainDuration);
-
-            // 4. Tạnh mưa
-            Debug.Log("Đã tạnh mưa.");
-            if (rainParticle != null)
-            {
-                rainParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            }
-
-            // 5. Chờ đến cơn mưa ngẫu nhiên tiếp theo
-            float waitTime = Random.Range(minTimeBetweenRain, maxTimeBetweenRain);
-            Debug.Log($"Trời nắng. Cơn mưa tiếp theo sẽ đến sau: {waitTime / 60f} phút.");
-            yield return new WaitForSeconds(waitTime);
+            transform.position = new Vector3(playerTransform.position.x, playerTransform.position.y + heightOffset, playerTransform.position.z);
         }
     }
 }

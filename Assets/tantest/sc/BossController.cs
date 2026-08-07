@@ -38,11 +38,14 @@ public class BossController : NetworkBehaviour
 
     [Header("Giao diện (UI Thanh Máu)")]
     public float khoangCachHienThanhMau = 25f;
-    public static BossController currentActiveBoss; // Trọng tài tĩnh quản lý UI
+    public static BossController currentActiveBoss;
 
     [Header("Cài Đặt Despawn")]
     public float thoiGianBienMat = 4f;
     [Networked] private TickTimer despawnTimer { get; set; }
+
+    // Biến mạng để đồng bộ Tốc Độ Di Chuyển cho Animator của mọi người chơi
+    [Networked] public float tocDoDiChuyen { get; set; }
 
     // --- Biến nội bộ ---
     private NavMeshAgent agent;
@@ -50,7 +53,7 @@ public class BossController : NetworkBehaviour
     private Vector3 viTriGoc;
     private Player_Controller mucTieuHienTai;
 
-    private float heSoScale = 1f; // Hệ số tự động nhận diện mô hình to/nhỏ
+    private float heSoScale = 1f;
 
     private TickTimer scanTargetTimer;
     private TickTimer updatePathTimer;
@@ -70,7 +73,6 @@ public class BossController : NetworkBehaviour
         animator = GetComponentInChildren<Animator>();
         viTriGoc = transform.position;
 
-        // Tự động lấy hệ số Scale lớn nhất để nhân rộng tầm AI
         heSoScale = Mathf.Max(transform.lossyScale.x, transform.lossyScale.z);
 
         if (HasStateAuthority)
@@ -80,8 +82,12 @@ public class BossController : NetworkBehaviour
             hitCount = 0;
             PhatSinhDiemTuanTraMoi();
         }
+        else
+        {
+            // QUAN TRỌNG: Tắt NavMeshAgent ở các máy con để nhường quyền cho NetworkTransform
+            if (agent != null) agent.enabled = false;
+        }
 
-        // Tắt UI thông qua Singleton khi Boss mới sinh ra
         if (HealthBar.Instance != null)
         {
             HealthBar.Instance.ResetHealthBar();
@@ -104,7 +110,21 @@ public class BossController : NetworkBehaviour
 
         TimMucTieuGanNhat();
         CapNhatTrangThaiAI();
-        DongBoAnimation();
+
+        // Gán tốc độ thực tế vào biến mạng để nội suy
+        if (agent.enabled)
+        {
+            tocDoDiChuyen = agent.velocity.magnitude;
+        }
+    }
+
+    // Hàm Render chạy liên tục trên MỌI MÁY (Client và Host) để xử lý UI và Animation mượt mà
+    public override void Render()
+    {
+        if (animator != null)
+        {
+            animator.SetFloat(hashSpeed, tocDoDiChuyen, 0.1f, Time.deltaTime);
+        }
     }
 
     void Update()
@@ -288,12 +308,6 @@ public class BossController : NetworkBehaviour
         }
     }
 
-    private void DongBoAnimation()
-    {
-        if (animator == null) return;
-        animator.SetFloat(hashSpeed, agent.velocity.magnitude, 0.1f, Runner.DeltaTime);
-    }
-
     private void ThucHienDanhPlayer()
     {
         hitCount++;
@@ -330,7 +344,7 @@ public class BossController : NetworkBehaviour
         if (CurrentHealth <= 0)
         {
             currentState = BossState.Chet;
-            agent.isStopped = true;
+            if (agent.isActiveAndEnabled) agent.isStopped = true;
             RPC_AnimDead();
             despawnTimer = TickTimer.CreateFromSeconds(Runner, thoiGianBienMat);
         }
@@ -339,7 +353,7 @@ public class BossController : NetworkBehaviour
             if (mienChoangTimer.ExpiredOrNotRunning(Runner))
             {
                 currentState = BossState.BiDanh;
-                agent.isStopped = true;
+                if (agent.isActiveAndEnabled) agent.isStopped = true;
 
                 stunTimer = TickTimer.CreateFromSeconds(Runner, thoiGianChoang);
                 mienChoangTimer = TickTimer.CreateFromSeconds(Runner, thoiGianChoang + thoiGianMienChoang);
