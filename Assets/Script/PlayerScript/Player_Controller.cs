@@ -896,21 +896,39 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void ThucHienXetVaChamChop()
     {
         Vector3 hitboxCenter = transform.position + transform.forward * hitboxOffset;
-        
-        LayerMask maskDung = (chopLayer.value != 0) ? chopLayer : Physics.DefaultRaycastLayers;
-        Terrain hitTerrain = null;
+        bool daChatCayPrefab = false;
 
-        // Bắn 1 tia ngắn xuống dưới để chắc chắn lấy đúng Terrain (đề phòng có nhiều Terrain)
-        if (Physics.Raycast(hitboxCenter + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 10f, maskDung))
+        // 1. KIỂM TRA CHẶT CÂY GAMEOBJECT (PREFAB CÓ TREESCRIPT) TRƯỚC
+        Collider[] hits = Physics.OverlapSphere(hitboxCenter, hitboxRadius, chopLayer);
+        foreach (var col in hits)
         {
-            hitTerrain = hit.collider.GetComponent<Terrain>();
+            // Dùng GetComponentInParent đề phòng va chạm trúng cái Visual con bên trong
+            TreeScript cay = col.GetComponentInParent<TreeScript>();
+            if (cay != null)
+            {
+                // Trừ máu cây bằng lực chém (ở đây lấy tạm attackDamageToAnimal, bạn có thể tạo biến riêng)
+                cay.RPC_TakeDamage(attackDamageToAnimal);
+                daChatCayPrefab = true;
+            }
         }
 
-        if (hitTerrain == null) hitTerrain = Terrain.activeTerrain;
-
-        if (hitTerrain != null && TreeManager.Instance != null)
+        // 2. NẾU KHÔNG TRÚNG CÂY PREFAB NÀO, MỚI THỬ CHẶT CÂY TRÊN TERRAIN (Giữ nguyên code cũ của bạn)
+        if (!daChatCayPrefab)
         {
-            TreeManager.Instance.TryChopTree(hitTerrain, hitboxCenter, Runner);
+            LayerMask maskDung = (chopLayer.value != 0) ? chopLayer : Physics.DefaultRaycastLayers;
+            Terrain hitTerrain = null;
+
+            if (Physics.Raycast(hitboxCenter + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 10f, maskDung))
+            {
+                hitTerrain = hit.collider.GetComponent<Terrain>();
+            }
+
+            if (hitTerrain == null) hitTerrain = Terrain.activeTerrain;
+
+            if (hitTerrain != null && TreeManager.Instance != null)
+            {
+                TreeManager.Instance.TryChopTree(hitTerrain, hitboxCenter, Runner);
+            }
         }
     }
 
