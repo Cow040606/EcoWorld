@@ -15,14 +15,11 @@ public class TreeScript : NetworkBehaviour
     public NetworkPrefabRef woodPrefab;
 
     [Header("Hình Ảnh & Va Chạm")]
-    [Tooltip("Không cần kéo thủ công nữa, code sẽ tự tìm!")]
     public GameObject treeVisual;
     public Collider treeCollider;
 
-    // Hàm Awake chạy ngay khi Prefab xuất hiện trong game
     private void Awake()
     {
-        // Tự động tìm object con có tên chính xác là "Visual"
         if (treeVisual == null)
         {
             Transform visualTransform = transform.Find("Visual");
@@ -32,8 +29,14 @@ public class TreeScript : NetworkBehaviour
             }
             else
             {
-                Debug.LogError($"<color=red>[LỖI]</color> Cây {gameObject.name} chưa có object con nào tên là 'Visual'. Hãy tạo ngay!");
+                Debug.LogError($"<color=red>[LỖI TREE]</color> Cây {gameObject.name} chưa có object con tên 'Visual'.");
             }
+        }
+
+        // TỰ ĐỘNG KIỂM TRA LAYER KHI VỪA CHẠY GAME
+        if (gameObject.layer != LayerMask.NameToLayer("Tree"))
+        {
+            Debug.LogWarning($"<color=orange>[CẢNH BÁO]</color> Cây {gameObject.name} đang ở Layer '{LayerMask.LayerToName(gameObject.layer)}'. Hãy đổi nó sang Layer 'Tree' ngay trên Inspector để Player chém trúng!");
         }
     }
 
@@ -43,7 +46,7 @@ public class TreeScript : NetworkBehaviour
         {
             HP = maxHP;
             IsActive = true;
-            Debug.Log($"[TreeScript] Cây {gameObject.name} đã sẵn sàng.");
+            Debug.Log($"<color=white>[TreeScript]</color> Cây {gameObject.name} đã Spawn thành công (HP: {HP}).");
         }
     }
 
@@ -56,7 +59,7 @@ public class TreeScript : NetworkBehaviour
             HP = maxHP;
             IsActive = true;
             RespawnTimer = TickTimer.None;
-            Debug.Log($"[TreeScript] Cây {gameObject.name} đã hồi sinh!");
+            Debug.Log($"<color=green>[TreeScript]</color> Cây {gameObject.name} đã mọc lại!");
         }
     }
 
@@ -74,20 +77,32 @@ public class TreeScript : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_TakeDamage(float damage)
     {
-        if (!IsActive) return;
+        // BÁO CÁO NGAY KHI NHẬN ĐƯỢC TÍN HIỆU CHÉM TỪ PLAYER
+        Debug.Log($"<color=cyan>[TreeScript - RPC]</color> Đã nhận lệnh chặt cây! Sát thương: {damage} | Trạng thái hiện tại IsActive: {IsActive}");
+
+        if (!IsActive)
+        {
+            Debug.Log($"<color=yellow>[TreeScript]</color> Cây đang bị đốn ngã chờ hồi sinh, từ chối nhận sát thương.");
+            return;
+        }
 
         HP -= damage;
-        Debug.Log($"[TreeScript] Cây bị chém! Máu còn: {HP}");
+        Debug.Log($"<color=yellow>[TreeScript]</color> Bị chém trúng! Máu còn lại: {HP}");
 
         if (HP <= 0)
         {
             IsActive = false;
             RespawnTimer = TickTimer.CreateFromSeconds(Runner, thoiGianHoiSinh);
-            Debug.Log($"[TreeScript] Cây đã đổ. Hồi sinh sau {thoiGianHoiSinh}s.");
+            Debug.Log($"<color=red>[TreeScript]</color> Cây {gameObject.name} đã đổ! Bắt đầu đếm ngược hồi sinh {thoiGianHoiSinh}s.");
 
             if (woodPrefab.IsValid)
             {
                 Runner.Spawn(woodPrefab, transform.position + Vector3.up * 1.5f, Quaternion.identity);
+                Debug.Log($"<color=magenta>[TreeScript]</color> Đã Spawn vật phẩm Gỗ thành công!");
+            }
+            else
+            {
+                Debug.LogError($"<color=red>[LỖI TREE]</color> Chưa kéo Wood Prefab vào cây {gameObject.name}!");
             }
         }
     }

@@ -21,7 +21,6 @@ public class EnemyAIOrc : NetworkBehaviour
     public float idleWaitTime = 5f;
     public float screamDuration = 2f;
 
-    // Đã giảm thời gian hồi đánh từ 1.5f xuống 1.0f (bạn có thể chỉnh thấp hơn nữa tùy ý)
     public float attackCooldown = 1.0f;
     public int maxHealth = 100;
 
@@ -33,6 +32,9 @@ public class EnemyAIOrc : NetworkBehaviour
     [Range(0f, 100f)]
     public float dropChance = 100f;
 
+    // THÊM: Bộ đếm thời gian dọn dẹp xác chết chuẩn Fusion (Thay thế cho Destroy)
+    [Networked] private TickTimer despawnTimer { get; set; }
+
     private NavMeshAgent agent;
     private Animator animator;
     private Vector3 startPosition;
@@ -43,20 +45,23 @@ public class EnemyAIOrc : NetworkBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
-
-        // Ép NavMeshAgent cập nhật đúng vị trí do hệ thống mạng chỉ định
-        if (agent != null)
-        {
-            agent.Warp(transform.position);
-            agent.enabled = true;
-        }
-
         startPosition = transform.position;
 
         if (HasStateAuthority)
         {
+            // Chỉ BẬT NavMeshAgent trên máy chủ (State Authority)
+            if (agent != null)
+            {
+                agent.Warp(transform.position);
+                agent.enabled = true;
+            }
             Health = maxHealth;
             CurrentState = EnemyState.Idle;
+        }
+        else
+        {
+            // QUAN TRỌNG: Máy con (Proxy) phải TẮT NavMeshAgent để nhường quyền cho NetworkTransform
+            if (agent != null) agent.enabled = false;
         }
     }
 
@@ -67,7 +72,17 @@ public class EnemyAIOrc : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (!HasStateAuthority || CurrentState == EnemyState.Dead) return;
+        if (!HasStateAuthority) return;
+
+        // Xử lý biến mất sau khi chết chuẩn mạng
+        if (CurrentState == EnemyState.Dead)
+        {
+            if (despawnTimer.Expired(Runner))
+            {
+                Runner.Despawn(Object);
+            }
+            return; // Khóa toàn bộ AI khi đã chết
+        }
 
         switch (CurrentState)
         {
@@ -106,26 +121,37 @@ public class EnemyAIOrc : NetworkBehaviour
                     {
                         CurrentState = EnemyState.Attack;
                         stateTimer = 0f;
-                        if (IsAgentValid()) agent.ResetPath();
+                        if (IsAgentValid()) agent.isStopped = true; // Dừng lại để chém
 
-                        // Gọi đánh ngay lần đầu tiên áp sát
                         RPC_PlayAttackAnim();
                     }
                     else if (distanceToPlayer > loseRadius)
                     {
                         targetPlayer = null;
                         CurrentState = EnemyState.Return;
-                        if (IsAgentValid()) agent.SetDestination(startPosition);
+                        if (IsAgentValid())
+                        {
+                            agent.isStopped = false;
+                            agent.SetDestination(startPosition);
+                        }
                     }
                     else
                     {
-                        if (IsAgentValid()) agent.SetDestination(targetPlayer.position);
+                        if (IsAgentValid())
+                        {
+                            agent.isStopped = false;
+                            agent.SetDestination(targetPlayer.position);
+                        }
                     }
                 }
                 else
                 {
                     CurrentState = EnemyState.Return;
-                    if (IsAgentValid()) agent.SetDestination(startPosition);
+                    if (IsAgentValid())
+                    {
+                        agent.isStopped = false;
+                        agent.SetDestination(startPosition);
+                    }
                 }
                 break;
 
@@ -141,10 +167,10 @@ public class EnemyAIOrc : NetworkBehaviour
                         if (dist > attackRadius)
                         {
                             CurrentState = EnemyState.Chase;
+                            if (IsAgentValid()) agent.isStopped = false; // Cho phép chạy tiếp
                         }
                         else
                         {
-                            // Nếu Player vẫn đứng yên trong tầm, reset timer và GỌI RPC ĐÁNH TIẾP
                             stateTimer = 0f;
                             RPC_PlayAttackAnim();
                         }
@@ -193,6 +219,7 @@ public class EnemyAIOrc : NetworkBehaviour
         {
             if (IsAgentValid())
             {
+                agent.isStopped = false;
                 agent.SetDestination(hit.position);
                 CurrentState = EnemyState.Patrol;
             }
@@ -206,10 +233,14 @@ public class EnemyAIOrc : NetworkBehaviour
         {
             if (hit.CompareTag("Player"))
             {
+                // Kiểm tra thêm Player đó có đang chết không (tránh việc đuổi theo xác chết)
+                Player_Controller player = hit.GetComponent<Player_Controller>();
+                if (player != null && player.isDead) continue;
+
                 targetPlayer = hit.transform;
                 CurrentState = EnemyState.Scream;
                 stateTimer = 0f;
-                if (IsAgentValid()) agent.ResetPath();
+                if (IsAgentValid()) agent.isStopped = true;
                 transform.LookAt(new Vector3(targetPlayer.position.x, transform.position.y, targetPlayer.position.z));
                 break;
             }
@@ -226,8 +257,11 @@ public class EnemyAIOrc : NetworkBehaviour
         if (Health <= 0)
         {
             CurrentState = EnemyState.Dead;
-            if (IsAgentValid()) agent.ResetPath();
+            if (IsAgentValid()) agent.isStopped = true;
             DropItem();
+
+            // Hẹn giờ Despawn mạng sau 5 giây (thay cho Destroy)
+            despawnTimer = TickTimer.CreateFromSeconds(Runner, 5f);
         }
         else
         {
@@ -255,7 +289,7 @@ public class EnemyAIOrc : NetworkBehaviour
                     }
                     else
                     {
-                        Debug.LogWarning($"[EnemyAIOrc] GameObject '{itemToDrop.name}' trong danh sách dropItems không có component NetworkObject! Không thể spawn qua mạng.");
+                        Debug.LogWarning($"[EnemyAIOrc] GameObject '{itemToDrop.name}' không có component NetworkObject!");
                     }
                 }
             }
@@ -268,9 +302,6 @@ public class EnemyAIOrc : NetworkBehaviour
         if (animator != null) animator.SetTrigger("takedame");
     }
 
-    // =========================================================================
-    // HÀM RPC ĐỂ GỌI ANIMATION ĐÁNH DÀNH CHO TẤT CẢ CLIENT
-    // =========================================================================
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_PlayAttackAnim()
     {
@@ -296,12 +327,11 @@ public class EnemyAIOrc : NetworkBehaviour
             case EnemyState.Scream:
                 animator.SetTrigger("scream");
                 break;
-            // Xóa case Attack ở đây đi vì ta đã dùng RPC_PlayAttackAnim() để gọi trực tiếp
             case EnemyState.Dead:
                 animator.SetTrigger("death");
                 Collider col = GetComponent<Collider>();
                 if (col != null) col.enabled = false;
-                Destroy(gameObject, 5f);
+                // ĐÃ XÓA LỆNH DESTROY Ở ĐÂY ĐỂ TRÁNH LỖI MẠNG
                 break;
         }
     }
