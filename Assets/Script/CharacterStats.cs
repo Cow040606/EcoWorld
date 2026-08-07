@@ -26,7 +26,7 @@ public class UI_StatsManager : MonoBehaviour
     void Update()
     {
         // Liên tục cập nhật hình ảnh UI dựa trên dữ liệu mạng của Player cục bộ
-        if (Player_Controller.localPlayer != null)
+        if (Player_Controller.localPlayer != null && Player_Controller.localPlayer.Object != null && Player_Controller.localPlayer.Object.IsValid)
         {
             CapNhatThongTinTrenBang();
         }

@@ -23,7 +23,7 @@ public class UI_Giap : MonoBehaviour
     void Update()
     {
         // Kiểm tra xem nhân vật của mình đã xuất hiện trong game chưa
-        if (Player_Controller.localPlayer != null)
+        if (Player_Controller.localPlayer != null && Player_Controller.localPlayer.Object != null && Player_Controller.localPlayer.Object.IsValid)
         {
             float giapHienTai = Player_Controller.localPlayer.CurrentArmor;
             float giapToiDa = Player_Controller.localPlayer.MaxArmor;

@@ -145,6 +145,10 @@ namespace Fusion {
 
     protected virtual void OnGUI() {
 
+      if (_nicifiedStageNames == null) {
+        _nicifiedStageNames = ConvertEnumToNicifiedNameLookup<FusionBootstrap.Stage>("Fusion Status: ");
+      }
+
       var nds = EnsureNetworkDebugStartExists();
       if (!nds.ShouldShowGUI) {
         return;
@@ -165,7 +169,7 @@ namespace Fusion {
         {
           GUILayout.BeginHorizontal(GUILayout.Height(height));
           {
-            var stagename = _nicifiedStageNames.TryGetValue(nds.CurrentStage, out var stage) ? stage : "Unrecognized Stage";
+            var stagename = (_nicifiedStageNames != null && _nicifiedStageNames.TryGetValue(nds.CurrentStage, out var stage)) ? stage : "Unrecognized Stage";
             GUILayout.Label(stagename, new GUIStyle(GUI.skin.label) { fontSize = (int)(GUI.skin.label.fontSize * .8f), alignment = TextAnchor.UpperLeft });
 
             // Add button to hide Shutdown option after all connect, which just enables AutoHide - so that interface will reappear after a disconnect.

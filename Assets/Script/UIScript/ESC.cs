@@ -1,14 +1,14 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using Fusion; // Phải có thư viện mạng để đọc NetworkArray
+using Fusion;
 
 public class ESC : MonoBehaviour 
 {
     public static ESC instance;
     public GameObject khungESC; 
-    
-    // ĐÃ ĐỔI TÊN BIẾN ĐỂ KHÔNG BỊ TRÙNG VỚI TÊN CLASS
     public bool isESC_Open; 
     
     void Awake()
@@ -18,22 +18,76 @@ public class ESC : MonoBehaviour
 
     void Start()
     {
-        // Vừa vào game là giấu cái bảng đi
         if (khungESC != null) khungESC.SetActive(false);
     }
 
-    // Gắn hàm này vào Nút (Button) UI
     public void BatTatESC()
     {
-        isESC_Open = !isESC_Open; // Đảo ngược trạng thái (Đang tắt thành bật, đang bật thành tắt)
+        isESC_Open = !isESC_Open;
         
         if (khungESC != null) 
         {
             khungESC.SetActive(isESC_Open);
         }
-        if (isESC_Open)
+
+        if (isESC_Open && Player_Controller.localPlayer != null)
         {
-            Debug.Log("Đang mở bảng lên! Chạy code vẽ item trong Balo ra đây...");
+            Player_Controller.localPlayer.LuuGameHienTai();
+        }
+    }
+
+    // --- 1. NÚT LƯU & THOÁT VỀ MENU CHÍNH (SCENE 0) ---
+    public async void BamNut_LuuVaThoatGame()
+    {
+        await ThucHienThoat(traVeMenu: true);
+    }
+
+    public async void BamNut_LuuVaThoatVeMenu()
+    {
+        await ThucHienThoat(traVeMenu: true);
+    }
+
+    // --- 2. NÚT LƯU & THOÁT HẮN KHỎI GAME (QUIT APPLICATION) ---
+    public async void BamNut_LuuVaThoatKhoiGame()
+    {
+        await ThucHienThoat(traVeMenu: false);
+    }
+
+    private async Task ThucHienThoat(bool traVeMenu)
+    {
+        Debug.Log("[ESC]: Bắt đầu tiến trình Lưu & Thoát...");
+
+        // 1. Lưu dữ liệu người chơi
+        if (Player_Controller.localPlayer != null)
+        {
+            Player_Controller.localPlayer.LuuGameHienTai();
+        }
+
+        // 2. Tắt Photon Runner một cách an toàn
+        if (NetworkRunner.Instances != null)
+        {
+            List<NetworkRunner> activeRunners = new List<NetworkRunner>(NetworkRunner.Instances);
+            foreach (var runner in activeRunners)
+            {
+                if (runner != null && runner.IsRunning)
+                {
+                    await runner.Shutdown();
+                }
+            }
+        }
+
+        // 3. Thực hiện chuyển Scene hoặc Đóng game
+        if (traVeMenu)
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        }
+        else
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
     }
 }

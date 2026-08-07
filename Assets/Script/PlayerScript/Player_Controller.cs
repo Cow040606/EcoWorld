@@ -222,7 +222,15 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (cameraTransform != null) cameraTransform.SetParent(null); 
             
             if (playerCamera == null) Debug.LogError("[Player_Controller] ❌ 'Player Camera' chưa được gán!");
-          
+
+            // --- NẠP & LƯU TỰ ĐỘNG KHI VỪA VÀO PHÒNG ---
+            if (SaveManager.instance != null && Runner != null && Runner.SessionInfo.IsValid)
+            {
+                SaveManager.instance.LoadGame(Runner.SessionInfo.Name, this);
+                LuuGameHienTai();
+            }
+
+            StartCoroutine(TienTrinhTuDongSave());
         }
         else
         {
@@ -241,9 +249,34 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             attackDamageToAnimal = baseDamage;
             MaxArmor = baseMaxArmor;
             CurrentArmor = MaxArmor;
-            CurrentHealth = MaxHealth;
-            CurrentStamina = MaxStamina;
+            if (CurrentHealth <= 0) CurrentHealth = MaxHealth;
+            if (CurrentStamina <= 0) CurrentStamina = MaxStamina;
         }
+    }
+
+    private System.Collections.IEnumerator TienTrinhTuDongSave()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(180f); // Tự động lưu mỗi 3 phút (180s)
+            LuuGameHienTai();
+        }
+    }
+
+    public void LuuGameHienTai()
+    {
+        if (!HasInputAuthority || SaveManager.instance == null) return;
+
+        string nameToSave = (Runner != null && Runner.SessionInfo.IsValid && !string.IsNullOrEmpty(Runner.SessionInfo.Name)) 
+            ? Runner.SessionInfo.Name 
+            : "TheGioi_AutoSave";
+
+        SaveManager.instance.SaveGame(nameToSave, this);
+    }
+
+    private void OnApplicationQuit()
+    {
+        LuuGameHienTai();
     }
 
     void Update()
@@ -279,8 +312,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             bool isEscOpen = (ESC.instance != null && ESC.instance.isESC_Open);
             bool isMapOpen = (MapManager.Instance != null && MapManager.Instance.dangMoMap);
             bool isCraftOpen = (ShopUIController.instance != null && ShopUIController.instance.dangMoCraft);
+            bool isCutsceneActive = NPC_DialogueTrigger.isCutsceneActive;
 
-            bool batKyUI_NaoDangMo = isBaloOpen || isEscOpen || isShopOpen || isChatActive || isQuestOpen || isMapOpen || isCraftOpen;
+            bool batKyUI_NaoDangMo = isBaloOpen || isEscOpen || isShopOpen || isChatActive || isQuestOpen || isMapOpen || isCraftOpen || isCutsceneActive;
 
             if (batKyUI_NaoDangMo)
             {
