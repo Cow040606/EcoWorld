@@ -153,8 +153,11 @@ public class TreeManager : NetworkBehaviour
         TreeInstance[] trees = targetTerrain.terrainData.treeInstances;
         if (treeIndex < 0 || treeIndex >= trees.Length) return;
 
-        // Bỏ kiểm tra phân loại, auto rớt ra đúng 1 loại woodPrefab duy nhất
+        // Vị trí rớt gỗ chỉ cách gốc 1.5f để không bị rớt từ trên trời xuống
         Vector3 spawnPos = TreeToWorld(targetTerrain, trees[treeIndex]) + Vector3.up * 1.5f;
+        // Thêm một chút xê dịch ngẫu nhiên để rớt tự nhiên hơn
+        spawnPos += new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
+
         if (woodPrefab.IsValid)
         {
             Runner.Spawn(woodPrefab, spawnPos, Quaternion.identity, chopper);
