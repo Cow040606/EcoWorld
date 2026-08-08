@@ -28,6 +28,11 @@ public class NPC_DialogueTrigger : MonoBehaviour
     [Header("Thời gian ép buộc chạy Cutscene (Nếu = 0: tự động tính)")]
     public float thoiGianCutsceneThuCong = 0f;
 
+    [Header("Danh sách Model NPC cần ẩn khi chạy cutscene")]
+    public List<GameObject> danhSachModelNPCCanAn = new List<GameObject>();
+
+    private List<Renderer> playerRenderersDaAn = new List<Renderer>();
+
     private bool dangNóiChuyenVoiNPCNay = false;
 
     private void OnEnable()
@@ -167,6 +172,8 @@ public class NPC_DialogueTrigger : MonoBehaviour
             }
         }
 
+        AnModelNhanVat();
+
         // Ép chuột hiển thị
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
@@ -192,6 +199,8 @@ public class NPC_DialogueTrigger : MonoBehaviour
             }
         }
         
+        HienModelNhanVat();
+
         // Khóa lại chuột khi xong Cutscene
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -293,6 +302,89 @@ public class NPC_DialogueTrigger : MonoBehaviour
                 if (ui != null && !ui.activeSelf) 
                 {
                     ui.SetActive(true);
+                }
+            }
+        }
+
+        EpTrangThaiModelLienTuc();
+    }
+
+    private void AnModelNhanVat()
+    {
+        if (danhSachModelNPCCanAn != null)
+        {
+            foreach (var model in danhSachModelNPCCanAn)
+            {
+                if (model != null) model.SetActive(false);
+            }
+        }
+
+        // Tìm tất cả Player hiện có để ẩn model
+        Player_Controller[] players = FindObjectsOfType<Player_Controller>();
+        foreach (var p in players)
+        {
+            Renderer[] renderers = p.GetComponentsInChildren<Renderer>();
+            foreach (var r in renderers)
+            {
+                if (r.enabled)
+                {
+                    r.enabled = false;
+                    playerRenderersDaAn.Add(r);
+                }
+            }
+        }
+    }
+
+    private void HienModelNhanVat()
+    {
+        if (danhSachModelNPCCanAn != null)
+        {
+            foreach (var model in danhSachModelNPCCanAn)
+            {
+                if (model != null) model.SetActive(true);
+            }
+        }
+
+        // Hiện lại tất cả model player đã ẩn
+        foreach (var r in playerRenderersDaAn)
+        {
+            if (r != null)
+            {
+                r.enabled = true;
+            }
+        }
+        playerRenderersDaAn.Clear();
+    }
+
+    private void EpTrangThaiModelLienTuc()
+    {
+        // Ép ẩn NPC Model liên tục
+        if (danhSachModelNPCCanAn != null)
+        {
+            foreach (var model in danhSachModelNPCCanAn)
+            {
+                if (model != null && model.activeSelf)
+                {
+                    model.SetActive(false);
+                }
+            }
+        }
+
+        // Quét tìm Player mới sau mỗi 10 frame để tối ưu hiệu suất (nếu người chơi mới vào thế giới khi đang có cutscene)
+        if (Time.frameCount % 10 == 0)
+        {
+            Player_Controller[] players = FindObjectsOfType<Player_Controller>();
+            foreach (var p in players)
+            {
+                Renderer[] renderers = p.GetComponentsInChildren<Renderer>();
+                foreach (var r in renderers)
+                {
+                    // Nếu renderer đang bật và chưa có trong danh sách đã ẩn
+                    if (r.enabled && !playerRenderersDaAn.Contains(r))
+                    {
+                        r.enabled = false;
+                        playerRenderersDaAn.Add(r);
+                    }
                 }
             }
         }

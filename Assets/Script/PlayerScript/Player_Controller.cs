@@ -161,6 +161,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Networked] public TickTimer actionTimer { get; set; }
     [Networked] public TickTimer hitTimer { get; set; }
     [Networked] public int pendingActionType { get; set; }
+    private float thoiDiemHetKhoaCucBo = 0f; // Biến này giúp khóa di chuyển ngay lập tức trên máy Client
 
     [Header("Hệ Thống Câu Cá")]
     public LayerMask waterLayer;
@@ -364,6 +365,15 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             float trucX = Keyboard.current.dKey.isPressed ? 1f : (Keyboard.current.aKey.isPressed ? -1f : 0f);
             float trucY = Keyboard.current.wKey.isPressed ? 1f : (Keyboard.current.sKey.isPressed ? -1f : 0f);
             moveInputLocal = new Vector2(trucX, trucY).normalized;
+
+            // FIX: Khóa di chuyển ngay lập tức trên máy của người chơi khi đang chém/chặt
+            if (Time.time < thoiDiemHetKhoaCucBo)
+            {
+                moveInputLocal = Vector2.zero;
+                jumpPressedLocal = false;
+                dashPressedLocal = false;
+                sprintPressedLocal = false;
+            }
         }
     }
 
@@ -828,7 +838,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         lastAttackTime = Time.time;
         RPC_AnimSlash(currentComboStep);
 
-        // Kích hoạt trạng thái khóa di chuyển và nhảy trong thời gian chém
+        // Kích hoạt trạng thái khóa di chuyển (cục bộ ngay lập tức + báo lên server)
+        thoiDiemHetKhoaCucBo = Time.time + slashLockDuration;
         RPC_BaoHieuBatDauAction(3, slashLockDuration, 0f);
 
         // Gọi hàm gây sát thương NGAY LẬP TỨC để fix lỗi không có dame (bỏ qua Animation Event)
@@ -882,6 +893,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void HandleChopping()
     {
         if (playerCamera == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
+
+        thoiDiemHetKhoaCucBo = Time.time + 1.5f;
         RPC_BaoHieuBatDauAction(1, 1.5f, 0.6f);
     }
 
@@ -890,6 +903,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
 
         RPC_AnimDapDa(); 
+        thoiDiemHetKhoaCucBo = Time.time + 1.5f;
         RPC_BaoHieuBatDauAction(2, 1.5f, 0.6f);
     }
 
