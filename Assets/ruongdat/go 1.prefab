@@ -369,7 +369,11 @@ GameObject:
   - component: {fileID: -6795627369822758807}
   - component: {fileID: 2074324521702198779}
   - component: {fileID: -9129882078653425416}
+
   - component: {fileID: 3100057460422555342}
+
+  - component: {fileID: 9057406930717181290}
+
   m_Layer: 0
   m_Name: go 1
   m_TagString: Items
@@ -488,8 +492,13 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+
 --- !u!65 &3100057460422555342
 BoxCollider:
+
+--- !u!136 &9057406930717181290
+CapsuleCollider:
+
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -506,6 +515,14 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
+
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+
+  serializedVersion: 2
+  m_Radius: 0.9544046
+  m_Height: 1.9088092
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.3289573, z: 0.039814543}
+
