@@ -35,13 +35,10 @@ public class WeatherController : NetworkBehaviour
         if (rainParticle != null) rainParticle.Stop();
         _wasRaining = false;
 
-        // CHỈ HOST (State Authority) mới được quyền khởi tạo thời tiết ban đầu
-        if (HasStateAuthority)
+        // Trong Shared Mode, Master Client phải xin quyền điều khiển Scene Object
+        if (Runner.IsSharedModeMasterClient || Runner.IsServer)
         {
-            IsRaining = false;
-            float waitTime = Random.Range(minTimeBetweenRain, maxTimeBetweenRain);
-            WeatherTimer = TickTimer.CreateFromSeconds(Runner, waitTime); // Đặt giờ nắng
-            Debug.Log($"[Host] Trời nắng. Cơn mưa tiếp theo sẽ đến sau: {waitTime / 60f} phút.");
+            Object.RequestStateAuthority();
         }
     }
 
@@ -50,6 +47,15 @@ public class WeatherController : NetworkBehaviour
         // CHỈ HOST mới chạy logic đếm thời gian
         if (HasStateAuthority)
         {
+            // Khởi tạo thời tiết nếu chưa chạy (dành cho Shared Mode khi vừa nhận StateAuthority)
+            if (!WeatherTimer.IsRunning)
+            {
+                IsRaining = false;
+                float waitTime = Random.Range(minTimeBetweenRain, maxTimeBetweenRain);
+                WeatherTimer = TickTimer.CreateFromSeconds(Runner, waitTime);
+                Debug.Log($"[Host] Trời nắng. Cơn mưa tiếp theo sẽ đến sau: {waitTime / 60f} phút.");
+            }
+
             // Kiểm tra xem bộ đếm thời gian đã chạy hết chưa
             if (WeatherTimer.Expired(Runner))
             {

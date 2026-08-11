@@ -2,9 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using DialogueEditor;
+using Fusion;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class NPC_RandomMovement : MonoBehaviour
+public class NPC_RandomMovement : NetworkBehaviour
 {
     [Header("Danh sách các điểm di chuyển")]
     public List<Transform> waypoints;
@@ -21,21 +22,36 @@ public class NPC_RandomMovement : MonoBehaviour
     private bool isWaiting;
     private bool wasChatting;
 
-    void Start()
+    [Networked] public NetworkBool isMovingNetworked { get; set; }
+
+    public override void Spawned()
     {
         agent = GetComponent<NavMeshAgent>();
         if (animator == null) animator = GetComponentInChildren<Animator>();
         
-        if (waypoints.Count > 0)
+        if (!Object.HasStateAuthority)
         {
-            MoveToRandomWaypoint();
+            // Tắt NavMeshAgent ở các máy Client để NetworkTransform toàn quyền điều khiển vị trí
+            if (agent != null) agent.enabled = false;
+        }
+        else
+        {
+            if (waypoints.Count > 0)
+            {
+                MoveToRandomWaypoint();
+            }
         }
     }
 
-    void Update()
+    public override void FixedUpdateNetwork()
     {
-        // Kiểm tra xem có hệ thống chat đang mở không (sử dụng DialogueEditor)
+        // Chỉ Host (Máy chủ) mới tính toán AI di chuyển
+        if (!Object.HasStateAuthority) return;
+
         bool isChatting = false;
+        // Chú ý: Đoạn code cũ này chỉ kiểm tra xem MÁY HOST có đang mở khung Chat hay không.
+        // Nếu một người chơi ở máy Client chat với NPC, Host sẽ không biết.
+        // Để khắc phục triệt để, bạn cần dùng RPC để báo cho Host biết "có người đang chat với NPC này".
         if (ConversationManager.Instance != null && ConversationManager.Instance.IsConversationActive)
         {
             isChatting = true;
@@ -51,22 +67,21 @@ public class NPC_RandomMovement : MonoBehaviour
             // Dừng di chuyển ngay lập tức khi đang chat
             agent.isStopped = true;
             isWaiting = true;
-            waitTimer = waitTime; // Reset đếm ngược lại 60s để sau khi chat xong sẽ đợi thêm 1 phút
+            waitTimer = waitTime;
         }
         else
         {
             if (wasChatting)
             {
-                // Vừa chat xong, giữ nguyên trạng thái chờ (isWaiting)
                 wasChatting = false;
             }
             
             if (isWaiting)
             {
                 agent.isStopped = true;
-                waitTimer -= Time.deltaTime;
+                waitTimer -= Runner.DeltaTime;
                 
-                // Đã đợi xong 1 phút
+                // Đã đợi xong
                 if (waitTimer <= 0)
                 {
                     isWaiting = false;
@@ -92,16 +107,16 @@ public class NPC_RandomMovement : MonoBehaviour
             }
         }
         
-        UpdateAnimation();
+        // Đồng bộ biến di chuyển lên mạng cho tất cả mọi người cùng thấy
+        isMovingNetworked = !agent.isStopped && agent.velocity.sqrMagnitude > 0.01f;
     }
 
-    private void UpdateAnimation()
+    public override void Render()
     {
+        // Cập nhật Animation ở tất cả các máy dựa trên cờ trạng thái mạng
         if (animator != null)
         {
-            // NPC được xem là đang đi nếu không bị dừng và có vận tốc di chuyển
-            bool isMoving = !agent.isStopped && agent.velocity.sqrMagnitude > 0.01f;
-            animator.SetBool(isWalkingParameter, isMoving);
+            animator.SetBool(isWalkingParameter, isMovingNetworked);
         }
     }
 
@@ -109,10 +124,7 @@ public class NPC_RandomMovement : MonoBehaviour
     {
         if (waypoints == null || waypoints.Count == 0) return;
 
-        // Chọn một điểm ngẫu nhiên trong danh sách
         int randomIndex = Random.Range(0, waypoints.Count);
-        
-        // Di chuyển tới điểm đó
         agent.SetDestination(waypoints[randomIndex].position);
     }
 }

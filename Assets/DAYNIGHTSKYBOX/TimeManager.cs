@@ -121,6 +121,24 @@ public class TimeManager : MonoBehaviour
         UpdateSkyBlend();
     }
 
+    // ==========================================
+    // HÀM ĐỒNG BỘ THỜI GIAN QUA MẠNG (MULTIPLAYER)
+    // ==========================================
+    public float CurrentTimeInSeconds 
+    {
+        get {
+            if (service != null) return (float)service.CurrentTime.TimeOfDay.TotalSeconds;
+            return 0f;
+        }
+    }
+
+    public void SyncTimeFromHost(float hostTime)
+    {
+        if (service != null)
+        {
+            service.SetTimeInSeconds(hostTime);
+        }
+    }
 
     // ==========================================
     // HÀM DÀNH CHO TIMELINE (CUTSCENE)
