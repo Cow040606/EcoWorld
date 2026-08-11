@@ -377,9 +377,25 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
+    private float syncTimeTimer = 0f;
+
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority && !HasInputAuthority) return;
+
+        // --- ĐỒNG BỘ THỜI GIAN GLOBAL TỪ HOST/MASTER CLIENT ---
+        if (HasStateAuthority && (Runner.IsServer || Runner.IsSharedModeMasterClient))
+        {
+            syncTimeTimer += Runner.DeltaTime;
+            if (syncTimeTimer >= 5f)
+            {
+                syncTimeTimer = 0f;
+                if (TimeManager.Instance != null)
+                {
+                    RPC_SyncGlobalTime(TimeManager.Instance.CurrentTimeInSeconds);
+                }
+            }
+        }
 
         // Kiểm tra chết trên server để spawn balo và đặt isDead = true
         if (CurrentHealth <= 0 && !isDead)
@@ -2051,6 +2067,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (InventoryManager.instance.slotNhan != null) InventoryManager.instance.slotNhan.XoaDoKhoiO();
             
             InventoryManager.instance.CapNhatLaiToanBoChiSo();
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_SyncGlobalTime(float hostTime)
+    {
+        // Bỏ qua nếu chính mình là người gửi (Host/Master)
+        if (Runner.IsServer || Runner.IsSharedModeMasterClient) return;
+
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.SyncTimeFromHost(hostTime);
         }
     }
 }

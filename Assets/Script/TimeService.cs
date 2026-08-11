@@ -39,6 +39,11 @@ public class TimeService {
         isDayTime.Value = IsDayTime();
         currentHour.Value = currentTime.Hour;
     }
+    public void SetTimeInSeconds(float totalSeconds) {
+        currentTime = currentTime.Date + TimeSpan.FromSeconds(totalSeconds);
+        isDayTime.Value = IsDayTime();
+        currentHour.Value = currentTime.Hour;
+    }
     public float GetDayFactor() {
         float timeInHours = (float)currentTime.TimeOfDay.TotalHours;
         float sunrise = settings.sunriseHour;
