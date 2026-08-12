@@ -545,11 +545,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             if (isDead)
             {
+
+
+                animator.SetBool("isDead", true);
+ 1caa3a580abf39c78c2833f4b13234c707fe56e0
                 animator.SetFloat("Speed", 0f);
                 animator.SetBool("isJump", false);
             }
             else
             {
+ 
+
+                animator.SetBool("isDead", false);
+ 1caa3a580abf39c78c2833f4b13234c707fe56e0
                 if (isJumping)
                 {
                     isSprinting = false;
@@ -1471,7 +1479,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_TakeDame(float Dame)
     {
         if (isInvincible && Dame > 0) return;
@@ -1817,7 +1825,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             animator.SetTrigger("slash");
         }
     }
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    [Rpc(RpcSources.All, RpcTargets.All)]
     public void RPC_AnimDash() { if (animator != null) animator.SetTrigger("dash"); }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
