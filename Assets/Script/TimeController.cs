@@ -1,11 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
 public class TimeController : MonoBehaviour
 {
+    public static TimeController Instance;
+
     [SerializeField]
     private float timeMultiplier;
 
@@ -43,32 +43,51 @@ public class TimeController : MonoBehaviour
     private float maxMoonLightIntensity;
 
     private DateTime currentTime;
-
     private TimeSpan sunriseTime;
-
     private TimeSpan sunsetTime;
 
-    // Start is called before the first frame update
+    // Biến lưu tổng số giây trong ngày (0 đến 86400)
+    public float CurrentTimeInSeconds { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     void Start()
     {
-        currentTime = DateTime.Now.Date + TimeSpan.FromHours(startHour);
-
+        CurrentTimeInSeconds = (float)TimeSpan.FromHours(startHour).TotalSeconds;
+        
         sunriseTime = TimeSpan.FromHours(sunriseHour);
         sunsetTime = TimeSpan.FromHours(sunsetHour);
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // Tất cả các máy đều tự chạy thời gian nội bộ cho mượt
+        CurrentTimeInSeconds += Time.deltaTime * timeMultiplier;
+        
+        if (CurrentTimeInSeconds >= 86400f)
+        {
+            CurrentTimeInSeconds -= 86400f;
+        }
+
+        // Dùng 1 ngày cố định để tránh lệch Timezone giữa các máy
+        currentTime = new DateTime(2024, 1, 1) + TimeSpan.FromSeconds(CurrentTimeInSeconds);
+
         UpdateTimeOfDay();
         RotateSun();
         UpdateLightSettings();
     }
 
+    // Hàm này sẽ được Player_Controller (của Host) gọi qua RPC để đồng bộ
+    public void SyncTimeFromHost(float hostTime)
+    {
+        CurrentTimeInSeconds = hostTime;
+    }
+
     private void UpdateTimeOfDay()
     {
-        currentTime = currentTime.AddSeconds(Time.deltaTime * timeMultiplier);
-
         if (timeText != null)
         {
             timeText.text = currentTime.ToString("HH:mm");

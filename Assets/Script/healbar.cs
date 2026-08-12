@@ -2,21 +2,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class HealthBar : MonoBehaviour
+public class BossHealthBarHUD : MonoBehaviour
 {
-    // Cầu nối tĩnh (Singleton) giúp các Boss tự gọi UI mà không cần lệnh Find nặng nề
-    public static HealthBar Instance;
+    // Cầu nối tĩnh (Singleton) giúp các Boss tự gọi UI
+    public static BossHealthBarHUD Instance;
 
-    [Header("Giao diện UI")]
+    [Header("Giao diện HUD Fantasy")]
+    [Tooltip("Kéo object Slider_Horizontal vào đây")]
     public Slider healthSlider;
-    public Slider lazySlider;
-    public TextMeshProUGUI txtTenBoss;
 
-    [Header("Cài đặt hiệu ứng")]
-    public float lazyDelay = 0.5f;
-    public float lerpSpeed = 10f;
+    [Tooltip("Kéo object Label_BossName vào đây")]
+    public TextMeshProUGUI txtBossName;
 
-    private float lazyCatchupTime;
+    [Tooltip("Kéo object Label_HP vào đây (để hiển thị số 100/100)")]
+    public TextMeshProUGUI txtHP;
 
     private void Awake()
     {
@@ -27,45 +26,49 @@ public class HealthBar : MonoBehaviour
         }
         else if (Instance != this)
         {
-            Destroy(gameObject); // Đảm bảo chỉ có 1 thanh máu duy nhất tồn tại
+            Destroy(gameObject);
         }
     }
 
+    /// <summary>
+    /// Cập nhật tên của Boss lên giao diện
+    /// </summary>
     public void CapNhatTenBoss(string ten)
     {
-        if (txtTenBoss != null)
+        if (txtBossName != null)
         {
-            txtTenBoss.text = ten;
+            txtBossName.text = ten;
         }
     }
 
+    /// <summary>
+    /// Đặt lại thanh máu về trạng thái đầy đủ
+    /// </summary>
     public void ResetHealthBar()
     {
         if (healthSlider != null) healthSlider.value = 1f;
-        if (lazySlider != null) lazySlider.value = 1f;
+        if (txtHP != null) txtHP.text = "MAX";
     }
 
+    /// <summary>
+    /// Gọi hàm này khi Boss nhận sát thương hoặc hồi máu
+    /// </summary>
     public void UpdateHealthBar(float currentHealth, float maxHealth)
     {
+        // Đảm bảo máu không bị âm
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         float targetHealthRatio = currentHealth / maxHealth;
 
-        if (healthSlider != null && healthSlider.value != targetHealthRatio)
+        // Cập nhật text máu (Ví dụ: 1500 / 2000)
+        if (txtHP != null)
         {
-            bool isTakingDamage = targetHealthRatio < healthSlider.value;
-            healthSlider.value = targetHealthRatio;
-
-            if (isTakingDamage)
-                lazyCatchupTime = Time.time + lazyDelay;
-            else if (lazySlider != null)
-                lazySlider.value = healthSlider.value;
+            txtHP.text = $"{Mathf.CeilToInt(currentHealth)} / {Mathf.CeilToInt(maxHealth)}";
         }
 
-        if (lazySlider != null && lazySlider.value != targetHealthRatio)
+        // Cập nhật thanh Slider chính ngay lập tức
+        if (healthSlider != null)
         {
-            if (Time.time >= lazyCatchupTime)
-            {
-                lazySlider.value = Mathf.Lerp(lazySlider.value, targetHealthRatio, Time.deltaTime * lerpSpeed);
-            }
+            healthSlider.value = targetHealthRatio;
         }
     }
 }

@@ -11,6 +11,15 @@ public class EnemyAI : NetworkBehaviour
     [Networked] private int currentPatrolIndex { get; set; }
     [Networked] private NetworkObject targetPlayer { get; set; }
 
+    public override void Spawned()
+    {
+        // Tắt NavMeshAgent ở các máy Client để NetworkTransform toàn quyền điều khiển vị trí
+        if (!Object.HasStateAuthority && agent != null)
+        {
+            agent.enabled = false;
+        }
+    }
+
     public override void FixedUpdateNetwork()
     {
         // Trong Shared Mode, chỉ người có quyền điều khiển (thường là Master/Host) mới tính toán AI

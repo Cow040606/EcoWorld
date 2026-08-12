@@ -88,10 +88,10 @@ public class BossController : NetworkBehaviour
             if (agent != null) agent.enabled = false;
         }
 
-        if (HealthBar.Instance != null)
+        if (BossHealthBarHUD.Instance != null)
         {
-            HealthBar.Instance.ResetHealthBar();
-            HealthBar.Instance.gameObject.SetActive(false);
+            BossHealthBarHUD.Instance.ResetHealthBar();
+            BossHealthBarHUD.Instance.gameObject.SetActive(false);
         }
     }
 
@@ -129,13 +129,13 @@ public class BossController : NetworkBehaviour
 
     void Update()
     {
-        if (Player_Controller.localPlayer == null || HealthBar.Instance == null) return;
+        if (Player_Controller.localPlayer == null || BossHealthBarHUD.Instance == null) return;
 
         if (currentState == BossState.Chet)
         {
             if (currentActiveBoss == this)
             {
-                HealthBar.Instance.gameObject.SetActive(false);
+                BossHealthBarHUD.Instance.gameObject.SetActive(false);
                 currentActiveBoss = null;
             }
             return;
@@ -164,7 +164,7 @@ public class BossController : NetworkBehaviour
         {
             if (currentActiveBoss == this)
             {
-                HealthBar.Instance.gameObject.SetActive(false);
+                BossHealthBarHUD.Instance.gameObject.SetActive(false);
                 currentActiveBoss = null;
             }
         }
@@ -173,9 +173,9 @@ public class BossController : NetworkBehaviour
     private void HienThiThongTinLenUI()
     {
         currentActiveBoss = this;
-        HealthBar.Instance.gameObject.SetActive(true);
-        HealthBar.Instance.CapNhatTenBoss(tenBoss);
-        HealthBar.Instance.UpdateHealthBar(CurrentHealth, maxHealth);
+        BossHealthBarHUD.Instance.gameObject.SetActive(true);
+        BossHealthBarHUD.Instance.CapNhatTenBoss(tenBoss);
+        BossHealthBarHUD.Instance.UpdateHealthBar(CurrentHealth, maxHealth);
     }
 
     #region LOGIC AI
