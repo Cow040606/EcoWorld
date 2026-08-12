@@ -35,6 +35,10 @@ public class EnemyAIOrc : NetworkBehaviour
     // THÊM: Bộ đếm thời gian dọn dẹp xác chết chuẩn Fusion (Thay thế cho Destroy)
     [Networked] private TickTimer despawnTimer { get; set; }
 
+    // THÊM: Đồng bộ vị trí thủ công cho chế độ Online
+    [Networked] private Vector3 NetworkPosition { get; set; }
+    [Networked] private Quaternion NetworkRotation { get; set; }
+
     private NavMeshAgent agent;
     private Animator animator;
     private Vector3 startPosition;
@@ -49,6 +53,9 @@ public class EnemyAIOrc : NetworkBehaviour
 
         if (HasStateAuthority)
         {
+            NetworkPosition = transform.position;
+            NetworkRotation = transform.rotation;
+
             // Chỉ BẬT NavMeshAgent trên máy chủ (State Authority)
             if (agent != null)
             {
@@ -62,6 +69,10 @@ public class EnemyAIOrc : NetworkBehaviour
         {
             // QUAN TRỌNG: Máy con (Proxy) phải TẮT NavMeshAgent để nhường quyền cho NetworkTransform
             if (agent != null) agent.enabled = false;
+            
+            // Đặt ngay vị trí ban đầu để tránh bị trượt từ tọa độ 0
+            transform.position = NetworkPosition;
+            transform.rotation = NetworkRotation;
         }
     }
 
@@ -72,6 +83,12 @@ public class EnemyAIOrc : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
+        if (HasStateAuthority)
+        {
+            NetworkPosition = transform.position;
+            NetworkRotation = transform.rotation;
+        }
+
         if (!HasStateAuthority) return;
 
         // Xử lý biến mất sau khi chết chuẩn mạng
@@ -306,6 +323,16 @@ public class EnemyAIOrc : NetworkBehaviour
     private void RPC_PlayAttackAnim()
     {
         if (animator != null) animator.SetTrigger("slash");
+    }
+
+    public override void Render()
+    {
+        if (!HasStateAuthority)
+        {
+            // Nội suy (Lerp) vị trí mượt mà trên máy khách
+            transform.position = Vector3.Lerp(transform.position, NetworkPosition, Runner.DeltaTime * 15f);
+            transform.rotation = Quaternion.Lerp(transform.rotation, NetworkRotation, Runner.DeltaTime * 15f);
+        }
     }
 
     public void OnStateChanged()

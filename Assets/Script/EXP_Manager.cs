@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class EXP_Manager : MonoBehaviour
 {
     public Slider sliderExp;
+    public Slider sliderExp2;
     public TextMeshProUGUI ExpText;
     void Update()
     {
@@ -12,11 +13,8 @@ public class EXP_Manager : MonoBehaviour
         if(sliderExp != null && myPlayer != null) 
         {
             sliderExp.value = myPlayer.ExpCurrent / myPlayer.expToLevelUp;
-            ExpText.text = " Lvl: " + myPlayer.level.ToString();
-        }
-        else
-        {
-            //Debug.LogWarning("Slider hoặc Player_Controller chưa được gán!");
+            sliderExp2.value = myPlayer.ExpCurrent / myPlayer.expToLevelUp;
+            ExpText.text = myPlayer.level.ToString();
         }
     }
 }
