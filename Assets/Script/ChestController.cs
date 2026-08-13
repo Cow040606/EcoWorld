@@ -114,16 +114,23 @@ public class ChestController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        // Dùng GetComponentInParent để phòng trường hợp Collider nằm ở object con của Player
+        Player_Controller player = other.GetComponentInParent<Player_Controller>();
+        
+        if (player != null)
         {
-            Player_Controller player = other.GetComponent<Player_Controller>();
-            
-            if (player != null)
+            // Kiểm tra an toàn cho Local Player (tránh lỗi khi test offline)
+            bool isLocalPlayer = true;
+            if (player.Object != null && player.Object.IsValid)
+            {
+                isLocalPlayer = player.HasInputAuthority;
+            }
+
+            if (isLocalPlayer)
             {
                 isPlayerNear = true;
                 currentPlayer = player;
                 
-                // Hiện UI nhắc nhở nếu được phép
                 if (uiTrenDauRuong != null && (moNhieuLan || !daMo))
                 {
                     uiTrenDauRuong.SetActive(true);
@@ -134,24 +141,23 @@ public class ChestController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        Player_Controller player = other.GetComponentInParent<Player_Controller>();
+        
+        // Nếu đúng là người chơi đang đứng gần rương đi ra thì mới tắt
+        if (player != null && player == currentPlayer)
         {
-            Player_Controller player = other.GetComponent<Player_Controller>();
-            if (player != null && player == currentPlayer)
+            isPlayerNear = false;
+            currentPlayer = null;
+            holdTimer = 0f;
+
+            if (uiTrenDauRuong != null)
             {
-                isPlayerNear = false;
-                currentPlayer = null;
-                holdTimer = 0f;
+                uiTrenDauRuong.SetActive(false);
+            }
 
-                if (uiTrenDauRuong != null)
-                {
-                    uiTrenDauRuong.SetActive(false);
-                }
-
-                if (UI_TienTrinhDung.instance != null)
-                {
-                    UI_TienTrinhDung.instance.AnUI();
-                }
+            if (UI_TienTrinhDung.instance != null)
+            {
+                UI_TienTrinhDung.instance.AnUI();
             }
         }
     }
