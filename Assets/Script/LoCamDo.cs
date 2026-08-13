@@ -31,6 +31,15 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
         if (khungSang != null) anhVien = khungSang.GetComponent<Image>();
     }
 
+    void Start()
+    {
+        // Kiểm tra ngay lúc vào game, nếu ô chưa có đồ thì làm tàng hình cục icon đi (tránh lỗi hiện cục trắng tinh)
+        if (idDangMac == 0)
+        {
+            XoaDoKhoiO();
+        }
+    }
+
     void OnDestroy()
     {
         if (danhSachTatCaCacLo.Contains(this)) danhSachTatCaCacLo.Remove(this);
@@ -133,9 +142,9 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
                 if (thongTin != null)
                 {
                     anhIcon.sprite = thongTin.icon; 
+                    anhIcon.enabled = true; // Bật icon lên khi có item
                     
-                    Color mauHienTai = anhIcon.color;
-                    mauHienTai.a = 1f; 
+                    Color mauHienTai = Color.white; 
                     anhIcon.color = mauHienTai;
                     
                     idDangMac = idDoVat; 
@@ -211,9 +220,7 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
         if (anhIcon != null)
         {
             anhIcon.sprite = null;
-            Color mauTrongSuot = anhIcon.color;
-            mauTrongSuot.a = 0f; 
-            anhIcon.color = mauTrongSuot;
+            anhIcon.enabled = false; // Tắt hoàn toàn icon để tàng hình, không bị hiện cục trắng
         }
 
         if (txtSoLuong != null)

@@ -19,6 +19,22 @@ public class UI_HotBar : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        // Quét lúc mới vào game: Nếu ô nào chưa có hình thì phải tắt hẳn đi để không bị hiện cục vuông trắng
+        if (danhSachIcon != null)
+        {
+            for (int i = 0; i < danhSachIcon.Length; i++)
+            {
+                if (danhSachIcon[i] != null && danhSachIcon[i].sprite == null)
+                {
+                    danhSachIcon[i].enabled = false;
+                    danhSachIcon[i].color = new Color(1f, 1f, 1f, 0f);
+                }
+            }
+        }
+    }
+
     // Hàm này chạy mỗi khi Bò bấm phím 1 2 3 4
     public void HighlightSlot(int slotIndex)
     {
@@ -32,8 +48,10 @@ public class UI_HotBar : MonoBehaviour
         if (slotIndex >= 0 && slotIndex < danhSachKhungSang.Length)
         {
             // Bật khung sáng cho cái ô đang chọn
-            if (danhSachKhungSang[slotIndex] != null) danhSachKhungSang[slotIndex].SetActive(true);
-
+            if (danhSachKhungSang[slotIndex] != null) 
+            {
+                danhSachKhungSang[slotIndex].SetActive(true);
+            }
         }
         // 3. NẾU BẤM CẤT VŨ KHÍ ĐI (Tay không: slotIndex = -1)
         else 
@@ -57,12 +75,14 @@ public class UI_HotBar : MonoBehaviour
             if (hinhAnhItem != null)
             {
                 danhSachIcon[slotIndex].sprite = hinhAnhItem;
-                danhSachIcon[slotIndex].color = Color.white; 
+                danhSachIcon[slotIndex].color = Color.white; // Màu tối đa
+                danhSachIcon[slotIndex].enabled = true; // Bật icon lên
             }
             else
             {
                 danhSachIcon[slotIndex].sprite = null;
-                danhSachIcon[slotIndex].color = new Color(1f, 1f, 1f, 0f); 
+                danhSachIcon[slotIndex].color = new Color(1f, 1f, 1f, 0f); // Độ mờ = 0
+                danhSachIcon[slotIndex].enabled = false; // Tắt hẳn icon đi cho nhẹ
             }
         }
     }

@@ -8,8 +8,8 @@ public class UI_Giap : MonoBehaviour
     [Tooltip("Kéo cục cha chứa toàn bộ thanh giáp vào đây (để ẩn đi khi không mặc giáp)")]
     public GameObject khungGiapTong; 
 
-    [Tooltip("Kéo cái hình ảnh thanh giáp (Image type: Filled) vào đây")]
-    public Image thanhGiapFill; 
+    [Tooltip("Kéo cái hình ảnh thanh giáp (Slider) vào đây")]
+    public Slider thanhGiapFill; 
     public GameObject Giapbroke; 
     private Image anhgiapbroke;
 
@@ -57,11 +57,11 @@ public class UI_Giap : MonoBehaviour
                 }
             }
 
-            // 3. CẬP NHẬT THANH CHẠY (IMAGE FILL)
+            // 3. CẬP NHẬT THANH CHẠY (SLIDER)
             if (thanhGiapFill != null)
             {
-                // Chia lấy tỷ lệ từ 0.0 đến 1.0 cho thanh Fill Amount
-                thanhGiapFill.fillAmount = giapHienTai / giapToiDa;
+                thanhGiapFill.maxValue = giapToiDa;
+                thanhGiapFill.value = giapHienTai;
             }
 
             // 4. CẬP NHẬT CHỮ SỐ (TEXT)

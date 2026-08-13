@@ -111,8 +111,14 @@ public class Player_QuestManager : NetworkBehaviour
             noiDungBang += dong + "\n";
         }
 
-        // Bắn dòng chữ lên Canvas
+        // Bắn dòng chữ lên Canvas (Giữ lại dự phòng nếu vẫn xài txtBangNhiemVu)
         if (txtBangNhiemVu != null) txtBangNhiemVu.text = noiDungBang;
+
+        // Cập nhật giao diện Prefab mới
+        if (QuestManager.instance != null)
+        {
+            QuestManager.instance.CapNhatUI_NhiemVu(danhSachNhiemVu);
+        }
 
         // Cập nhật các icon ! trên đầu NPC / Map
         CapNhatTatCaIconNPC();

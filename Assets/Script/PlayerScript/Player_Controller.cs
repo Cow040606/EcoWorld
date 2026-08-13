@@ -88,9 +88,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float thoiGianDelayHoi = 2f;
     private float dongHoDelayHoi = 0f;
 
-    public float ExpCurrent { get; set; }
-    public int level = 0;
-    public float expToLevelUp = 100f;
+    [Networked] public float ExpCurrent { get; set; }
+    [Networked] public int level { get; set; }
+    [Networked] public float expToLevelUp { get; set; }
 
     [Header("Trạng Thái Tiêu Hao")]
     private bool dangSuDungVatPham = false;
@@ -118,7 +118,16 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Header("Kinh tế & Túi đồ")]
     [Networked] public int Gold { get; set; }
     [Networked] public int Gem { get; set; }
-    [Networked, Capacity(20)] public NetworkArray<O_VatPham> TuiDo { get; }
+    [Networked, OnChangedRender(nameof(OnTuiDoChanged)), Capacity(20)] public NetworkArray<O_VatPham> TuiDo { get; }
+    
+    private void OnTuiDoChanged()
+    {
+        // Khi balo thực sự cập nhật từ Server về Client, ta quét lại tiến độ nhiệm vụ
+        if (HasInputAuthority && Player_QuestManager.localQuest != null)
+        {
+            Player_QuestManager.localQuest.KiemTraTienDo();
+        }
+    }
     [Networked, OnChangedRender(nameof(OnHotbarChanged)), Capacity(6)] public NetworkArray<int> HotbarIDs { get; }
 
     private void OnHotbarChanged()
@@ -197,7 +206,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         animator = GetComponent<Animator>();
         CurrentHealth = 100;
-        ExpCurrent = 0;
 
         if (hintText != null) hintText.text = "";
 
@@ -244,6 +252,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (HasStateAuthority)
         {
+            level = 0;
+            expToLevelUp = 100f;
+            ExpCurrent = 0f;
+            
             MaxHealth = baseMaxHealth;
             MaxStamina = baseMaxStamina;
             speed = baseSpeed;
@@ -301,8 +313,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 sprintPressedLocal = false;
                 return;
             }
-
-            RPC_AddExp(0.1f);
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                RPC_AddExp(20f);
+            }
 
             if (KiemTraDangGoPhimChat()) return;
 
