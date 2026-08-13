@@ -78,7 +78,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float tocDoTut = 20f;
     public float tocDoHoi = 15f;
 
-    // [ĐÃ SỬA] CHUYỂN HỆ THỐNG EXP SANG BIẾN MẠNG ĐỂ ĐỒNG BỘ
     [Header("Hệ Thống Kinh Nghiệm & Cấp Độ")]
     [Networked] public float ExpCurrent { get; set; }
     [Networked] public int level { get; set; }
@@ -120,10 +119,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Networked] public int Gold { get; set; }
     [Networked] public int Gem { get; set; }
     [Networked, OnChangedRender(nameof(OnTuiDoChanged)), Capacity(20)] public NetworkArray<O_VatPham> TuiDo { get; }
-    
+
     private void OnTuiDoChanged()
     {
-        // Khi balo thực sự cập nhật từ Server về Client, ta quét lại tiến độ nhiệm vụ
         if (HasInputAuthority && Player_QuestManager.localQuest != null)
         {
             Player_QuestManager.localQuest.KiemTraTienDo();
@@ -198,15 +196,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private Vector3 rayHitPoint;
     #endregion
 
-    #region 2. KHỞI TẠO & VÒNG LẶP CHÍNH (SPAWN, UPDATE, FIXED UPDATE, RENDER)
+    #region 2. KHỞI TẠO & VÒNG LẶP CHÍNH
 
     public override void Spawned()
     {
         animator = GetComponent<Animator>();
-
         CurrentHealth = 100;
-
-
 
         if (hintText != null) hintText.text = "";
 
@@ -252,7 +247,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             level = 0;
             expToLevelUp = 100f;
             ExpCurrent = 0f;
-            
+
             MaxHealth = baseMaxHealth;
             MaxStamina = baseMaxStamina;
             speed = baseSpeed;
@@ -263,7 +258,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (CurrentHealth <= 0) CurrentHealth = MaxHealth;
             if (CurrentStamina <= 0) CurrentStamina = MaxStamina;
 
-            // Khởi tạo mức Exp cần để lên level 1 nếu chưa có
             if (expToLevelUp <= 0) expToLevelUp = 100f;
         }
     }
@@ -311,14 +305,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                RPC_AddExp(20f);
-            }
-
-
-            // [ĐÃ XÓA] Xóa RPC_AddExp(0.1f) ở đây để tránh giật lag mạng do gọi hàm theo FPS.
-
+            if (Input.GetKeyDown(KeyCode.L)) RPC_AddExp(20f);
 
             if (KiemTraDangGoPhimChat()) return;
 
@@ -453,13 +440,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             character.Move(Vector3.zero);
             isrun = isSprinting = isJumping = false;
 
-            if (hitTimer.Expired(Runner))
-            {
-                hitTimer = TickTimer.None;
-                if (pendingActionType == 1) ThucHienXetVaChamChop();
-                else if (pendingActionType == 2) ThucHienXetVaChamMine();
-            }
-
+            // [ĐÃ SỬA] Đã loại bỏ logic gọi hàm va chạm bằng TickTimer ở đây. 
+            // Giờ đây mọi thứ sẽ được trigger bởi Animation Event.
             if (actionTimer.Expired(Runner))
             {
                 isDoingAction = false;
@@ -563,16 +545,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             if (isDead)
             {
-
-
                 animator.SetBool("isDead", true);
                 animator.SetFloat("Speed", 0f);
                 animator.SetBool("isJump", false);
             }
             else
             {
- 
-
                 animator.SetBool("isDead", false);
                 if (isJumping)
                 {
@@ -629,7 +607,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #endregion
 
-    #region 3. HỆ THỐNG NHẬP LIỆU (INPUT METHODS)
+    #region 3. HỆ THỐNG NHẬP LIỆU
 
     private bool KiemTraDangGoPhimChat()
     {
@@ -757,7 +735,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #endregion
 
-    #region 4. CƠ CHẾ TƯƠNG TÁC & VŨ KHÍ (INTERACTION & TOOLS)
+    #region 4. CƠ CHẾ TƯƠNG TÁC & VŨ KHÍ
 
     private void HandleGameplayInteraction(int idDangCam)
     {
@@ -860,10 +838,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         lastAttackTime = Time.time;
         RPC_AnimSlash(currentComboStep);
 
+        // [ĐÃ SỬA] Tham số timeToHit truyền vào là 0f để vô hiệu hóa HitTimer, nhường quyền kích hoạt cho Event
         thoiDiemHetKhoaCucBo = Time.time + slashLockDuration;
         RPC_BaoHieuBatDauAction(3, slashLockDuration, 0f);
 
-        PlayerDoDamage();
+        // [ĐÃ SỬA] Đã xóa gọi PlayerDoDamage() ở đây.
 
         if (currentComboStep == 3)
         {
@@ -873,7 +852,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     public void PlayerDoDamage()
     {
-        if (!HasInputAuthority) return;
+        if (!HasInputAuthority) return; // Bảo mật: Chỉ máy Client đánh mới tự tính toán Raycast
 
         Vector3 tamQuet = transform.position + transform.forward * 1f;
         float banKinhChem = 3f;
@@ -912,7 +891,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (playerCamera == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
 
         thoiDiemHetKhoaCucBo = Time.time + 1.5f;
-        RPC_BaoHieuBatDauAction(1, 1.5f, 0.6f);
+        // [ĐÃ SỬA] Đổi tham số timeToHit thành 0f 
+        RPC_BaoHieuBatDauAction(1, 1.5f, 0f);
     }
 
     private void HandleMining()
@@ -921,11 +901,15 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         RPC_AnimDapDa();
         thoiDiemHetKhoaCucBo = Time.time + 1.5f;
-        RPC_BaoHieuBatDauAction(2, 1.5f, 0.6f);
+        // [ĐÃ SỬA] Đổi tham số timeToHit thành 0f 
+        RPC_BaoHieuBatDauAction(2, 1.5f, 0f);
     }
 
-    private void ThucHienXetVaChamChop()
+    // [ĐÃ SỬA] Hàm chuyển thành public để đón event từ Animator
+    public void ThucHienXetVaChamChop()
     {
+        if (!HasInputAuthority) return; // Tránh việc máy khác chạy anim rồi spam trừ máu cây
+
         Vector3 hitboxCenter = transform.position + transform.forward * hitboxOffset;
         bool daChatCayPrefab = false;
 
@@ -959,8 +943,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    private void ThucHienXetVaChamMine()
+    // [ĐÃ SỬA] Hàm chuyển thành public để đón event từ Animator
+    public void ThucHienXetVaChamMine()
     {
+        if (!HasInputAuthority) return;
+
         Vector3 hitboxCenter = transform.position + transform.forward * hitboxOffset + Vector3.up * 1f;
         Collider[] hits = Physics.OverlapSphere(hitboxCenter, hitboxRadius, rockLayer);
 
@@ -1028,7 +1015,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #endregion
 
-    #region 5. NÔNG TRẠI & CÂU CÁ (FARMING & FISHING)
+    #region 5. NÔNG TRẠI & CÂU CÁ
 
     private void UpdateFarmingUI(int idDangCam)
     {
@@ -1188,7 +1175,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #endregion
 
-    #region 6. TÚI ĐỒ & GIAO DIỆN (INVENTORY & UI)
+    #region 6. TÚI ĐỒ & GIAO DIỆN
 
     private int _lastEquippedID = -1;
 
@@ -1336,7 +1323,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #endregion
 
-    #region 7. CHỈ SỐ & SÁT THƯƠNG (STATS & DAMAGE)
+    #region 7. CHỈ SỐ & SÁT THƯƠNG
 
     private void XuLyTheLuc()
     {
@@ -1386,9 +1373,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     #endregion
 
-    #region 8. HỆ THỐNG GỌI HÀM TỪ XA (RPC) & KINH NGHIỆM ĐỒNG BỘ
+    #region 8. HỆ THỐNG GỌI HÀM TỪ XA (RPC)
 
-    // [ĐÃ THÊM] XỬ LÝ EXP AN TOÀN TRÊN SERVER
     public void Server_AddExp(float exp)
     {
         if (!HasStateAuthority) return;
@@ -1813,6 +1799,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         isDoingAction = true;
         pendingActionType = actionType;
         actionTimer = TickTimer.CreateFromSeconds(Runner, totalAnimTime);
+
         if (timeToHit > 0)
         {
             hitTimer = TickTimer.CreateFromSeconds(Runner, timeToHit);
