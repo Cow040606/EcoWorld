@@ -14,23 +14,22 @@ public class EnemyAIOrc : NetworkBehaviour
 
     [Networked, OnChangedRender(nameof(OnHealthChanged))]
     public int Health { get; set; }
-
-    // THÊM MỚI: Biến mạng đồng bộ Level giữa các người chơi
     [Networked, OnChangedRender(nameof(OnLevelChanged))]
     public int NetworkedLevel { get; set; }
 
     [Header("Enemy Info")]
     public string enemyName = "Skeleton";
 
-    [Header("Level & Stats Settings (Cài đặt cấp độ và chỉ số)")]
-    public int minLevel = 1;             // Cấp độ nhỏ nhất khi spawn
-    public int maxLevel = 5;             // Cấp độ lớn nhất khi spawn
+    [Header("Thưởng Kinh Nghiệm")]
+    public float expReward = 50f; // CHỈNH SỐ LƯỢNG EXP CỦA QUÁI Ở ĐÂY
 
-    public int baseHealth = 100;         // Máu cơ bản ở cấp 1
-    public int healthPerLevel = 20;      // Mỗi cấp độ tăng thêm bao nhiêu máu?
-
-    public float baseDamage = 15f;       // Sát thương cơ bản ở cấp 1
-    public float damagePerLevel = 3f;    // Mỗi cấp độ tăng thêm bao nhiêu sát thương?
+    [Header("Level & Stats Settings")]
+    public int minLevel = 1;
+    public int maxLevel = 5;
+    public int baseHealth = 100;
+    public int healthPerLevel = 20;
+    public float baseDamage = 15f;
+    public float damagePerLevel = 3f;
 
     [Header("AI Settings")]
     public float patrolRadius = 10f;
@@ -49,9 +48,7 @@ public class EnemyAIOrc : NetworkBehaviour
 
     [Header("Drop Settings")]
     public List<GameObject> dropItems;
-
-    [Range(0f, 100f)]
-    public float dropChance = 100f;
+    [Range(0f, 100f)] public float dropChance = 100f;
 
     [Networked] private TickTimer despawnTimer { get; set; }
 
@@ -66,7 +63,6 @@ public class EnemyAIOrc : NetworkBehaviour
     private Transform targetPlayer;
     private Camera mainCamera;
 
-    // Các hàm tính toán chỉ số theo Level
     public int GetMaxHealth(int level) => baseHealth + ((Mathf.Max(1, level) - 1) * healthPerLevel);
     public float GetDamage(int level) => baseDamage + ((Mathf.Max(1, level) - 1) * damagePerLevel);
 
@@ -91,13 +87,8 @@ public class EnemyAIOrc : NetworkBehaviour
                 agent.Warp(transform.position);
                 agent.enabled = true;
             }
-
-            // Random cấp độ và lưu vào biến mạng
             NetworkedLevel = Random.Range(minLevel, maxLevel + 1);
-
-            // Tính toán lượng máu tối đa dựa trên cấp độ và gán máu hiện tại
             Health = GetMaxHealth(NetworkedLevel);
-
             CurrentState = EnemyState.Idle;
         }
         else
@@ -109,10 +100,7 @@ public class EnemyAIOrc : NetworkBehaviour
             transform.rotation = NetworkRotation;
         }
 
-        // --- KHỞI TẠO UI CHO MỌI NGƯỜI CHƠI ---
         if (nameText != null) nameText.text = enemyName;
-
-        // Gọi cập nhật UI ban đầu
         OnLevelChanged();
         OnHealthChanged();
     }
@@ -120,17 +108,10 @@ public class EnemyAIOrc : NetworkBehaviour
     private void LateUpdate()
     {
         if (healthCanvas != null && mainCamera != null && CurrentState != EnemyState.Dead)
-        {
-            // SỬA LẠI: Đồng bộ vector hướng nhìn của UI trùng khớp tuyệt đối với hướng nhìn của Camera.
-            // Cách này đảm bảo UI không bao giờ bị ngược chữ và bỏ qua mọi góc nghiêng do xương đầu của quái vật tạo ra.
             healthCanvas.transform.forward = mainCamera.transform.forward;
-        }
     }
 
-    private bool IsAgentValid()
-    {
-        return agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh;
-    }
+    private bool IsAgentValid() => agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh;
 
     public override void FixedUpdateNetwork()
     {
@@ -144,10 +125,7 @@ public class EnemyAIOrc : NetworkBehaviour
 
         if (CurrentState == EnemyState.Dead)
         {
-            if (despawnTimer.Expired(Runner))
-            {
-                Runner.Despawn(Object);
-            }
+            if (despawnTimer.Expired(Runner)) Runner.Despawn(Object);
             return;
         }
 
@@ -158,7 +136,6 @@ public class EnemyAIOrc : NetworkBehaviour
                 if (stateTimer >= idleWaitTime) StartPatrol();
                 DetectPlayer();
                 break;
-
             case EnemyState.Patrol:
                 if (IsAgentValid() && !agent.pathPending && agent.remainingDistance < 0.5f)
                 {
@@ -167,12 +144,10 @@ public class EnemyAIOrc : NetworkBehaviour
                 }
                 DetectPlayer();
                 break;
-
             case EnemyState.Scream:
                 stateTimer += Runner.DeltaTime;
                 if (stateTimer >= screamDuration) CurrentState = EnemyState.Chase;
                 break;
-
             case EnemyState.Chase:
                 if (targetPlayer != null)
                 {
@@ -213,7 +188,6 @@ public class EnemyAIOrc : NetworkBehaviour
                     }
                 }
                 break;
-
             case EnemyState.Attack:
                 if (targetPlayer != null)
                 {
@@ -234,12 +208,8 @@ public class EnemyAIOrc : NetworkBehaviour
                         }
                     }
                 }
-                else
-                {
-                    CurrentState = EnemyState.Return;
-                }
+                else CurrentState = EnemyState.Return;
                 break;
-
             case EnemyState.Return:
                 if (IsAgentValid() && !agent.pathPending && agent.remainingDistance < 0.5f)
                 {
@@ -259,12 +229,7 @@ public class EnemyAIOrc : NetworkBehaviour
             if (dist <= attackRadius + 1f)
             {
                 Player_Controller player = targetPlayer.GetComponent<Player_Controller>();
-                if (player != null)
-                {
-                    // Lấy sát thương chuẩn được tính dựa trên Cấp độ (Level)
-                    float damageToDeal = GetDamage(NetworkedLevel);
-                    player.RPC_TakeDame(damageToDeal);
-                }
+                if (player != null) player.RPC_TakeDame(GetDamage(NetworkedLevel));
             }
         }
     }
@@ -273,9 +238,7 @@ public class EnemyAIOrc : NetworkBehaviour
     {
         Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
         randomDirection += startPosition;
-
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomDirection, out hit, patrolRadius, 1))
+        if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, patrolRadius, 1))
         {
             if (IsAgentValid())
             {
@@ -295,7 +258,6 @@ public class EnemyAIOrc : NetworkBehaviour
             {
                 Player_Controller player = hit.GetComponent<Player_Controller>();
                 if (player != null && player.isDead) continue;
-
                 targetPlayer = hit.transform;
                 CurrentState = EnemyState.Scream;
                 stateTimer = 0f;
@@ -307,78 +269,62 @@ public class EnemyAIOrc : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_TakeDamageFromPlayer(int damage)
+    public void RPC_TakeDamageFromPlayer(int damage, RpcInfo info = default)
     {
         if (CurrentState == EnemyState.Dead) return;
 
         Health -= damage;
-
         if (Health <= 0)
         {
             CurrentState = EnemyState.Dead;
             if (IsAgentValid()) agent.isStopped = true;
             DropItem();
             despawnTimer = TickTimer.CreateFromSeconds(Runner, 5f);
+
+            // TRẢ KINH NGHIỆM CHO NGƯỜI KẾT LIỄU
+            GiveExpToKiller(info.Source, expReward);
         }
-        else
-        {
-            RPC_PlayTakeDamageAnim();
-        }
+        else RPC_PlayTakeDamageAnim();
     }
 
-    // Callback cập nhật thanh máu UI
-    public void OnHealthChanged()
+    // ĐÃ SỬA LỖI CS1061 TẠI ĐÂY: Dùng playerRef == PlayerRef.None
+    private void GiveExpToKiller(PlayerRef playerRef, float expAmount)
     {
-        if (healthSlider != null)
+        if (!HasStateAuthority || playerRef == PlayerRef.None) return;
+
+        NetworkObject playerObj = Runner.GetPlayerObject(playerRef);
+        if (playerObj != null)
         {
-            healthSlider.value = Health;
+            Player_Controller player = playerObj.GetComponent<Player_Controller>();
+            if (player != null) player.Server_AddExp(expAmount);
         }
     }
 
-    // THÊM MỚI: Callback cập nhật Level UI và thay đổi giới hạn của thanh máu
+    public void OnHealthChanged() { if (healthSlider != null) healthSlider.value = Health; }
     public void OnLevelChanged()
     {
         int safeLevel = Mathf.Max(1, NetworkedLevel);
         if (levelText != null) levelText.text = safeLevel.ToString();
-
-        // Điều chỉnh lại MaxValue của Slider máu cho khớp với Level
         if (healthSlider != null) healthSlider.maxValue = GetMaxHealth(safeLevel);
     }
 
     private void DropItem()
     {
-        if (dropItems != null && dropItems.Count > 0)
+        if (dropItems != null && dropItems.Count > 0 && Random.Range(0f, 100f) <= dropChance)
         {
-            float randomValue = Random.Range(0f, 100f);
-            if (randomValue <= dropChance)
+            GameObject itemToDrop = dropItems[Random.Range(0, dropItems.Count)];
+            if (itemToDrop != null)
             {
-                int randomIndex = Random.Range(0, dropItems.Count);
-                GameObject itemToDrop = dropItems[randomIndex];
-
-                if (itemToDrop != null)
-                {
-                    NetworkObject netObj = itemToDrop.GetComponent<NetworkObject>();
-                    if (netObj != null)
-                    {
-                        Vector3 spawnPosition = transform.position + Vector3.up * 1f;
-                        Runner.Spawn(netObj, spawnPosition, Quaternion.identity);
-                    }
-                }
+                NetworkObject netObj = itemToDrop.GetComponent<NetworkObject>();
+                if (netObj != null) Runner.Spawn(netObj, transform.position + Vector3.up * 1f, Quaternion.identity);
             }
         }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_PlayTakeDamageAnim()
-    {
-        if (animator != null) animator.SetTrigger("takedame");
-    }
-
+    private void RPC_PlayTakeDamageAnim() { if (animator != null) animator.SetTrigger("takedame"); }
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_PlayAttackAnim()
-    {
-        if (animator != null) animator.SetTrigger("slash");
-    }
+    private void RPC_PlayAttackAnim() { if (animator != null) animator.SetTrigger("slash"); }
 
     public override void Render()
     {
@@ -393,27 +339,21 @@ public class EnemyAIOrc : NetworkBehaviour
     public void OnStateChanged()
     {
         if (animator == null) return;
-
         animator.SetBool("isWalking", false);
         animator.SetBool("isRunning", false);
-
         switch (CurrentState)
         {
             case EnemyState.Patrol:
             case EnemyState.Return:
-                animator.SetBool("isWalking", true);
-                break;
+                animator.SetBool("isWalking", true); break;
             case EnemyState.Chase:
-                animator.SetBool("isRunning", true);
-                break;
+                animator.SetBool("isRunning", true); break;
             case EnemyState.Scream:
-                animator.SetTrigger("scream");
-                break;
+                animator.SetTrigger("scream"); break;
             case EnemyState.Dead:
                 animator.SetTrigger("death");
                 Collider col = GetComponent<Collider>();
                 if (col != null) col.enabled = false;
-
                 if (healthCanvas != null) healthCanvas.gameObject.SetActive(false);
                 break;
         }
