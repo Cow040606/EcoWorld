@@ -59,8 +59,9 @@ public class EXP_Manager : MonoBehaviour
                     }
                 }
 
-                // Nếu có cộng thêm EXP thì bật animation "+ XP"
-                if (gainedExp > 0)
+                // Nếu có cộng thêm EXP (và lượng cộng thêm đủ lớn, ví dụ >= 1) thì mới bật animation "+ XP"
+                // Việc này giúp lọc lượng EXP thụ động (cộng rất nhỏ từng frame) không làm kẹt Animator
+                if (gainedExp >= 1f)
                 {
                     if (xpLogAnimator != null) 
                     {

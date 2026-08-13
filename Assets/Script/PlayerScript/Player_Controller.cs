@@ -95,13 +95,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float thoiGianDelayHoi = 2f;
     private float dongHoDelayHoi = 0f;
 
-
-    [Networked] public float ExpCurrent { get; set; }
-    [Networked] public int level { get; set; }
-    [Networked] public float expToLevelUp { get; set; }
-
-
-
     [Header("Trạng Thái Tiêu Hao")]
     private bool dangSuDungVatPham = false;
     private Coroutine tienTrinhDungItem;
@@ -416,12 +409,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                     RPC_SyncGlobalTime(TimeManager.Instance.CurrentTimeInSeconds);
                 }
             }
-
-            // [ĐÃ THÊM] Passive EXP sinh tồn: Cộng liên tục lượng exp nhỏ theo thời gian (ví dụ 1 exp mỗi giây)
-            if (!isDead)
-            {
-                Server_AddExp(1.0f * Runner.DeltaTime);
-            }
         }
 
         if (CurrentHealth <= 0 && !isDead)
@@ -579,7 +566,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
 
                 animator.SetBool("isDead", true);
- 1caa3a580abf39c78c2833f4b13234c707fe56e0
                 animator.SetFloat("Speed", 0f);
                 animator.SetBool("isJump", false);
             }
@@ -588,7 +574,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
  
 
                 animator.SetBool("isDead", false);
- 1caa3a580abf39c78c2833f4b13234c707fe56e0
                 if (isJumping)
                 {
                     isSprinting = false;
