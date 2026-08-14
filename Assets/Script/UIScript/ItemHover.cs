@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems; 
 
 public class ItemHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -14,7 +14,7 @@ public class ItemHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (thongTinMonDo != null && TooltipManager.instance != null)
         {
-            TooltipManager.instance.HienThiTooltip(thongTinMonDo, soLuongDangCo);
+            TooltipManager.instance.HienThiTooltip(thongTinMonDo);
             
             // --- 2. GÁN ID KHI CHUỘT CHẠM VÀO ĐỒ ---
             // (Lu ít đoán biến ID trong file Item của Bò tên là itemID, nếu khác thì Bò sửa lại xíu nha)

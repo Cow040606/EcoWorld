@@ -1,8 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic; // Bắt buộc để dùng List
 using Fusion;
+using UnityEngine.EventSystems;
 
 public class ShopUIController : MonoBehaviour
 {
@@ -13,6 +14,9 @@ public class ShopUIController : MonoBehaviour
     [Header("UI Shop")]
     public GameObject khungShop; 
     
+    [Header("Các UI cần ẩn khi mở Shop")]
+    public List<GameObject> uiCanAnKhiMoShop = new List<GameObject>();
+
     public bool isShopOpen = false;
 
     [Header("Cấu hình Ô UI")]
@@ -23,8 +27,34 @@ public class ShopUIController : MonoBehaviour
     // Dùng List để Bò dễ dàng Thêm/Bớt đồ đạc khi có Event
     public List<Item> danhSachMatHang = new List<Item>(); 
 
+    [Header("UI Bảng Chi Tiết")]
+    public TextMeshProUGUI txtTenChiTiet;
+    public Image imgIconChiTiet;
+    public TextMeshProUGUI txtGiaChiTiet;
+    public TextMeshProUGUI txtDoHiemChiTiet;
+    public TextMeshProUGUI txtMoTaChiTiet;
+    
+    [Header("UI Tổng Tiền Mua/Bán")]
+    public TextMeshProUGUI txtTongTienMua;
+    public TextMeshProUGUI txtTongTienBan;
+
+    [Header("UI Trạng Thái")]
+    public TextMeshProUGUI txtStatus;
+
+    [Header("Hệ Thống Số Lượng")]
+    public TMP_InputField txtSoLuongMuaBan; // Đổi thành TMP_InputField để có thể gõ chữ
+    public Button btnCong;
+    public Button btnTru;
+    public Button btnMax;
+    public Button btnMin;
+    public Button btnBuy;
+    public Button btnSell;
+
+    private Item selectedItem;
+    private int currentQuantity = 1;
+    private int playerCurrentQuantity = 0;
+
     private Player_Controller khachHangHienTai;
-    public bool dangmoshop = false;
 
     void Awake()
     {
@@ -37,6 +67,7 @@ public class ShopUIController : MonoBehaviour
         khungGiaoDien.SetActive(true);
         khungGiaoDien.SetActive(false);
     }
+
     // HÀM SIÊU TÌM KIẾM: Đảm bảo 1000% tìm ra Local Player
     private Player_Controller TimKhachHangLocal()
     {
@@ -71,6 +102,11 @@ public class ShopUIController : MonoBehaviour
         isShopOpen = !isShopOpen;
 
         if (khungShop != null) khungShop.SetActive(isShopOpen);
+
+        foreach (GameObject ui in uiCanAnKhiMoShop)
+        {
+            if (ui != null) ui.SetActive(!isShopOpen);
+        }
 
         if (isShopOpen)
         {
@@ -114,49 +150,226 @@ public class ShopUIController : MonoBehaviour
                 }
             }
 
-            // --- BƠM DỮ LIỆU CHO TOOLTIP ---
+            // --- XÓA ITEM HOVER ĐỂ KHÔNG HIỆN TOOLTIP ---
             ItemHover camBien = oMoi.GetComponent<ItemHover>();
             if (camBien != null)
             {
-                camBien.thongTinMonDo = matHang;
-                camBien.soLuongDangCo = soLuongThucTe; 
+                Destroy(camBien);
             }
 
             // Gán dữ liệu lên hình ảnh và chữ
             if (itemName != null) itemName.text = matHang.itemName;
             if (itemIMG != null) itemIMG.sprite = matHang.icon;
-            if (itemPrice != null) itemPrice.text = matHang.value.ToString() + " Xu"; 
+            if (itemPrice != null) itemPrice.text = matHang.value.ToString() + " Coin"; 
 
-            // Gắn chức năng cho Nút Mua
-            if (nutMua != null)
+            // BIẾN Ô ĐỒ THÀNH NÚT CHỌN
+            Button btnChon = oMoi.GetComponent<Button>();
+            if (btnChon == null) btnChon = oMoi.AddComponent<Button>();
+
+            if (btnChon != null)
             {
-                int idMua = matHang.itemID;
-                int giaMua = matHang.value;
-                string tenMon = matHang.itemName;
-
-                nutMua.onClick.AddListener(() => {
-                    if (khachHang != null)
-                    {
-                        khachHang.RPC_MuaVatPham(idMua, giaMua);
-                        UnityEngine.Debug.Log($"Đã gửi yêu cầu mua hàng: {tenMon} - Giá: {giaMua}");
-                        Invoke("VeShopRaManHinh", 0.1f);
-                    }
+                Item captureItem = matHang;
+                int captureSoLuong = soLuongThucTe;
+                btnChon.onClick.AddListener(() => {
+                    ChonMatHang(captureItem, captureSoLuong);
                 });
             }
-            if(nutBan != null)
-            {
-                int idMua = matHang.itemID;
-                int giaban = matHang.value /2;
-                string tenMon = matHang.itemName;
 
-                nutBan.onClick.AddListener(() => {
-                    if (khachHang != null)
-                    {
-                        khachHang.RPC_BanVatPham(idMua, giaban);
-                        UnityEngine.Debug.Log($"Đã gửi yêu cầu Bán hàng: {tenMon} - Giá: {giaban}");
-                        Invoke("VeShopRaManHinh", 0.1f);
-                    }
-                });
+            // HIỆU ỨNG PHÓNG TO KHI LIA CHUỘT
+            EventTrigger trigger = oMoi.GetComponent<EventTrigger>();
+            if (trigger == null) trigger = oMoi.AddComponent<EventTrigger>();
+            trigger.triggers.Clear(); // Xoá sạch phòng khi bị lặp
+
+            Vector3 originalScale = Vector3.one;
+
+            EventTrigger.Entry entryEnter = new EventTrigger.Entry();
+            entryEnter.eventID = EventTriggerType.PointerEnter;
+            entryEnter.callback.AddListener((data) => { oMoi.transform.localScale = originalScale * 1.1f; });
+            trigger.triggers.Add(entryEnter);
+
+            EventTrigger.Entry entryExit = new EventTrigger.Entry();
+            entryExit.eventID = EventTriggerType.PointerExit;
+            entryExit.callback.AddListener((data) => { oMoi.transform.localScale = originalScale; });
+            trigger.triggers.Add(entryExit);
+
+            // Ẩn 2 nút cũ trên prefab đi
+            if (nutMua != null) nutMua.gameObject.SetActive(false);
+            if (nutBan != null) nutBan.gameObject.SetActive(false);
+        }
+        
+        CapNhatSuKienCacNut();
+    }
+
+    private void CapNhatSuKienCacNut()
+    {
+        if (txtSoLuongMuaBan != null)
+        {
+            txtSoLuongMuaBan.onValueChanged.RemoveAllListeners();
+            txtSoLuongMuaBan.onValueChanged.AddListener(OnInputSoLuongThayDoi);
+            txtSoLuongMuaBan.onEndEdit.RemoveAllListeners();
+            txtSoLuongMuaBan.onEndEdit.AddListener(OnInputKetThucGo);
+        }
+
+        if (btnCong != null) { btnCong.onClick.RemoveAllListeners(); btnCong.onClick.AddListener(() => ThayDoiSoLuong(1)); }
+        if (btnTru != null) { btnTru.onClick.RemoveAllListeners(); btnTru.onClick.AddListener(() => ThayDoiSoLuong(-1)); }
+        if (btnMax != null) { btnMax.onClick.RemoveAllListeners(); btnMax.onClick.AddListener(() => ThayDoiSoLuong(999)); }
+        if (btnMin != null) { btnMin.onClick.RemoveAllListeners(); btnMin.onClick.AddListener(() => ThayDoiSoLuong(-999)); }
+        
+        if (btnBuy != null) { btnBuy.onClick.RemoveAllListeners(); btnBuy.onClick.AddListener(MuaVatPhamHienTai); }
+        if (btnSell != null) { btnSell.onClick.RemoveAllListeners(); btnSell.onClick.AddListener(BanVatPhamHienTai); }
+    }
+
+    public void ChonMatHang(Item item, int soLuongDangCo)
+    {
+        selectedItem = item;
+        playerCurrentQuantity = soLuongDangCo;
+        currentQuantity = 1;
+
+        if (txtTenChiTiet != null) txtTenChiTiet.text = item.itemName;
+        if (imgIconChiTiet != null) imgIconChiTiet.sprite = item.icon;
+        if (txtGiaChiTiet != null) txtGiaChiTiet.text = item.value.ToString();
+        if (txtMoTaChiTiet != null) txtMoTaChiTiet.text = item.description;
+
+        if (txtStatus != null) txtStatus.text = "";
+
+        if (txtDoHiemChiTiet != null)
+        {
+            txtDoHiemChiTiet.text = "Rarity: " + item.rarity.ToString();
+            switch (item.rarity)
+            {
+                case Item.ItemRarity.Common: txtDoHiemChiTiet.color = Color.white; break;
+                case Item.ItemRarity.Uncommon: txtDoHiemChiTiet.color = Color.green; break;
+                case Item.ItemRarity.Rare: txtDoHiemChiTiet.color = Color.blue; break;
+                case Item.ItemRarity.Epic: txtDoHiemChiTiet.color = new Color(0.6f, 0.2f, 0.8f); break;
+                case Item.ItemRarity.Legendary: txtDoHiemChiTiet.color = new Color(1f, 0.6f, 0f); break;
+            }
+        }
+
+        HienThiSoLuong();
+    }
+
+    private void ThayDoiSoLuong(int thayDoi)
+    {
+        if (selectedItem == null) return;
+        
+        if (thayDoi == 999) currentQuantity = 99;
+        else if (thayDoi == -999) currentQuantity = 1;
+        else currentQuantity += thayDoi;
+
+        if (currentQuantity < 1) currentQuantity = 1;
+        if (currentQuantity > 99) currentQuantity = 99;
+
+        HienThiSoLuong();
+    }
+
+    private void OnInputSoLuongThayDoi(string noiDung)
+    {
+        if (string.IsNullOrEmpty(noiDung)) return; // Cho phép xoá trống khi đang gõ
+        if (int.TryParse(noiDung, out int giaTri))
+        {
+            if (giaTri < 1) giaTri = 1;
+            if (giaTri > 99) giaTri = 99;
+            currentQuantity = giaTri;
+        }
+    }
+
+    private void OnInputKetThucGo(string noiDung)
+    {
+        if (string.IsNullOrEmpty(noiDung) || !int.TryParse(noiDung, out int giaTri))
+        {
+            currentQuantity = 1;
+        }
+        else
+        {
+            currentQuantity = Mathf.Clamp(giaTri, 1, 99);
+        }
+        HienThiSoLuong(); // Cập nhật lại giao diện khi gõ xong
+    }
+
+    private void HienThiSoLuong()
+    {
+        if (txtSoLuongMuaBan != null)
+        {
+            txtSoLuongMuaBan.text = currentQuantity.ToString();
+        }
+
+        if (selectedItem != null)
+        {
+            int tongTienMua = selectedItem.value * currentQuantity;
+            int tongTienBan = (selectedItem.value / 2) * currentQuantity;
+
+            if (txtTongTienMua != null)
+            {
+                txtTongTienMua.text = "-" + tongTienMua + " Xu";
+                txtTongTienMua.color = Color.red;
+            }
+            if (txtTongTienBan != null)
+            {
+                txtTongTienBan.text = "+" + tongTienBan + " Xu";
+                txtTongTienBan.color = Color.green;
+            }
+        }
+    }
+
+    private void MuaVatPhamHienTai()
+    {
+        if (selectedItem == null) 
+        {
+            if (txtStatus != null) { txtStatus.text = "Invalid item!"; txtStatus.color = Color.red; }
+            return;
+        }
+
+        Player_Controller khachHang = TimKhachHangLocal();
+        if (khachHang != null)
+        {
+            int tongGiaHienTai = selectedItem.value * currentQuantity;
+            if (khachHang.Gold < tongGiaHienTai)
+            {
+                if (txtStatus != null) { txtStatus.text = "Not enough money!"; txtStatus.color = Color.red; }
+                return;
+            }
+
+            khachHang.RPC_MuaVatPham(selectedItem.itemID, selectedItem.value, currentQuantity);
+            if (txtStatus != null) { txtStatus.text = "Purchase successful!"; txtStatus.color = Color.green; }
+            
+            Invoke("VeShopRaManHinh", 0.1f);
+        }
+    }
+
+    private void BanVatPhamHienTai()
+    {
+        if (selectedItem == null) 
+        {
+            if (txtStatus != null) { txtStatus.text = "Invalid item!"; txtStatus.color = Color.red; }
+            return;
+        }
+
+        Player_Controller khachHang = TimKhachHangLocal();
+        if (khachHang != null)
+        {
+            int soLuongCoTheBan = 0;
+            for (int i = 0; i < khachHang.TuiDo.Length; i++)
+            {
+                if (khachHang.TuiDo[i].ItemID == selectedItem.itemID)
+                {
+                    soLuongCoTheBan += khachHang.TuiDo[i].SoLuong;
+                }
+            }
+
+            if (soLuongCoTheBan < currentQuantity)
+            {
+                if (txtStatus != null) { txtStatus.text = "Not enough items!"; txtStatus.color = Color.red; }
+                return;
+            }
+
+            int soLuongThucBan = Mathf.Min(currentQuantity, soLuongCoTheBan);
+
+            if (soLuongThucBan > 0)
+            {
+                int giaBan = selectedItem.value / 2;
+                khachHang.RPC_BanVatPham(selectedItem.itemID, giaBan, soLuongThucBan);
+                if (txtStatus != null) { txtStatus.text = "Sell successful!"; txtStatus.color = Color.green; }
+                Invoke("VeShopRaManHinh", 0.1f);
             }
         }
     }
@@ -172,6 +385,7 @@ public class ShopUIController : MonoBehaviour
             VeShopRaManHinh();
         }
     }
+
     public void OpenShop() 
     { 
         if (NetworkRunner.Instances.Count > 0)
@@ -186,6 +400,12 @@ public class ShopUIController : MonoBehaviour
 
         isShopOpen = true; 
         khungShop.SetActive(true); 
+
+        foreach (GameObject ui in uiCanAnKhiMoShop)
+        {
+            if (ui != null) ui.SetActive(false);
+        }
+
         VeShopRaManHinh(); 
     }
 
@@ -193,7 +413,13 @@ public class ShopUIController : MonoBehaviour
     { 
         isShopOpen = false; 
         khungShop.SetActive(false); 
+
+        foreach (GameObject ui in uiCanAnKhiMoShop)
+        {
+            if (ui != null) ui.SetActive(true);
+        }
     }
+
     public void BatTatCraft()
     {
         dangMoCraft = !dangMoCraft;
@@ -203,3 +429,10 @@ public class ShopUIController : MonoBehaviour
         }
     }
 }
+
+
+
+
+
+
+
