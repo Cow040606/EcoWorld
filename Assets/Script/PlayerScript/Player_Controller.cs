@@ -440,8 +440,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             character.Move(Vector3.zero);
             isrun = isSprinting = isJumping = false;
 
-            // [ĐÃ SỬA] Đã loại bỏ logic gọi hàm va chạm bằng TickTimer ở đây. 
-            // Giờ đây mọi thứ sẽ được trigger bởi Animation Event.
             if (actionTimer.Expired(Runner))
             {
                 isDoingAction = false;
@@ -838,11 +836,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         lastAttackTime = Time.time;
         RPC_AnimSlash(currentComboStep);
 
-        // [ĐÃ SỬA] Tham số timeToHit truyền vào là 0f để vô hiệu hóa HitTimer, nhường quyền kích hoạt cho Event
         thoiDiemHetKhoaCucBo = Time.time + slashLockDuration;
         RPC_BaoHieuBatDauAction(3, slashLockDuration, 0f);
-
-        // [ĐÃ SỬA] Đã xóa gọi PlayerDoDamage() ở đây.
 
         if (currentComboStep == 3)
         {
@@ -891,7 +886,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (playerCamera == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
 
         thoiDiemHetKhoaCucBo = Time.time + 1.5f;
-        // [ĐÃ SỬA] Đổi tham số timeToHit thành 0f 
         RPC_BaoHieuBatDauAction(1, 1.5f, 0f);
     }
 
@@ -901,14 +895,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         RPC_AnimDapDa();
         thoiDiemHetKhoaCucBo = Time.time + 1.5f;
-        // [ĐÃ SỬA] Đổi tham số timeToHit thành 0f 
         RPC_BaoHieuBatDauAction(2, 1.5f, 0f);
     }
 
-    // [ĐÃ SỬA] Hàm chuyển thành public để đón event từ Animator
     public void ThucHienXetVaChamChop()
     {
-        if (!HasInputAuthority) return; // Tránh việc máy khác chạy anim rồi spam trừ máu cây
+        if (!HasInputAuthority) return;
 
         Vector3 hitboxCenter = transform.position + transform.forward * hitboxOffset;
         bool daChatCayPrefab = false;
@@ -943,7 +935,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    // [ĐÃ SỬA] Hàm chuyển thành public để đón event từ Animator
     public void ThucHienXetVaChamMine()
     {
         if (!HasInputAuthority) return;
@@ -1736,7 +1727,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void RPC_ThayDoiGem(int soGem) { Gem = Mathf.Max(0, Gem + soGem); }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_HoanThanhQuest(int idVatPham, int soLuongCanTru, int tienThuong, int gemThuong = 0, int idVatPhamThuong = 0, int soLuongVatPhamThuong = 1)
+    public void RPC_HoanThanhQuest(int idVatPham, int soLuongCanTru, int tienThuong, int gemThuong = 0, int idVatPhamThuong = 0, int soLuongVatPhamThuong = 1, float expThuong = 0f)
     {
         if (idVatPham > 0 && soLuongCanTru > 0)
         {
@@ -1761,6 +1752,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (idVatPhamThuong > 0 && soLuongVatPhamThuong > 0)
         {
             ThemDoVatVaoTui(idVatPhamThuong, soLuongVatPhamThuong);
+        }
+
+        if (expThuong > 0)
+        {
+            Server_AddExp(expThuong);
         }
 
         KiemTraDonDepHotbar();
