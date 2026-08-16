@@ -26,14 +26,14 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 416859516465806732}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.10534128, z: 0, w: 0.9944362}
   m_LocalPosition: {x: 0, y: 0, z: 0.089}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3297248169605849552}
   m_Father: {fileID: 3566378898530199488}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 12.094, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0.022, y: 1.983}
@@ -2785,6 +2785,7 @@ MonoBehaviour:
   _CurrentState: 0
   _Health: 100
   _NetworkedLevel: 0
+  enemyID: 10
   enemyName: Skeleton
   expReward: 50
   minLevel: 1
@@ -2943,7 +2944,7 @@ PrefabInstance:
     - target: {fileID: 7960420476135095685, guid: 1f63672458639e84a88fa14d76b9b886,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: -0.9999826
       objectReference: {fileID: 0}
     - target: {fileID: 7960420476135095685, guid: 1f63672458639e84a88fa14d76b9b886,
         type: 3}
@@ -2953,7 +2954,7 @@ PrefabInstance:
     - target: {fileID: 7960420476135095685, guid: 1f63672458639e84a88fa14d76b9b886,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0.0059116473
       objectReference: {fileID: 0}
     - target: {fileID: 7960420476135095685, guid: 1f63672458639e84a88fa14d76b9b886,
         type: 3}
@@ -2978,7 +2979,7 @@ PrefabInstance:
     - target: {fileID: 7960420476135095685, guid: 1f63672458639e84a88fa14d76b9b886,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -359.323
       objectReference: {fileID: 0}
     - target: {fileID: 7960420476135095685, guid: 1f63672458639e84a88fa14d76b9b886,
         type: 3}

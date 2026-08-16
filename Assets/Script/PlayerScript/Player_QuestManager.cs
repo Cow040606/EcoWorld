@@ -18,18 +18,18 @@ public class Player_QuestManager : NetworkBehaviour
 
     [Header("Danh sách nhiệm vụ đang làm")]
     public List<NhiemVuDangLam> danhSachNhiemVu = new List<NhiemVuDangLam>();
-    
+
     [Header("Gắn UI bảng nhiệm vụ vào đây")]
-    public TextMeshProUGUI txtBangNhiemVu; 
+    public TextMeshProUGUI txtBangNhiemVu;
 
     public override void Spawned()
     {
         if (HasInputAuthority)
         {
             localQuest = this;
-            GameObject uiObj = QuestManager.instance != null ? QuestManager.instance.txtBangNhiemVu : null; 
-            
-            if (uiObj != null) 
+            GameObject uiObj = QuestManager.instance != null ? QuestManager.instance.txtBangNhiemVu : null;
+
+            if (uiObj != null)
             {
                 txtBangNhiemVu = uiObj.GetComponent<TextMeshProUGUI>();
             }
@@ -102,8 +102,8 @@ public class Player_QuestManager : NetworkBehaviour
 
             // Viết dòng chữ cho Nhiệm vụ này
             string dong = $"- {nv.duLieuQuest.tenNhiemVu}: {nv.soLuongHienTai}/{nv.duLieuQuest.soLuongCan}";
-            
-            if (nv.daDatYeuCau) 
+
+            if (nv.daDatYeuCau)
             {
                 dong += " <color=yellow>(Đã đạt yêu cầu)</color>";
             }
@@ -155,9 +155,9 @@ public class Player_QuestManager : NetworkBehaviour
     // --- 4. TỰ ĐỘNG HOÀN THÀNH & NHẬN THƯỞNG NHIỆM VỤ NÓI CHUYỆN NPC ---
     public void HoanThanhNhiemVuNPC(int npcID)
     {
-        NhiemVuDangLam nvNPC = danhSachNhiemVu.Find(x => 
-            x.duLieuQuest != null && 
-            x.duLieuQuest.loaiNhiemVu == LoaiNhiemVu.TroChuyenNPC && 
+        NhiemVuDangLam nvNPC = danhSachNhiemVu.Find(x =>
+            x.duLieuQuest != null &&
+            x.duLieuQuest.loaiNhiemVu == LoaiNhiemVu.TroChuyenNPC &&
             (x.duLieuQuest.targetID == 0 || x.duLieuQuest.targetID == npcID)
         );
 
@@ -186,8 +186,8 @@ public class Player_QuestManager : NetworkBehaviour
             }
 
             // Kiểm tra xem player có ĐANG NHẬN bất kỳ nhiệm vụ nào liên quan đến NPC này không
-            bool coNhiemVuLienQuan = danhSachNhiemVu.Exists(x => 
-                x.duLieuQuest != null && 
+            bool coNhiemVuLienQuan = danhSachNhiemVu.Exists(x =>
+                x.duLieuQuest != null &&
                 (
                     // 1. Trường npcID trong QuestSO chỉ định NPC này
                     x.duLieuQuest.npcID == npc.npcID ||
@@ -221,13 +221,14 @@ public class Player_QuestManager : NetworkBehaviour
                     questCanTra.tienThuong,
                     questCanTra.gemThuong,
                     questCanTra.idVatPhamThuong,
-                    questCanTra.soLuongVatPhamThuong
+                    questCanTra.soLuongVatPhamThuong,
+                    questCanTra.expThuong // ĐÃ BỔ SUNG TRUYỀN EXP VÀO ĐÂY
                 );
             }
 
             // Xóa khỏi danh sách & cập nhật UI
             danhSachNhiemVu.Remove(nv);
-            KiemTraTienDo(); 
+            KiemTraTienDo();
         }
     }
 

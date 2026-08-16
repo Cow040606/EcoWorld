@@ -41,6 +41,10 @@ public class QuestSO : ScriptableObject
     [Header("Phần Thưởng")]
     public int tienThuong;              // Thưởng bao nhiêu Gold
     public int gemThuong;               // Thưởng bao nhiêu Gem
+
+    [Tooltip("Thưởng bao nhiêu Kinh Nghiệm (EXP)")]
+    public float expThuong;             // ĐÃ THÊM BIẾN NÀY ĐỂ THƯỞNG EXP
+
     public int idVatPhamThuong;         // ID vật phẩm thưởng (0 = không thưởng item)
     public int soLuongVatPhamThuong = 1; // Số lượng vật phẩm thưởng
 }
