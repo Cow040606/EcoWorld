@@ -11,6 +11,10 @@ public class Item : ScriptableObject
     public bool stackable = true;
     public int value;
 
+    public enum ItemRarity { Common, Uncommon, Rare, Epic, Legendary }
+    [Header("Độ hiếm")]
+    public ItemRarity rarity = ItemRarity.Common;
+
     // Lu ít thêm 'VuKhi_CongCu' để Bò dễ phân biệt đồ cầm tay (Cuốc, Rìu) với rác/khoáng sản
     public enum LoaiTrangBi { KhongPhai, Non, DayChuyen, Ao, Giay, Nhan, VuKhi_CongCu }
     

@@ -11,7 +11,8 @@ public class TooltipManager : MonoBehaviour
     public TextMeshProUGUI txtGia;
     public TextMeshProUGUI txtMoTa;
 
-    public TextMeshProUGUI txtSoLuong;
+    public TextMeshProUGUI txtRarity;
+    public Image imgIcon;
     private RectTransform rectTransform;
 
     void Awake()
@@ -32,23 +33,27 @@ public class TooltipManager : MonoBehaviour
         }
     }
 
-    public void HienThiTooltip(Item monDo, int soLuong) 
+    public void HienThiTooltip(Item monDo) 
     {
         txtTen.text = monDo.itemName;
         txtGia.text = "Giá: " + monDo.value.ToString() + " Xu";
         txtMoTa.text = monDo.description;
 
-        // HIỆN SỐ LƯỢNG LÊN MÀN HÌNH
-        if (txtSoLuong != null)
+        if (imgIcon != null && monDo.icon != null)
         {
-            // Nếu có đồ thì hiện, còn nếu = 0 thì báo là Chưa có
-            if (soLuong > 0) 
+            imgIcon.sprite = monDo.icon;
+        }
+
+        if (txtRarity != null)
+        {
+            txtRarity.text = "Độ hiếm: " + monDo.rarity.ToString();
+            switch (monDo.rarity)
             {
-                txtSoLuong.text = "Đang sở hữu: " + soLuong.ToString();
-            }
-            else 
-            {
-                txtSoLuong.text = "Đang sở hữu: 0"; 
+                case Item.ItemRarity.Common: txtRarity.color = Color.white; break;
+                case Item.ItemRarity.Uncommon: txtRarity.color = Color.green; break;
+                case Item.ItemRarity.Rare: txtRarity.color = Color.blue; break;
+                case Item.ItemRarity.Epic: txtRarity.color = new Color(0.6f, 0.2f, 0.8f); break; // Tím
+                case Item.ItemRarity.Legendary: txtRarity.color = new Color(1f, 0.6f, 0f); break; // Cam
             }
         }
 

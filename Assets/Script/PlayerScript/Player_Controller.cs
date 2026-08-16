@@ -1274,9 +1274,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (ShopUIController.instance != null && ShopUIController.instance.isShopOpen)
         {
-            ShopUIController.instance.isShopOpen = false;
-            ShopUIController.instance.dangmoshop = false;
-            ShopUIController.instance.khungShop.SetActive(false);
+            ShopUIController.instance.CloseShop();
         }
 
         if (DialogueEditor.ConversationManager.Instance != null && DialogueEditor.ConversationManager.Instance.IsConversationActive)
@@ -1666,31 +1664,46 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_BanVatPham(int idBan, int giaBan)
+    public void RPC_BanVatPham(int idBan, int giaBanCua1Cai, int soLuongBan = 1)
     {
+        int soLuongConPhaiBan = soLuongBan;
+        int tongTienNhanDuoc = 0;
+
         for (int i = 0; i < TuiDo.Length; i++)
         {
             if (TuiDo[i].ItemID == idBan && TuiDo[i].SoLuong > 0)
             {
                 var doVat = TuiDo[i];
-                doVat.SoLuong--;
+                int soLuongTru = Mathf.Min(doVat.SoLuong, soLuongConPhaiBan);
+                doVat.SoLuong -= soLuongTru;
+                soLuongConPhaiBan -= soLuongTru;
+                tongTienNhanDuoc += soLuongTru * giaBanCua1Cai;
+
                 if (doVat.SoLuong <= 0) doVat.ItemID = 0;
                 TuiDo.Set(i, doVat);
-                Gold += giaBan;
-                KiemTraDonDepHotbar();
-                return;
+
+                if (soLuongConPhaiBan <= 0) break;
             }
+        }
+
+        if (tongTienNhanDuoc > 0)
+        {
+            Gold += tongTienNhanDuoc;
+            KiemTraDonDepHotbar();
         }
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_MuaVatPham(int idMatHang, int giaTien)
+    public void RPC_MuaVatPham(int idMatHang, int giaTienCua1Cai, int soLuongMua = 1)
     {
-        if (Gold < giaTien || InventoryManager.instance == null) return;
+        int tongTien = giaTienCua1Cai * soLuongMua;
+        if (Gold < tongTien || InventoryManager.instance == null) return;
         Item thongTin = InventoryManager.instance.TraCuuItem(idMatHang);
         if (thongTin == null) return;
 
-        bool daNhetVaoTui = false;
+        int soLuongConPhaiNhet = soLuongMua;
+        bool daTieuTien = false;
+
         if (thongTin.stackable)
         {
             for (int i = 0; i < TuiDo.Length; i++)
@@ -1698,26 +1711,48 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 if (TuiDo[i].ItemID == idMatHang)
                 {
                     O_VatPham doVat = TuiDo[i];
-                    doVat.SoLuong++;
+                    doVat.SoLuong += soLuongConPhaiNhet;
                     TuiDo.Set(i, doVat);
-                    daNhetVaoTui = true; break;
+                    soLuongConPhaiNhet = 0;
+                    break;
                 }
             }
         }
 
-        if (!daNhetVaoTui)
+        while (soLuongConPhaiNhet > 0)
         {
+            bool daTimThayChoTrang = false;
             for (int i = 0; i < TuiDo.Length; i++)
             {
                 if (TuiDo[i].ItemID == 0)
                 {
-                    TuiDo.Set(i, new O_VatPham { ItemID = idMatHang, SoLuong = 1 });
-                    daNhetVaoTui = true; break;
+                    O_VatPham slotTrong = TuiDo[i];
+                    slotTrong.ItemID = idMatHang;
+                    
+                    if (thongTin.stackable)
+                    {
+                        slotTrong.SoLuong = soLuongConPhaiNhet;
+                        soLuongConPhaiNhet = 0;
+                    }
+                    else
+                    {
+                        slotTrong.SoLuong = 1;
+                        soLuongConPhaiNhet -= 1;
+                    }
+                    
+                    TuiDo.Set(i, slotTrong);
+                    daTimThayChoTrang = true;
+                    break;
                 }
             }
+            if (!daTimThayChoTrang) break; // Hết ô trống
         }
 
-        if (daNhetVaoTui) Gold -= giaTien;
+        int soLuongDaNhet = soLuongMua - soLuongConPhaiNhet;
+        if (soLuongDaNhet > 0)
+        {
+            Gold -= (giaTienCua1Cai * soLuongDaNhet);
+        }
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -2052,3 +2087,5 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 }
+
+

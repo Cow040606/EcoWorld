@@ -247,7 +247,6 @@ RectTransform:
   - {fileID: 8130135078918713565}
   - {fileID: 6327001827197967827}
   - {fileID: 2730525516779650616}
-  - {fileID: 5711077866190020303}
   - {fileID: 387947716160566507}
   - {fileID: 7772452016772525282}
   - {fileID: 7883254118012694298}
@@ -263,6 +262,7 @@ RectTransform:
   - {fileID: 4450901477776340243}
   - {fileID: 6698130815866122997}
   - {fileID: 8580627610467229909}
+  - {fileID: 5711077866190020303}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2946,6 +2946,7 @@ MonoBehaviour:
   khungGiaoDien: {fileID: 6382820333066868864}
   dangMoCraft: 0
   khungShop: {fileID: 8246658585347903530}
+  uiCanAnKhiMoShop: []
   isShopOpen: 0
   itemHolder: {fileID: 3139333316236605448}
   shopItemPrefab: {fileID: 62742395450633911, guid: c21bc2bef2eaa8349bd4dbcbb2f492c0,
@@ -2969,7 +2970,21 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cb10948e9c2428147b9b039bc8693729, type: 2}
   - {fileID: 11400000, guid: 360a498e891732845a8cdd8b9ae0aecc, type: 2}
   - {fileID: 11400000, guid: f24e98474fea44a409a67f774f722f25, type: 2}
-  dangmoshop: 0
+  txtTenChiTiet: {fileID: 0}
+  imgIconChiTiet: {fileID: 0}
+  txtGiaChiTiet: {fileID: 0}
+  txtDoHiemChiTiet: {fileID: 0}
+  txtMoTaChiTiet: {fileID: 0}
+  txtTongTienMua: {fileID: 0}
+  txtTongTienBan: {fileID: 0}
+  txtStatus: {fileID: 0}
+  txtSoLuongMuaBan: {fileID: 0}
+  btnCong: {fileID: 0}
+  btnTru: {fileID: 0}
+  btnMax: {fileID: 0}
+  btnMin: {fileID: 0}
+  btnBuy: {fileID: 0}
+  btnSell: {fileID: 0}
 --- !u!1 &1951349525840096551
 GameObject:
   m_ObjectHideFlags: 0
@@ -13096,9 +13111,9 @@ RectTransform:
   - {fileID: 7921878250812729116}
   - {fileID: 5190919355075848332}
   - {fileID: 4882560039937051472}
-  - {fileID: 2144156590728106633}
   - {fileID: 7960186923869083578}
   - {fileID: 6359474911707346501}
+  - {fileID: 2144156590728106633}
   m_Father: {fileID: 5711077866190020303}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -15247,7 +15262,8 @@ MonoBehaviour:
   txtTen: {fileID: 3560274675885154192}
   txtGia: {fileID: 6811773746396067120}
   txtMoTa: {fileID: 7309287856757698104}
-  txtSoLuong: {fileID: 6630486369137123621}
+  txtRarity: {fileID: 0}
+  imgIcon: {fileID: 0}
 --- !u!1 &9148093107081623874
 GameObject:
   m_ObjectHideFlags: 0
