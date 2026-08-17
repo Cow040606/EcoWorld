@@ -14,14 +14,17 @@ public class EnemyAIOrc : NetworkBehaviour
 
     [Networked, OnChangedRender(nameof(OnHealthChanged))]
     public int Health { get; set; }
+
     [Networked, OnChangedRender(nameof(OnLevelChanged))]
     public int NetworkedLevel { get; set; }
 
     [Header("Enemy Info")]
+    [Tooltip("ID của quái vật. Dùng để đối chiếu với targetID trong Nhiệm Vụ.")]
+    public int enemyID = 1;
     public string enemyName = "Skeleton";
 
     [Header("Thưởng Kinh Nghiệm")]
-    public float expReward = 50f; // CHỈNH SỐ LƯỢNG EXP CỦA QUÁI Ở ĐÂY
+    public float expReward = 50f;
 
     [Header("Level & Stats Settings")]
     public int minLevel = 1;
@@ -52,7 +55,6 @@ public class EnemyAIOrc : NetworkBehaviour
 
     [Networked] private TickTimer despawnTimer { get; set; }
 
-    // THÊM: Đồng bộ vị trí thủ công cho chế độ Online
     [Networked] private Vector3 NetworkPosition { get; set; }
     [Networked] private Quaternion NetworkRotation { get; set; }
 
@@ -69,18 +71,17 @@ public class EnemyAIOrc : NetworkBehaviour
     public override void Spawned()
     {
         agent = GetComponent<NavMeshAgent>();
-        animator = GetComponent<Animator>();
+
+        // FIX 1: Tìm Animator ở cả object cha lẫn con để tránh bị null
+        animator = GetComponentInChildren<Animator>();
+
         startPosition = transform.position;
         mainCamera = Camera.main;
 
         if (HasStateAuthority)
         {
-
             NetworkPosition = transform.position;
             NetworkRotation = transform.rotation;
-
-            // Chỉ BẬT NavMeshAgent trên máy chủ (State Authority)
-
 
             if (agent != null)
             {
@@ -94,8 +95,6 @@ public class EnemyAIOrc : NetworkBehaviour
         else
         {
             if (agent != null) agent.enabled = false;
-            
-            // Đặt ngay vị trí ban đầu để tránh bị trượt từ tọa độ 0
             transform.position = NetworkPosition;
             transform.rotation = NetworkRotation;
         }
@@ -123,10 +122,19 @@ public class EnemyAIOrc : NetworkBehaviour
 
         if (!HasStateAuthority) return;
 
+        // FIX 2: Khởi tạo TickTimer trong FUN (Simulation) thay vì RPC để đảm bảo luôn chạy
         if (CurrentState == EnemyState.Dead)
         {
-            if (despawnTimer.Expired(Runner)) Runner.Despawn(Object);
-            return;
+            if (!despawnTimer.IsRunning)
+            {
+                despawnTimer = TickTimer.CreateFromSeconds(Runner, 5f);
+            }
+
+            if (despawnTimer.Expired(Runner))
+            {
+                Runner.Despawn(Object);
+            }
+            return; // Đảm bảo quái chết không chạy các logic AI bên dưới
         }
 
         switch (CurrentState)
@@ -279,15 +287,23 @@ public class EnemyAIOrc : NetworkBehaviour
             CurrentState = EnemyState.Dead;
             if (IsAgentValid()) agent.isStopped = true;
             DropItem();
-            despawnTimer = TickTimer.CreateFromSeconds(Runner, 5f);
 
             // TRẢ KINH NGHIỆM CHO NGƯỜI KẾT LIỄU
             GiveExpToKiller(info.Source, expReward);
+
+            // ----> CODE GỌI QUEST VỪA THÊM VÀO ĐÂY <----
+            // Truy cập thẳng vào localQuest và gọi hàm tăng tiến độ
+            if (Player_QuestManager.localQuest != null)
+            {
+                Player_QuestManager.localQuest.TangTienDoNhiemVu(LoaiNhiemVu.TieuDietQuai, enemyID, 1);
+            }
         }
-        else RPC_PlayTakeDamageAnim();
+        else
+        {
+            RPC_PlayTakeDamageAnim();
+        }
     }
 
-    // ĐÃ SỬA LỖI CS1061 TẠI ĐÂY: Dùng playerRef == PlayerRef.None
     private void GiveExpToKiller(PlayerRef playerRef, float expAmount)
     {
         if (!HasStateAuthority || playerRef == PlayerRef.None) return;
@@ -330,7 +346,6 @@ public class EnemyAIOrc : NetworkBehaviour
     {
         if (!HasStateAuthority)
         {
-            // Nội suy (Lerp) vị trí mượt mà trên máy khách
             transform.position = Vector3.Lerp(transform.position, NetworkPosition, Runner.DeltaTime * 15f);
             transform.rotation = Quaternion.Lerp(transform.rotation, NetworkRotation, Runner.DeltaTime * 15f);
         }
@@ -338,9 +353,21 @@ public class EnemyAIOrc : NetworkBehaviour
 
     public void OnStateChanged()
     {
+        // FIX 3: Đưa logic tắt Collider và Thanh máu lên đầu để luôn được chạy
+        if (CurrentState == EnemyState.Dead)
+        {
+            Collider[] colliders = GetComponents<Collider>();
+            foreach (var col in colliders) col.enabled = false;
+
+            if (healthCanvas != null) healthCanvas.gameObject.SetActive(false);
+        }
+
+        // Nếu không có animator thì thoát ngang tại đây, đảm bảo quái vẫn vô hình/mất va chạm
         if (animator == null) return;
+
         animator.SetBool("isWalking", false);
         animator.SetBool("isRunning", false);
+
         switch (CurrentState)
         {
             case EnemyState.Patrol:
@@ -352,9 +379,6 @@ public class EnemyAIOrc : NetworkBehaviour
                 animator.SetTrigger("scream"); break;
             case EnemyState.Dead:
                 animator.SetTrigger("death");
-                Collider col = GetComponent<Collider>();
-                if (col != null) col.enabled = false;
-                if (healthCanvas != null) healthCanvas.gameObject.SetActive(false);
                 break;
         }
     }

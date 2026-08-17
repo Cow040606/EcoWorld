@@ -1,11 +1,14 @@
 using UnityEngine;
 using Fusion;
 using UnityEngine.AI;
-using System.Collections.Generic; // Bắt buộc phải có để dùng List<>
+using System.Collections.Generic;
 
 public class BossController : NetworkBehaviour
 {
     [Header("Định danh Boss")]
+    // THÊM MỚI: ID của Boss để đối chiếu với nhiệm vụ
+    [Tooltip("ID của Boss. Dùng để đối chiếu với targetID trong Nhiệm Vụ.")]
+    public int bossID = 100;
     public string tenBoss = "Quỷ Khổng Lồ";
     public Sprite avatarBoss;
 
@@ -14,16 +17,14 @@ public class BossController : NetworkBehaviour
     [Networked] public float CurrentHealth { get; set; }
 
     [Header("Thưởng Kinh Nghiệm")]
-    public float expReward = 500f; // CHỈNH SỐ LƯỢNG EXP CHO BOSS Ở ĐÂY
+    public float expReward = 500f;
 
-    // --- ĐOẠN MỚI THÊM: CÀI ĐẶT RỚT ĐỒ ---
     [Header("Drop Settings (Rớt đồ)")]
     [Tooltip("Danh sách các vật phẩm có thể rớt (Bắt buộc phải có component NetworkObject)")]
     public List<GameObject> dropItems;
 
     [Tooltip("Tỉ lệ rớt đồ (0 đến 100%)")]
     [Range(0f, 100f)] public float dropChance = 100f;
-    // -------------------------------------
 
     [Header("Cơ chế Vùng & Di chuyển (NavMesh)")]
     public float tocDoTuanTra = 1.5f;
@@ -305,6 +306,12 @@ public class BossController : NetworkBehaviour
 
             // CHIA KINH NGHIỆM CHO NGƯỜI KẾT LIỄU
             GiveExpToKiller(info.Source, expReward);
+
+            // --- THÊM MỚI: BÁO CHO NHIỆM VỤ LÀ BOSS ĐÃ CHẾT ---
+            if (Player_QuestManager.localQuest != null)
+            {
+                Player_QuestManager.localQuest.TangTienDoNhiemVu(LoaiNhiemVu.TieuDietQuai, bossID, 1);
+            }
 
             // --- GỌI HÀM RỚT ĐỒ ---
             DropItem();

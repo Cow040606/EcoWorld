@@ -63,6 +63,14 @@ public class UI_StatsManager : MonoBehaviour
         }
     }
 
+    public void NutBam_CongSucManh()
+    {
+        if (Player_Controller.localPlayer != null)
+        {
+            Player_Controller.localPlayer.RPC_CongDiemTiemNang(1); // 1 là Sức mạnh
+            YeuCauCapNhatTongChiSo();
+        }
+    }
     public void NutBam_CongTheLuc()
     {
         if (Player_Controller.localPlayer != null)
