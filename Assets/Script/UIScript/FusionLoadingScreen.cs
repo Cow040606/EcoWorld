@@ -1,7 +1,7 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Video;
 
 public class FusionLoadingScreen : MonoBehaviour
 {
@@ -14,133 +14,302 @@ public class FusionLoadingScreen : MonoBehaviour
     public TextMeshProUGUI txtPercent;
     public GameObject btnHuy;
 
-    [Header("Cấu Hình Tốc Độ Chạy % (Smooth)")]
-    [Tooltip("Tốc độ đuổi theo target progress khi chuyển giai đoạn")]
+    [Header("Video Loading")]
+    public RawImage videoRawImage;
+    public VideoPlayer videoPlayer;
+
+    [Header("Cấu Hình Tốc Độ Chạy %")]
+    [Tooltip("Tốc độ đuổi theo target progress")]
     public float baseSmoothSpeed = 0.6f;
-    [Tooltip("Tốc độ tự động nhích 1% 2% 3%... liên tục trong lúc đứng chờ mạng")]
+
+    [Tooltip("Tốc độ tự động nhích % khi đang chờ")]
     public float minCreepSpeed = 0.08f;
 
     private float targetProgress = 0f;
     private float currentProgress = 0f;
     private float currentSpeed = 0.6f;
+
     private bool isErrorState = false;
     private int lastDisplayedPercent = -1;
 
     private void Awake()
     {
-        if (instance == null) instance = this;
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
     }
 
     private void Start()
     {
-        if (loadingPanel != null) loadingPanel.SetActive(false);
-        if (btnHuy != null) btnHuy.SetActive(false);
+        // Không Stop Video ở đây.
+        // Video Player sẽ tự phát nếu Play On Awake đang bật.
+
+        if (btnHuy != null)
+        {
+            btnHuy.SetActive(false);
+        }
+
+        if (videoRawImage != null)
+        {
+            // Video nằm phía sau Button/Text/Slider
+            videoRawImage.raycastTarget = false;
+        }
     }
 
     private void Update()
     {
-        if (loadingPanel != null && loadingPanel.activeSelf && !isErrorState)
+        if (loadingPanel == null || !loadingPanel.activeSelf)
+            return;
+
+        if (isErrorState)
+            return;
+
+        // ==========================================
+        // TĂNG PROGRESS
+        // ==========================================
+
+        if (currentProgress < targetProgress)
         {
-            // 1. Tự động tính toán tiến độ tăng dần liên tục không bị khựng
-            if (currentProgress < targetProgress)
-            {
-                // Đuổi theo mốc mục tiêu
-                currentProgress = Mathf.MoveTowards(currentProgress, targetProgress, Time.deltaTime * currentSpeed);
-            }
-            else if (currentProgress < 0.95f)
-            {
-                // Nếu đã đạt mốc tạm thời nhưng chưa xong 100%, tự động nhích % từ từ (1% 2% 3%...) để người chơi không thấy kẹt
-                currentProgress += Time.deltaTime * minCreepSpeed;
-                currentProgress = Mathf.Clamp(currentProgress, 0f, 0.95f);
-            }
+            currentProgress = Mathf.MoveTowards(
+                currentProgress,
+                targetProgress,
+                Time.deltaTime * currentSpeed
+            );
+        }
+        else if (currentProgress < 0.95f)
+        {
+            currentProgress += Time.deltaTime * minCreepSpeed;
 
-            // 2. Cập nhật Slider
-            if (sliderProgress != null)
-            {
-                sliderProgress.value = currentProgress;
-            }
+            currentProgress = Mathf.Clamp(
+                currentProgress,
+                0f,
+                0.95f
+            );
+        }
 
-            // 3. Cập nhật chữ % (Chạy từng số 1% 2% 3%...)
-            int displayPercent = Mathf.FloorToInt(currentProgress * 100f);
-            if (displayPercent != lastDisplayedPercent)
+        // ==========================================
+        // SLIDER
+        // ==========================================
+
+        if (sliderProgress != null)
+        {
+            sliderProgress.value = currentProgress;
+        }
+
+        // ==========================================
+        // %
+        // ==========================================
+
+        int displayPercent =
+            Mathf.FloorToInt(currentProgress * 100f);
+
+        if (displayPercent != lastDisplayedPercent)
+        {
+            lastDisplayedPercent = displayPercent;
+
+            if (txtPercent != null)
             {
-                lastDisplayedPercent = displayPercent;
-                if (txtPercent != null)
-                {
-                    txtPercent.text = displayPercent + "%";
-                }
+                txtPercent.text = displayPercent + "%";
             }
         }
     }
 
-    // Mở màn hình Loading
+    // =========================================================
+    // HIỆN LOADING
+    // =========================================================
+
     public void ShowLoading(string sessionName, string modeName)
     {
         isErrorState = false;
+
         currentProgress = 0f;
         targetProgress = 0.15f;
         currentSpeed = baseSmoothSpeed;
         lastDisplayedPercent = -1;
 
-        if (sliderProgress != null) sliderProgress.value = 0f;
-        if (btnHuy != null) btnHuy.SetActive(false);
+        // ==========================================
+        // BẬT PANEL
+        // ==========================================
+
+        if (loadingPanel != null)
+        {
+            loadingPanel.SetActive(true);
+        }
+
+        // ==========================================
+        // RESET SLIDER
+        // ==========================================
+
+        if (sliderProgress != null)
+        {
+            sliderProgress.value = 0f;
+        }
+
+        // ==========================================
+        // RESET BUTTON
+        // ==========================================
+
+        if (btnHuy != null)
+        {
+            btnHuy.SetActive(false);
+        }
+
+        // ==========================================
+        // STATUS
+        // ==========================================
 
         if (txtStatus != null)
         {
-            txtStatus.text = $"Đang khởi tạo [{modeName}] phòng: {sessionName}...";
+            txtStatus.text =
+                $"Đang khởi tạo [{modeName}] phòng: {sessionName}...";
         }
 
-        if (txtPercent != null) txtPercent.text = "0%";
+        // ==========================================
+        // %
+        // ==========================================
 
-        if (loadingPanel != null) loadingPanel.SetActive(true);
+        if (txtPercent != null)
+        {
+            txtPercent.text = "0%";
+        }
+
+        // ==========================================
+        // BẬT VIDEO
+        // ==========================================
+
+        if (videoRawImage != null)
+        {
+            videoRawImage.gameObject.SetActive(true);
+        }
+
+        PlayLoadingVideo();
     }
 
-    // Cập nhật trạng thái & Tiến độ (0.0 đến 1.0)
+    // =========================================================
+    // PHÁT VIDEO
+    // =========================================================
+
+    private void PlayLoadingVideo()
+    {
+        if (videoPlayer == null)
+        {
+            Debug.LogWarning(
+                "[FusionLoadingScreen] Video Player chưa được gắn!"
+            );
+
+            return;
+        }
+
+        // Đảm bảo dùng Render Texture
+        videoPlayer.renderMode = VideoRenderMode.RenderTexture;
+
+        // Đảm bảo Target Texture vẫn là LoadingVideo
+        // Không cần gán lại bằng code nếu Inspector đã setup đúng.
+
+        // Phát lại từ đầu
+        videoPlayer.Stop();
+
+        videoPlayer.time = 0;
+
+        videoPlayer.Play();
+
+        Debug.Log(
+            "[FusionLoadingScreen] Loading Video đang phát."
+        );
+    }
+
+    // =========================================================
+    // CẬP NHẬT STATUS + PROGRESS
+    // =========================================================
+
     public void UpdateStatus(string statusText, float progress)
     {
-        if (isErrorState) return;
+        if (isErrorState)
+            return;
 
         float clamped = Mathf.Clamp01(progress);
+
         if (clamped > targetProgress)
         {
             targetProgress = clamped;
         }
 
-        // Khi đạt 100% -> tăng tốc chạy nốt % còn lại cực nhanh để chuyển game
+        // Khi đạt 100%
         if (clamped >= 1.0f)
         {
             currentSpeed = 2.5f;
         }
 
-        if (txtStatus != null && !string.IsNullOrEmpty(statusText))
+        if (txtStatus != null &&
+            !string.IsNullOrEmpty(statusText))
         {
             txtStatus.text = statusText;
         }
     }
 
-    // Hiển thị báo lỗi khi kết nối thất bại
+    // =========================================================
+    // HIỂN THỊ LỖI
+    // =========================================================
+
     public void ShowError(string errorMessage)
     {
         isErrorState = true;
+
         if (txtStatus != null)
         {
-            txtStatus.text = $"<color=red>Lỗi kết nối:</color> {errorMessage}";
+            txtStatus.text =
+                $"<color=red>Lỗi kết nối:</color> {errorMessage}";
         }
 
         if (btnHuy != null)
         {
             btnHuy.SetActive(true);
         }
+
+        // Tạm dừng video khi có lỗi
+        if (videoPlayer != null)
+        {
+            videoPlayer.Pause();
+        }
     }
 
-    // Ẩn màn hình Loading
+    // =========================================================
+    // ẨN LOADING
+    // =========================================================
+
     public void HideLoading()
     {
         isErrorState = false;
-        if (loadingPanel != null) loadingPanel.SetActive(false);
+
+        // Dừng video khi Loading kết thúc
+        if (videoPlayer != null)
+        {
+            videoPlayer.Stop();
+        }
+
+        // Ẩn video
+        if (videoRawImage != null)
+        {
+            videoRawImage.gameObject.SetActive(false);
+        }
+
+        // Ẩn Loading Panel
+        if (loadingPanel != null)
+        {
+            loadingPanel.SetActive(false);
+        }
     }
 
-    // Sự kiện khi bấm nút Hủy / Quay lại
+    // =========================================================
+    // NÚT HỦY
+    // =========================================================
+
     public void BamNut_Huy()
     {
         HideLoading();
