@@ -8,7 +8,8 @@ public enum LoaiNhiemVu
     ThuHoach = 3,       // Trồng / Thu hoạch cây trồng (targetID = ID nông sản, 0 = nông sản bất kỳ)
     TroChuyenNPC = 4,   // Trò chuyện / Gặp NPC (targetID = ID NPC)
     TichLuyTien = 5,    // Tích lũy đủ số Gold hiện có
-    CheTao = 6          // Chế tạo vật phẩm (targetID = ID vật phẩm chế tạo, 0 = bất kỳ)
+    CheTao = 6,         // Chế tạo vật phẩm (targetID = ID vật phẩm chế tạo, 0 = bất kỳ)
+    DatCapDo = 7        // Đạt đến cấp độ yêu cầu (soLuongCan = Level cần đạt)
 }
 
 [CreateAssetMenu(fileName = "NhiemVu_Moi", menuName = "Tạo nhiệm vụ/Nhiệm Vụ")]
@@ -43,7 +44,7 @@ public class QuestSO : ScriptableObject
     public int gemThuong;               // Thưởng bao nhiêu Gem
 
     [Tooltip("Thưởng bao nhiêu Kinh Nghiệm (EXP)")]
-    public float expThuong;             // ĐÃ THÊM BIẾN NÀY ĐỂ THƯỞNG EXP
+    public float expThuong;
 
     public int idVatPhamThuong;         // ID vật phẩm thưởng (0 = không thưởng item)
     public int soLuongVatPhamThuong = 1; // Số lượng vật phẩm thưởng
