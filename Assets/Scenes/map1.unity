@@ -342388,11 +342388,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NPCConversation
   CurrentIDCounter: 18
-  json: '{"Options":[{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":509,"yPos":398},"ID":13,"ParamActions":[],"TMPFontGUID":null,"Text":"khoong
-    co gi","parentUIDs":[0,15],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":15}],"EditorInfo":{"isRoot":false,"xPos":497,"yPos":105},"ID":14,"ParamActions":[],"TMPFontGUID":null,"Text":"xin
-    chao","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":1343,"yPos":211},"ID":16,"ParamActions":[],"TMPFontGUID":null,"Text":"mo
-    shop","parentUIDs":[15],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":13},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":14}],"EditorInfo":{"isRoot":true,"xPos":68,"yPos":112},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Xin
-    chaof","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Shop","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":16},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":13}],"EditorInfo":{"isRoot":false,"xPos":1073,"yPos":183},"ID":15,"ParamActions":[],"TMPFontGUID":null,"Text":"Bn
+  json: '{"Options":[{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":754,"yPos":468},"ID":13,"ParamActions":[],"TMPFontGUID":null,"Text":"khoong
+    co gi","parentUIDs":[0,15],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":15}],"EditorInfo":{"isRoot":false,"xPos":742,"yPos":175},"ID":14,"ParamActions":[],"TMPFontGUID":null,"Text":"xin
+    chao","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":1588,"yPos":281},"ID":16,"ParamActions":[],"TMPFontGUID":null,"Text":"mo
+    shop","parentUIDs":[15],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":13},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":14}],"EditorInfo":{"isRoot":true,"xPos":313,"yPos":182},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Xin
+    chaof","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Shop","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":16},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":13}],"EditorInfo":{"isRoot":false,"xPos":1318,"yPos":253},"ID":15,"ParamActions":[],"TMPFontGUID":null,"Text":"Bn
     muoons giup gi","parentUIDs":[14],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Shop","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
   saveVersion: 110
   DefaultName: 
@@ -342408,19 +342408,7 @@ MonoBehaviour:
   EndConversationFont: {fileID: 0}
   Event:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1586762442}
-        m_TargetAssemblyTypeName: ShopUIController, Assembly-CSharp
-        m_MethodName: OpenShop
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1443082653
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -384076,6 +384064,11 @@ PrefabInstance:
         type: 3}
       propertyPath: danhSachUI_CanAn.Array.size
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1450605632221128228, guid: 5a4cdf6143bade348932c1a3325b7fde,
+        type: 3}
+      propertyPath: 'danhSachUI_CanAn.Array.data[3]'
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1450605632221128228, guid: 5a4cdf6143bade348932c1a3325b7fde,
         type: 3}
@@ -452180,6 +452173,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 238400545}
   m_LocalEulerAnglesHint: {x: -1.585, y: 121.61301, z: -83.59701}
+--- !u!224 &1988429620 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7405630394297968302, guid: 110ff1faef69b7e46b712e89c76f4b2b,
+    type: 3}
+  m_PrefabInstance: {fileID: 8024409495734461005}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1988539281
 GameObject:
   m_ObjectHideFlags: 0
@@ -507152,6 +507151,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2041341775125342461, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
+      propertyPath: chatContentParent
+      value: 
+      objectReference: {fileID: 1988429620}
+    - target: {fileID: 2041341775125342461, guid: 110ff1faef69b7e46b712e89c76f4b2b,
+        type: 3}
+      propertyPath: chatLogItemPrefab
+      value: 
+      objectReference: {fileID: 7056528883619945640, guid: b78c6e2f40e271e4ba53536f5034e637,
+        type: 3}
+    - target: {fileID: 2041341775125342461, guid: 110ff1faef69b7e46b712e89c76f4b2b,
+        type: 3}
       propertyPath: inputFieldMessage
       value: 
       objectReference: {fileID: 302207234}
@@ -507258,37 +507268,37 @@ PrefabInstance:
     - target: {fileID: 3816568988310127410, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3816568988310127410, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3816568988310127410, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 3816568988310127410, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 3816568988310127410, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 600
       objectReference: {fileID: 0}
     - target: {fileID: 3816568988310127410, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -40
       objectReference: {fileID: 0}
     - target: {fileID: 7405630394297968302, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7837870801893246896, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
@@ -507323,47 +507333,47 @@ PrefabInstance:
     - target: {fileID: 7931941167403557528, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7931941167403557528, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7931941167403557528, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 7931941167403557528, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 7931941167403557528, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 7931941167403557528, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -40
       objectReference: {fileID: 0}
     - target: {fileID: 8416370448548813992, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8416370448548813992, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8600980290307168535, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8909974537028353066, guid: 110ff1faef69b7e46b712e89c76f4b2b,
         type: 3}
@@ -507371,7 +507381,8 @@ PrefabInstance:
       value: Chatlog
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2491155057941782601, guid: 110ff1faef69b7e46b712e89c76f4b2b, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 110ff1faef69b7e46b712e89c76f4b2b, type: 3}
