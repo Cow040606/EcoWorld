@@ -80,7 +80,16 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     [Header("Hệ Thống Kinh Nghiệm & Cấp Độ")]
     [Networked] public float ExpCurrent { get; set; }
-    [Networked] public int level { get; set; }
+    [Networked, OnChangedRender(nameof(OnLevelChanged))] public int level { get; set; }
+
+    private void OnLevelChanged()
+    {
+        if (HasInputAuthority && Player_QuestManager.localQuest != null)
+        {
+            Player_QuestManager.localQuest.KiemTraTienDo();
+        }
+    }
+
     [Networked] public float expToLevelUp { get; set; }
 
     [Header("Hệ Thống Phân Bổ Điểm")]
@@ -1728,7 +1737,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 {
                     O_VatPham slotTrong = TuiDo[i];
                     slotTrong.ItemID = idMatHang;
-                    
+
                     if (thongTin.stackable)
                     {
                         slotTrong.SoLuong = soLuongConPhaiNhet;
@@ -1739,7 +1748,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                         slotTrong.SoLuong = 1;
                         soLuongConPhaiNhet -= 1;
                     }
-                    
+
                     TuiDo.Set(i, slotTrong);
                     daTimThayChoTrang = true;
                     break;
@@ -2087,5 +2096,3 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 }
-
-

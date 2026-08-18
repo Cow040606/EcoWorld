@@ -90,6 +90,10 @@ public class Player_QuestManager : NetworkBehaviour
                     nv.soLuongHienTai = Player_Controller.localPlayer.Gold;
                     break;
 
+                case LoaiNhiemVu.DatCapDo:
+                    nv.soLuongHienTai = Player_Controller.localPlayer.level;
+                    break;
+
                 case LoaiNhiemVu.TieuDietQuai:
                 case LoaiNhiemVu.CauCa:
                 case LoaiNhiemVu.ThuHoach:
@@ -222,7 +226,7 @@ public class Player_QuestManager : NetworkBehaviour
                     questCanTra.gemThuong,
                     questCanTra.idVatPhamThuong,
                     questCanTra.soLuongVatPhamThuong,
-                    questCanTra.expThuong // ĐÃ BỔ SUNG TRUYỀN EXP VÀO ĐÂY
+                    questCanTra.expThuong
                 );
             }
 
