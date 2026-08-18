@@ -3,90 +3,92 @@ using Fusion;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
-using System.Collections; // BẮT BUỘC THÊM ĐỂ DÙNG HIỆU ỨNG THỜI GIAN (COROUTINE)
+using System.Collections; 
 
 public class ChatSystem : NetworkBehaviour
 {
+    [Header("Chat Log Settings")]
+    public GameObject chatLogItemPrefab; 
+    public Transform chatContentParent;  
+
     [Header("UI Components")]
-    public TextMeshProUGUI textMessage;
     public TMP_InputField inputFieldMessage;
-    public Button buttonSend;
+    public Button buttonSend; 
     public GameObject ChatSys;
     
-    // Biến quản lý hiệu ứng làm mờ
     private CanvasGroup chatCanvasGroup;
     private Coroutine fadeCoroutine;
 
-    // Biến tĩnh dùng chung toàn game
     public static bool IsChatting = false;
-    
-    // Bản sao CỤC BỘ của máy Bò, giúp xử lý tin nhắn từ mọi người mượt mà nhất
     public static ChatSystem LocalInstance;
+
+    private float lastSendTime = 0f; // BỘ ĐẾM CHỐNG KẸT NÚT ENTER
 
     public override void Spawned()
     {
-        // Yêu cầu của Bò: Bật lại kiểm tra quyền điều khiển
-        //if (HasInputAuthority)
-        //{
-            LocalInstance = this; // Khẳng định: Đây là UI trên màn hình của mình!
-            IsChatting = false;
+        LocalInstance = this; 
+        IsChatting = false;
 
-            
-            if (ChatSys != null)
-            {
-                ChatSys.SetActive(true); 
-
-                // TỰ ĐỘNG THÊM CANVAS GROUP (Vũ khí làm mờ UI)
-                chatCanvasGroup = ChatSys.GetComponent<CanvasGroup>();
-                if (chatCanvasGroup == null) chatCanvasGroup = ChatSys.AddComponent<CanvasGroup>();
-            }
-
-            textMessage = GameObject.Find("TextMessage").GetComponent<TextMeshProUGUI>();
-            inputFieldMessage = GameObject.Find("InputField Message").GetComponent<TMP_InputField>();
-            buttonSend = GameObject.Find("Send").GetComponent<Button>();
-
-            buttonSend.onClick.AddListener(SendMessageChat);
-
-            // Bắt đầu game: Chỉ TẮT Ô NHẬP LIỆU để không che màn hình
-            inputFieldMessage.gameObject.SetActive(false);
-            buttonSend.gameObject.SetActive(false);
-            
-            // Ép tàng hình khung chat ngay từ đầu
-            if (chatCanvasGroup != null) chatCanvasGroup.alpha = 0f; 
-
-            // Yêu cầu: Tắt ChatSys hoàn toàn khi hết Spawn
-            if (ChatSys != null) ChatSys.SetActive(false);
+        if (ChatSys != null)
+        {
+            ChatSys.SetActive(true); 
+            chatCanvasGroup = ChatSys.GetComponent<CanvasGroup>();
+            if (chatCanvasGroup == null) chatCanvasGroup = ChatSys.AddComponent<CanvasGroup>();
         }
-    //}
+
+        if (inputFieldMessage != null)
+        {
+            inputFieldMessage.gameObject.SetActive(false);
+            // BỎ cái onSubmit đi để tránh đụng độ với nút Enter trong hàm Update
+        }
+
+        if (buttonSend != null)
+        {
+            buttonSend.onClick.AddListener(SendMessageChat);
+            buttonSend.gameObject.SetActive(false);
+        }
+        
+        if (chatCanvasGroup != null) chatCanvasGroup.alpha = 0f; 
+        if (ChatSys != null) ChatSys.SetActive(false);
+    }
 
     void Update()
     {
-        // Yêu cầu của Bò: Bật lại kiểm tra quyền
-        //if (!HasInputAuthority) return;
+        if (Keyboard.current == null) return;
 
-        // Bật chat (/)
-        if (!IsChatting && Keyboard.current != null && Keyboard.current.slashKey.wasPressedThisFrame)
+        bool pressEnter = Keyboard.current.enterKey.wasPressedThisFrame || Keyboard.current.numpadEnterKey.wasPressedThisFrame;
+        bool pressSlash = Keyboard.current.slashKey.wasPressedThisFrame;
+        bool pressEsc = Keyboard.current.escapeKey.wasPressedThisFrame;
+
+        if (!IsChatting)
         {
-            OpenChat();
+            // Bật chat: Bấm / hoặc Enter (Cách lần gửi cuối 0.2s để không bị lặp nút)
+            if ((pressEnter || pressSlash) && Time.time - lastSendTime > 0.2f)
+            {
+                OpenChat();
+            }
         }
-        // Gửi bằng Enter
-        else if (IsChatting && Keyboard.current != null && Keyboard.current.enterKey.wasPressedThisFrame)
+        else
         {
-            SendMessageChat();
-        }
-        // Tắt bằng Escape
-        else if (IsChatting && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
-            CloseChat();
+            // Đang chat: Bấm Enter để gửi, Esc để tắt
+            if (pressEnter)
+            {
+                SendMessageChat();
+            }
+            else if (pressEsc)
+            {
+                CloseChat();
+            }
         }
     }
 
     public void SendMessageChat()
     {
+        if (inputFieldMessage == null) return;
+
         var message = inputFieldMessage.text;
         if (!string.IsNullOrWhiteSpace(message))
         {
-            // Yêu cầu: Xác định đúng tên của người chơi nhắn
             string tenHienThi = "Người chơi";
             if (Player_Controller.localPlayer != null)
             {
@@ -94,11 +96,11 @@ public class ChatSystem : NetworkBehaviour
                 if (data != null) tenHienThi = data.tenTrenMang.ToString();
             }
             
-            // Yêu cầu: Tên màu vàng, nội dung màu trắng
             var text = $"<color=yellow>{tenHienThi}</color>: <color=white>{message}</color>";
             RpcChat(text);
         }
         
+        lastSendTime = Time.time; // Cập nhật thời gian vừa gửi xong
         CloseChat();
     }
 
@@ -106,17 +108,17 @@ public class ChatSystem : NetworkBehaviour
     {
         IsChatting = true;
         
-        // Yêu cầu: Bật hoàn toàn ChatSys khi Open
         if (ChatSys != null) ChatSys.SetActive(true);
-
-        // Sáng 100% ngay lập tức
         if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
         if (chatCanvasGroup != null) chatCanvasGroup.alpha = 1f;
 
-        // CHỈ HIỆN 2 Ô NHẬP LIỆU
-        inputFieldMessage.gameObject.SetActive(true);
-        buttonSend.gameObject.SetActive(true);
-        inputFieldMessage.ActivateInputField();
+        if (inputFieldMessage != null)
+        {
+            inputFieldMessage.gameObject.SetActive(true);
+            inputFieldMessage.ActivateInputField();
+        }
+
+        if (buttonSend != null) buttonSend.gameObject.SetActive(true);
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -125,47 +127,45 @@ public class ChatSystem : NetworkBehaviour
     void CloseChat()
     {
         IsChatting = false;
-        inputFieldMessage.text = ""; 
 
-        // CHỈ ẨN 2 Ô NHẬP LIỆU
-        inputFieldMessage.gameObject.SetActive(false);
-        buttonSend.gameObject.SetActive(false);
+        if (inputFieldMessage != null)
+        {
+            inputFieldMessage.text = ""; 
+            inputFieldMessage.gameObject.SetActive(false);
+        }
+
+        if (buttonSend != null) buttonSend.gameObject.SetActive(false);
         
         if (UnityEngine.EventSystems.EventSystem.current != null)
-        {
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
-        }
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Kích hoạt đồng hồ đếm ngược 4s (Nó sẽ tự tắt ChatSys hoàn toàn sau khi mờ xong)
         WakeUpChatUI();
     }
-
-    // ===============================================
-    // PHẦN XỬ LÝ MẠNG VÀ HIỆU ỨNG
-    // ===============================================
 
     [Rpc(RpcSources.All, RpcTargets.All)]
     public void RpcChat(string message)
     {
-        if (LocalInstance != null && LocalInstance.textMessage != null)
+        if (LocalInstance != null)
         {
-            LocalInstance.textMessage.text += message + "\n";
-            LocalInstance.WakeUpChatUI(); // Đánh thức UI sáng lên
+            if (LocalInstance.chatLogItemPrefab != null && LocalInstance.chatContentParent != null)
+            {
+                GameObject newChatLog = Instantiate(LocalInstance.chatLogItemPrefab, LocalInstance.chatContentParent);
+                TextMeshProUGUI chatText = newChatLog.GetComponentInChildren<TextMeshProUGUI>();
+                if (chatText != null) chatText.text = message;
+            }
+
+            LocalInstance.WakeUpChatUI(); 
         }
     }
 
     public void WakeUpChatUI()
     {
-        // Khi có tin nhắn tới, phải đảm bảo ChatSys đang bật để nhìn thấy
         if (ChatSys != null) ChatSys.SetActive(true);
-
-        // Sáng rực rỡ
         if (chatCanvasGroup != null) chatCanvasGroup.alpha = 1f;
 
-        // Nếu KHÔNG BẬT KHUNG GÕ CHỮ thì mới cho phép đếm ngược mờ đi
         if (!IsChatting)
         {
             if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
@@ -175,26 +175,18 @@ public class ChatSystem : NetworkBehaviour
 
     private IEnumerator FadeOutRoutine()
     {
-        // Đứng chờ 4 giây cho người ta đọc tin nhắn
         yield return new WaitForSeconds(4f);
-
-        float duration = 1.5f; // Thời gian hiệu ứng mờ dần (1.5 giây)
+        float duration = 1.5f; 
         float time = 0f;
 
-        // Vòng lặp từ từ giảm độ Alpha từ 1 về 0
         while (time < duration)
         {
             time += Time.deltaTime;
-            if (chatCanvasGroup != null)
-            {
-                chatCanvasGroup.alpha = Mathf.Lerp(1f, 0f, time / duration);
-            }
+            if (chatCanvasGroup != null) chatCanvasGroup.alpha = Mathf.Lerp(1f, 0f, time / duration);
             yield return null; 
         }
 
         if (chatCanvasGroup != null) chatCanvasGroup.alpha = 0f;
-        
-        // Yêu cầu: Tắt hoàn toàn ChatSys khi Close (Thực hiện sau khi mờ xong)
         if (ChatSys != null) ChatSys.SetActive(false);
     }
 }
