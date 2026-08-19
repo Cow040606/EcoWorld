@@ -18,6 +18,12 @@ public class PlayerAudioManager : MonoBehaviour
     public AudioClip tiengDaoKhoang;
     public AudioClip tiengChatCay; // Giữ lại dự phòng
 
+    // ===== THÊM 2 ÂM THANH PLAYER =====
+
+    [Header("Âm Thanh Player")]
+    public AudioClip tiengNhay;
+    public AudioClip tiengBiThuong;
+
     // --- CÁC HÀM PHÁT TIẾNG CHÉM RIÊNG BIỆT (DÙNG CHO ANIMATION EVENT) ---
 
     // Cách 1: Chọn hàm này nếu Animation Event truyền tham số (1, 2, 3)
@@ -50,6 +56,7 @@ public class PlayerAudioManager : MonoBehaviour
         if (danhSachTiengChatCay != null && danhSachTiengChatCay.Length > 0)
         {
             int rand = Random.Range(0, danhSachTiengChatCay.Length);
+
             if (danhSachTiengChatCay[rand] != null)
             {
                 loaNhanVat.PlayOneShot(danhSachTiengChatCay[rand]);
@@ -69,12 +76,34 @@ public class PlayerAudioManager : MonoBehaviour
             case "CauCa":
                 if (tiengCauCa != null) loaNhanVat.PlayOneShot(tiengCauCa);
                 break;
+
             case "DaoKhoang":
                 if (tiengDaoKhoang != null) loaNhanVat.PlayOneShot(tiengDaoKhoang);
                 break;
+
             default:
                 Debug.LogWarning("Chưa có âm thanh cho hành động: " + tenHanhDong);
                 break;
+        }
+    }
+
+    // ===== ÂM THANH PLAYER =====
+
+    // Âm thanh khi Player nhảy
+    public void PhatTiengNhay()
+    {
+        if (tiengNhay != null)
+        {
+            loaNhanVat.PlayOneShot(tiengNhay);
+        }
+    }
+
+    // Âm thanh khi Player bị quái vật tấn công / mất máu
+    public void PhatTiengBiThuong()
+    {
+        if (tiengBiThuong != null)
+        {
+            loaNhanVat.PlayOneShot(tiengBiThuong);
         }
     }
 }

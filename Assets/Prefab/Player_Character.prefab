@@ -8708,17 +8708,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 424.92957
+      value: 2587.374
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.8
+      value: 72.306885
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 201.01245
+      value: -1984.3146
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
@@ -8897,7 +8897,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
@@ -9069,10 +9069,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 3318347428971164434}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1774969301367583880}
   m_SourcePrefab: {fileID: 100100000, guid: 175abce4628c6784cbddb19be0e5bca3, type: 3}
 --- !u!95 &3698320381410715315 stripped
 Animator:
@@ -9375,6 +9371,8 @@ MonoBehaviour:
   tiengCauCa: {fileID: 8300000, guid: 385a63505e95421489c7584279768f3c, type: 3}
   tiengDaoKhoang: {fileID: 8300000, guid: c50cfac9d348aab4f8a785117b08e295, type: 3}
   tiengChatCay: {fileID: 0}
+  tiengNhay: {fileID: 8300000, guid: b7cf106466df06a4d80f15e83f6740e6, type: 3}
+  tiengBiThuong: {fileID: 0}
 --- !u!82 &3125081616612146868
 AudioSource:
   m_ObjectHideFlags: 0
@@ -9489,17 +9487,3 @@ MonoBehaviour:
   rootAnimator: {fileID: 3698320381410715315}
   avatarNam: {fileID: 9000000, guid: d49c65de9fce66146b5d0e164b1f9d2d, type: 3}
   avatarNu: {fileID: 9000000, guid: aeb00aa9822ab824699f23ba3178d813, type: 3}
---- !u!114 &1774969301367583880
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7996403590029583987}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1541381998, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObjectPrefabData
-  Guid:
-    RawGuidValue: 90f3e9377bbf22a4b948d3eccdf726b4
