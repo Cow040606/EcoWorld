@@ -121,6 +121,9 @@ namespace DialogueEditor
 
             conversation.Parameters = this.ParameterList;
             json = Jsonify(conversation);
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+#endif
         }
 
         public Conversation Deserialize()
