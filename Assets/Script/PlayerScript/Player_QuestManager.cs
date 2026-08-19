@@ -226,6 +226,12 @@ public class Player_QuestManager : NetworkBehaviour
                 );
             }
 
+            // Hiện thông báo hoàn thành cực xịn xò lên màn hình
+            if (QuestNotifyManager.Instance != null)
+            {
+                QuestNotifyManager.Instance.ShowQuestComplete(questCanTra.tenNhiemVu, (int)questCanTra.expThuong, (int)questCanTra.tienThuong);
+            }
+
             // Xóa khỏi danh sách & cập nhật UI
             danhSachNhiemVu.Remove(nv);
             KiemTraTienDo();

@@ -324,6 +324,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
+                if (HintUIManager.instance != null) HintUIManager.instance.HideHint();
                 if (hintText != null) hintText.text = "";
             }
             else
@@ -1010,18 +1011,24 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private void UpdateFarmingUI(int idDangCam)
     {
-        if (hintText == null) return;
-        string chuChuoiUI = "";
+        string inputKey = "";
+        string inputAction = "";
 
+        // 1. Ưu tiên mục tiêu ngắm trúng (Đất trồng)
         if (BanTiaTuTamManHinh(interactRange, farmlandLayer, out RaycastHit hit))
         {
             currentLookedPlot = hit.collider.GetComponentInParent<FarmPlot>();
             if (currentLookedPlot != null)
             {
                 if (currentLookedPlot.CurrentState == FarmPlot.PlotState.DatTrong)
-                    chuChuoiUI += (idDangCam == 10) ? "[Chuột Phải] Gieo hạt\n" : "Cần hạt giống\n";
+                {
+                    inputKey = (idDangCam == 10) ? "M2" : "";
+                    inputAction = (idDangCam == 10) ? "Sow seeds" : "Need seeds";
+                }
                 else if (currentLookedPlot.CurrentState == FarmPlot.PlotState.CayCon)
-                    chuChuoiUI += "Cây đang lớn...\n";
+                {
+                    inputAction = "Trees are growing...";
+                }
             }
         }
         else
@@ -1029,64 +1036,92 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             currentLookedPlot = null;
         }
 
-        Collider[] cacVatTheGan = Physics.OverlapSphere(transform.position, banKinhNhat);
-        float khoangCachNganNhat = float.MaxValue;
-        Collider mucTieuGanNhat = null;
-
-        foreach (var col in cacVatTheGan)
+        // 2. Nếu không có ngắm vào đất, thì tìm mục tiêu gần nhất để tương tác
+        if (string.IsNullOrEmpty(inputAction))
         {
-            FarmPlot plot = col.GetComponentInParent<FarmPlot>();
-            bool laCayLon = (plot != null && plot.CurrentState == FarmPlot.PlotState.CayLon);
-            bool laNPC = col.CompareTag("NPC");
-            bool laItem = col.CompareTag("Items");
-            bool laBalo = (col.GetComponentInParent<DroppedBackpack>() != null);
+            Collider[] cacVatTheGan = Physics.OverlapSphere(transform.position, banKinhNhat);
+            float khoangCachNganNhat = float.MaxValue;
+            Collider mucTieuGanNhat = null;
 
-            if (laCayLon || laNPC || laItem || laBalo)
+            foreach (var col in cacVatTheGan)
             {
-                float khoangCach = Vector3.Distance(transform.position, col.transform.position);
-                if (khoangCach < khoangCachNganNhat)
+                FarmPlot plot = col.GetComponentInParent<FarmPlot>();
+                bool laCayLon = (plot != null && plot.CurrentState == FarmPlot.PlotState.CayLon);
+                bool laNPC = col.CompareTag("NPC");
+                bool laItem = col.CompareTag("Items");
+                bool laBalo = (col.GetComponentInParent<DroppedBackpack>() != null);
+
+                if (laCayLon || laNPC || laItem || laBalo)
                 {
-                    khoangCachNganNhat = khoangCach;
-                    mucTieuGanNhat = col;
+                    float khoangCach = Vector3.Distance(transform.position, col.transform.position);
+                    if (khoangCach < khoangCachNganNhat)
+                    {
+                        khoangCachNganNhat = khoangCach;
+                        mucTieuGanNhat = col;
+                    }
+                }
+            }
+
+            if (mucTieuGanNhat != null)
+            {
+                inputKey = "F";
+                FarmPlot plot = mucTieuGanNhat.GetComponentInParent<FarmPlot>();
+                if (plot != null && plot.CurrentState == FarmPlot.PlotState.CayLon)
+                {
+                    inputAction = "Harvest";
+                }
+                else if (mucTieuGanNhat.CompareTag("NPC"))
+                {
+                    inputAction = "Interact";
+                }
+                else if (mucTieuGanNhat.GetComponentInParent<DroppedBackpack>() != null)
+                {
+                    inputAction = "Pick up the backpack";
+                }
+                else if (mucTieuGanNhat.CompareTag("Items"))
+                {
+                    XuLyItem theCanCuoc = mucTieuGanNhat.GetComponent<XuLyItem>();
+                    if (theCanCuoc != null && theCanCuoc.thongTinDoVat != null)
+                        inputAction = $"Pick up {theCanCuoc.thongTinDoVat.itemName}";
+                    else
+                        inputAction = "Pick up";
+                }
+            }
+            // 3. Nếu không có gì tương tác, kiểm tra xem có cầm vật phẩm dùng được không
+            else if (idDangCam > 0 && InventoryManager.instance != null)
+            {
+                Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
+                if (thongTinItem != null && thongTinItem.loaiTieuHao != Item.LoaiTieuHao.KhongPhai)
+                {
+                    inputKey = "M2";
+                    inputAction = $"Use {thongTinItem.itemName}";
                 }
             }
         }
 
-        if (mucTieuGanNhat != null)
+        // --- GỌI GIAO DIỆN HƯỚNG DẪN MỚI ---
+        if (HintUIManager.instance != null)
         {
-            FarmPlot plot = mucTieuGanNhat.GetComponentInParent<FarmPlot>();
-            if (plot != null && plot.CurrentState == FarmPlot.PlotState.CayLon)
+            if (!string.IsNullOrEmpty(inputAction))
             {
-                chuChuoiUI += "[F] Thu hoạch\n";
+                HintUIManager.instance.ShowHint(inputKey, inputAction);
             }
-            else if (mucTieuGanNhat.CompareTag("NPC"))
+            else
             {
-                chuChuoiUI += "[F] Trò chuyện\n";
+                HintUIManager.instance.HideHint();
             }
-            else if (mucTieuGanNhat.GetComponentInParent<DroppedBackpack>() != null)
+        }
+        else
+        {
+            // Tương thích ngược lỡ chưa kéo script
+            if (hintText != null)
             {
-                chuChuoiUI += "[F] Nhặt lại Balo\n";
-            }
-            else if (mucTieuGanNhat.CompareTag("Items"))
-            {
-                XuLyItem theCanCuoc = mucTieuGanNhat.GetComponent<XuLyItem>();
-                if (theCanCuoc != null && theCanCuoc.thongTinDoVat != null)
-                    chuChuoiUI += $"[F] Nhặt {theCanCuoc.thongTinDoVat.itemName}\n";
+                if (!string.IsNullOrEmpty(inputAction))
+                    hintText.text = (string.IsNullOrEmpty(inputKey) ? "" : $"[{inputKey}] ") + inputAction;
                 else
-                    chuChuoiUI += "[F] Nhặt đồ\n";
+                    hintText.text = "";
             }
         }
-
-        if (idDangCam > 0 && InventoryManager.instance != null)
-        {
-            Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
-            if (thongTinItem != null && thongTinItem.loaiTieuHao != Item.LoaiTieuHao.KhongPhai)
-            {
-                chuChuoiUI += $"[Chuột Phải] Dùng {thongTinItem.itemName}";
-            }
-        }
-
-        hintText.text = chuChuoiUI.TrimEnd('\n');
     }
 
     private void HandleFarmingPlantLogic()

@@ -10,6 +10,9 @@ public class EXP_Manager : MonoBehaviour
     [Tooltip("Kéo object HUD_PlayerLevel (có chứa Animator) vào đây")]
     public Animator levelUpAnimator;
     
+    [Tooltip("Kéo chữ hiển thị số Level (khi đang nhảy thông báo Level Up) vào đây")]
+    public TextMeshProUGUI levelUpText;
+    
     [Header("XP LOG")]
     [Tooltip("Kéo object HUD_XPLog_Item (có chứa Animator) vào đây")]
     public Animator xpLogAnimator;
@@ -55,7 +58,24 @@ public class EXP_Manager : MonoBehaviour
                     // Chạy animation level up
                     if (levelUpAnimator != null)
                     {
-                        levelUpAnimator.SetTrigger("LevelUp");
+                        // Bật gameobject lên trước
+                        levelUpAnimator.gameObject.SetActive(true);
+                        
+                        // Khôi phục độ sáng 100% để đề phòng trường hợp đang mờ dở thì lại lên cấp
+                        CanvasGroup cg = levelUpAnimator.gameObject.GetComponent<CanvasGroup>();
+                        if (cg != null) cg.alpha = 1f;
+                        
+                        levelUpAnimator.Play("LevelUp", -1, 0f); 
+                        
+                        // Gọi đồng hồ đếm ngược tự động tắt
+                        StopCoroutine("HideLevelUpBanner");
+                        StartCoroutine("HideLevelUpBanner");
+                    }
+                    
+                    // Đổi số Level hiển thị trên chữ thông báo
+                    if (levelUpText != null)
+                    {
+                        levelUpText.text = myPlayer.level.ToString();
                     }
                 }
 
@@ -78,6 +98,37 @@ public class EXP_Manager : MonoBehaviour
                 previousExp = myPlayer.ExpCurrent;
                 previousExpToLevelUp = myPlayer.expToLevelUp;
             }
+        }
+    }
+
+    // Hàm tự động tắt bảng Level Up mượt mà
+    private System.Collections.IEnumerator HideLevelUpBanner()
+    {
+        // Chờ 2.5 giây cho hiệu ứng tung tóe chạy gần xong
+        yield return new WaitForSeconds(2.5f);
+        
+        if (levelUpAnimator != null)
+        {
+            // Tự động gắn CanvasGroup nếu chưa có để làm mờ
+            CanvasGroup canvasGroup = levelUpAnimator.gameObject.GetComponent<CanvasGroup>();
+            if (canvasGroup == null) canvasGroup = levelUpAnimator.gameObject.AddComponent<CanvasGroup>();
+
+            float duration = 1f; // Tốn 1 giây để mờ dần
+            float time = 0f;
+
+            // Chạy vòng lặp giảm độ sáng từ 1 về 0
+            while (time < duration)
+            {
+                time += Time.deltaTime;
+                canvasGroup.alpha = Mathf.Lerp(1f, 0f, time / duration);
+                yield return null; 
+            }
+
+            // Mờ xong thì mới tắt hoàn toàn để tiết kiệm tài nguyên
+            levelUpAnimator.gameObject.SetActive(false);
+            
+            // Trả lại độ sáng 100% để lần lên cấp tiếp theo không bị tàng hình
+            canvasGroup.alpha = 1f;
         }
     }
 }
