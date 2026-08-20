@@ -90,7 +90,6 @@ public class Player_QuestManager : NetworkBehaviour
                     nv.soLuongHienTai = Player_Controller.localPlayer.Gold;
                     break;
 
-                // THÊM MỚI: Check level của Player
                 case LoaiNhiemVu.DatCapDo:
                     nv.soLuongHienTai = Player_Controller.localPlayer.level;
                     break;
@@ -201,19 +200,24 @@ public class Player_QuestManager : NetworkBehaviour
         }
     }
 
-    // --- 7. TRẢ NHIỆM VỤ ---
+    // --- 7. TRẢ NHIỆM VỤ (ĐÃ SỬA CHỐNG BUG SKIP) ---
     public void TraNhiemVu(QuestSO questCanTra)
     {
         if (questCanTra == null) return;
+
+        // [BẢO MẬT]: Ép cập nhật lại tiến độ lần cuối để đảm bảo số liệu chính xác nhất
+        KiemTraTienDo();
+
         NhiemVuDangLam nv = danhSachNhiemVu.Find(x => x.duLieuQuest == questCanTra);
 
+        // Kiểm tra chặt chẽ: Phải có trong danh sách ĐANG LÀM và thực sự ĐÃ ĐẠT YÊU CẦU
         if (nv != null && nv.daDatYeuCau)
         {
             // Chỉ trừ đồ nếu nhiệm vụ thuộc loại GiaoVatPham
             int idVatPhamCanTru = (questCanTra.loaiNhiemVu == LoaiNhiemVu.GiaoVatPham) ? questCanTra.targetID : 0;
             int soLuongCanTru = (questCanTra.loaiNhiemVu == LoaiNhiemVu.GiaoVatPham) ? questCanTra.soLuongCan : 0;
 
-            // Gọi Server trao thưởng & trừ đồ (nếu có)
+            // Gọi Server trao thưởng & trừ đồ (nếu có) qua RPC của Photon Fusion
             if (Player_Controller.localPlayer != null)
             {
                 Player_Controller.localPlayer.RPC_HoanThanhQuest(
@@ -227,15 +231,22 @@ public class Player_QuestManager : NetworkBehaviour
                 );
             }
 
-            // Hiện thông báo hoàn thành cực xịn xò lên màn hình
+            // Hiện thông báo hoàn thành
             if (QuestNotifyManager.Instance != null)
             {
                 QuestNotifyManager.Instance.ShowQuestComplete(questCanTra.tenNhiemVu, (int)questCanTra.expThuong, (int)questCanTra.tienThuong);
             }
 
+            // Đánh dấu đã hoàn thành vĩnh viễn
+            LuuVetNhiemVuDaXong(questCanTra.idNhiemVu);
+
             // Xóa khỏi danh sách & cập nhật UI
             danhSachNhiemVu.Remove(nv);
             KiemTraTienDo();
+        }
+        else
+        {
+            Debug.LogWarning($"<color=red>[Quest Security]</color> Chặn hành vi trả nhiệm vụ sai lệ: {questCanTra?.tenNhiemVu}. Player chưa làm xong hoặc quest không tồn tại!");
         }
     }
 
@@ -258,29 +269,46 @@ public class Player_QuestManager : NetworkBehaviour
         return list;
     }
 
-    // --- 9. IMPORT DỮ LIỆU SAVE NHIỆM VỤ ---
-    public void ImportQuestSaveData(List<QuestSaveData> saveList)
+    [Header("Lịch sử nhiệm vụ đã làm xong")]
+    public List<int> danhSachDaHoanThanh = new List<int>();
+
+    // Đánh dấu nhiệm vụ đã làm xong
+    public void LuuVetNhiemVuDaXong(int questID)
     {
-        if (saveList == null) return;
-        danhSachNhiemVu.Clear();
-
-        QuestSO[] tatCaQuestSO = Resources.FindObjectsOfTypeAll<QuestSO>();
-
-        foreach (var itemSave in saveList)
+        if (!danhSachDaHoanThanh.Contains(questID))
         {
-            QuestSO questSO = System.Array.Find(tatCaQuestSO, q => q.idNhiemVu == itemSave.idNhiemVu);
-            if (questSO != null)
+            danhSachDaHoanThanh.Add(questID);
+        }
+    }
+
+    // --- 9. IMPORT DỮ LIỆU SAVE NHIỆM VỤ ---
+    public void ImportQuestSaveData(List<QuestSaveData> saveList, List<int> completedList = null)
+    {
+        if (saveList != null)
+        {
+            danhSachNhiemVu.Clear();
+            QuestSO[] tatCaQuestSO = Resources.FindObjectsOfTypeAll<QuestSO>();
+
+            foreach (var itemSave in saveList)
             {
-                NhiemVuDangLam nv = new NhiemVuDangLam
+                QuestSO questSO = System.Array.Find(tatCaQuestSO, q => q.idNhiemVu == itemSave.idNhiemVu);
+                if (questSO != null)
                 {
-                    duLieuQuest = questSO,
-                    soLuongHienTai = itemSave.soLuongHienTai,
-                    daDatYeuCau = itemSave.daDatYeuCau
-                };
-                danhSachNhiemVu.Add(nv);
+                    NhiemVuDangLam nv = new NhiemVuDangLam
+                    {
+                        duLieuQuest = questSO,
+                        soLuongHienTai = itemSave.soLuongHienTai,
+                        daDatYeuCau = itemSave.daDatYeuCau
+                    };
+                    danhSachNhiemVu.Add(nv);
+                }
             }
+            KiemTraTienDo();
         }
 
-        KiemTraTienDo();
+        if (completedList != null)
+        {
+            danhSachDaHoanThanh = completedList;
+        }
     }
 }

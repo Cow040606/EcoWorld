@@ -422,28 +422,43 @@ public class BossController : NetworkBehaviour
     private void RPC_AnimAttack()
     {
         if (animator != null) animator.SetTrigger(hashAttack);
-        PlaySound(attackSound); // Phát âm thanh đánh
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_AnimSkill()
     {
         if (animator != null) animator.SetTrigger(hashSkill);
-        PlaySound(attackSound); // Dùng chung âm thanh vung vũ khí cho Skill
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_AnimHurt()
     {
         if (animator != null) animator.SetTrigger(hashHit);
-        PlaySound(hurtSound); // Phát âm thanh bị thương
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_AnimDead()
     {
         if (animator != null) animator.SetBool(hashIsDead, true);
-        PlaySound(deathSound); // Phát âm thanh chết
+    }
+
+    // =========================================================================
+    // ANIMATION EVENTS (GỌI TỪ KHUNG HÌNH HOẠT ẢNH TRONG ANIMATION WINDOW)
+    // HƯỚNG DẪN: Mở Animation Window của Unity, chọn frame tương ứng và tạo Event gọi các hàm này.
+    // =========================================================================
+    public void AnimEvent_PlayAttackSound()
+    {
+        PlaySound(attackSound);
+    }
+
+    public void AnimEvent_PlayHurtSound()
+    {
+        PlaySound(hurtSound);
+    }
+
+    public void AnimEvent_PlayDeathSound()
+    {
+        PlaySound(deathSound);
     }
     #endregion
 

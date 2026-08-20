@@ -42398,27 +42398,27 @@ PrefabInstance:
     - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.9999994
       objectReference: {fileID: 0}
     - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.0011451485
       objectReference: {fileID: 0}
     - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: -0.131
       objectReference: {fileID: 0}
     - target: {fileID: 8017697618352028366, guid: b784161688fde4b4bbf3873dba861153,
         type: 3}
@@ -78939,6 +78939,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 464662738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &466696273 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1842703506834780272, guid: 7ad45e7acc9b815429ae2a15071ed9eb,
+    type: 3}
+  m_PrefabInstance: {fileID: 968392757}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &467580336
 GameObject:
   m_ObjectHideFlags: 0
@@ -108535,7 +108541,15 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 370461850626214841, guid: 29695b20b0eac0b43b5c6c2a413edee3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 7206833283480107386, guid: 29695b20b0eac0b43b5c6c2a413edee3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 29695b20b0eac0b43b5c6c2a413edee3, type: 3}
 --- !u!4 &583009380 stripped
 Transform:
@@ -201575,26 +201589,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 488191950524031701, guid: 96627cafdebd52348ad3d74aeecab4e5,
-        type: 3}
-      propertyPath: maxHealth
-      value: 500
-      objectReference: {fileID: 0}
-    - target: {fileID: 488191950524031701, guid: 96627cafdebd52348ad3d74aeecab4e5,
-        type: 3}
-      propertyPath: banKinhTanCong
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 488191950524031701, guid: 96627cafdebd52348ad3d74aeecab4e5,
-        type: 3}
-      propertyPath: banKinhTuanTra
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 488191950524031701, guid: 96627cafdebd52348ad3d74aeecab4e5,
-        type: 3}
-      propertyPath: banKinhPhatHien
-      value: 10
-      objectReference: {fileID: 0}
     - target: {fileID: 2023032572948147829, guid: 96627cafdebd52348ad3d74aeecab4e5,
         type: 3}
       propertyPath: SortKey
@@ -247857,10 +247851,23 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8248667884693541469, guid: 7ad45e7acc9b815429ae2a15071ed9eb,
+        type: 3}
+      propertyPath: iconDauChamCam
+      value: 
+      objectReference: {fileID: 466696273}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1849177815663835590, guid: 7ad45e7acc9b815429ae2a15071ed9eb,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 1842703506834780272, guid: 7ad45e7acc9b815429ae2a15071ed9eb,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 7ad45e7acc9b815429ae2a15071ed9eb, type: 3}
 --- !u!1 &969289694
 GameObject:
@@ -265801,26 +265808,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4249025384427147439, guid: bf7fbf42a1876a84c938275e4a811fd0,
-        type: 3}
-      propertyPath: expReward
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 4249025384427147439, guid: bf7fbf42a1876a84c938275e4a811fd0,
-        type: 3}
-      propertyPath: maxHealth
-      value: 300
-      objectReference: {fileID: 0}
-    - target: {fileID: 4249025384427147439, guid: bf7fbf42a1876a84c938275e4a811fd0,
-        type: 3}
-      propertyPath: banKinhTuanTra
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4249025384427147439, guid: bf7fbf42a1876a84c938275e4a811fd0,
-        type: 3}
-      propertyPath: banKinhPhatHien
-      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5233338941220087928, guid: bf7fbf42a1876a84c938275e4a811fd0,
         type: 3}
@@ -341551,7 +341538,7 @@ MonoBehaviour:
   maxEnemies: 5
   spawnRadius: 15
   spawnInterval: 3
-  uiTimeText: {fileID: 0}
+  uiTimeText: {fileID: 2033561136}
   startSpawnHour: 19
   endSpawnHour: 6
 --- !u!4 &1441099498
@@ -458497,6 +458484,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ffbc799f11ca774db909eee5e55fa71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+--- !u!114 &2033561136 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4331010881782197474, guid: 5a4cdf6143bade348932c1a3325b7fde,
+    type: 3}
+  m_PrefabInstance: {fileID: 1937429475}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2034625658
 GameObject:
   m_ObjectHideFlags: 0
@@ -495784,6 +495783,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3132638341962812439, guid: 1151ff966161e9b428c5b1609bc14b71,
+        type: 3}
+      propertyPath: npcID
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 5849677912962347839, guid: 1151ff966161e9b428c5b1609bc14b71,
         type: 3}
       propertyPath: m_Name
