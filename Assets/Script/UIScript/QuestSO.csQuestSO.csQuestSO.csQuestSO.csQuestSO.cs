@@ -8,7 +8,8 @@ public enum LoaiNhiemVu
     ThuHoach = 3,       // Trồng / Thu hoạch cây trồng (targetID = ID nông sản, 0 = nông sản bất kỳ)
     TroChuyenNPC = 4,   // Trò chuyện / Gặp NPC (targetID = ID NPC)
     TichLuyTien = 5,    // Tích lũy đủ số Gold hiện có
-    CheTao = 6          // Chế tạo vật phẩm (targetID = ID vật phẩm chế tạo, 0 = bất kỳ)
+    CheTao = 6,         // Chế tạo vật phẩm (targetID = ID vật phẩm chế tạo, 0 = bất kỳ)
+    DatCapDo = 7        // THÊM MỚI: Đạt đến cấp độ yêu cầu (soLuongCan = Cấp độ cần đạt)
 }
 
 [CreateAssetMenu(fileName = "NhiemVu_Moi", menuName = "Tạo nhiệm vụ/Nhiệm Vụ")]

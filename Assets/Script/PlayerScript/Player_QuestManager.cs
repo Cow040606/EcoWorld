@@ -90,6 +90,11 @@ public class Player_QuestManager : NetworkBehaviour
                     nv.soLuongHienTai = Player_Controller.localPlayer.Gold;
                     break;
 
+                // THÊM MỚI: Check level của Player
+                case LoaiNhiemVu.DatCapDo:
+                    nv.soLuongHienTai = Player_Controller.localPlayer.level;
+                    break;
+
                 case LoaiNhiemVu.TieuDietQuai:
                 case LoaiNhiemVu.CauCa:
                 case LoaiNhiemVu.ThuHoach:
@@ -172,7 +177,6 @@ public class Player_QuestManager : NetworkBehaviour
     }
 
     // --- 6. CẬP NHẬT ICON (!) CHO TẤT CẢ NPC TRONG SCENE ---
-    // Bật dấu ! trên đầu NPC nếu player ĐANG NHẬN bất kỳ nhiệm vụ nào liên quan đến NPC đó
     public void CapNhatTatCaIconNPC()
     {
         NPC_DialogueTrigger[] danhSachNPC = FindObjectsOfType<NPC_DialogueTrigger>();
@@ -185,13 +189,10 @@ public class Player_QuestManager : NetworkBehaviour
                 continue;
             }
 
-            // Kiểm tra xem player có ĐANG NHẬN bất kỳ nhiệm vụ nào liên quan đến NPC này không
             bool coNhiemVuLienQuan = danhSachNhiemVu.Exists(x =>
                 x.duLieuQuest != null &&
                 (
-                    // 1. Trường npcID trong QuestSO chỉ định NPC này
                     x.duLieuQuest.npcID == npc.npcID ||
-                    // 2. Hoặc nhiệm vụ dạng Trò chuyện NPC có targetID trùng npcID (hoặc = 0)
                     (x.duLieuQuest.loaiNhiemVu == LoaiNhiemVu.TroChuyenNPC && (x.duLieuQuest.targetID == 0 || x.duLieuQuest.targetID == npc.npcID))
                 )
             );
@@ -222,7 +223,7 @@ public class Player_QuestManager : NetworkBehaviour
                     questCanTra.gemThuong,
                     questCanTra.idVatPhamThuong,
                     questCanTra.soLuongVatPhamThuong,
-                    questCanTra.expThuong // ĐÃ BỔ SUNG TRUYỀN EXP VÀO ĐÂY
+                    questCanTra.expThuong
                 );
             }
 

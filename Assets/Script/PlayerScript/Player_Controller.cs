@@ -1404,6 +1404,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (!HasStateAuthority) return;
 
         ExpCurrent += exp;
+        bool daLenCap = false;
 
         while (ExpCurrent >= expToLevelUp)
         {
@@ -1411,6 +1412,23 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             level++;
             AvailablePoints += 3;
             expToLevelUp *= 1.1f;
+            daLenCap = true;
+        }
+
+        // Báo cho máy của Player biết là đã lên cấp để load lại UI Nhiệm Vụ
+        if (daLenCap)
+        {
+            RPC_CapNhatNhiemVuLevel();
+        }
+    }
+
+    // GỌI HÀM NÀY ĐỂ BÁO VỀ CLIENT UPDATE QUEST BẢNG UI
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    private void RPC_CapNhatNhiemVuLevel()
+    {
+        if (Player_QuestManager.localQuest != null)
+        {
+            Player_QuestManager.localQuest.KiemTraTienDo();
         }
     }
 
@@ -1763,7 +1781,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 {
                     O_VatPham slotTrong = TuiDo[i];
                     slotTrong.ItemID = idMatHang;
-                    
+
                     if (thongTin.stackable)
                     {
                         slotTrong.SoLuong = soLuongConPhaiNhet;
@@ -1774,7 +1792,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                         slotTrong.SoLuong = 1;
                         soLuongConPhaiNhet -= 1;
                     }
-                    
+
                     TuiDo.Set(i, slotTrong);
                     daTimThayChoTrang = true;
                     break;
@@ -2122,5 +2140,3 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 }
-
-

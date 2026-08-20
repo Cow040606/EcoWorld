@@ -6,7 +6,6 @@ using System.Collections.Generic;
 public class BossController : NetworkBehaviour
 {
     [Header("Định danh Boss")]
-    // THÊM MỚI: ID của Boss để đối chiếu với nhiệm vụ
     [Tooltip("ID của Boss. Dùng để đối chiếu với targetID trong Nhiệm Vụ.")]
     public int bossID = 100;
     public string tenBoss = "Quỷ Khổng Lồ";
@@ -25,6 +24,17 @@ public class BossController : NetworkBehaviour
 
     [Tooltip("Tỉ lệ rớt đồ (0 đến 100%)")]
     [Range(0f, 100f)] public float dropChance = 100f;
+
+    [Header("Âm Thanh (Audio)")]
+    [Tooltip("Âm thanh khi vung vũ khí hoặc tấn công")]
+    public AudioClip attackSound;
+    [Tooltip("Âm thanh khi bị dính đòn")]
+    public AudioClip hurtSound;
+    [Tooltip("Âm thanh khi ngã gục")]
+    public AudioClip deathSound;
+
+    // Component phát âm thanh
+    private AudioSource audioSource;
 
     [Header("Cơ chế Vùng & Di chuyển (NavMesh)")]
     public float tocDoTuanTra = 1.5f;
@@ -81,6 +91,18 @@ public class BossController : NetworkBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
+
+        // Tự động tìm hoặc gắn AudioSource nếu chưa có
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        // Cài đặt âm thanh 3D để xa thì nghe nhỏ, gần nghe to
+        audioSource.spatialBlend = 1f;
+        audioSource.minDistance = 5f;
+        audioSource.maxDistance = 30f;
+
         viTriGoc = transform.position;
         heSoScale = Mathf.Max(transform.lossyScale.x, transform.lossyScale.z);
 
@@ -275,15 +297,43 @@ public class BossController : NetworkBehaviour
         if (hitCount >= soDonDeTungSkill)
         {
             RPC_AnimSkill();
-            if (mucTieuHienTai != null) mucTieuHienTai.Server_TakeDamageFromBoss(skillDamage);
             hitCount = 0;
             attackTimer = TickTimer.CreateFromSeconds(Runner, thoiGianHoiSkill);
         }
         else
         {
             RPC_AnimAttack();
-            if (mucTieuHienTai != null) mucTieuHienTai.Server_TakeDamageFromBoss(attackDamage);
             attackTimer = TickTimer.CreateFromSeconds(Runner, thoiGianHoiDon);
+        }
+    }
+    #endregion
+
+    #region ANIMATION EVENTS (GỌI TỪ ANIMATOR)
+    public void AnimEvent_DealNormalDamage()
+    {
+        if (!HasStateAuthority) return;
+
+        if (mucTieuHienTai != null && !mucTieuHienTai.isDead)
+        {
+            float distance = Vector3.Distance(transform.position, mucTieuHienTai.transform.position);
+            if (distance <= banKinhTanCong * heSoScale + 1f)
+            {
+                mucTieuHienTai.Server_TakeDamageFromBoss(attackDamage);
+            }
+        }
+    }
+
+    public void AnimEvent_DealSkillDamage()
+    {
+        if (!HasStateAuthority) return;
+
+        if (mucTieuHienTai != null && !mucTieuHienTai.isDead)
+        {
+            float distance = Vector3.Distance(transform.position, mucTieuHienTai.transform.position);
+            if (distance <= (banKinhTanCong * heSoScale) + 2f)
+            {
+                mucTieuHienTai.Server_TakeDamageFromBoss(skillDamage);
+            }
         }
     }
     #endregion
@@ -304,16 +354,13 @@ public class BossController : NetworkBehaviour
             RPC_AnimDead();
             despawnTimer = TickTimer.CreateFromSeconds(Runner, thoiGianBienMat);
 
-            // CHIA KINH NGHIỆM CHO NGƯỜI KẾT LIỄU
             GiveExpToKiller(info.Source, expReward);
 
-            // --- THÊM MỚI: BÁO CHO NHIỆM VỤ LÀ BOSS ĐÃ CHẾT ---
             if (Player_QuestManager.localQuest != null)
             {
                 Player_QuestManager.localQuest.TangTienDoNhiemVu(LoaiNhiemVu.TieuDietQuai, bossID, 1);
             }
 
-            // --- GỌI HÀM RỚT ĐỒ ---
             DropItem();
         }
         else
@@ -344,10 +391,9 @@ public class BossController : NetworkBehaviour
         }
     }
 
-    // --- HÀM XỬ LÝ RỚT ĐỒ CỦA BOSS ---
     private void DropItem()
     {
-        if (!HasStateAuthority) return; // Chỉ máy chủ mới được tạo vật phẩm
+        if (!HasStateAuthority) return;
 
         if (dropItems != null && dropItems.Count > 0 && Random.Range(0f, 100f) <= dropChance)
         {
@@ -357,21 +403,48 @@ public class BossController : NetworkBehaviour
                 NetworkObject netObj = itemToDrop.GetComponent<NetworkObject>();
                 if (netObj != null)
                 {
-                    // Rớt đồ cách mặt đất một chút để tránh bị chìm
                     Runner.Spawn(netObj, transform.position + Vector3.up * 1.5f, Quaternion.identity);
                 }
             }
         }
     }
 
+    // ----- CÁC HÀM RPC ĐÃ ĐƯỢC CHÈN THÊM ÂM THANH -----
+    private void PlaySound(AudioClip clip)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_AnimAttack() { if (animator != null) animator.SetTrigger(hashAttack); }
+    private void RPC_AnimAttack()
+    {
+        if (animator != null) animator.SetTrigger(hashAttack);
+        PlaySound(attackSound); // Phát âm thanh đánh
+    }
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_AnimSkill() { if (animator != null) animator.SetTrigger(hashSkill); }
+    private void RPC_AnimSkill()
+    {
+        if (animator != null) animator.SetTrigger(hashSkill);
+        PlaySound(attackSound); // Dùng chung âm thanh vung vũ khí cho Skill
+    }
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_AnimHurt() { if (animator != null) animator.SetTrigger(hashHit); }
+    private void RPC_AnimHurt()
+    {
+        if (animator != null) animator.SetTrigger(hashHit);
+        PlaySound(hurtSound); // Phát âm thanh bị thương
+    }
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_AnimDead() { if (animator != null) animator.SetBool(hashIsDead, true); }
+    private void RPC_AnimDead()
+    {
+        if (animator != null) animator.SetBool(hashIsDead, true);
+        PlaySound(deathSound); // Phát âm thanh chết
+    }
     #endregion
 
     private void OnDrawGizmosSelected()
