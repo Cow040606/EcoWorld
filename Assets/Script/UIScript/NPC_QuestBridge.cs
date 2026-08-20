@@ -36,12 +36,13 @@ public class NPC_QuestBridge : MonoBehaviour
     // HƯỚNG DẪN: Kéo hàm này vào Condition của Option Node "Trả nhiệm vụ"
     public bool KiemTraHoanThanhNhiemVu(QuestSO quest)
     {
+        if (quest == null) return false;
         if (Player_QuestManager.localQuest != null)
         {
             // Force check lại tiến độ ngay lúc nói chuyện để số liệu mới nhất
             Player_QuestManager.localQuest.KiemTraTienDo();
 
-            NhiemVuDangLam nv = Player_QuestManager.localQuest.danhSachNhiemVu.Find(x => x.duLieuQuest == quest);
+            NhiemVuDangLam nv = Player_QuestManager.localQuest.danhSachNhiemVu.Find(x => x.duLieuQuest != null && x.duLieuQuest.idNhiemVu == quest.idNhiemVu);
             if (nv != null)
             {
                 return nv.daDatYeuCau; // Chỉ trả về true nếu đã làm xong
@@ -54,10 +55,11 @@ public class NPC_QuestBridge : MonoBehaviour
     // HƯỚNG DẪN: Kéo hàm này vào Condition của Option Node "Ta đang làm" / "Chưa xong"
     public bool KiemTraChuaHoanThanh(QuestSO quest)
     {
+        if (quest == null) return false;
         if (Player_QuestManager.localQuest != null)
         {
             Player_QuestManager.localQuest.KiemTraTienDo();
-            NhiemVuDangLam nv = Player_QuestManager.localQuest.danhSachNhiemVu.Find(x => x.duLieuQuest == quest);
+            NhiemVuDangLam nv = Player_QuestManager.localQuest.danhSachNhiemVu.Find(x => x.duLieuQuest != null && x.duLieuQuest.idNhiemVu == quest.idNhiemVu);
             if (nv != null)
             {
                 return !nv.daDatYeuCau; // Đang làm nhưng chưa xong
@@ -70,6 +72,7 @@ public class NPC_QuestBridge : MonoBehaviour
     // HƯỚNG DẪN: Dùng để làm điều kiện cho câu thoại mở đầu "Cậu có muốn giúp tôi không?"
     public bool KiemTraChuaTungNhanNhiemVu(QuestSO quest)
     {
+        if (quest == null) return false;
         if (Player_QuestManager.localQuest != null)
         {
             // Nếu đã từng làm xong và trả rồi -> false (không cho nhận lại)
@@ -79,7 +82,7 @@ public class NPC_QuestBridge : MonoBehaviour
             }
 
             // Nếu đang nằm trong danh sách nhiệm vụ ĐANG LÀM -> false
-            bool dangLam = Player_QuestManager.localQuest.danhSachNhiemVu.Exists(x => x.duLieuQuest == quest);
+            bool dangLam = Player_QuestManager.localQuest.danhSachNhiemVu.Exists(x => x.duLieuQuest != null && x.duLieuQuest.idNhiemVu == quest.idNhiemVu);
             if (dangLam)
             {
                 return false;

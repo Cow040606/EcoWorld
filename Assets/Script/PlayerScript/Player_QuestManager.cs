@@ -208,7 +208,7 @@ public class Player_QuestManager : NetworkBehaviour
         // [BẢO MẬT]: Ép cập nhật lại tiến độ lần cuối để đảm bảo số liệu chính xác nhất
         KiemTraTienDo();
 
-        NhiemVuDangLam nv = danhSachNhiemVu.Find(x => x.duLieuQuest == questCanTra);
+        NhiemVuDangLam nv = danhSachNhiemVu.Find(x => x.duLieuQuest != null && x.duLieuQuest.idNhiemVu == questCanTra.idNhiemVu);
 
         // Kiểm tra chặt chẽ: Phải có trong danh sách ĐANG LÀM và thực sự ĐÃ ĐẠT YÊU CẦU
         if (nv != null && nv.daDatYeuCau)

@@ -14,7 +14,7 @@ public class GemUI : MonoBehaviour
             {
                 if (txtGold[i] != null)
                 {
-                    txtGold[i].text = ": " + Player_Controller.localPlayer.Gold.ToString();
+                    txtGold[i].text = ": " + Player_Controller.localPlayer.Gem.ToString();
                 }
             }
         }
