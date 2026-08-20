@@ -2139,4 +2139,24 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             TimeManager.Instance.SyncTimeFromHost(hostTime);
         }
     }
+
+    // =========================================================
+    //              TRẠNG THÁI DI CHUYỂN CHO AUDIO
+    // =========================================================
+
+    public bool DangDiChuyen
+    {
+        get
+        {
+            return moveInputLocal.sqrMagnitude > 0.01f;
+        }
+    }
+
+    public bool DangChay
+    {
+        get
+        {
+            return dangChayNhanh && DangDiChuyen;
+        }
+    }
 }
