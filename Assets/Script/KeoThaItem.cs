@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 // Cần 3 cái Interface này để nhận diện thao tác chuột
@@ -10,7 +10,9 @@ public class KeoThaItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     private CanvasGroup canvasGroup;
     
     [HideInInspector] 
-    public int idMonDoDangKeo;  // Sẽ được bơm ID vào lúc mở balo
+    public int idMonDoDangKeo;
+    [HideInInspector]
+    public int levelMonDoDangKeo;
 
     void Awake()
     {
