@@ -1217,10 +1217,17 @@ PrefabInstance:
     - target: {fileID: 5139715806370845123, guid: 3ed0e8d66802c2146b3a3e7b1ada024b,
         type: 3}
       propertyPath: json
+
       value: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":3},{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":3}],"EditorInfo":{"isRoot":false,"xPos":209.8999,"yPos":201.399979},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"Show
         me what you have","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":true,"xPos":-85,"yPos":227.599991},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Welcome,
         traveler! You look weary from the road. Let''s see if I have something to
         help you on your journey!","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Merchant","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":555.1993,"yPos":48.8000641},"ID":3,"ParamActions":[],"TMPFontGUID":null,"Text":"Take
+
+      value: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":3},{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":3}],"EditorInfo":{"isRoot":false,"xPos":236.8999,"yPos":83.79999},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"Show
+        me what you have","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":true,"xPos":-57,"yPos":110},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Welcome,
+        traveler! You look weary from the road. Let''s see if I have something to
+        help you on your journey!","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Merchant","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":583.199341,"yPos":-68.79993},"ID":3,"ParamActions":[],"TMPFontGUID":null,"Text":"Take
+
         a look. I''ve got some useful supplies. Everything here is for sale.","parentUIDs":[2,2],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Merchant","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
       objectReference: {fileID: 0}
     - target: {fileID: 5139715806370845123, guid: 3ed0e8d66802c2146b3a3e7b1ada024b,
@@ -1252,7 +1259,11 @@ PrefabInstance:
         type: 3}
       propertyPath: 'NodeSerializedDataList.Array.data[2]'
       value: 
+
       objectReference: {fileID: 5736079852215696397}
+
+      objectReference: {fileID: 2633221538830004912}
+
     - target: {fileID: 5139715806370845123, guid: 3ed0e8d66802c2146b3a3e7b1ada024b,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.size
@@ -1890,7 +1901,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4182734744233071437, guid: 3ed0e8d66802c2146b3a3e7b1ada024b,
         type: 3}
       insertIndex: -1
+
       addedObject: {fileID: 5736079852215696397}
+
+      addedObject: {fileID: 2633221538830004912}
+
   m_SourcePrefab: {fileID: 100100000, guid: 3ed0e8d66802c2146b3a3e7b1ada024b, type: 3}
 --- !u!4 &4234741893876138754 stripped
 Transform:
@@ -1973,7 +1988,11 @@ MonoBehaviour:
   TMPFont: {fileID: 0}
   Icon: {fileID: 0}
   Audio: {fileID: 0}
+
 --- !u!114 &5736079852215696397
+
+--- !u!114 &2633221538830004912
+
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

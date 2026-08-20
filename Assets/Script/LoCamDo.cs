@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using UnityEngine.UI; 
@@ -24,6 +24,7 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
     public Image anhIcon;
     public TextMeshProUGUI txtSoLuong; 
     public int idDangMac = 0;
+    public int levelDangMac = 0;
 
     void Awake()
     {
@@ -33,7 +34,6 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
 
     void Start()
     {
-        // Kiểm tra ngay lúc vào game, nếu ô chưa có đồ thì làm tàng hình cục icon đi (tránh lỗi hiện cục trắng tinh)
         if (idDangMac == 0)
         {
             XoaDoKhoiO();
@@ -60,9 +60,6 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
     {
         if (thongTinItem == null) return false;
         
-        // ========================================================
-        // Đã tháo chốt chặn! Cứ là ô chế tạo thì cho phép thả đồ vào
-        // ========================================================
         if (loaiCuaO == LoaiLo.NguyenLieuCheTao) return true;
 
         if (loaiCuaO == LoaiLo.Hotbar && (thongTinItem.loaiTrangBi == Item.LoaiTrangBi.VuKhi_CongCu || thongTinItem.loaiTrangBi == Item.LoaiTrangBi.KhongPhai))
@@ -95,11 +92,12 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
             if (doBiKeo != null && InventoryManager.instance != null)
             {
                 int idDoVat = doBiKeo.idMonDoDangKeo;
+                int levelDoVat = doBiKeo.levelMonDoDangKeo;
                 Item thongTin = InventoryManager.instance.TraCuuItem(idDoVat);
 
                 if (KiemTraHopLe(thongTin))
                 {
-                    XuLyGanDo(idDoVat);
+                    XuLyGanDo(idDoVat, levelDoVat);
                     Destroy(doBiKeo.gameObject);
                 }
                 else
@@ -110,7 +108,7 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
         }
     }
 
-    private void XuLyGanDo(int idDoVat)
+    private void XuLyGanDo(int idDoVat, int levelDoVat = 0)
     {
         if (Player_Controller.localPlayer == null) return;
 
@@ -120,14 +118,10 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
         }
         else 
         {
-            // ========================================================
-            // TÌM VÀ XÓA ĐỒ Ở Ô CŨ TRƯỚC KHI GẮN VÀO Ô MỚI
-            // ========================================================
             if (loaiCuaO == LoaiLo.NguyenLieuCheTao)
             {
                 foreach (var lo in danhSachTatCaCacLo)
                 {
-                    // Nếu thấy một lỗ khác (cũng là lỗ chế tạo) đang cầm món đồ này -> Tẩy trắng nó!
                     if (lo != this && lo.loaiCuaO == LoaiLo.NguyenLieuCheTao && lo.idDangMac == idDoVat)
                     {
                         lo.XoaDoKhoiO(); 
@@ -135,19 +129,19 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
                 }
             }
 
-            // Tiến hành gắn đồ vào ô hiện tại
             if (anhIcon != null && InventoryManager.instance != null)
             {
                 Item thongTin = InventoryManager.instance.TraCuuItem(idDoVat);
                 if (thongTin != null)
                 {
                     anhIcon.sprite = thongTin.icon; 
-                    anhIcon.enabled = true; // Bật icon lên khi có item
+                    anhIcon.enabled = true;
                     
                     Color mauHienTai = Color.white; 
                     anhIcon.color = mauHienTai;
                     
-                    idDangMac = idDoVat; 
+                    idDangMac = idDoVat;
+                    levelDangMac = levelDoVat; 
 
                     if (txtSoLuong != null)
                     {
@@ -170,7 +164,6 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
             InventoryManager.instance.CapNhatLaiToanBoChiSo();
         }
 
-        // Tự động load lại Balo để món đồ vừa gắn bị ẩn đi
         if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo && Player_Controller.localPlayer != null)
         {
             InventoryManager.instance.VeBaloRaManHinh(Player_Controller.localPlayer.TuiDo);
@@ -189,7 +182,6 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        // Nhận diện cú click chuột phải để gỡ đồ
         if (eventData.button == PointerEventData.InputButton.Right)
         {
             if (idDangMac != 0 || loaiCuaO == LoaiLo.Hotbar)
@@ -204,7 +196,6 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
                     if (InventoryManager.instance != null) InventoryManager.instance.CapNhatLaiToanBoChiSo();
                 }
 
-                // Load lại Balo để đồ hiện lại
                 if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo && Player_Controller.localPlayer != null)
                 {
                     InventoryManager.instance.VeBaloRaManHinh(Player_Controller.localPlayer.TuiDo);
@@ -216,11 +207,12 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
     public void XoaDoKhoiO()
     {
         idDangMac = 0; 
+        levelDangMac = 0;
         
         if (anhIcon != null)
         {
             anhIcon.sprite = null;
-            anhIcon.enabled = false; // Tắt hoàn toàn icon để tàng hình, không bị hiện cục trắng
+            anhIcon.enabled = false;
         }
 
         if (txtSoLuong != null)

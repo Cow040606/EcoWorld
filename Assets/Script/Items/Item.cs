@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "New_Item", menuName = "Items/Item Create")]
 public class Item : ScriptableObject
@@ -26,7 +26,9 @@ public class Item : ScriptableObject
     [Tooltip("Chỉ có tác dụng khi món đồ này được mặc lên người")]
     public float congThemMau;     
     public float congThemStamina;  
-    public float congThemTocDo; 
+    public float congThemTocDo;
+    public float congThemGiap;
+    public float congThemSatThuong;
 
     
     public enum LoaiTieuHao { KhongPhai, HoiMau, HoiTheLuc, SuaGiap }
@@ -40,7 +42,10 @@ public class Item : ScriptableObject
     
     [Tooltip("Số điểm cộng thêm (Ví dụ: 20 máu, 50 giáp...)")]
     public float luongHoiPhuc = 0f;
-    public float congThemGiap;   
+
+    [Header("--- YÊU CẦU NÂNG CẤP ---")]
+    public int idNguyenLieuNangCap = 1;
+    public int soLuongNguyenLieuNangCap = 5;   
 
 
     [Header("Mô tả chi tiết")]
