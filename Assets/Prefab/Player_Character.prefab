@@ -9109,7 +9109,7 @@ CharacterController:
   m_Height: 1.6
   m_Radius: 0.2
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0.6
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.9, z: 0}
@@ -9138,6 +9138,7 @@ MonoBehaviour:
   thoiGianDash: 0.6
   thoiGianHoiDash: 2
   theLucTieuHaoDash: 15
+  thoiGianVoDich: 0.6
   _isDashing:
     _value: 0
   _isInvincible:
@@ -9375,8 +9376,6 @@ MonoBehaviour:
   tiengBiThuong: {fileID: 8300000, guid: 5d17fc20dae41894e963d4b043c1b189, type: 3}
   tiengWalk: {fileID: 8300000, guid: 6a3eabc7a36dbcf429e6afaabaa76f77, type: 3}
   tiengRun: {fileID: 8300000, guid: 9493c36dc8a86b74eb0e4c8f4f80d456, type: 3}
-  khoangCachWalk: 0.5
-  khoangCachRun: 0.3
 --- !u!82 &3125081616612146868
 AudioSource:
   m_ObjectHideFlags: 0
