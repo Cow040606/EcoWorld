@@ -31,6 +31,12 @@ public class NPC_DialogueTrigger : MonoBehaviour
     [Header("Danh sách Model NPC cần ẩn khi chạy cutscene")]
     public List<GameObject> danhSachModelNPCCanAn = new List<GameObject>();
 
+    // =========================================================================
+    // CODE MỚI THÊM: Danh sách Model sẽ bị ẨN LUÔN sau khi Cutscene kết thúc
+    // =========================================================================
+    [Header("Danh sách Model NPC cần ẨN LUÔN sau khi Cutscene")]
+    public List<GameObject> danhSachModelNPCAnSauCutscene = new List<GameObject>();
+
     private List<Renderer> playerRenderersDaAn = new List<Renderer>();
 
     private bool dangNóiChuyenVoiNPCNay = false;
@@ -145,6 +151,10 @@ public class NPC_DialogueTrigger : MonoBehaviour
         {
             objCutscene.SetActive(false);
             HienDanhSachUI();
+            
+            // CODE MỚI THÊM: Ẩn các model sau khi tắt thủ công
+            XuLyAnModelSauCutscene();
+            
             Debug.Log($"<color=yellow>[NPC Cutscene]:</color> Đã tắt Cutscene GameObject: {objCutscene.name}");
         }
     }
@@ -277,7 +287,30 @@ public class NPC_DialogueTrigger : MonoBehaviour
         }
 
         HienDanhSachUI();
+
+        // =========================================================================
+        // CODE MỚI THÊM: Gọi hàm ẩn danh sách Model vĩnh viễn sau khi Cutscene chạy xong
+        // =========================================================================
+        XuLyAnModelSauCutscene();
+
         Debug.Log($"<color=green>[NPC Cutscene]:</color> Đã hoàn thành Cutscene. Tự tắt Cutscene {objCutscene?.name}, hiện lại UI và ẩn chuột.");
+    }
+
+    // =========================================================================
+    // CODE MỚI THÊM: Hàm duyệt qua danh sách và tắt các model
+    // =========================================================================
+    private void XuLyAnModelSauCutscene()
+    {
+        if (danhSachModelNPCAnSauCutscene != null && danhSachModelNPCAnSauCutscene.Count > 0)
+        {
+            foreach (var model in danhSachModelNPCAnSauCutscene)
+            {
+                if (model != null)
+                {
+                    model.SetActive(false);
+                }
+            }
+        }
     }
 
     private void EpTrangThaiUILienTuc()

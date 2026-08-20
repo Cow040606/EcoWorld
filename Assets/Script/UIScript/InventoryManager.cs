@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Fusion; // Phải có thư viện mạng để đọc NetworkArray
@@ -43,9 +43,9 @@ public class InventoryManager : MonoBehaviour
         int idNhan = slotNhan != null ? slotNhan.LayIDTrangBiHienTai() : 0;
 
         // 2. Gom TẤT CẢ vào 1 mảng
-        int[] danhSachDoDangMac = new int[] 
+        O_VatPham[] danhSachDoDangMac = new O_VatPham[] 
         { 
-            idMu, idAo, idQuan, idVuKhi, idDayChuyen, idGiay, idNhan 
+            new O_VatPham { ItemID = idMu, UpgradeLevel = (slotMu != null ? slotMu.levelDangMac : 0) }, new O_VatPham { ItemID = idAo, UpgradeLevel = (slotAo != null ? slotAo.levelDangMac : 0) }, new O_VatPham { ItemID = idQuan, UpgradeLevel = (slotQuan != null ? slotQuan.levelDangMac : 0) }, new O_VatPham { ItemID = idVuKhi, UpgradeLevel = (slotVuKhi != null ? slotVuKhi.levelDangMac : 0) }, new O_VatPham { ItemID = idDayChuyen, UpgradeLevel = (slotDayChuyen != null ? slotDayChuyen.levelDangMac : 0) }, new O_VatPham { ItemID = idGiay, UpgradeLevel = (slotGiay != null ? slotGiay.levelDangMac : 0) }, new O_VatPham { ItemID = idNhan, UpgradeLevel = (slotNhan != null ? slotNhan.levelDangMac : 0) } 
         };
 
         // 3. Quăng cái mảng cho Player tính toán
@@ -140,15 +140,16 @@ public class InventoryManager : MonoBehaviour
                     {
                         // (Mấy dòng code cũ đẻ Prefab và gán dữ liệu của Bò nhét hết vào trong hàm if này nhé)
                         GameObject oMoi = Instantiate(itemPrefab, itemHolder);
-                        oMoi.GetComponent<SlotItemUI>().SetData(thongTinMonDo, tuiDoCuaPlayer[i].SoLuong);
+                        oMoi.GetComponent<SlotItemUI>().SetData(thongTinMonDo, tuiDoCuaPlayer[i].SoLuong, tuiDoCuaPlayer[i].UpgradeLevel);
                         
                         ItemHover camBien = oMoi.GetComponent<ItemHover>();
                         KeoThaItem cucKeoTha = oMoi.GetComponent<KeoThaItem>();
-                        if (cucKeoTha != null) cucKeoTha.idMonDoDangKeo = thongTinMonDo.itemID;
+                        if (cucKeoTha != null) { cucKeoTha.idMonDoDangKeo = thongTinMonDo.itemID; cucKeoTha.levelMonDoDangKeo = tuiDoCuaPlayer[i].UpgradeLevel; }
                         if (camBien != null)
                         {
                             camBien.thongTinMonDo = thongTinMonDo;
-                            camBien.soLuongDangCo = tuiDoCuaPlayer[i].SoLuong; 
+                            camBien.soLuongDangCo = tuiDoCuaPlayer[i].SoLuong;
+                              camBien.upgradeLevel = tuiDoCuaPlayer[i].UpgradeLevel; 
                         }
                     }
                 }

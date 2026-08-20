@@ -10,6 +10,7 @@ public class ItemSaveData
 {
     public int itemID;
     public int soLuong;
+    public int upgradeLevel;
 }
 
 [Serializable]
@@ -297,7 +298,7 @@ public class SaveManager : MonoBehaviour
         {
             for (int i = 0; i < p.TuiDo.Length; i++)
             {
-                data.tuiDo.Add(new ItemSaveData { itemID = p.TuiDo[i].ItemID, soLuong = p.TuiDo[i].SoLuong });
+                data.tuiDo.Add(new ItemSaveData { itemID = p.TuiDo[i].ItemID, soLuong = p.TuiDo[i].SoLuong, upgradeLevel = p.TuiDo[i].UpgradeLevel });
             }
         }
 
@@ -359,7 +360,7 @@ public class SaveManager : MonoBehaviour
         {
             for (int i = 0; i < Mathf.Min(p.TuiDo.Length, data.tuiDo.Count); i++)
             {
-                p.TuiDo.Set(i, new O_VatPham { ItemID = data.tuiDo[i].itemID, SoLuong = data.tuiDo[i].soLuong });
+                p.TuiDo.Set(i, new O_VatPham { ItemID = data.tuiDo[i].itemID, SoLuong = data.tuiDo[i].soLuong, UpgradeLevel = data.tuiDo[i].upgradeLevel });
             }
         }
 

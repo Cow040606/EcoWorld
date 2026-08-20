@@ -18,6 +18,7 @@ public struct O_VatPham : INetworkStruct
 {
     public int ItemID;
     public int SoLuong;
+    public int UpgradeLevel;
 }
 
 public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
@@ -49,10 +50,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float thoiGianDash = 0.25f;
     public float thoiGianHoiDash = 1.2f;
     public float theLucTieuHaoDash = 15f;
+    public float thoiGianVoDich = 0.6f;
     [Networked] public NetworkBool isDashing { get; set; }
     [Networked] public NetworkBool isInvincible { get; set; }
     [Networked] public TickTimer dongHoDash { get; set; }
     [Networked] public TickTimer dongHoHoiDash { get; set; }
+    [Networked] public TickTimer dongHoVoDich { get; set; }
     private bool dashPressedLocal;
 
     [Header("Trạng Thái Sinh Mệnh")]
@@ -67,7 +70,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float baseMaxStamina = 100f;
     public float baseMaxArmor = 0f;
     public float baseSpeed = 5f;
-    public float baseDamage = 25f;
+    public float baseDamage = 0f; // Đã đổi về 0 để phụ thuộc vào vũ khí
 
     [Networked] public float CurrentHealth { get; set; }
     [Networked] public float MaxHealth { get; set; }
@@ -452,12 +455,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (GetInput(out DuLieuInput data))
         {
+            if (isInvincible)
+            {
+                if (dongHoVoDich.Expired(Runner))
+                {
+                    isInvincible = false;
+                }
+            }
+
             if (isDashing)
             {
                 if (dongHoDash.Expired(Runner))
                 {
                     isDashing = false;
-                    isInvincible = false;
                 }
                 else
                 {
@@ -480,6 +490,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 isDashing = true;
                 isInvincible = true;
                 dongHoDash = TickTimer.CreateFromSeconds(Runner, thoiGianDash);
+                dongHoVoDich = TickTimer.CreateFromSeconds(Runner, thoiGianVoDich);
                 dongHoHoiDash = TickTimer.CreateFromSeconds(Runner, thoiGianHoiDash);
                 RPC_AnimDash();
                 return;
@@ -850,6 +861,32 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (!HasInputAuthority) return; // Bảo mật: Chỉ máy Client đánh mới tự tính toán Raycast
 
+        int idDangCam = (CurrentToolIndex >= 0 && CurrentToolIndex <= 5) ? HotbarIDs[CurrentToolIndex] : 0;
+        float satThuongVuKhi = 0f;
+        
+        if (idDangCam > 0 && InventoryManager.instance != null)
+        {
+            Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
+            if (thongTinItem != null)
+            {
+                int upgradeLvl = 0;
+                for (int i = 0; i < TuiDo.Length; i++)
+                {
+                    if (TuiDo[i].ItemID == idDangCam && TuiDo[i].SoLuong > 0)
+                    {
+                        upgradeLvl = TuiDo[i].UpgradeLevel;
+                        break;
+                    }
+                }
+                float multiplier = 1f + (0.1f * upgradeLvl);
+                satThuongVuKhi = thongTinItem.congThemSatThuong * multiplier;
+            }
+        }
+
+        // Tính tổng sát thương lúc chém
+        float satThuongGoc = DiemSucManh * 2f + baseDamage;
+        float satThuongTong = satThuongGoc + satThuongVuKhi;
+
         Vector3 tamQuet = transform.position + transform.forward * 1f;
         float banKinhChem = 3f;
         Collider[] hitColliders = Physics.OverlapSphere(tamQuet, banKinhChem, attackLayer);
@@ -858,7 +895,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (currentComboStep == 2) heSoCombo = 1.2f;
         else if (currentComboStep == 3) heSoCombo = 1.5f;
 
-        float satThuongThucTe = attackDamageToAnimal * heSoCombo;
+        float satThuongThucTe = satThuongTong * heSoCombo;
 
         foreach (var hitCollider in hitColliders)
         {
@@ -912,7 +949,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             TreeScript cay = col.GetComponentInParent<TreeScript>();
             if (cay != null)
             {
-                cay.RPC_TakeDamage(attackDamageToAnimal);
+                cay.RPC_TakeDamage(20f);
                 daChatCayPrefab = true;
             }
         }
@@ -1238,7 +1275,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    public bool ThemDoVaoTui(int idCanThem, int soLuongCanThem)
+    public bool ThemDoVaoTui(int idCanThem, int soLuongCanThem, int upgradeLevel = 0)
     {
         bool isStackable = true;
         if (InventoryManager.instance != null)
@@ -1247,11 +1284,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (thongTin != null) isStackable = thongTin.stackable;
         }
 
+        if (upgradeLevel > 0) isStackable = false;
+
         if (isStackable)
         {
             for (int i = 0; i < TuiDo.Length; i++)
             {
-                if (TuiDo[i].ItemID == idCanThem)
+                if (TuiDo[i].ItemID == idCanThem && TuiDo[i].UpgradeLevel == upgradeLevel)
                 {
                     O_VatPham doVat = TuiDo[i];
                     doVat.SoLuong += soLuongCanThem;
@@ -1266,7 +1305,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             if (TuiDo[i].ItemID == 0)
             {
-                TuiDo.Set(i, new O_VatPham { ItemID = idCanThem, SoLuong = soLuongCanThem });
+                TuiDo.Set(i, new O_VatPham { ItemID = idCanThem, SoLuong = soLuongCanThem, UpgradeLevel = upgradeLevel });
                 Rpc_NotifyPickupClient(idCanThem, soLuongCanThem);
                 return true;
             }
@@ -1382,6 +1421,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void Server_TakeDamageFromBoss(float damage)
     {
         if (!Object.HasStateAuthority) return;
+        if (isInvincible && damage > 0) return;
 
         if (damage > 0)
         {
@@ -1499,24 +1539,36 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    public void ThemDoVatVaoTui(int idCanThem, int soLuongCanThem)
+    public void ThemDoVatVaoTui(int idCanThem, int soLuongCanThem, int upgradeLevel = 0)
     {
-        for (int i = 0; i < TuiDo.Length; i++)
+        bool isStackable = true;
+        if (InventoryManager.instance != null)
         {
-            if (TuiDo[i].ItemID == idCanThem)
+            Item thongTin = InventoryManager.instance.TraCuuItem(idCanThem);
+            if (thongTin != null) isStackable = thongTin.stackable;
+        }
+
+        if (upgradeLevel > 0) isStackable = false;
+
+        if (isStackable)
+        {
+            for (int i = 0; i < TuiDo.Length; i++)
             {
-                O_VatPham doVat = TuiDo[i];
-                doVat.SoLuong += soLuongCanThem;
-                TuiDo.Set(i, doVat);
-                if (Player_QuestManager.localQuest != null) Player_QuestManager.localQuest.KiemTraTienDo();
-                return;
+                if (TuiDo[i].ItemID == idCanThem && TuiDo[i].UpgradeLevel == upgradeLevel)
+                {
+                    O_VatPham doVat = TuiDo[i];
+                    doVat.SoLuong += soLuongCanThem;
+                    TuiDo.Set(i, doVat);
+                    if (Player_QuestManager.localQuest != null) Player_QuestManager.localQuest.KiemTraTienDo();
+                    return;
+                }
             }
         }
         for (int i = 0; i < TuiDo.Length; i++)
         {
             if (TuiDo[i].ItemID == 0)
             {
-                TuiDo.Set(i, new O_VatPham { ItemID = idCanThem, SoLuong = soLuongCanThem });
+                TuiDo.Set(i, new O_VatPham { ItemID = idCanThem, SoLuong = soLuongCanThem, UpgradeLevel = upgradeLevel });
                 if (Player_QuestManager.localQuest != null) Player_QuestManager.localQuest.KiemTraTienDo();
                 return;
             }
@@ -1544,7 +1596,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_CapNhatChiSoTrangBi(int[] idNhungMonDangMac)
+    public void RPC_CapNhatChiSoTrangBi(O_VatPham[] danhSachDoDangMac)
     {
         float bonusHealth = DiemMau * 10f;
         float bonusStamina = DiemTheLuc * 5f;
@@ -1552,17 +1604,23 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         float bonusSpeed = DiemNhanhNhen * 0.2f;
         float bonusArmor = 0f;
 
-        foreach (int id in idNhungMonDangMac)
+        foreach (O_VatPham monDo in danhSachDoDangMac)
         {
-            if (id > 0 && InventoryManager.instance != null)
+            if (monDo.ItemID > 0 && InventoryManager.instance != null)
             {
-                Item thongTin = InventoryManager.instance.TraCuuItem(id);
+                Item thongTin = InventoryManager.instance.TraCuuItem(monDo.ItemID);
                 if (thongTin != null)
                 {
-                    bonusHealth += thongTin.congThemMau;
-                    bonusStamina += thongTin.congThemStamina;
-                    bonusSpeed += thongTin.congThemTocDo;
-                    bonusArmor += thongTin.congThemGiap;
+                    // Tăng thêm 10% chỉ số cho mỗi cấp độ nâng cấp
+                    float multiplier = 1f + (0.1f * monDo.UpgradeLevel);
+                    
+                    bonusHealth += thongTin.congThemMau * multiplier;
+                    bonusStamina += thongTin.congThemStamina * multiplier;
+                    bonusSpeed += thongTin.congThemTocDo * multiplier; // Có thể không nhân speed để tránh lạm phát tốc độ
+                    bonusArmor += thongTin.congThemGiap * multiplier;
+                    bonusDamage += thongTin.congThemSatThuong * multiplier;
+                    
+                    // Note: Nếu vũ khí có sát thương, nhưng Item.cs không có trường sát thương riêng (có thể gộp vào congThemGiap hoặc máu tùy logic game, nhưng tạm thời cứ áp dụng hệ số).
                 }
             }
         }
@@ -1692,6 +1750,22 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             rac.gameObject.SetActive(false);
             if (HasStateAuthority) Runner.Despawn(rac);
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+
+    public void RPC_NangCapVatPham(int idVatPham, int levelHienTai)
+    {
+        for (int i = 0; i < TuiDo.Length; i++)
+        {
+            if (TuiDo[i].ItemID == idVatPham && TuiDo[i].UpgradeLevel == levelHienTai && TuiDo[i].SoLuong > 0)
+            {
+                var doVat = TuiDo[i];
+                doVat.UpgradeLevel += 1;
+                TuiDo.Set(i, doVat);
+                break;
+            }
         }
     }
 
@@ -2085,7 +2159,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
                 for (int i = 0; i < TuiDo.Length; i++)
                 {
-                    TuiDo.Set(i, new O_VatPham { ItemID = 0, SoLuong = 0 });
+                    TuiDo.Set(i, new O_VatPham { ItemID = 0, SoLuong = 0, UpgradeLevel = 0 });
                 }
             }
         }
@@ -2139,4 +2213,24 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             TimeManager.Instance.SyncTimeFromHost(hostTime);
         }
     }
+    // =========================================================
+    //              TRẠNG THÁI DI CHUYỂN CHO AUDIO
+    // =========================================================
+
+    public bool DangDiChuyen
+    {
+        get
+        {
+            return moveInputLocal.sqrMagnitude > 0.01f;
+        }
+    }
+
+    public bool DangChay
+    {
+        get
+        {
+            return dangChayNhanh && DangDiChuyen;
+        }
+    }
 }
+    
