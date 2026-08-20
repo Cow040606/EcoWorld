@@ -1544,16 +1544,19 @@ MonoBehaviour:
   bossID: 2
   tenBoss: Knight Hero
   avatarBoss: {fileID: 0}
-  maxHealth: 1000
+  maxHealth: 500
   _CurrentHealth: 0
   expReward: 500
   dropItems: []
   dropChance: 100
+  attackSound: {fileID: 8300000, guid: 448fad744e99c044da3d35ebbef34a40, type: 3}
+  hurtSound: {fileID: 8300000, guid: e937034eb3208924c9c3ad71cd6a4d74, type: 3}
+  deathSound: {fileID: 8300000, guid: a00fc8335cc383c43913806a23250d14, type: 3}
   tocDoTuanTra: 1.5
   tocDoDuoiTheo: 2
-  banKinhTuanTra: 15
-  banKinhPhatHien: 20
-  banKinhTanCong: 3
+  banKinhTuanTra: 10
+  banKinhPhatHien: 10
+  banKinhTanCong: 2
   attackDamage: 30
   thoiGianHoiDon: 2
   soDonDeTungSkill: 3

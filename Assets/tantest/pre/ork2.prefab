@@ -2795,15 +2795,18 @@ MonoBehaviour:
   bossID: 3
   tenBoss: ORC KING
   avatarBoss: {fileID: 0}
-  maxHealth: 1000
+  maxHealth: 300
   _CurrentHealth: 0
-  expReward: 500
+  expReward: 1000
   dropItems: []
   dropChance: 100
+  attackSound: {fileID: 8300000, guid: a04c676d2879a024490428e4f62563dd, type: 3}
+  hurtSound: {fileID: 8300000, guid: e937034eb3208924c9c3ad71cd6a4d74, type: 3}
+  deathSound: {fileID: 8300000, guid: a00fc8335cc383c43913806a23250d14, type: 3}
   tocDoTuanTra: 1.5
   tocDoDuoiTheo: 2
-  banKinhTuanTra: 15
-  banKinhPhatHien: 20
+  banKinhTuanTra: 5
+  banKinhPhatHien: 5
   banKinhTanCong: 1.8
   attackDamage: 30
   thoiGianHoiDon: 2

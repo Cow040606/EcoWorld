@@ -26,6 +26,14 @@ public class EnemyAIOrc : NetworkBehaviour
     [Header("Thưởng Kinh Nghiệm")]
     public float expReward = 50f;
 
+    [Header("Audio Settings")]
+    [Tooltip("AudioSource để phát âm thanh của quái. Nếu để trống sẽ tự động tìm hoặc thêm mới.")]
+    public AudioSource audioSource;
+    public AudioClip attackSound; // atk
+    public AudioClip hurtSound;   // hurt
+    public AudioClip screamSound; // argy (scream)
+    public AudioClip deathSound;  // die
+
     [Header("Level & Stats Settings")]
     public int minLevel = 1;
     public int maxLevel = 5;
@@ -77,6 +85,20 @@ public class EnemyAIOrc : NetworkBehaviour
 
         startPosition = transform.position;
         mainCamera = Camera.main;
+
+        // Tự động tìm hoặc thêm AudioSource nếu chưa kéo thả
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.spatialBlend = 1f; // Âm thanh 3D
+            audioSource.minDistance = 1f;
+            audioSource.maxDistance = loseRadius > 0 ? loseRadius : 15f;
+            audioSource.rolloffMode = AudioRolloffMode.Logarithmic;
+        }
 
         if (HasStateAuthority)
         {
@@ -316,6 +338,14 @@ public class EnemyAIOrc : NetworkBehaviour
         }
     }
 
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
     public void OnHealthChanged() { if (healthSlider != null) healthSlider.value = Health; }
     public void OnLevelChanged()
     {
@@ -338,9 +368,15 @@ public class EnemyAIOrc : NetworkBehaviour
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_PlayTakeDamageAnim() { if (animator != null) animator.SetTrigger("takedame"); }
+    private void RPC_PlayTakeDamageAnim() 
+    { 
+        if (animator != null) animator.SetTrigger("takedame"); 
+    }
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_PlayAttackAnim() { if (animator != null) animator.SetTrigger("slash"); }
+    private void RPC_PlayAttackAnim() 
+    { 
+        if (animator != null) animator.SetTrigger("slash"); 
+    }
 
     public override void Render()
     {
@@ -376,10 +412,35 @@ public class EnemyAIOrc : NetworkBehaviour
             case EnemyState.Chase:
                 animator.SetBool("isRunning", true); break;
             case EnemyState.Scream:
-                animator.SetTrigger("scream"); break;
+                animator.SetTrigger("scream"); 
+                break;
             case EnemyState.Dead:
                 animator.SetTrigger("death");
                 break;
         }
+    }
+
+    // =========================================================================
+    // ANIMATION EVENTS (GỌI TỪ KHUNG HÌNH HOẠT ẢNH TRONG ANIMATION WINDOW)
+    // HƯỚNG DẪN: Mở Animation Window của Unity, chọn frame tương ứng và tạo Event gọi các hàm này.
+    // =========================================================================
+    public void AnimEvent_PlayAttackSound()
+    {
+        PlaySound(attackSound);
+    }
+
+    public void AnimEvent_PlayHurtSound()
+    {
+        PlaySound(hurtSound);
+    }
+
+    public void AnimEvent_PlayScreamSound()
+    {
+        PlaySound(screamSound);
+    }
+
+    public void AnimEvent_PlayDeathSound()
+    {
+        PlaySound(deathSound);
     }
 }
