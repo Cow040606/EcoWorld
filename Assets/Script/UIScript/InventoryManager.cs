@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Fusion; // Phải có thư viện mạng để đọc NetworkArray
@@ -9,7 +9,8 @@ public class InventoryManager : MonoBehaviour
     public static InventoryManager instance;
 
     [Header("UI Balo")]
-    public GameObject khungBalo; 
+    public GameObject khungBalo;
+    public GameObject khungStats; // UI Stats trong Balo 
     public bool trangThaiBalo = false; 
 
     [Header("Cấu hình Ô UI")]
@@ -185,7 +186,8 @@ public class InventoryManager : MonoBehaviour
         chuSoHuuBalo = player; 
         trangThaiBalo = !trangThaiBalo;
 
-        // Bật hoặc tắt các UI râu ria dựa theo trạng thái balo
+        if (khungStats != null && trangThaiBalo) khungStats.SetActive(true);
+
         foreach (GameObject ui in danhSachUI_CanAn)
         {
             if (ui != null)
@@ -196,11 +198,35 @@ public class InventoryManager : MonoBehaviour
 
         if (trangThaiBalo)
         {
-            // Vẽ đồ trong Balo ra
             VeBaloRaManHinh(tuiDoCuaPlayer);
         }
 
-        // Bật/tắt cái khung Balo
         if (khungBalo != null) khungBalo.SetActive(trangThaiBalo);
+    }
+
+    public void MoBaloTuNgoai(Player_Controller player, bool anKhungStats = false)
+    {
+        chuSoHuuBalo = player;
+        if (khungStats != null) khungStats.SetActive(!anKhungStats);
+        
+        if (!trangThaiBalo)
+        {
+            trangThaiBalo = true;
+            foreach (GameObject ui in danhSachUI_CanAn) { if (ui != null) ui.SetActive(false); }
+            VeBaloRaManHinh(player.TuiDo);
+            if (khungBalo != null) khungBalo.SetActive(true);
+        }
+    }
+
+    public void DongBaloTuNgoai()
+    {
+        if (khungStats != null) khungStats.SetActive(true); // Khôi phục lại
+        
+        if (trangThaiBalo)
+        {
+            trangThaiBalo = false;
+            foreach (GameObject ui in danhSachUI_CanAn) { if (ui != null) ui.SetActive(true); }
+            if (khungBalo != null) khungBalo.SetActive(false);
+        }
     }
 }

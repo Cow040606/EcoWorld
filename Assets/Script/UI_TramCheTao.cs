@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 public class UI_TramCheTao : MonoBehaviour
@@ -18,6 +18,28 @@ public class UI_TramCheTao : MonoBehaviour
     public GameObject prefabMotCongThuc; 
 
     private int idCu1, idCu2, idCu3; // Dùng để theo dõi xem người chơi có đổi đồ trong lỗ không
+        public bool dangMo = false;
+
+    public void OpenCraft()
+    {
+        dangMo = true;
+        gameObject.SetActive(true);
+        if (InventoryManager.instance != null && Player_Controller.localPlayer != null)
+        {
+            InventoryManager.instance.MoBaloTuNgoai(Player_Controller.localPlayer, true);
+        }
+    }
+
+    public void CloseCraft()
+    {
+        dangMo = false;
+        gameObject.SetActive(false);
+        if (InventoryManager.instance != null)
+        {
+            InventoryManager.instance.DongBaloTuNgoai();
+        }
+    }
+
     void Awake()
     {
         if (instance == null) instance = this;

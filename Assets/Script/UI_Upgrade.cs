@@ -11,6 +11,28 @@ public class UI_Upgrade : MonoBehaviour
     public TMP_Text txtThongBao;
     public TMP_Text txtThongTinNguyenLieu; // Tùy chọn: Để hiện số đá cần thiết
 
+        public bool dangMo = false;
+
+    public void OpenUpgrade()
+    {
+        dangMo = true;
+        gameObject.SetActive(true);
+        if (InventoryManager.instance != null && Player_Controller.localPlayer != null)
+        {
+            InventoryManager.instance.MoBaloTuNgoai(Player_Controller.localPlayer, true);
+        }
+    }
+
+    public void CloseUpgrade()
+    {
+        dangMo = false;
+        gameObject.SetActive(false);
+        if (InventoryManager.instance != null)
+        {
+            InventoryManager.instance.DongBaloTuNgoai();
+        }
+    }
+
     private void Start()
     {
         if (btnUpgrade != null)
