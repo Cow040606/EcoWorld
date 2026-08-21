@@ -1922,6 +1922,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
 
         KiemTraDonDepHotbar();
+        RPC_BaoClientVeLaiUI();
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]

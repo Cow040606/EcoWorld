@@ -125,12 +125,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 703556306}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &5116312 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7708039196632837494, guid: da9c55adf8e0da744be9528231193c59,
-    type: 3}
-  m_PrefabInstance: {fileID: 7381083910897420809}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6367125
 GameObject:
   m_ObjectHideFlags: 0
@@ -5075,12 +5069,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 464662738}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!4 &6827681 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7040151391589251020, guid: da9c55adf8e0da744be9528231193c59,
-    type: 3}
-  m_PrefabInstance: {fileID: 7381083910897420809}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6916100
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -41952,7 +41940,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6827681}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -72174,12 +72162,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 750842075}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &440501251 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6830434955389640181, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &444639783 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2027084317498107039, guid: 5e4766c17c649b24bbb20d23ea721b01,
@@ -73595,30 +73577,6 @@ Transform:
   - {fileID: 618695093}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &466306654 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
-    type: 3}
-  m_PrefabInstance: {fileID: 7381083910897420809}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5116312}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NPCConversation
---- !u!114 &466306655 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5186050297226292113, guid: da9c55adf8e0da744be9528231193c59,
-    type: 3}
-  m_PrefabInstance: {fileID: 7381083910897420809}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5116312}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 436de8c271868aa479a2bdcdd0eb0d51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPC_QuestBridge
 --- !u!1 &466491645
 GameObject:
   m_ObjectHideFlags: 0
@@ -86662,12 +86620,6 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!1 &521002721 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2609604652154854108, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &526511403
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -128326,12 +128278,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 154029842}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &613785870 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1079137660775917385, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &614245992
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -154529,7 +154475,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6827681}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &654026387
 MonoBehaviour:
@@ -154546,7 +154492,7 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 466306655}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: NPC_QuestBridge, Assembly-CSharp
         m_MethodName: ThuHoiViecTuPlayer
         m_Mode: 2
@@ -154609,7 +154555,7 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 466306655}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: NPC_QuestBridge, Assembly-CSharp
         m_MethodName: GiaoViecChoPlayer
         m_Mode: 2
@@ -154622,7 +154568,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 7381083910897420810}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: NPC_DialogueTrigger, Assembly-CSharp
         m_MethodName: ChayCutsceneCuThe
         m_Mode: 2
@@ -154657,12 +154603,6 @@ MonoBehaviour:
   TMPFont: {fileID: 0}
   Icon: {fileID: 0}
   Audio: {fileID: 0}
---- !u!1 &657862310 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6702198777973044305, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &659322259
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -194273,6 +194213,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 464662738}
   m_LocalEulerAnglesHint: {x: 7.3370004, y: 78.01, z: 8.484}
+--- !u!114 &781794992 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 633193964904593032, guid: 5a4cdf6143bade348932c1a3325b7fde,
+    type: 3}
+  m_PrefabInstance: {fileID: 802645284}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d54c49011f0490418506fd8b3e31545, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_Upgrade
 --- !u!1001 &783040461
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -201254,12 +201206,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 464662738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &814945257 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7591442743302528988, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &815210051
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -201613,7 +201559,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6827681}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -224288,19 +224234,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 464662738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &910938928 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1758242567153105063, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &910938930 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2164755790231805890, guid: 5a4cdf6143bade348932c1a3325b7fde,
     type: 3}
   m_PrefabInstance: {fileID: 802645284}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 910938928}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 827086ed8eea0f240b171e091320890f, type: 3}
@@ -235956,6 +235896,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1895558524}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &925046984 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5693446425125223902, guid: 5a4cdf6143bade348932c1a3325b7fde,
+    type: 3}
+  m_PrefabInstance: {fileID: 802645284}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3129d1f97b37b4498297b873a2d3faf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_TramCheTao
 --- !u!1001 &926381393
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -247565,12 +247517,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 792592146}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &964793883 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2151722350246877721, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &968392757
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -247637,6 +247583,7 @@ PrefabInstance:
     - target: {fileID: 4309361643784061297, guid: 7ad45e7acc9b815429ae2a15071ed9eb,
         type: 3}
       propertyPath: json
+
       value: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":false,"xPos":-578.5332,"yPos":-6.59972572},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"what
         happen\n","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":6}],"EditorInfo":{"isRoot":false,"xPos":-351.8661,"yPos":173.400421},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"NO","parentUIDs":[3],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":7}],"EditorInfo":{"isRoot":false,"xPos":-132.533569,"yPos":261.400543},"ID":5,"ParamActions":[],"TMPFontGUID":null,"Text":"OK","parentUIDs":[3],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":21}],"EditorInfo":{"isRoot":false,"xPos":-48.53244,"yPos":-177.266235},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"I
         am still working on the Skeletons","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":10}],"EditorInfo":{"isRoot":false,"xPos":275.866455,"yPos":-35.66636},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"Done
@@ -247659,6 +247606,25 @@ PrefabInstance:
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: ThuHoiViecTuPlayer
       objectReference: {fileID: 0}
+
+      value: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":false,"xPos":-43.3328857,"yPos":187.000122},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"what
+        happen\n","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":6}],"EditorInfo":{"isRoot":false,"xPos":183.334015,"yPos":367},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"NO","parentUIDs":[3],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":7}],"EditorInfo":{"isRoot":false,"xPos":402.6664,"yPos":454.999939},"ID":5,"ParamActions":[],"TMPFontGUID":null,"Text":"OK","parentUIDs":[3],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":21}],"EditorInfo":{"isRoot":false,"xPos":467.3342,"yPos":20.3336945},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        am still working on the Skeletons","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":10}],"EditorInfo":{"isRoot":false,"xPos":797.333252,"yPos":140.3335},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"Done
+        ","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"DaXongQ2","CheckType":0,"RequiredValue":true}],"NodeUID":13}],"EditorInfo":{"isRoot":false,"xPos":790.001,"yPos":432.3335},"ID":11,"ParamActions":[],"TMPFontGUID":null,"Text":"The
+        Orc King is died!","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":22}],"EditorInfo":{"isRoot":false,"xPos":664.667236,"yPos":576.333435},"ID":12,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        am still hunting the Orc King","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":15}],"EditorInfo":{"isRoot":false,"xPos":814.000244,"yPos":796.9995},"ID":14,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        need more power first.","parentUIDs":[13],"SpeechUID":-1}],"Parameters":[{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"ChuaNhanQ1","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"DangLamQ1","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"DaXongQ1","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"DangLamQ2","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"DaXongQ2","BoolValue":false}],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"ChuaNhanQ1","CheckType":0,"RequiredValue":true}],"NodeUID":1},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"DangLamQ1","CheckType":0,"RequiredValue":true}],"NodeUID":8},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"DaXongQ1","CheckType":0,"RequiredValue":true}],"NodeUID":9},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"DangLamQ2","CheckType":0,"RequiredValue":true}],"NodeUID":12},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"DaXongQ2","CheckType":0,"RequiredValue":true}],"NodeUID":11}],"EditorInfo":{"isRoot":true,"xPos":-65,"yPos":22},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"HUHUHU","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":3}],"EditorInfo":{"isRoot":false,"xPos":239.334076,"yPos":138.000122},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        had a wife, but she was killed by the Orc King.","parentUIDs":[1],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":4},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":5}],"EditorInfo":{"isRoot":false,"xPos":217.33371,"yPos":262.667023},"ID":3,"ParamActions":[],"TMPFontGUID":null,"Text":"Please
+        take revenge for me.","parentUIDs":[2],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":174.666779,"yPos":471.9994},"ID":6,"ParamActions":[],"TMPFontGUID":null,"Text":"Fine,loser.","parentUIDs":[4],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":563.332764,"yPos":235.333344},"ID":7,"ParamActions":[],"TMPFontGUID":null,"Text":"First,
+        reach level 10 by killing 10 skeletons.","parentUIDs":[5],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":814.6677,"yPos":251.333557},"ID":10,"ParamActions":[],"TMPFontGUID":null,"Text":"Very
+        good. Now, find the Orc King and eliminate him.","parentUIDs":[9],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":14}],"EditorInfo":{"isRoot":false,"xPos":851.334,"yPos":698.0001},"ID":13,"ParamActions":[],"TMPFontGUID":null,"Text":"You
+        did it. Thank you; I will send you the reward.","parentUIDs":[11],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":16}],"EditorInfo":{"isRoot":false,"xPos":815.333,"yPos":879.999634},"ID":15,"ParamActions":[],"TMPFontGUID":null,"Text":"Wise
+        choice. Go to the royal castle and meet the King.","parentUIDs":[14],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":833.333,"yPos":999.333862},"ID":16,"ParamActions":[],"TMPFontGUID":null,"Text":"He
+        will grant you the strength you need.","parentUIDs":[15],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":727.666748,"yPos":3.33313751},"ID":21,"ParamActions":[],"TMPFontGUID":null,"Text":"pls,Hurry
+        ","parentUIDs":[8],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":615,"yPos":660.6666},"ID":22,"ParamActions":[],"TMPFontGUID":null,"Text":"Try
+        your best","parentUIDs":[12],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
+      objectReference: {fileID: 0}
+
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -273005,12 +272971,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 961246f5a43263b4480e85cef330412c, type: 3}
---- !u!1 &1127798289 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1012778031148166297, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1128594018
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -286064,43 +286024,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 464662738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1169639715 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3800246220834599659, guid: da9c55adf8e0da744be9528231193c59,
-    type: 3}
-  m_PrefabInstance: {fileID: 7381083910897420809}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1169639722
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169639715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
-  Event:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1755606963}
-        m_TargetAssemblyTypeName: QuestVideoTrigger, Assembly-CSharp
-        m_MethodName: TriggerPlay
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  NodeID: 6
-  TMPFont: {fileID: 0}
-  Icon: {fileID: 0}
-  Audio: {fileID: 0}
 --- !u!1 &1169703424
 GameObject:
   m_ObjectHideFlags: 0
@@ -317025,12 +316948,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 464662738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1335948552 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2725115292585169393, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1337316063
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -341259,12 +341176,6 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!1 &1430755559 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8385935778970745931, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1432972696 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3551539287431506741, guid: a44e7519780bd26469a03581099405c4,
@@ -341692,7 +341603,7 @@ MonoBehaviour:
   maxEnemies: 5
   spawnRadius: 15
   spawnInterval: 3
-  uiTimeText: {fileID: 1254668547}
+  uiTimeText: {fileID: 0}
   startSpawnHour: 19
   endSpawnHour: 6
 --- !u!4 &1441099498
@@ -356499,12 +356410,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 464662738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1580300735 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8650882341596690784, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1581834341 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3787378389685982778, guid: 031813e85a4b0614fb5022560b430c9c,
@@ -367556,12 +367461,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ee3d76bdac1489f49abaf57caccc3914, type: 3}
---- !u!1 &1608326609 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8178420276986047035, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1609484290
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -394546,7 +394445,7 @@ MonoBehaviour:
   myVideoPlayer: {fileID: 648239471}
   videoScreenUI: {fileID: 648239469}
   danhSachModelCanAn:
-  - {fileID: 5116312}
+  - {fileID: 0}
 --- !u!4 &1755606964
 Transform:
   m_ObjectHideFlags: 0
@@ -400818,12 +400717,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5df44ef08f5ddd84f8d461c7392be826, type: 3}
---- !u!1 &1864012631 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6246954581732251307, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1865043872
 GameObject:
   m_ObjectHideFlags: 0
@@ -400974,12 +400867,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 750842075}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1876276074 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2197160062388966006, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1876937374
 GameObject:
   m_ObjectHideFlags: 0
@@ -440186,6 +440073,74 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1575917227}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1961745462 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5536590433431800712, guid: 73d0b1086be8a0d428c775ee228703eb,
+    type: 3}
+  m_PrefabInstance: {fileID: 3884470195343559147}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1961745469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1961745462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 925046984}
+        m_TargetAssemblyTypeName: UI_TramCheTao, Assembly-CSharp
+        m_MethodName: OpenCraft
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  NodeID: 9
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
+--- !u!114 &1961745470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1961745462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 781794992}
+        m_TargetAssemblyTypeName: UI_Upgrade, Assembly-CSharp
+        m_MethodName: OpenUpgrade
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  NodeID: 8
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
 --- !u!1 &1964221097
 GameObject:
   m_ObjectHideFlags: 0
@@ -481689,12 +481644,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5db8465442f4d0847b7eb59fe6ee1ad6, type: 3}
---- !u!1 &2142982031 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 920901903687615276, guid: 5a4cdf6143bade348932c1a3325b7fde,
-    type: 3}
-  m_PrefabInstance: {fileID: 802645284}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2144141822
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -490280,7 +490229,14 @@ PrefabInstance:
     - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
       propertyPath: json
+
       value: '{"Options":[{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":292.799957,"yPos":107.000015},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"UP","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":276,"yPos":350.2},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"create","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":8},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":9}],"EditorInfo":{"isRoot":true,"xPos":0.5999603,"yPos":218.8},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":null,"parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":null,"OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
+
+      value: '{"Options":[{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":409.333344,"yPos":105.666672},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"
+        i need update","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":352.666656,"yPos":207.666672},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"i
+        need crafting","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":8},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":9}],"EditorInfo":{"isRoot":true,"xPos":135.666656,"yPos":108},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":null,"parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"What
+        Up","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
+
       objectReference: {fileID: 0}
     - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
@@ -490301,32 +490257,60 @@ PrefabInstance:
         type: 3}
       propertyPath: 'NodeSerializedDataList.Array.data[5]'
       value: 
+
       objectReference: {fileID: 354125599}
+
+      objectReference: {fileID: 1961745470}
+
     - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
       propertyPath: 'NodeSerializedDataList.Array.data[6]'
       value: 
+
       objectReference: {fileID: 354125598}
+
+      objectReference: {fileID: 1961745469}
+
     - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+
       objectReference: {fileID: 1154545590}
     - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OpenCraft
+
+      objectReference: {fileID: 781794992}
+    - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OpenUpgrade
+
       objectReference: {fileID: 0}
     - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+
       value: UI_TramCheTao, Assembly-CSharp
+
+      value: UI_Upgrade, Assembly-CSharp
+
       objectReference: {fileID: 0}
     - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+
+
+    - target: {fileID: 6192867319165411054, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      propertyPath: tamHoatDong
+      value: 1
+      objectReference: {fileID: 0}
+
     - target: {fileID: 6192867319165411054, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
       propertyPath: cuocHoiThoaiCuaNPC
@@ -490750,11 +490734,19 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5536590433431800712, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
       insertIndex: -1
+
       addedObject: {fileID: 354125599}
     - targetCorrespondingSourceObject: {fileID: 5536590433431800712, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 354125598}
+
+      addedObject: {fileID: 1961745470}
+    - targetCorrespondingSourceObject: {fileID: 5536590433431800712, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1961745469}
+
     - targetCorrespondingSourceObject: {fileID: 7388910361591875335, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
       insertIndex: -1
@@ -495263,6 +495255,7 @@ Transform:
   - {fileID: 6291111677904520314}
   m_Father: {fileID: 4172673196729627969}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+
 --- !u!1001 &7381083910897420809
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -495617,6 +495610,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ec9f29a5f4894d46b8864644b5e492c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPC_DialogueTrigger
+
+
 --- !u!1 &7393125110655529810
 GameObject:
   m_ObjectHideFlags: 0
@@ -503998,7 +503993,6 @@ SceneRoots:
   - {fileID: 3722569393534196328}
   - {fileID: 1314596577}
   - {fileID: 497158616}
-  - {fileID: 7381083910897420809}
   - {fileID: 46461363}
   - {fileID: 101999222}
   - {fileID: 160572253}
@@ -504045,3 +504039,6 @@ SceneRoots:
   - {fileID: 1755606964}
   - {fileID: 2125366991}
   - {fileID: 1042949979}
+  - {fileID: 264300894}
+  - {fileID: 654026386}
+  - {fileID: 821197496}
