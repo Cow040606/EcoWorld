@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
     public void BamNutThoatRaMenu()
     {
         // 1. Tìm hệ thống mạng đang chạy ngầm
-        NetworkRunner runner = FindObjectOfType<NetworkRunner>();
+        NetworkRunner runner = FindFirstObjectByType<NetworkRunner>();
         
         // 2. Nếu đang kết nối mạng thì ngắt kết nối
         if (runner != null)

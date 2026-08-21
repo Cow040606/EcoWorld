@@ -8,6 +8,7 @@ public class NPC_QuestBridge : MonoBehaviour
         if (Player_QuestManager.localQuest != null)
         {
             Player_QuestManager.localQuest.NhanNhiemVu(quest);
+            CapNhatThongSoQuestSO(quest); // Tự động cập nhật thông số ngay sau khi nhận nhiệm vụ
         }
     }
 
@@ -20,6 +21,7 @@ public class NPC_QuestBridge : MonoBehaviour
             if (KiemTraHoanThanhNhiemVu(quest))
             {
                 Player_QuestManager.localQuest.TraNhiemVu(quest);
+                CapNhatThongSoQuestSO(quest); // Tự động cập nhật thông số ngay sau khi trả nhiệm vụ
             }
             else
             {
@@ -160,5 +162,89 @@ public class NPC_QuestBridge : MonoBehaviour
         DialogueEditor.ConversationManager.Instance.SetBool(questName + "_DaXong", daXong);
 
         Debug.Log($"[Dialogue Bridge] Auto-Set Parameter: {questName}_ChuaNhan={chuaNhan}, {questName}_DangLam={dangLam}, {questName}_DaXong={daXong}");
+    }
+
+    // Cập nhật thông số cho tất cả QuestSO có trong game vào Dialogue parameters
+    public void CapNhatTatCaThongSoQuest()
+    {
+        if (Player_QuestManager.localQuest == null || DialogueEditor.ConversationManager.Instance == null) return;
+
+        // Force check lại tiến độ tất cả nhiệm vụ một lần trước khi cập nhật
+        Player_QuestManager.localQuest.KiemTraTienDo();
+
+        QuestSO[] tatCaQuestSO = Resources.FindObjectsOfTypeAll<QuestSO>();
+        foreach (var quest in tatCaQuestSO)
+        {
+            if (quest != null)
+            {
+                CapNhatThongSoQuestSOInternal(quest);
+            }
+        }
+    }
+
+    private void CapNhatThongSoQuestSOInternal(QuestSO quest)
+    {
+        if (quest == null || Player_QuestManager.localQuest == null || DialogueEditor.ConversationManager.Instance == null) return;
+
+        string questName = quest.name; // Lấy tên của file asset
+
+        bool chuaNhan = KiemTraChuaTungNhanNhiemVuInternal(quest);
+        bool dangLam = KiemTraChuaHoanThanhInternal(quest);
+        bool daXong = KiemTraHoanThanhNhiemVuInternal(quest);
+
+        DialogueEditor.ConversationManager.Instance.SetBool(questName + "_ChuaNhan", chuaNhan);
+        DialogueEditor.ConversationManager.Instance.SetBool(questName + "_DangLam", dangLam);
+        DialogueEditor.ConversationManager.Instance.SetBool(questName + "_DaXong", daXong);
+
+        Debug.Log($"[Dialogue Bridge] Auto-Set Parameter Internal: {questName}_ChuaNhan={chuaNhan}, {questName}_DangLam={dangLam}, {questName}_DaXong={daXong}");
+    }
+
+    private bool KiemTraHoanThanhNhiemVuInternal(QuestSO quest)
+    {
+        if (quest == null) return false;
+        if (Player_QuestManager.localQuest != null)
+        {
+            NhiemVuDangLam nv = Player_QuestManager.localQuest.danhSachNhiemVu.Find(x => x.duLieuQuest != null && x.duLieuQuest.idNhiemVu == quest.idNhiemVu);
+            if (nv != null)
+            {
+                return nv.daDatYeuCau;
+            }
+        }
+        return false;
+    }
+
+    private bool KiemTraChuaHoanThanhInternal(QuestSO quest)
+    {
+        if (quest == null) return false;
+        if (Player_QuestManager.localQuest != null)
+        {
+            NhiemVuDangLam nv = Player_QuestManager.localQuest.danhSachNhiemVu.Find(x => x.duLieuQuest != null && x.duLieuQuest.idNhiemVu == quest.idNhiemVu);
+            if (nv != null)
+            {
+                return !nv.daDatYeuCau;
+            }
+        }
+        return false;
+    }
+
+    private bool KiemTraChuaTungNhanNhiemVuInternal(QuestSO quest)
+    {
+        if (quest == null) return false;
+        if (Player_QuestManager.localQuest != null)
+        {
+            if (Player_QuestManager.localQuest.danhSachDaHoanThanh.Contains(quest.idNhiemVu))
+            {
+                return false; 
+            }
+
+            bool dangLam = Player_QuestManager.localQuest.danhSachNhiemVu.Exists(x => x.duLieuQuest != null && x.duLieuQuest.idNhiemVu == quest.idNhiemVu);
+            if (dangLam)
+            {
+                return false;
+            }
+
+            return true;
+        }
+        return false;
     }
 }

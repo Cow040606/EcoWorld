@@ -72,6 +72,7 @@ public class EnemyAIOrc : NetworkBehaviour
     private float stateTimer = 0f;
     private Transform targetPlayer;
     private Camera mainCamera;
+    private Collider[] detectionResults = new Collider[8];
 
     public int GetMaxHealth(int level) => baseHealth + ((Mathf.Max(1, level) - 1) * healthPerLevel);
     public float GetDamage(int level) => baseDamage + ((Mathf.Max(1, level) - 1) * damagePerLevel);
@@ -281,10 +282,15 @@ public class EnemyAIOrc : NetworkBehaviour
 
     private void DetectPlayer()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, detectionRadius);
-        foreach (var hit in hits)
+        // Phân chia tần suất (Throttling): chỉ quét mỗi 10 ticks (khoảng 6 lần/giây) để giảm tải CPU
+        if (Runner.Tick % 10 != 0) return;
+
+        // Quét không cấp phát bộ nhớ (NonAlloc) để triệt tiêu hoàn toàn rác thải bộ nhớ GC
+        int numHits = Physics.OverlapSphereNonAlloc(transform.position, detectionRadius, detectionResults);
+        for (int i = 0; i < numHits; i++)
         {
-            if (hit.CompareTag("Player"))
+            Collider hit = detectionResults[i];
+            if (hit != null && hit.CompareTag("Player"))
             {
                 Player_Controller player = hit.GetComponent<Player_Controller>();
                 if (player != null && player.isDead) continue;
@@ -296,6 +302,8 @@ public class EnemyAIOrc : NetworkBehaviour
                 break;
             }
         }
+        // Dọn dẹp mảng để tránh giữ tham chiếu đối tượng
+        System.Array.Clear(detectionResults, 0, numHits);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

@@ -70,7 +70,7 @@ public class SaveManager : MonoBehaviour
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<SaveManager>();
+                _instance = FindFirstObjectByType<SaveManager>();
                 if (_instance == null)
                 {
                     GameObject go = new GameObject("SaveManager");

@@ -77,6 +77,7 @@ public class BossController : NetworkBehaviour
     private float heSoScale = 1f;
     private TickTimer scanTargetTimer;
     private TickTimer updatePathTimer;
+    private Collider[] scanResults = new Collider[8];
 
     private readonly int hashSpeed = Animator.StringToHash("Speed");
     private readonly int hashAttack = Animator.StringToHash("Attack");
@@ -265,21 +266,26 @@ public class BossController : NetworkBehaviour
 
         if (mucTieuHienTai == null)
         {
-            Collider[] hits = Physics.OverlapSphere(transform.position, tamPhatHienThucTe);
+            int numHits = Physics.OverlapSphereNonAlloc(transform.position, tamPhatHienThucTe, scanResults);
             float khoangCachNganNhat = Mathf.Infinity;
-            foreach (var hit in hits)
+            for (int i = 0; i < numHits; i++)
             {
-                Player_Controller player = hit.GetComponentInParent<Player_Controller>();
-                if (player != null && !player.isDead)
+                Collider hit = scanResults[i];
+                if (hit != null && hit.CompareTag("Player"))
                 {
-                    float khoangCach = Vector3.Distance(transform.position, player.transform.position);
-                    if (khoangCach < khoangCachNganNhat)
+                    Player_Controller player = hit.GetComponentInParent<Player_Controller>();
+                    if (player != null && !player.isDead)
                     {
-                        khoangCachNganNhat = khoangCach;
-                        mucTieuHienTai = player;
+                        float khoangCach = Vector3.Distance(transform.position, player.transform.position);
+                        if (khoangCach < khoangCachNganNhat)
+                        {
+                            khoangCachNganNhat = khoangCach;
+                            mucTieuHienTai = player;
+                        }
                     }
                 }
             }
+            System.Array.Clear(scanResults, 0, numHits);
         }
     }
 

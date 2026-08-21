@@ -76,6 +76,13 @@ public class NPC_DialogueTrigger : MonoBehaviour
                     {
                         dangNóiChuyenVoiNPCNay = true;
                         ConversationManager.Instance.StartConversation(cuocHoiThoaiCuaNPC);
+
+                        // Tự động cập nhật thông số cho tất cả nhiệm vụ khi bắt đầu đối thoại
+                        NPC_QuestBridge bridge = FindFirstObjectByType<NPC_QuestBridge>();
+                        if (bridge != null)
+                        {
+                            bridge.CapNhatTatCaThongSoQuest();
+                        }
                     }
                 }
             }
@@ -280,7 +287,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
         }
         
         // Gọi hàm HideDialogue() để ẩn panel UI của DialogueUI.cs
-        DialogueUI dialogueUI = FindObjectOfType<DialogueUI>();
+        DialogueUI dialogueUI = FindFirstObjectByType<DialogueUI>();
         if (dialogueUI != null)
         {
             dialogueUI.HideDialogue();

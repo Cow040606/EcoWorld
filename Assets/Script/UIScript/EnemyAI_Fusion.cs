@@ -17,6 +17,7 @@ public class EnemyAI_Fusion : NetworkBehaviour
     // Biến nội bộ
     private Vector3 viTriBanDau;
     private bool dangDuoiTheo = false;
+    private Collider[] nguoiChoiResults = new Collider[4];
 
     public override void Spawned()
     {
@@ -47,14 +48,17 @@ public class EnemyAI_Fusion : NetworkBehaviour
         // CHỈ CÓ HOST MỚI XỬ LÝ LOGIC NÀY
         if (!HasStateAuthority) return;
 
-        // 1. Bật Radar hình cầu quét xem có Player nào lọt vào vùng không
-        Collider[] nguoiChoiGoc = Physics.OverlapSphere(transform.position, banKinhPhatHien, layerPlayer);
+        // Chỉ chạy logic AI và quét radar mỗi 10 ticks để tiết kiệm CPU và tránh lag mạng
+        if (Runner.Tick % 10 != 0) return;
 
-        if (nguoiChoiGoc.Length > 0)
+        // 1. Bật Radar hình cầu quét xem có Player nào lọt vào vùng không (Không cấp phát bộ nhớ)
+        int numHits = Physics.OverlapSphereNonAlloc(transform.position, banKinhPhatHien, nguoiChoiResults, layerPlayer);
+
+        if (numHits > 0)
         {
             // TRẠNG THÁI: ĐUỔI THEO PLAYER
             dangDuoiTheo = true;
-            mucTieuCuaQuai = nguoiChoiGoc[0].transform;
+            mucTieuCuaQuai = nguoiChoiResults[0].transform;
             agent.SetDestination(mucTieuCuaQuai.position); // Chỉ điểm cho NavMesh đuổi
         }
         else
@@ -78,6 +82,9 @@ public class EnemyAI_Fusion : NetworkBehaviour
                 }
             }
         }
+
+        // Giải phóng tham chiếu
+        System.Array.Clear(nguoiChoiResults, 0, numHits);
     }
 
     // Hàm này giúp Bò nhìn thấy cái vòng tròn phát hiện trong màn hình Scene

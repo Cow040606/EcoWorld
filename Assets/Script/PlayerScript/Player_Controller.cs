@@ -112,7 +112,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float khoangCachMax = 10f;
     public float tocDoZoomChuot = 0.5f;
     private float khoangCachMucTieu;
-    private float mouseXLocalAcc;
     public LayerMask layerVaChamCamera;
     public float fovBinhThuong = 60f;
     public float fovChayNhanh = 75f;
@@ -734,7 +733,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         input.Set(data);
         jumpPressedLocal = false;
         dashPressedLocal = false;
-        mouseXLocalAcc = 0f;
     }
 
     public void OnMove(InputValue value)
@@ -1829,7 +1827,6 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (thongTin == null) return;
 
         int soLuongConPhaiNhet = soLuongMua;
-        bool daTieuTien = false;
 
         if (thongTin.stackable)
         {
@@ -2098,8 +2095,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
+#pragma warning disable UNT0006
     public void OnConnectedToServer(NetworkRunner runner) { }
     public void OnDisconnectedFromServer(NetworkRunner runner, Fusion.Sockets.NetDisconnectReason reason) { }
+#pragma warning restore UNT0006
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
     public void OnConnectFailed(NetworkRunner runner, Fusion.Sockets.NetAddress remoteAddress, Fusion.Sockets.NetConnectFailedReason reason) { }
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
@@ -2172,7 +2171,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         CurrentStamina = MaxStamina;
         isDead = false;
 
-        Player_Runner runner = FindObjectOfType<Player_Runner>();
+        Player_Runner runner = FindFirstObjectByType<Player_Runner>();
         if (runner != null && runner.spawn != null)
         {
             Vector3 diemHoiSinh = runner.spawn.transform.position;
