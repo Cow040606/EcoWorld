@@ -47566,6 +47566,74 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &354125591 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5536590433431800712, guid: 73d0b1086be8a0d428c775ee228703eb,
+    type: 3}
+  m_PrefabInstance: {fileID: 3884470195343559147}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &354125598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 354125591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1154545590}
+        m_TargetAssemblyTypeName: UI_TramCheTao, Assembly-CSharp
+        m_MethodName: OpenCraft
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  NodeID: 9
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
+--- !u!114 &354125599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 354125591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1511745985}
+        m_TargetAssemblyTypeName: UI_Upgrade, Assembly-CSharp
+        m_MethodName: OpenUpgrade
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  NodeID: 8
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
 --- !u!1001 &354347499
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -107762,6 +107830,37 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SM_Chr_King_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 6094884298711884002, guid: 29695b20b0eac0b43b5c6c2a413edee3,
+        type: 3}
+      propertyPath: json
+      value: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":false,"xPos":351.599945,"yPos":117.266541},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        am ready, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":18}],"EditorInfo":{"isRoot":false,"xPos":288.933319,"yPos":332.4665},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"I''m
+        on it","parentUIDs":[2],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":24}],"EditorInfo":{"isRoot":false,"xPos":939.86615,"yPos":-68.73349},"ID":6,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        have the armor and power.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":25}],"EditorInfo":{"isRoot":false,"xPos":894.532837,"yPos":282.9987},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        will bring his head.","parentUIDs":[8],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":26}],"EditorInfo":{"isRoot":false,"xPos":1183.8667,"yPos":247.9322},"ID":10,"ParamActions":[],"TMPFontGUID":null,"Text":"It''s
+        too dangerous.","parentUIDs":[8],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":29}],"EditorInfo":{"isRoot":false,"xPos":961.8661,"yPos":-235.401428},"ID":12,"ParamActions":[],"TMPFontGUID":null,"Text":"The
+        traitor is dead.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":20}],"EditorInfo":{"isRoot":false,"xPos":76.1994,"yPos":247.932938},"ID":19,"ParamActions":[],"TMPFontGUID":null,"Text":"Maybe
+        later","parentUIDs":[2],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":5}],"EditorInfo":{"isRoot":false,"xPos":679.4,"yPos":100.599854},"ID":22,"ParamActions":[],"TMPFontGUID":null,"Text":"i
+        am still working on the level and armor ","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":28}],"EditorInfo":{"isRoot":false,"xPos":557.5331,"yPos":-156.066528},"ID":27,"ParamActions":[],"TMPFontGUID":null,"Text":"i
+        am hunting the traitor","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":1209.53369,"yPos":-111.399857},"ID":30,"ParamActions":[],"TMPFontGUID":null,"Text":"i
+        will go ","parentUIDs":[15],"SpeechUID":-1}],"Parameters":[{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"find
+        king_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"LV20_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"LV20_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"craft_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"boss2_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"boss2_DaXong","BoolValue":false}],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"find
+        king_DangLam","CheckType":0,"RequiredValue":false}],"NodeUID":1},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"LV20_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":22},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"LV20_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":6},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"boss2_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":27},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"boss2_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":12}],"EditorInfo":{"isRoot":true,"xPos":517.4,"yPos":-20.3999939},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Welcome,
+        new knight. No time to celebrate. Our kingdom is in peril, and I need you.","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":4},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":19}],"EditorInfo":{"isRoot":false,"xPos":338.666779,"yPos":206.132736},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"First,
+        prove your worth. Reach Lv.20 and craft an armor.","parentUIDs":[1],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":665.199951,"yPos":195.999557},"ID":5,"ParamActions":[],"TMPFontGUID":null,"Text":"What
+        up''s . Come back when you ready","parentUIDs":[22],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":9},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":10}],"EditorInfo":{"isRoot":false,"xPos":1054.8,"yPos":129.866058},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"Now,
+        execute ''The HERO''. He is a traitor blinded by glory.","parentUIDs":[24],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":933.199158,"yPos":599.5989},"ID":13,"ParamActions":[],"TMPFontGUID":null,"Text":"Excellent
+        work! The kingdom owes you.","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":30}],"EditorInfo":{"isRoot":false,"xPos":1211.20044,"yPos":-254.40094},"ID":15,"ParamActions":[],"TMPFontGUID":null,"Text":"One
+        last thing. Seek the Old Wizard to awaken your true power. Go now.","parentUIDs":[29],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":206.8664,"yPos":416.932556},"ID":18,"ParamActions":[],"TMPFontGUID":null,"Text":"GO
+        and do not fail me ","parentUIDs":[4],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-65.80011,"yPos":344.93338},"ID":20,"ParamActions":[],"TMPFontGUID":null,"Text":null,"parentUIDs":[19],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Do
+        not make me wait ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":8}],"EditorInfo":{"isRoot":false,"xPos":1045.53345,"yPos":6.933197},"ID":24,"ParamActions":[],"TMPFontGUID":null,"Text":"Impressive.
+        You are ready for the real threat.","parentUIDs":[6],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":662.9999,"yPos":345.86673},"ID":25,"ParamActions":[],"TMPFontGUID":null,"Text":"Very
+        good","parentUIDs":[9],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":1293.5332,"yPos":126.266541},"ID":26,"ParamActions":[],"TMPFontGUID":null,"Text":"It
+        must be done","parentUIDs":[10],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":700.866333,"yPos":-289.066467},"ID":28,"ParamActions":[],"TMPFontGUID":null,"Text":"find
+        him and end this threat ","parentUIDs":[27],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":15}],"EditorInfo":{"isRoot":false,"xPos":1070.2,"yPos":-383.7331},"ID":29,"ParamActions":[],"TMPFontGUID":null,"Text":"Excellent
+        work! The kingdom owes you.","parentUIDs":[12],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
       objectReference: {fileID: 0}
     - target: {fileID: 7337407008283423722, guid: 29695b20b0eac0b43b5c6c2a413edee3,
         type: 3}
@@ -195592,36 +195691,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 787849572604867734, guid: 5a4cdf6143bade348932c1a3325b7fde,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 787849572604867734, guid: 5a4cdf6143bade348932c1a3325b7fde,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 787849572604867734, guid: 5a4cdf6143bade348932c1a3325b7fde,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 856.25574
-      objectReference: {fileID: 0}
-    - target: {fileID: 787849572604867734, guid: 5a4cdf6143bade348932c1a3325b7fde,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 448.12787
-      objectReference: {fileID: 0}
-    - target: {fileID: 787849572604867734, guid: 5a4cdf6143bade348932c1a3325b7fde,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -50
-      objectReference: {fileID: 0}
-    - target: {fileID: 1012778031148166297, guid: 5a4cdf6143bade348932c1a3325b7fde,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1561493473908182225, guid: 5a4cdf6143bade348932c1a3325b7fde,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -195637,11 +195706,6 @@ PrefabInstance:
       propertyPath: diemDichChuyen
       value: 
       objectReference: {fileID: 2125366991}
-    - target: {fileID: 2271184090785882379, guid: 5a4cdf6143bade348932c1a3325b7fde,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2600663516747466805, guid: 5a4cdf6143bade348932c1a3325b7fde,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -195997,11 +196061,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6382820333066868864, guid: 5a4cdf6143bade348932c1a3325b7fde,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6659789014860463172, guid: 5a4cdf6143bade348932c1a3325b7fde,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -196100,11 +196159,6 @@ PrefabInstance:
     - target: {fileID: 7425567639634653135, guid: 5a4cdf6143bade348932c1a3325b7fde,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8246658585347903530, guid: 5a4cdf6143bade348932c1a3325b7fde,
-        type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8368114009265507108, guid: 5a4cdf6143bade348932c1a3325b7fde,
@@ -247580,6 +247634,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4309361643784061297, guid: 7ad45e7acc9b815429ae2a15071ed9eb,
+        type: 3}
+      propertyPath: json
+      value: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":false,"xPos":-578.5332,"yPos":-6.59972572},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"what
+        happen\n","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":6}],"EditorInfo":{"isRoot":false,"xPos":-351.8661,"yPos":173.400421},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"NO","parentUIDs":[3],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":7}],"EditorInfo":{"isRoot":false,"xPos":-132.533569,"yPos":261.400543},"ID":5,"ParamActions":[],"TMPFontGUID":null,"Text":"OK","parentUIDs":[3],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":21}],"EditorInfo":{"isRoot":false,"xPos":-48.53244,"yPos":-177.266235},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        am still working on the Skeletons","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":10}],"EditorInfo":{"isRoot":false,"xPos":275.866455,"yPos":-35.66636},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"Done
+        ","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"DaXongQ2","CheckType":0,"RequiredValue":true}],"NodeUID":13}],"EditorInfo":{"isRoot":false,"xPos":254.800873,"yPos":238.7338},"ID":11,"ParamActions":[],"TMPFontGUID":null,"Text":"The
+        Orc King is died!","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":22}],"EditorInfo":{"isRoot":false,"xPos":133.467133,"yPos":379.53363},"ID":12,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        am still hunting the Orc King","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":15}],"EditorInfo":{"isRoot":false,"xPos":278.800018,"yPos":603.399841},"ID":14,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        need more power first.","parentUIDs":[13],"SpeechUID":-1}],"Parameters":[{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"ChuaNhanQ1","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"DangLamQ1","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"DaXongQ1","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"DangLamQ2","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"DaXongQ2","BoolValue":false}],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"ChuaNhanQ1","CheckType":0,"RequiredValue":true}],"NodeUID":1},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"DangLamQ1","CheckType":0,"RequiredValue":true}],"NodeUID":8},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"DaXongQ1","CheckType":0,"RequiredValue":true}],"NodeUID":9},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"DangLamQ2","CheckType":0,"RequiredValue":true}],"NodeUID":12},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"DaXongQ2","CheckType":0,"RequiredValue":true}],"NodeUID":11}],"EditorInfo":{"isRoot":true,"xPos":-600.2002,"yPos":-171.599915},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"HUHUHU","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":3}],"EditorInfo":{"isRoot":false,"xPos":-295.8659,"yPos":-55.5996323},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        had a wife, but she was killed by the Orc King.","parentUIDs":[1],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":4},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":5}],"EditorInfo":{"isRoot":false,"xPos":-317.866333,"yPos":69.067276},"ID":3,"ParamActions":[],"TMPFontGUID":null,"Text":"Please
+        take revenge for me.","parentUIDs":[2],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-360.533325,"yPos":278.3998},"ID":6,"ParamActions":[],"TMPFontGUID":null,"Text":"Fine,loser.","parentUIDs":[4],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-100.667053,"yPos":51.3335953},"ID":7,"ParamActions":[],"TMPFontGUID":null,"Text":"First,
+        reach level 10 by killing 10 skeletons.","parentUIDs":[5],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":276.800751,"yPos":83.067276},"ID":10,"ParamActions":[],"TMPFontGUID":null,"Text":"Very
+        good. Now, find the Orc King and eliminate him.","parentUIDs":[9],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":14}],"EditorInfo":{"isRoot":false,"xPos":316.134,"yPos":504.40033},"ID":13,"ParamActions":[],"TMPFontGUID":null,"Text":"You
+        did it. Thank you; I will send you the reward.","parentUIDs":[11],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":16}],"EditorInfo":{"isRoot":false,"xPos":280.1329,"yPos":686.4001},"ID":15,"ParamActions":[],"TMPFontGUID":null,"Text":"Wise
+        choice. Go to the royal castle and meet the King.","parentUIDs":[14],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":298.133026,"yPos":805.7336},"ID":16,"ParamActions":[],"TMPFontGUID":null,"Text":"He
+        will grant you the strength you need.","parentUIDs":[15],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":191.13327,"yPos":-190.266785},"ID":21,"ParamActions":[],"TMPFontGUID":null,"Text":"pls,Hurry
+        ","parentUIDs":[8],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":79.79999,"yPos":467.067},"ID":22,"ParamActions":[],"TMPFontGUID":null,"Text":"Try
+        your best","parentUIDs":[12],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Warrior","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309361643784061297, guid: 7ad45e7acc9b815429ae2a15071ed9eb,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ThuHoiViecTuPlayer
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -285050,6 +285129,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1152476227}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1154545590 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5693446425125223902, guid: 5a4cdf6143bade348932c1a3325b7fde,
+    type: 3}
+  m_PrefabInstance: {fileID: 802645284}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3129d1f97b37b4498297b873a2d3faf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_TramCheTao
 --- !u!1001 &1155927890
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -350578,6 +350669,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 1.32}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1511745985 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 633193964904593032, guid: 5a4cdf6143bade348932c1a3325b7fde,
+    type: 3}
+  m_PrefabInstance: {fileID: 802645284}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d54c49011f0490418506fd8b3e31545, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_Upgrade
 --- !u!1 &1511763518
 GameObject:
   m_ObjectHideFlags: 0
@@ -483312,6 +483415,21 @@ PrefabInstance:
       propertyPath: SortKey
       value: 3332252682
       objectReference: {fileID: 0}
+    - target: {fileID: 3177657492455158165, guid: 21a3a24ef7f106c4396f82db91617d0f,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.87
+      objectReference: {fileID: 0}
+    - target: {fileID: 3177657492455158165, guid: 21a3a24ef7f106c4396f82db91617d0f,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.48
+      objectReference: {fileID: 0}
+    - target: {fileID: 3177657492455158165, guid: 21a3a24ef7f106c4396f82db91617d0f,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -7.76
+      objectReference: {fileID: 0}
     - target: {fileID: 3246138409430060619, guid: 21a3a24ef7f106c4396f82db91617d0f,
         type: 3}
       propertyPath: SortKey
@@ -490159,6 +490277,56 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0.20467658
       objectReference: {fileID: 0}
+    - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      propertyPath: json
+      value: '{"Options":[{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":292.799957,"yPos":107.000015},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"UP","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":276,"yPos":350.2},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"create","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":8},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":9}],"EditorInfo":{"isRoot":true,"xPos":0.5999603,"yPos":218.8},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":null,"parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":null,"OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      propertyPath: saveVersion
+      value: 110
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      propertyPath: CurrentIDCounter
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      propertyPath: NodeSerializedDataList.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      propertyPath: 'NodeSerializedDataList.Array.data[5]'
+      value: 
+      objectReference: {fileID: 354125599}
+    - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      propertyPath: 'NodeSerializedDataList.Array.data[6]'
+      value: 
+      objectReference: {fileID: 354125598}
+    - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1154545590}
+    - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OpenCraft
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UI_TramCheTao, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116987878148075574, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 6192867319165411054, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
       propertyPath: cuocHoiThoaiCuaNPC
@@ -490579,6 +490747,14 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 5536590433431800712, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 354125599}
+    - targetCorrespondingSourceObject: {fileID: 5536590433431800712, guid: 73d0b1086be8a0d428c775ee228703eb,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 354125598}
     - targetCorrespondingSourceObject: {fileID: 7388910361591875335, guid: 73d0b1086be8a0d428c775ee228703eb,
         type: 3}
       insertIndex: -1
@@ -495122,6 +495298,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1962923911489737215, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
+      propertyPath: danhSachUIHienKhiChayCutscene.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1962923911489737215, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
       propertyPath: 'danhSachUIAnKhiChayCutscene.Array.data[0]'
       value: 
       objectReference: {fileID: 613785870}
@@ -495208,9 +495389,10 @@ PrefabInstance:
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: json
-      value: "{\"Options\":[{\"Connections\":[],\"EditorInfo\":{\"isRoot\":false,\"xPos\":-47.2998848,\"yPos\":165.599884},\"ID\":1,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"C\xF3
-        \",\"parentUIDs\":[0],\"SpeechUID\":-1},{\"Connections\":[],\"EditorInfo\":{\"isRoot\":false,\"xPos\":-118.299927,\"yPos\":496.599731},\"ID\":2,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Kh\xF4ng\",\"parentUIDs\":[0],\"SpeechUID\":-1},{\"Connections\":[{\"__type\":\"EditableSpeechConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":4}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":-81.49992,\"yPos\":284.1998},\"ID\":3,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"xong
-        r\u1ED3i\",\"parentUIDs\":[0],\"SpeechUID\":-1},{\"Connections\":[],\"EditorInfo\":{\"isRoot\":false,\"xPos\":232.799973,\"yPos\":438.2},\"ID\":6,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"end\",\"parentUIDs\":[4],\"SpeechUID\":-1}],\"Parameters\":[],\"SpeechNodes\":[{\"Connections\":[{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":1},{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":2},{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":3}],\"EditorInfo\":{\"isRoot\":true,\"xPos\":-365.800049,\"yPos\":155.599976},\"ID\":0,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":null,\"parentUIDs\":[],\"AdvanceDialogueAutomatically\":false,\"AudioGUID\":null,\"AutoAdvanceShouldDisplayOption\":false,\"IconGUID\":null,\"Name\":\"WIFE\",\"OptionUIDs\":null,\"SpeechUID\":0,\"TimeUntilAdvance\":0,\"Volume\":0},{\"Connections\":[{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":6}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":238.699356,\"yPos\":249.799713},\"ID\":4,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Ph\u1EA7n
+      value: "{\"Options\":[{\"Connections\":[],\"EditorInfo\":{\"isRoot\":false,\"xPos\":-71.2999954,\"yPos\":163.999908},\"ID\":1,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"C\xF3
+        \",\"parentUIDs\":[0],\"SpeechUID\":-1},{\"Connections\":[],\"EditorInfo\":{\"isRoot\":false,\"xPos\":-142.299911,\"yPos\":494.9998},\"ID\":2,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Kh\xF4ng\",\"parentUIDs\":[0],\"SpeechUID\":-1},{\"Connections\":[{\"__type\":\"EditableSpeechConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":4}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":-105.500008,\"yPos\":282.5998},\"ID\":3,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"xong
+        r\u1ED3i\",\"parentUIDs\":[0],\"SpeechUID\":-1},{\"Connections\":[],\"EditorInfo\":{\"isRoot\":false,\"xPos\":224.8,\"yPos\":411.000031},\"ID\":6,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"end\",\"parentUIDs\":[4],\"SpeechUID\":-1}],\"Parameters\":[],\"SpeechNodes\":[{\"Connections\":[{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":1},{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":2},{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":3}],\"EditorInfo\":{\"isRoot\":true,\"xPos\":-389.800049,\"yPos\":154},\"ID\":0,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Can
+        you have me?\",\"parentUIDs\":[],\"AdvanceDialogueAutomatically\":false,\"AudioGUID\":null,\"AutoAdvanceShouldDisplayOption\":false,\"IconGUID\":null,\"Name\":\"WIFE\",\"OptionUIDs\":null,\"SpeechUID\":0,\"TimeUntilAdvance\":0,\"Volume\":0},{\"Connections\":[{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":6}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":214.699173,\"yPos\":245.799744},\"ID\":4,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Ph\u1EA7n
         th\u01B0\u1EDFng c\u1EE7a b\u1EA1n \u0111\xE2y\",\"parentUIDs\":[3],\"AdvanceDialogueAutomatically\":false,\"AudioGUID\":null,\"AutoAdvanceShouldDisplayOption\":false,\"IconGUID\":null,\"Name\":\"WIFE\",\"OptionUIDs\":null,\"SpeechUID\":0,\"TimeUntilAdvance\":0,\"Volume\":0}]}"
       objectReference: {fileID: 0}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
@@ -495261,12 +495443,12 @@ PrefabInstance:
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
@@ -495277,7 +495459,8 @@ PrefabInstance:
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1755606963}
+      objectReference: {fileID: 11400000, guid: 2e297751542ca264d9139a4c28f2cb49,
+        type: 2}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[1].m_Target
@@ -495296,7 +495479,7 @@ PrefabInstance:
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: TriggerPlay
+      value: set_idVatPhamCanTim
       objectReference: {fileID: 0}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
@@ -495306,7 +495489,7 @@ PrefabInstance:
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: QuestVideoTrigger, Assembly-CSharp
+      value: QuestSO, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
@@ -495316,7 +495499,7 @@ PrefabInstance:
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5699158849459855987, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
