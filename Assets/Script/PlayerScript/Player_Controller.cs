@@ -12,6 +12,7 @@ public struct DuLieuInput : INetworkInput
     public float mouseX;
     public NetworkBool isRunfast;
     public NetworkBool isDashPressed;
+    public NetworkBool isUsingItem;
 }
 
 public struct O_VatPham : INetworkStruct
@@ -515,7 +516,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             isSprinting = isrun && data.isRunfast;
 
             float targetSpeed = 0f;
-            if (dangBampi) targetSpeed = isSprinting ? runfast : speed;
+            if (dangBampi) 
+            {
+                if (data.isUsingItem) targetSpeed = 2f;
+                else targetSpeed = isSprinting ? runfast : speed;
+            }
 
             if (dangBampi)
             {
@@ -730,6 +735,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             data.isRunfast = dangChayNhanh;
         }
 
+        data.isUsingItem = dangSuDungVatPham;
         input.Set(data);
         jumpPressedLocal = false;
         dashPressedLocal = false;
@@ -1017,6 +1023,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private System.Collections.IEnumerator TienTrinhSuDungItem(Item thongTinItem)
     {
         dangSuDungVatPham = true;
+        RPC_AnimTuongTac(true);
         float thoiGianConLai = thongTinItem.thoiGianDung;
 
         while (thoiGianConLai > 0)
@@ -1030,6 +1037,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 if (UI_TienTrinhDung.instance != null) UI_TienTrinhDung.instance.AnUI();
                 dangSuDungVatPham = false;
+                RPC_AnimTuongTac(false);
                 yield break;
             }
             yield return null;
@@ -1037,6 +1045,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (UI_TienTrinhDung.instance != null) UI_TienTrinhDung.instance.AnUI();
         dangSuDungVatPham = false;
+        RPC_AnimTuongTac(false);
         RPC_HoanThanhDungVatPham(thongTinItem.itemID);
     }
 
@@ -1986,6 +1995,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     }
     [Rpc(RpcSources.All, RpcTargets.All)]
     public void RPC_AnimDash() { if (animator != null) animator.SetTrigger("dash"); }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_AnimTuongTac(NetworkBool isTuongTac) { if (animator != null) animator.SetBool("tuongtac", isTuongTac); }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_QuangPhaoVatLy(Vector3 diemBatDau, Vector3 huongNem)
