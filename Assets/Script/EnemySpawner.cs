@@ -48,7 +48,12 @@ public class EnemySpawner : NetworkBehaviour
     // Dùng Update thường để lấy giờ từ UI liên tục mà không ảnh hưởng tới Network Tick
     private void Update()
     {
-        if (uiTimeText != null && !string.IsNullOrEmpty(uiTimeText.text))
+        if (TimeController.Instance != null)
+        {
+            float totalSeconds = TimeController.Instance.CurrentTimeInSeconds;
+            currentHour = Mathf.FloorToInt(totalSeconds / 3600f) % 24;
+        }
+        else if (uiTimeText != null && !string.IsNullOrEmpty(uiTimeText.text))
         {
             ParseTimeFromUI(uiTimeText.text);
         }
@@ -58,6 +63,12 @@ public class EnemySpawner : NetworkBehaviour
     {
         // Chỉ Server/Host mới có quyền tính toán và Spawn quái
         if (!HasStateAuthority) return;
+
+        if (TimeController.Instance != null)
+        {
+            float totalSeconds = TimeController.Instance.CurrentTimeInSeconds;
+            currentHour = Mathf.FloorToInt(totalSeconds / 3600f) % 24;
+        }
 
         // Xóa các quái vật đã bị tiêu diệt (bị Despawn = null) khỏi danh sách
         activeEnemies.RemoveAll(item => item == null);

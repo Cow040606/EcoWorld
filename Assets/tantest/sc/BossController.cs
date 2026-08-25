@@ -77,7 +77,7 @@ public class BossController : NetworkBehaviour
     private float heSoScale = 1f;
     private TickTimer scanTargetTimer;
     private TickTimer updatePathTimer;
-    private Collider[] scanResults = new Collider[8];
+    private Collider[] scanResults = new Collider[32];
 
     private readonly int hashSpeed = Animator.StringToHash("Speed");
     private readonly int hashAttack = Animator.StringToHash("Attack");
@@ -86,7 +86,7 @@ public class BossController : NetworkBehaviour
     private readonly int hashHit = Animator.StringToHash("Hit");
 
     public enum BossState { TuanTra, DiTheo, TanCong, BiDanh, Chet }
-    [Networked] public BossState currentState { get; set; }
+    [Networked, OnChangedRender(nameof(OnStateChanged))] public BossState currentState { get; set; }
 
     public override void Spawned()
     {
@@ -145,6 +145,43 @@ public class BossController : NetworkBehaviour
     public override void Render()
     {
         if (animator != null) animator.SetFloat(hashSpeed, tocDoDiChuyen, 0.1f, Time.deltaTime);
+    }
+
+    public void OnStateChanged()
+    {
+        if (currentState == BossState.Chet)
+        {
+            // Tắt tất cả Collider của Boss để không cản người chơi và không bị trúng đòn thêm
+            Collider[] colliders = GetComponents<Collider>();
+            foreach (var col in colliders) col.enabled = false;
+
+            Collider[] childColliders = GetComponentsInChildren<Collider>();
+            foreach (var col in childColliders) col.enabled = false;
+
+            if (BossHealthBarHUD.Instance != null && currentActiveBoss == this)
+            {
+                BossHealthBarHUD.Instance.gameObject.SetActive(false);
+                currentActiveBoss = null;
+            }
+        }
+
+        if (animator == null) return;
+
+        switch (currentState)
+        {
+            case BossState.Chet:
+                animator.ResetTrigger(hashHit);
+                animator.ResetTrigger(hashAttack);
+                animator.ResetTrigger(hashSkill);
+                animator.SetBool(hashIsDead, true);
+                break;
+            default:
+                if (currentState != BossState.BiDanh)
+                {
+                    animator.ResetTrigger(hashHit);
+                }
+                break;
+        }
     }
 
     void Update()
@@ -271,7 +308,7 @@ public class BossController : NetworkBehaviour
             for (int i = 0; i < numHits; i++)
             {
                 Collider hit = scanResults[i];
-                if (hit != null && hit.CompareTag("Player"))
+                if (hit != null)
                 {
                     Player_Controller player = hit.GetComponentInParent<Player_Controller>();
                     if (player != null && !player.isDead)
@@ -439,13 +476,23 @@ public class BossController : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_AnimHurt()
     {
-        if (animator != null) animator.SetTrigger(hashHit);
+        if (animator != null)
+        {
+            animator.ResetTrigger(hashHit);
+            animator.SetTrigger(hashHit);
+        }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_AnimDead()
     {
-        if (animator != null) animator.SetBool(hashIsDead, true);
+        if (animator != null)
+        {
+            animator.ResetTrigger(hashHit);
+            animator.ResetTrigger(hashAttack);
+            animator.ResetTrigger(hashSkill);
+            animator.SetBool(hashIsDead, true);
+        }
     }
 
     // =========================================================================

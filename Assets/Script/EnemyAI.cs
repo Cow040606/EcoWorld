@@ -40,23 +40,24 @@ public class EnemyAI : NetworkBehaviour
 
     void FindNearestPlayer()
     {
-        NetworkObject closest = null;
+        Player_Controller closest = null;
         float minDistance = float.MaxValue;
 
-        // Tìm tất cả Player trong phòng
-        foreach (var player in Runner.ActivePlayers)
+        // Tìm tất cả Player_Controller hoạt động trong phòng
+        Player_Controller[] players = FindObjectsOfType<Player_Controller>();
+        foreach (var player in players)
         {
-            if (Runner.TryGetPlayerObject(player, out var pObj))
+            if (player != null && !player.isDead)
             {
-                float dist = Vector3.Distance(transform.position, pObj.transform.position);
+                float dist = Vector3.Distance(transform.position, player.transform.position);
                 if (dist < minDistance)
                 {
                     minDistance = dist;
-                    closest = pObj;
+                    closest = player;
                 }
             }
         }
-        targetPlayer = closest;
+        targetPlayer = closest != null ? closest.Object : null;
     }
 
     void ChasePlayer()
