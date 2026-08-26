@@ -1082,25 +1082,32 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         float satThuongThucTe = satThuongTong * heSoCombo;
 
+        HashSet<BossController> damagedBosses = new HashSet<BossController>();
+        HashSet<EnemyAIOrc> damagedOrcs = new HashSet<EnemyAIOrc>();
+        HashSet<ithappy.Animals_FREE.AnimalAI_Controller> damagedAnimals = new HashSet<ithappy.Animals_FREE.AnimalAI_Controller>();
+
         foreach (var hitCollider in hitColliders)
         {
             var animalAI = hitCollider.GetComponentInParent<ithappy.Animals_FREE.AnimalAI_Controller>();
-            if (animalAI != null)
+            if (animalAI != null && !damagedAnimals.Contains(animalAI))
             {
+                damagedAnimals.Add(animalAI);
                 animalAI.RPC_AnimalTakeDamage(satThuongThucTe, Runner.LocalPlayer);
                 DamagePopup.Create(animalAI.transform.position + Vector3.up * 1.0f, (int)satThuongThucTe, currentComboStep == 3);
             }
 
             var enemyOrc = hitCollider.GetComponentInParent<EnemyAIOrc>();
-            if (enemyOrc != null)
+            if (enemyOrc != null && !damagedOrcs.Contains(enemyOrc))
             {
+                damagedOrcs.Add(enemyOrc);
                 enemyOrc.RPC_TakeDamageFromPlayer((int)satThuongThucTe);
                 DamagePopup.Create(enemyOrc.transform.position + Vector3.up * 1.5f, (int)satThuongThucTe, currentComboStep == 3);
             }
 
             var boss = hitCollider.GetComponentInParent<BossController>();
-            if (boss != null)
+            if (boss != null && !damagedBosses.Contains(boss))
             {
+                damagedBosses.Add(boss);
                 boss.RPC_PlayerHitBoss(satThuongThucTe);
                 DamagePopup.Create(boss.transform.position + Vector3.up * 2.5f, (int)satThuongThucTe, currentComboStep == 3);
             }

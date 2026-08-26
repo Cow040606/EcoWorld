@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class NPC_QuestBridge : MonoBehaviour
 {
@@ -157,9 +158,13 @@ public class NPC_QuestBridge : MonoBehaviour
         bool dangLam = KiemTraChuaHoanThanh(quest);
         bool daXong = KiemTraHoanThanhNhiemVu(quest);
 
-        DialogueEditor.ConversationManager.Instance.SetBool(questName + "_ChuaNhan", chuaNhan);
-        DialogueEditor.ConversationManager.Instance.SetBool(questName + "_DangLam", dangLam);
-        DialogueEditor.ConversationManager.Instance.SetBool(questName + "_DaXong", daXong);
+        // 1. Gán theo chuẩn cũ mặc định để tương thích ngược
+        SetBoolIfParameterExists(questName + "_ChuaNhan", chuaNhan);
+        SetBoolIfParameterExists(questName + "_DangLam", dangLam);
+        SetBoolIfParameterExists(questName + "_DaXong", daXong);
+
+        // 2. Tìm kiếm thông minh dựa trên danh sách tham số đang có trong Conversation
+        SmartMapQuestStatus(questName, chuaNhan, dangLam, daXong);
 
         Debug.Log($"[Dialogue Bridge] Auto-Set Parameter: {questName}_ChuaNhan={chuaNhan}, {questName}_DangLam={dangLam}, {questName}_DaXong={daXong}");
     }
@@ -172,6 +177,16 @@ public class NPC_QuestBridge : MonoBehaviour
         // Force check lại tiến độ tất cả nhiệm vụ một lần trước khi cập nhật
         Player_QuestManager.localQuest.KiemTraTienDo();
 
+        // 1. Quét qua các nhiệm vụ đang thực hiện (chắc chắn có trong memory và quan trọng nhất)
+        foreach (var nv in Player_QuestManager.localQuest.danhSachNhiemVu)
+        {
+            if (nv != null && nv.duLieuQuest != null)
+            {
+                CapNhatThongSoQuestSOInternal(nv.duLieuQuest);
+            }
+        }
+
+        // 2. Quét qua tất cả QuestSO trong bộ nhớ dự phòng
         QuestSO[] tatCaQuestSO = Resources.FindObjectsOfTypeAll<QuestSO>();
         foreach (var quest in tatCaQuestSO)
         {
@@ -192,12 +207,135 @@ public class NPC_QuestBridge : MonoBehaviour
         bool dangLam = KiemTraChuaHoanThanhInternal(quest);
         bool daXong = KiemTraHoanThanhNhiemVuInternal(quest);
 
-        DialogueEditor.ConversationManager.Instance.SetBool(questName + "_ChuaNhan", chuaNhan);
-        DialogueEditor.ConversationManager.Instance.SetBool(questName + "_DangLam", dangLam);
-        DialogueEditor.ConversationManager.Instance.SetBool(questName + "_DaXong", daXong);
+        // 1. Gán theo chuẩn cũ mặc định
+        SetBoolIfParameterExists(questName + "_ChuaNhan", chuaNhan);
+        SetBoolIfParameterExists(questName + "_DangLam", dangLam);
+        SetBoolIfParameterExists(questName + "_DaXong", daXong);
+
+        // 2. Tìm kiếm thông minh dựa trên danh sách tham số đang có trong Conversation
+        SmartMapQuestStatus(questName, chuaNhan, dangLam, daXong);
 
         Debug.Log($"[Dialogue Bridge] Auto-Set Parameter Internal: {questName}_ChuaNhan={chuaNhan}, {questName}_DangLam={dangLam}, {questName}_DaXong={daXong}");
     }
+
+    // ==========================================
+    // THÊM MỚI: CÁC HÀM HỖ TRỢ BẢN ĐỒ THAM SỐ THÔNG MINH
+    // ==========================================
+    private void SetBoolIfParameterExists(string paramName, bool value)
+    {
+        if (DialogueEditor.ConversationManager.Instance == null) return;
+        List<string> paramNames = DialogueEditor.ConversationManager.Instance.GetParameterNames();
+        if (paramNames.Contains(paramName))
+        {
+            DialogueEditor.ConversationManager.Instance.SetBool(paramName, value);
+        }
+    }
+
+    private void SmartMapQuestStatus(string questName, bool chuaNhan, bool dangLam, bool daXong)
+    {
+        if (DialogueEditor.ConversationManager.Instance == null) return;
+
+        List<string> paramNames = DialogueEditor.ConversationManager.Instance.GetParameterNames();
+        foreach (string param in paramNames)
+        {
+            string statusType;
+            if (IsMatchingQuest(questName, param, out statusType))
+            {
+                if (statusType == "chuanhan")
+                {
+                    DialogueEditor.ConversationManager.Instance.SetBool(param, chuaNhan);
+                    Debug.Log($"[Smart Quest Map] Mapped parameter '{param}' to quest '{questName}' ChuaNhan={chuaNhan}");
+                }
+                else if (statusType == "danglam")
+                {
+                    DialogueEditor.ConversationManager.Instance.SetBool(param, dangLam);
+                    Debug.Log($"[Smart Quest Map] Mapped parameter '{param}' to quest '{questName}' DangLam={dangLam}");
+                }
+                else if (statusType == "daxong")
+                {
+                    DialogueEditor.ConversationManager.Instance.SetBool(param, daXong);
+                    Debug.Log($"[Smart Quest Map] Mapped parameter '{param}' to quest '{questName}' DaXong={daXong}");
+                }
+            }
+        }
+    }
+
+    private bool IsMatchingQuest(string questName, string paramName, out string statusType)
+    {
+        statusType = null;
+        
+        string nQuest = NormalizeString(questName);
+        string nParam = NormalizeString(paramName);
+        
+        // Xử lý các lỗi chính tả phổ biến (ví dụ: "bosskill" vs "boss skill")
+        nQuest = nQuest.Replace("bossskill", "bosskill");
+        nParam = nParam.Replace("bossskill", "bosskill");
+        
+        // Kiểm tra xem tên tham số có chứa tên nhiệm vụ đã chuẩn hóa hay không
+        bool hasQuestName = nParam.Contains(nQuest);
+        
+        // Trường hợp đặc biệt nếu questName là một phần của tham số hoặc ngược lại
+        if (!hasQuestName)
+        {
+            if (nQuest == "killske" && nParam.Contains("killske")) hasQuestName = true;
+            if (nQuest == "bosskill" && nParam.Contains("bosskill")) hasQuestName = true;
+        }
+        
+        if (!hasQuestName) return false;
+        
+        // Phân loại trạng thái nhiệm vụ dựa trên từ khóa trong tên tham số
+        if (nParam.Contains("chuanhan") || nParam.Contains("notstarted") || nParam.Contains("chuathuchien"))
+        {
+            statusType = "chuanhan";
+            return true;
+        }
+        else if (nParam.Contains("danglam") || nParam.Contains("inprogress") || nParam.Contains("chuanhoanthanh") || nParam.Contains("chuaxong"))
+        {
+            statusType = "danglam";
+            return true;
+        }
+        else if (nParam.Contains("daxong") || nParam.Contains("hoanthanh") || nParam.Contains("completed") || nParam.Contains("complete") || nParam.Contains("done") || nParam.Contains("xong"))
+        {
+            statusType = "daxong";
+            return true;
+        }
+        
+        return false;
+    }
+
+    private string NormalizeString(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return "";
+        s = s.ToLower().Trim();
+        s = s.Replace("_", "").Replace(" ", "").Replace("-", "");
+        s = RemoveSign4VietnameseString(s);
+        return s;
+    }
+
+    private string RemoveSign4VietnameseString(string str)
+    {
+        string[] arr1 = new string[] { "á", "à", "ả", "ã", "ạ", "â", "ấ", "ầ", "ẩ", "ẫ", "ậ", "ă", "ắ", "ằ", "ẳ", "ẵ", "ặ",
+            "đ",
+            "é","è","ẻ","ẽ","ẹ","ê","ế","ề","ể","ễ","ệ",
+            "í","ì","ỉ","ĩ","ị",
+            "ó","ò","ỏ","õ","ọ","ô","ố","ồ","ổ","ỗ","ộ","ơ","ớ","ờ","ở","ỡ","ợ",
+            "ú","ù","ủ","ũ","ụ","ư","ứ","ừ","ử","ữ","ự",
+            "ý","ỳ","ỷ","ỹ","ỵ",};
+        string[] arr2 = new string[] { "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a",
+            "d",
+            "e","e","e","e","e","e","e","e","e","e","e",
+            "i","i","i","i","i",
+            "o","o","o","o","o","o","o","o","o","o","o","o","o","o","o","o","o",
+            "u","u","u","u","u","u","u","u","u","u","u",
+            "y","y","y","y","y",};
+        for (int i = 0; i < arr1.Length; i++)
+        {
+            str = str.Replace(arr1[i], arr2[i]);
+            str = str.Replace(arr1[i].ToUpper(), arr2[i].ToUpper());
+        }
+        return str;
+    }
+
 
     private bool KiemTraHoanThanhNhiemVuInternal(QuestSO quest)
     {

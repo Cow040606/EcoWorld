@@ -184,7 +184,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2315384767545804143}
-        m_TargetAssemblyTypeName: NPC_QuestBridge, Assembly-CSharp
+        m_TargetAssemblyTypeName: 
         m_MethodName: GiaoViecChoPlayer
         m_Mode: 2
         m_Arguments:
@@ -235,7 +235,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2315384767545804143}
-        m_TargetAssemblyTypeName: NPC_QuestBridge, Assembly-CSharp
+        m_TargetAssemblyTypeName: 
         m_MethodName: ThuHoiViecTuPlayer
         m_Mode: 2
         m_Arguments:
@@ -316,7 +316,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
   Event:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2315384767545804143}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: GiaoViecChoPlayer
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11400000, guid: dbfa2653e33b4974aa11b16391db07ea,
+            type: 2}
+          m_ObjectArgumentAssemblyTypeName: QuestSO, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   NodeID: 11
   TMPFont: {fileID: 0}
   Icon: {fileID: 0}
@@ -356,7 +369,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2315384767545804143}
-        m_TargetAssemblyTypeName: NPC_QuestBridge, Assembly-CSharp
+        m_TargetAssemblyTypeName: 
         m_MethodName: ThuHoiViecTuPlayer
         m_Mode: 2
         m_Arguments:
@@ -437,7 +450,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
   Event:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2315384767545804143}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: GiaoViecChoPlayer
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11400000, guid: 02b9e432cd5119d44a604af5dbcc1fc0,
+            type: 2}
+          m_ObjectArgumentAssemblyTypeName: QuestSO, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   NodeID: 17
   TMPFont: {fileID: 0}
   Icon: {fileID: 0}
@@ -477,7 +503,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2315384767545804143}
-        m_TargetAssemblyTypeName: NPC_QuestBridge, Assembly-CSharp
+        m_TargetAssemblyTypeName: 
         m_MethodName: ThuHoiViecTuPlayer
         m_Mode: 2
         m_Arguments:
@@ -2308,7 +2334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ec9f29a5f4894d46b8864644b5e492c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPC_DialogueTrigger
-  npcID: 0
+  npcID: 11
   cuocHoiThoaiCuaNPC: {fileID: 6529112795165161678}
   tamHoatDong: 5
   iconDauChamCam: {fileID: 4633869811666852402}
@@ -2316,6 +2342,7 @@ MonoBehaviour:
   danhSachUIHienKhiChayCutscene: []
   thoiGianCutsceneThuCong: 0
   danhSachModelNPCCanAn: []
+  danhSachModelNPCAnSauCutscene: []
 --- !u!114 &2315384767545804143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2341,19 +2368,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NPCConversation
   CurrentIDCounter: 32
-  json: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":false,"xPos":-386.333374,"yPos":41.6661224},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"You
-    know who I am?","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":4}],"EditorInfo":{"isRoot":false,"xPos":-685.6669,"yPos":234.999542},"ID":3,"ParamActions":[],"TMPFontGUID":null,"Text":"Tell
-    me what I must do.","parentUIDs":[2],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":6}],"EditorInfo":{"isRoot":false,"xPos":-669.666931,"yPos":377.666321},"ID":5,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    will get them.","parentUIDs":[4],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":9}],"EditorInfo":{"isRoot":false,"xPos":-289.000244,"yPos":560.9988},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    have the 20 Ores.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":12}],"EditorInfo":{"isRoot":false,"xPos":-286.33374,"yPos":768.9995},"ID":11,"ParamActions":[],"TMPFontGUID":null,"Text":"Consider
-    it done.","parentUIDs":[10],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":14}],"EditorInfo":{"isRoot":false,"xPos":-113.000427,"yPos":130.333054},"ID":13,"ParamActions":[],"TMPFontGUID":null,"Text":"Here
-    are the 10 potions.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":18}],"EditorInfo":{"isRoot":false,"xPos":387.000854,"yPos":303.000916},"ID":17,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    will destroy the beast.","parentUIDs":[16],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":21}],"EditorInfo":{"isRoot":false,"xPos":-4.333435,"yPos":311.665222},"ID":20,"ParamActions":[],"TMPFontGUID":null,"Text":"The
-    Orc Hammer is dead","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":23}],"EditorInfo":{"isRoot":false,"xPos":-599.666931,"yPos":-77.6668243},"ID":22,"ParamActions":[],"TMPFontGUID":null,"Text":"i
-    am still working","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":25}],"EditorInfo":{"isRoot":false,"xPos":-66.33368,"yPos":676.333252},"ID":24,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    am not ready for alchemy.","parentUIDs":[10],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":27}],"EditorInfo":{"isRoot":false,"xPos":554.334,"yPos":245.666611},"ID":26,"ParamActions":[],"TMPFontGUID":null,"Text":"That
-    beast is too strong for me.","parentUIDs":[16],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":29}],"EditorInfo":{"isRoot":false,"xPos":-122.333679,"yPos":-69.00008},"ID":28,"ParamActions":[],"TMPFontGUID":null,"Text":"im
-    still hunting the beast","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":31}],"EditorInfo":{"isRoot":false,"xPos":-1107,"yPos":229.666534},"ID":30,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+  json: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":false,"xPos":692.6666,"yPos":52.3327332},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"You
+    know who I am?","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":4}],"EditorInfo":{"isRoot":false,"xPos":393.33313,"yPos":245.666153},"ID":3,"ParamActions":[],"TMPFontGUID":null,"Text":"Tell
+    me what I must do.","parentUIDs":[2],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":6}],"EditorInfo":{"isRoot":false,"xPos":409.333069,"yPos":388.332916},"ID":5,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+    will get them.","parentUIDs":[4],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":9}],"EditorInfo":{"isRoot":false,"xPos":789.999756,"yPos":571.6654},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+    have the 20 Ores.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":12}],"EditorInfo":{"isRoot":false,"xPos":792.66626,"yPos":779.666138},"ID":11,"ParamActions":[],"TMPFontGUID":null,"Text":"Consider
+    it done.","parentUIDs":[10],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":14}],"EditorInfo":{"isRoot":false,"xPos":972.6662,"yPos":163.666336},"ID":13,"ParamActions":[],"TMPFontGUID":null,"Text":"Here
+    are the 10 potions.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":18}],"EditorInfo":{"isRoot":false,"xPos":1466.00073,"yPos":313.6675},"ID":17,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+    will destroy the beast.","parentUIDs":[16],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":21}],"EditorInfo":{"isRoot":false,"xPos":1074.6665,"yPos":322.331818},"ID":20,"ParamActions":[],"TMPFontGUID":null,"Text":"The
+    Orc Hammer is dead","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":23}],"EditorInfo":{"isRoot":false,"xPos":479.333069,"yPos":-67.00021},"ID":22,"ParamActions":[],"TMPFontGUID":null,"Text":"i
+    am still working","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":25}],"EditorInfo":{"isRoot":false,"xPos":1012.66632,"yPos":686.9999},"ID":24,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+    am not ready for alchemy.","parentUIDs":[10],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":27}],"EditorInfo":{"isRoot":false,"xPos":1633.334,"yPos":256.333221},"ID":26,"ParamActions":[],"TMPFontGUID":null,"Text":"That
+    beast is too strong for me.","parentUIDs":[16],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":29}],"EditorInfo":{"isRoot":false,"xPos":956.6663,"yPos":-58.3334656},"ID":28,"ParamActions":[],"TMPFontGUID":null,"Text":"im
+    still hunting the beast","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":31}],"EditorInfo":{"isRoot":false,"xPos":-28,"yPos":240.333145},"ID":30,"ParamActions":[],"TMPFontGUID":null,"Text":"I
     am still crafting the 10 potions","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"talk2_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"daoquang_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"daoquang_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"craft2_DangLam
     ","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"craft2_DaXong
     ","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"bossfinal_DangLam
@@ -2362,39 +2389,39 @@ MonoBehaviour:
     ","CheckType":0,"RequiredValue":true}],"NodeUID":13},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bossfinal_DaXong
     ","CheckType":0,"RequiredValue":true}],"NodeUID":20},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"craft2_DangLam
     ","CheckType":0,"RequiredValue":true}],"NodeUID":30},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bossfinal_DangLam
-    ","CheckType":0,"RequiredValue":true}],"NodeUID":28}],"EditorInfo":{"isRoot":true,"xPos":-982,"yPos":50.0000458},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+    ","CheckType":0,"RequiredValue":true}],"NodeUID":28}],"EditorInfo":{"isRoot":true,"xPos":101.666687,"yPos":59.9999847},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"I
     have been waiting for you... The winds whispered of your arrival","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":3}],"EditorInfo":{"isRoot":false,"xPos":-392.333618,"yPos":170.666138},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"You
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":3}],"EditorInfo":{"isRoot":false,"xPos":686.6664,"yPos":181.332748},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"You
     are the successor. The one destined to bear the ultimate power. But power must
     be earned, not given.","parentUIDs":[1],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":5}],"EditorInfo":{"isRoot":false,"xPos":-359.6665,"yPos":300.6662},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"First,
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":5}],"EditorInfo":{"isRoot":false,"xPos":719.3335,"yPos":311.3328},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"First,
     we temper your physical vessel. Bring me 20 Ores from the deep earth","parentUIDs":[3],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-393.000366,"yPos":421.333984},"ID":6,"ParamActions":[],"TMPFontGUID":null,"Text":"Go.
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":685.999634,"yPos":432.00058},"ID":6,"ParamActions":[],"TMPFontGUID":null,"Text":"Go.
     The earth does not yield its secrets to the weak.","parentUIDs":[5],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":10}],"EditorInfo":{"isRoot":false,"xPos":-669.6668,"yPos":645.999146},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"A
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":10}],"EditorInfo":{"isRoot":false,"xPos":409.3332,"yPos":656.6658},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"A
     solid foundation. Your body is ready. Now, we test your mind.","parentUIDs":[8],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":11},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":24}],"EditorInfo":{"isRoot":false,"xPos":-285.666748,"yPos":649.332642},"ID":10,"ParamActions":[],"TMPFontGUID":null,"Text":"To
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":11},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":24}],"EditorInfo":{"isRoot":false,"xPos":793.333252,"yPos":659.999268},"ID":10,"ParamActions":[],"TMPFontGUID":null,"Text":"To
     survive the coming abyss, you must master alchemy. Craft 10 Health Potions","parentUIDs":[9],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-572.3334,"yPos":775.3323},"ID":12,"ParamActions":[],"TMPFontGUID":null,"Text":"Patience
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":506.666626,"yPos":785.9989},"ID":12,"ParamActions":[],"TMPFontGUID":null,"Text":"Patience
     and precision. Do not fail this task.","parentUIDs":[11],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":16}],"EditorInfo":{"isRoot":false,"xPos":198.33374,"yPos":47.99913},"ID":14,"ParamActions":[],"TMPFontGUID":null,"Text":"Your
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":16}],"EditorInfo":{"isRoot":false,"xPos":1277.33374,"yPos":58.66574},"ID":14,"ParamActions":[],"TMPFontGUID":null,"Text":"Your
     mind is sharp. You are finally ready for the true test","parentUIDs":[13],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":17},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":26}],"EditorInfo":{"isRoot":false,"xPos":357.667847,"yPos":136.000153},"ID":16,"ParamActions":[],"TMPFontGUID":null,"Text":"The
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":17},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":26}],"EditorInfo":{"isRoot":false,"xPos":1436.66772,"yPos":146.666763},"ID":16,"ParamActions":[],"TMPFontGUID":null,"Text":"The
     final trial. Slay the world''s strongest beast: The Orc Hammer. Only then will
     your true power awaken.","parentUIDs":[14],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":381.0006,"yPos":408.667358},"ID":18,"ParamActions":[],"TMPFontGUID":null,"Text":"May
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":1460.00049,"yPos":419.333954},"ID":18,"ParamActions":[],"TMPFontGUID":null,"Text":"May
     the stars guide your blade. Return only in victory","parentUIDs":[17],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":59.6660767,"yPos":455.9995},"ID":21,"ParamActions":[],"TMPFontGUID":null,"Text":"The
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":1138.666,"yPos":466.6661},"ID":21,"ParamActions":[],"TMPFontGUID":null,"Text":"The
     prophecy is fulfilled. Arise, true Hero! The ultimate power is now yours.","parentUIDs":[20],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-384.333374,"yPos":-184.000214},"ID":23,"ParamActions":[],"TMPFontGUID":null,"Text":"Go.
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":694.6666,"yPos":-173.3336},"ID":23,"ParamActions":[],"TMPFontGUID":null,"Text":"Go.
     The earth does not yield its secrets to the weak","parentUIDs":[22],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-4.33392334,"yPos":786.667236},"ID":25,"ParamActions":[],"TMPFontGUID":null,"Text":"Then
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":1074.666,"yPos":797.333862},"ID":25,"ParamActions":[],"TMPFontGUID":null,"Text":"Then
     you are not ready for the path of the ultimate power.","parentUIDs":[24],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":682.3349,"yPos":366.666321},"ID":27,"ParamActions":[],"TMPFontGUID":null,"Text":"Fear
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":1761.335,"yPos":377.332916},"ID":27,"ParamActions":[],"TMPFontGUID":null,"Text":"Fear
     is the enemy of fate. You will never become the true Hero","parentUIDs":[26],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":136.999847,"yPos":-100.666824},"ID":29,"ParamActions":[],"TMPFontGUID":null,"Text":"May
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":1215.99976,"yPos":-90.00021},"ID":29,"ParamActions":[],"TMPFontGUID":null,"Text":"May
     the stars guide your blade. Return only in victory","parentUIDs":[28],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
-    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-1017.66663,"yPos":333.333069},"ID":31,"ParamActions":[],"TMPFontGUID":null,"Text":"Patience
+    MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":61.333374,"yPos":343.999664},"ID":31,"ParamActions":[],"TMPFontGUID":null,"Text":"Patience
     and precision. Do not fail this task.","parentUIDs":[30],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
     MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
   saveVersion: 110
@@ -2435,7 +2462,20 @@ MonoBehaviour:
   EndConversationFont: {fileID: 0}
   Event:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2315384767545804143}
+        m_TargetAssemblyTypeName: NPC_QuestBridge, Assembly-CSharp
+        m_MethodName: ThuHoiViecTuPlayer
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11400000, guid: f31086f453cd46441b4f2776acb1831e,
+            type: 2}
+          m_ObjectArgumentAssemblyTypeName: QuestSO, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!136 &4141469585878212248
 CapsuleCollider:
   m_ObjectHideFlags: 0
