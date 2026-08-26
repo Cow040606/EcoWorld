@@ -118,6 +118,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float fovChayNhanh = 75f;
     public float tocDoZoom = 5f;
 
+    [Header("Camera Ngắm Bắn (Over-The-Shoulder)")]
+    [Tooltip("Độ lệch vị trí camera khi ngắm bắn: X = Sang phải, Y = Nâng cao, Z = Tiến/lùi")]
+    public Vector3 aimCameraOffset = new Vector3(0.65f, 0.1f, 0f);
+    public float aimCameraDistance = 2.2f;
+    public float tocDoChuyenGocAim = 8f;
+    private Vector3 currentAimOffsetSmooth = Vector3.zero;
+
     [Header("Kinh tế & Túi đồ")]
     [Networked] public int Gold { get; set; }
     [Networked] public int Gem { get; set; }
@@ -143,6 +150,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private Animator animator;
     [Networked, OnChangedRender(nameof(OnToolChanged))] public int CurrentToolIndex { get; set; }
     public Transform viTriCamVuKhi;
+    public Transform viTriCamTayTrai;
     private GameObject vuKhiDangCamThucTe;
 
     [Header("Tương Tác & Thu Thập")]
@@ -197,6 +205,16 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private float debugRayDistance;
     private bool didRayHit;
     private Vector3 rayHitPoint;
+
+    [Header("Bắn Cung")]
+    public GameObject ArrowPrefab;
+    public float maxBowTension = 1.5f;
+    public float maxShootForce = 40f;
+    public float drawDuration = 0.4f;
+    private float drawStartTime = 0f;
+
+    public enum BowState { Idle, Drawing, Holding, Shooting }
+    public BowState currentBowState = BowState.Idle;
     #endregion
 
     #region 2. KHỞI TẠO & VÒNG LẶP CHÍNH
@@ -323,6 +341,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
             bool batKyUI_NaoDangMo = isBaloOpen || isEscOpen || isShopOpen || isChatActive || isQuestOpen || isMapOpen || isCraftOpen || isCutsceneActive;
 
+            if (batKyUI_NaoDangMo && currentBowState != BowState.Idle)
+            {
+                currentBowState = BowState.Idle;
+                RPC_AnimBowState(0);
+            }
+
             if (batKyUI_NaoDangMo)
             {
                 Cursor.lockState = CursorLockMode.None;
@@ -360,7 +384,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (!batKyUI_NaoDangMo)
             {
                 int idDangCam = (CurrentToolIndex >= 0) ? HotbarIDs[CurrentToolIndex] : 0;
+                if (idDangCam != 999 && currentBowState != BowState.Idle)
+                {
+                    currentBowState = BowState.Idle;
+                    RPC_AnimBowState(0);
+                }
                 HandleGameplayInteraction(idDangCam);
+                CapNhatDayCung(idDangCam);
             }
 
             sprintPressedLocal = Keyboard.current.leftShiftKey.isPressed;
@@ -373,7 +403,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             float trucY = Keyboard.current.wKey.isPressed ? 1f : (Keyboard.current.sKey.isPressed ? -1f : 0f);
             moveInputLocal = new Vector2(trucX, trucY).normalized;
 
-            if (Time.time < thoiDiemHetKhoaCucBo)
+            if (Time.time < thoiDiemHetKhoaCucBo || currentBowState == BowState.Drawing || currentBowState == BowState.Holding)
             {
                 moveInputLocal = Vector2.zero;
                 jumpPressedLocal = false;
@@ -509,6 +539,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 isJumping = false;
             }
 
+            if (currentBowState == BowState.Drawing || currentBowState == BowState.Holding)
+            {
+                currentSpeedSmooth = 0f;
+                character.maxSpeed = 0f;
+                character.Move(Vector3.zero);
+                isrun = false;
+                isSprinting = false;
+                isJumping = false;
+
+                transform.rotation = Quaternion.Euler(0f, data.mouseX, 0f);
+                return;
+            }
+
             Vector3 huongDiChuyen = new Vector3(data.moveInput.x, 0f, data.moveInput.y);
             bool dangBampi = huongDiChuyen.magnitude > 0.1f;
 
@@ -580,26 +623,40 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
                 int idDangCam = (CurrentToolIndex >= 0 && CurrentToolIndex <= 5) ? HotbarIDs[CurrentToolIndex] : 0;
                 bool isTool = (idDangCam == 4 || idDangCam == 5 || idDangCam == 6 || idDangCam == 8);
+                bool isBow = (idDangCam == 999);
 
                 if (isTool && !isJumping)
                 {
                     animator.SetBool("isHoldingTool", true);
+                    animator.SetBool("isEquipBow", false);
+                }
+                else if (isBow && !isJumping)
+                {
+                    animator.SetBool("isEquipBow", true);
+                    animator.SetBool("isHoldingTool", false);
                 }
                 else
                 {
                     animator.SetBool("isHoldingTool", false);
+                    animator.SetBool("isEquipBow", false);
                 }
             }
         }
 
         if (HasInputAuthority && cameraTransform != null)
         {
-            khoangCachCamera = Mathf.Lerp(khoangCachCamera, khoangCachMucTieu, Time.deltaTime * 10f);
+            bool isAimingBow = (currentBowState == BowState.Drawing || currentBowState == BowState.Holding);
+
+            float targetDistance = isAimingBow ? Mathf.Min(khoangCachMucTieu, aimCameraDistance) : khoangCachMucTieu;
+            khoangCachCamera = Mathf.Lerp(khoangCachCamera, targetDistance, Time.deltaTime * 10f);
 
             Quaternion camRotationMucTieu = Quaternion.Euler(xRotation, yRotation, 0f);
             cameraTransform.rotation = Quaternion.Slerp(cameraTransform.rotation, camRotationMucTieu, Time.deltaTime * 25f);
 
-            Vector3 diemNhin = transform.position + Vector3.up * 1.5f;
+            Vector3 targetAimOffset = isAimingBow ? (cameraTransform.right * aimCameraOffset.x + cameraTransform.up * aimCameraOffset.y + cameraTransform.forward * aimCameraOffset.z) : Vector3.zero;
+            currentAimOffsetSmooth = Vector3.Lerp(currentAimOffsetSmooth, targetAimOffset, Time.deltaTime * tocDoChuyenGocAim);
+
+            Vector3 diemNhin = transform.position + Vector3.up * 1.5f + currentAimOffsetSmooth;
             Vector3 huongCamera = -(cameraTransform.rotation * Vector3.forward);
             Vector3 viTriDuKien = diemNhin + huongCamera * khoangCachCamera;
 
@@ -614,7 +671,14 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (playerCamera != null)
             {
                 float fovMucTieu = isSprinting ? fovChayNhanh : fovBinhThuong;
+                if (isAimingBow) fovMucTieu = fovBinhThuong - 15f; // Zoom in khi giương/giữ cung
+
                 playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, fovMucTieu, Time.deltaTime * tocDoZoom);
+            }
+
+            if (isAimingBow)
+            {
+                transform.rotation = Quaternion.Euler(0f, yRotation, 0f);
             }
         }
     }
@@ -718,7 +782,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             data.moveInput = Vector2.zero;
             data.isJumpPressed = false;
-            data.mouseX = 0f;
+            data.mouseX = yRotation;
         }
         else
         {
@@ -731,7 +795,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 camForward.Normalize(); camRight.Normalize();
                 huongChuanBiGui = camForward * moveInputLocal.y + camRight * moveInputLocal.x;
             }
-            data.moveInput = new Vector2(huongChuanBiGui.x, huongChuanBiGui.z);
+
+            if (currentBowState == BowState.Drawing || currentBowState == BowState.Holding)
+            {
+                data.moveInput = Vector2.zero;
+                data.isJumpPressed = false;
+                data.isDashPressed = false;
+            }
+            else
+            {
+                data.moveInput = new Vector2(huongChuanBiGui.x, huongChuanBiGui.z);
+            }
+
+            data.mouseX = yRotation;
             data.isRunfast = dangChayNhanh;
         }
 
@@ -829,6 +905,111 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 }
             }
         }
+
+        if (idDangCam == 999)
+        {
+            HandleBowShooting();
+        }
+    }
+
+    private void HandleBowShooting()
+    {
+        // 1. Kéo cung (Drawing): Bấm giữ chuột trái
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            currentBowState = BowState.Drawing;
+            drawStartTime = Time.time;
+            RPC_AnimBowState(1);
+        }
+
+        // 2. Giữ cung (Holding): Đang giữ chuột và đã kéo đủ thời gian drawDuration
+        if (Mouse.current.leftButton.isPressed && currentBowState == BowState.Drawing)
+        {
+            if (Time.time - drawStartTime >= drawDuration)
+            {
+                currentBowState = BowState.Holding;
+                RPC_AnimBowState(2);
+            }
+        }
+
+        // 3. Bắn cung (Shooting): Nhả chuột trái khi đang kéo hoặc giữ cung
+        if (Mouse.current.leftButton.wasReleasedThisFrame && (currentBowState == BowState.Drawing || currentBowState == BowState.Holding))
+        {
+            float holdTime = Time.time - drawStartTime;
+            float tension = Mathf.Clamp01(holdTime / maxBowTension);
+            float shootForce = Mathf.Lerp(12f, maxShootForce, tension);
+
+            // 1. Tính toán sát thương tối đa (Dame gốc + Dame Sức mạnh + Dame Vũ khí + Cấp độ nâng cấp)
+            int idDangCam = (CurrentToolIndex >= 0 && CurrentToolIndex <= 5) ? HotbarIDs[CurrentToolIndex] : 0;
+            float satThuongVuKhi = 0f;
+            if (idDangCam > 0 && InventoryManager.instance != null)
+            {
+                Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
+                if (thongTinItem != null)
+                {
+                    int upgradeLvl = 0;
+                    for (int i = 0; i < TuiDo.Length; i++)
+                    {
+                        if (TuiDo[i].ItemID == idDangCam && TuiDo[i].SoLuong > 0)
+                        {
+                            upgradeLvl = TuiDo[i].UpgradeLevel;
+                            break;
+                        }
+                    }
+                    float multiplier = 1f + (0.1f * upgradeLvl);
+                    satThuongVuKhi = thongTinItem.congThemSatThuong * multiplier;
+                }
+            }
+
+            float satThuongGoc = DiemSucManh * 2f + baseDamage;
+            float satThuongMax = satThuongGoc + satThuongVuKhi;
+            if (satThuongMax < 1f) satThuongMax = 25f;
+
+            // 2. Tụ lực sát thương từ 1 đến satThuongMax theo tỷ lệ căng dây cung (tension: 0 -> 1)
+            float satThuongThucTe = Mathf.Lerp(1f, satThuongMax, tension);
+
+            currentBowState = BowState.Idle;
+            RPC_AnimBowState(3);
+
+            // Xác định điểm xuất phát thực tế từ cây cung trên tay nhân vật (không bị trôi theo vị trí camera)
+            Vector3 diemBatDau;
+            if (vuKhiDangCamThucTe != null)
+                diemBatDau = vuKhiDangCamThucTe.transform.position + transform.forward * 0.3f;
+            else if (viTriCamTayTrai != null)
+                diemBatDau = viTriCamTayTrai.position + transform.forward * 0.3f;
+            else
+                diemBatDau = transform.position + Vector3.up * 1.3f + transform.forward * 0.5f;
+
+            // Xác định điểm mục tiêu từ tâm màn hình camera
+            Vector3 targetPoint;
+            Ray ray = (playerCamera != null)
+                ? playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f))
+                : new Ray(cameraTransform.position, cameraTransform.forward);
+
+            if (Physics.Raycast(ray, out RaycastHit hit, 150f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            {
+                if (hit.collider.transform.IsChildOf(transform) || hit.collider.gameObject == gameObject)
+                    targetPoint = ray.origin + ray.direction * 100f;
+                else
+                    targetPoint = hit.point;
+            }
+            else
+            {
+                targetPoint = ray.origin + ray.direction * 100f;
+            }
+
+            Vector3 huongBay = (targetPoint - diemBatDau).normalized;
+            Vector3 huongBan = huongBay * shootForce + Vector3.up * (tension * 1.5f);
+
+            RPC_BanCungToanSever(diemBatDau, huongBan, satThuongThucTe);
+        }
+
+        // 4. Hủy ngắm bắn (Cancel): Nhấn chuột phải
+        if (Mouse.current.rightButton.wasPressedThisFrame && (currentBowState == BowState.Drawing || currentBowState == BowState.Holding))
+        {
+            currentBowState = BowState.Idle;
+            RPC_AnimBowState(0);
+        }
     }
 
     private void HandleAttackAnimal()
@@ -907,18 +1088,21 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (animalAI != null)
             {
                 animalAI.RPC_AnimalTakeDamage(satThuongThucTe, Runner.LocalPlayer);
+                DamagePopup.Create(animalAI.transform.position + Vector3.up * 1.0f, (int)satThuongThucTe, currentComboStep == 3);
             }
 
             var enemyOrc = hitCollider.GetComponentInParent<EnemyAIOrc>();
             if (enemyOrc != null)
             {
                 enemyOrc.RPC_TakeDamageFromPlayer((int)satThuongThucTe);
+                DamagePopup.Create(enemyOrc.transform.position + Vector3.up * 1.5f, (int)satThuongThucTe, currentComboStep == 3);
             }
 
             var boss = hitCollider.GetComponentInParent<BossController>();
             if (boss != null)
             {
                 boss.RPC_PlayerHitBoss(satThuongThucTe);
+                DamagePopup.Create(boss.transform.position + Vector3.up * 2.5f, (int)satThuongThucTe, currentComboStep == 3);
             }
         }
     }
@@ -1271,13 +1455,33 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
 
-            if (thongTinItem != null && thongTinItem.model3DPrefab != null && viTriCamVuKhi != null)
+            Transform viTriGhep = (idDangCam == 999 && viTriCamTayTrai != null) ? viTriCamTayTrai : viTriCamVuKhi;
+
+            if (thongTinItem != null && thongTinItem.model3DPrefab != null && viTriGhep != null)
             {
-                vuKhiDangCamThucTe = Instantiate(thongTinItem.model3DPrefab, viTriCamVuKhi);
+                vuKhiDangCamThucTe = Instantiate(thongTinItem.model3DPrefab, viTriGhep);
 
                 vuKhiDangCamThucTe.transform.localPosition = thongTinItem.viTriCamOffset;
                 vuKhiDangCamThucTe.transform.localRotation = Quaternion.Euler(thongTinItem.gocXoayOffset);
                 vuKhiDangCamThucTe.transform.localScale = thongTinItem.scaleTrenTay;
+            }
+        }
+    }
+
+    private void CapNhatDayCung(int idDangCam)
+    {
+        if (idDangCam == 999 && vuKhiDangCamThucTe != null)
+        {
+            Bow_StringController bowString = vuKhiDangCamThucTe.GetComponent<Bow_StringController>();
+            if (bowString != null)
+            {
+                float tension = 0f;
+                if (currentBowState == BowState.Drawing || currentBowState == BowState.Holding)
+                {
+                    float holdTime = Time.time - drawStartTime;
+                    tension = Mathf.Clamp01(holdTime / maxBowTension);
+                }
+                bowString.SetStringTension(tension, viTriCamVuKhi);
             }
         }
     }
@@ -1397,7 +1601,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private void XuLyTheLuc()
     {
-        if (isDashing)
+        if (isDashing || currentBowState == BowState.Drawing || currentBowState == BowState.Holding)
         {
             dongHoDelayHoi = thoiGianDelayHoi;
             dangChayNhanh = false;
@@ -1595,11 +1799,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 CurrentArmor = 0;
                 CurrentHealth = Mathf.Clamp(CurrentHealth - satThuongDu, 0, MaxHealth);
             }
+            RPC_HienDamagePopupKhach((int)Dame);
         }
         else
         {
             CurrentHealth = Mathf.Clamp(CurrentHealth - Dame, 0, MaxHealth);
         }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_HienDamagePopupKhach(int satThuong)
+    {
+        DamagePopup.Create(transform.position + Vector3.up * 1.8f, satThuong, false, true);
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
@@ -2042,6 +2253,56 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         else
         {
             if (animator != null) animator.SetTrigger("GiatCan");
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_AnimBowState(int stateIndex)
+    {
+        if (animator == null) return;
+        if (stateIndex == 1) // Kéo cung (Drawing)
+        {
+            animator.SetInteger("BowState", 1);
+            animator.SetBool("isDrawingBow", true);
+            animator.SetBool("isHoldingBow", false);
+        }
+        else if (stateIndex == 2) // Giữ cung (Holding)
+        {
+            animator.SetInteger("BowState", 2);
+            animator.SetBool("isDrawingBow", false);
+            animator.SetBool("isHoldingBow", true);
+        }
+        else if (stateIndex == 3) // Bắn cung (Shooting)
+        {
+            animator.SetInteger("BowState", 3);
+            animator.SetBool("isDrawingBow", false);
+            animator.SetBool("isHoldingBow", false);
+            animator.SetTrigger("ShootBow");
+        }
+        else // 0: Reset / Cancel
+        {
+            animator.SetInteger("BowState", 0);
+            animator.SetBool("isDrawingBow", false);
+            animator.SetBool("isHoldingBow", false);
+            animator.ResetTrigger("ShootBow");
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_BanCungToanSever(Vector3 diemBatDau, Vector3 huongBan, float satThuongMuiTen)
+    {
+        if (ArrowPrefab != null)
+        {
+            GameObject arrow = Instantiate(ArrowPrefab, diemBatDau, Quaternion.LookRotation(huongBan));
+            
+            Rigidbody rb = arrow.GetComponent<Rigidbody>();
+            if (rb != null) rb.AddForce(huongBan, ForceMode.Impulse);
+
+            Arrow_Logic logic = arrow.GetComponent<Arrow_Logic>();
+            if (logic == null) logic = arrow.AddComponent<Arrow_Logic>();
+            
+            logic.chuSohuu = this;
+            logic.damage = satThuongMuiTen;
         }
     }
 
