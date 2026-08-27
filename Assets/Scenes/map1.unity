@@ -6535,6 +6535,21 @@ PrefabInstance:
       propertyPath: timeText
       value: 
       objectReference: {fileID: 1254668547}
+    - target: {fileID: 2824180579709053451, guid: c1e5738808992c34c981087c2546125e,
+        type: 3}
+      propertyPath: nightAmbientLight.b
+      value: 0.26415092
+      objectReference: {fileID: 0}
+    - target: {fileID: 2824180579709053451, guid: c1e5738808992c34c981087c2546125e,
+        type: 3}
+      propertyPath: nightAmbientLight.g
+      value: 0.26415092
+      objectReference: {fileID: 0}
+    - target: {fileID: 2824180579709053451, guid: c1e5738808992c34c981087c2546125e,
+        type: 3}
+      propertyPath: nightAmbientLight.r
+      value: 0.26415092
+      objectReference: {fileID: 0}
     - target: {fileID: 5067206759560870645, guid: c1e5738808992c34c981087c2546125e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -389614,7 +389629,7 @@ PrefabInstance:
     - target: {fileID: 2853713896408763678, guid: 1d15719f3f4c0e547a62ec31ab7a54f8,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.000005722
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3104453529188796981, guid: 1d15719f3f4c0e547a62ec31ab7a54f8,
         type: 3}
@@ -399895,7 +399910,8 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 1919eb7a6f0942a43b1655689b65fdd1, type: 2}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6264908427917178816, guid: 0f63be80b1364944e980bf2873dac5a3, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5358136772946492430, guid: 0f63be80b1364944e980bf2873dac5a3,

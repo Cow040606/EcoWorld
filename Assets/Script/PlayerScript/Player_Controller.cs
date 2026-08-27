@@ -118,6 +118,23 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float fovChayNhanh = 75f;
     public float tocDoZoom = 5f;
 
+    [Header("Độ Mượt Camera (Smooth Damping & Follow)")]
+    [Tooltip("Thời gian làm mượt di chuyển theo nhân vật (trục ngang X-Z)")]
+    public float cameraFollowSmoothTime = 0.08f;
+    [Tooltip("Thời gian làm mượt độ cao theo nhân vật (trục dọc Y - chống nảy giật khi nhảy/leo dốc)")]
+    public float cameraVerticalSmoothTime = 0.12f;
+    [Tooltip("Độ mượt khi thu/phóng va chạm vật cản")]
+    public float collisionSmoothTime = 0.05f;
+    [Tooltip("Bán kính hình cầu kiểm tra va chạm tránh xuyên góc tường")]
+    public float cameraCollisionRadius = 0.2f;
+
+    private Vector3 currentCameraPivotPos;
+    private Vector3 cameraFollowVelocity;
+    private float currentCollisionDistance;
+    private float collisionDistanceVelocity;
+    private bool isCameraInitialized = false;
+    private RaycastHit[] cameraHitBuffer = new RaycastHit[10];
+
     [Header("Camera Ngắm Bắn (Over-The-Shoulder)")]
     [Tooltip("Độ lệch vị trí camera khi ngắm bắn: X = Sang phải, Y = Nâng cao, Z = Tiến/lùi")]
     public Vector3 aimCameraOffset = new Vector3(0.65f, 0.1f, 0f);
@@ -213,6 +230,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public float drawDuration = 0.4f;
     private float drawStartTime = 0f;
 
+    [Header("Âm Thanh Bắn Cung")]
+    public AudioClip arrowLoadingSound;
+    public AudioClip arrowShotSound;
+    private AudioSource audioSource;
+
     public enum BowState { Idle, Drawing, Holding, Shooting }
     public BowState currentBowState = BowState.Idle;
     #endregion
@@ -222,6 +244,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public override void Spawned()
     {
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
         CurrentHealth = 100;
 
         if (hintText != null) hintText.text = "";
@@ -238,6 +261,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             Runner.SetPlayerObject(Runner.LocalPlayer, Object);
 
             khoangCachMucTieu = khoangCachCamera;
+            currentCameraPivotPos = transform.position + Vector3.up * 1.5f;
+            currentCollisionDistance = khoangCachCamera;
+            isCameraInitialized = true;
 
             GameObject objHint = GameObject.Find("Text_Hint");
             if (objHint != null) hintText = objHint.GetComponent<TextMeshProUGUI>();
@@ -647,27 +673,88 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             bool isAimingBow = (currentBowState == BowState.Drawing || currentBowState == BowState.Holding);
 
-            float targetDistance = isAimingBow ? Mathf.Min(khoangCachMucTieu, aimCameraDistance) : khoangCachMucTieu;
-            khoangCachCamera = Mathf.Lerp(khoangCachCamera, targetDistance, Time.deltaTime * 10f);
+            // Khởi tạo vị trí pivot an toàn nếu chưa được set
+            if (!isCameraInitialized)
+            {
+                currentCameraPivotPos = transform.position + Vector3.up * 1.5f;
+                currentCollisionDistance = khoangCachCamera;
+                isCameraInitialized = true;
+            }
 
+            // 1. Độ mượt vị trí Pivot (Làm mượt chuyển động camera theo nhân vật)
+            // Khi ngắm bắn cung: giảm smoothTime để tâm ngắm bám dính nhạy bén
+            float smoothFollow = isAimingBow ? 0.02f : cameraFollowSmoothTime;
+            float smoothVertical = isAimingBow ? 0.02f : cameraVerticalSmoothTime;
+
+            Vector3 targetPivot = transform.position + Vector3.up * 1.5f;
+
+            // Làm mượt riêng biệt trục ngang (X-Z) và trục dọc (Y) để loại bỏ rung giật khi chạy qua địa hình gồ ghề / nhảy
+            float newPivotX = Mathf.SmoothDamp(currentCameraPivotPos.x, targetPivot.x, ref cameraFollowVelocity.x, smoothFollow);
+            float newPivotZ = Mathf.SmoothDamp(currentCameraPivotPos.z, targetPivot.z, ref cameraFollowVelocity.z, smoothFollow);
+            float newPivotY = Mathf.SmoothDamp(currentCameraPivotPos.y, targetPivot.y, ref cameraFollowVelocity.y, smoothVertical);
+            currentCameraPivotPos = new Vector3(newPivotX, newPivotY, newPivotZ);
+
+            // 2. Góc xoay Camera theo chuột (Slerp góc mượt mà)
             Quaternion camRotationMucTieu = Quaternion.Euler(xRotation, yRotation, 0f);
             cameraTransform.rotation = Quaternion.Slerp(cameraTransform.rotation, camRotationMucTieu, Time.deltaTime * 25f);
 
-            Vector3 targetAimOffset = isAimingBow ? (cameraTransform.right * aimCameraOffset.x + cameraTransform.up * aimCameraOffset.y + cameraTransform.forward * aimCameraOffset.z) : Vector3.zero;
+            // 3. Offset ngắm bắn (Over-The-Shoulder)
+            Vector3 targetAimOffset = isAimingBow 
+                ? (cameraTransform.right * aimCameraOffset.x + cameraTransform.up * aimCameraOffset.y + cameraTransform.forward * aimCameraOffset.z) 
+                : Vector3.zero;
             currentAimOffsetSmooth = Vector3.Lerp(currentAimOffsetSmooth, targetAimOffset, Time.deltaTime * tocDoChuyenGocAim);
 
-            Vector3 diemNhin = transform.position + Vector3.up * 1.5f + currentAimOffsetSmooth;
+            Vector3 diemNhinCuoiCung = currentCameraPivotPos + currentAimOffsetSmooth;
+
+            // 4. Khoảng cách Camera mong muốn (Zoom lăn chuột & Aim)
+            float targetDistance = isAimingBow ? Mathf.Min(khoangCachMucTieu, aimCameraDistance) : khoangCachMucTieu;
+            khoangCachCamera = Mathf.Lerp(khoangCachCamera, targetDistance, Time.deltaTime * 10f);
+
             Vector3 huongCamera = -(cameraTransform.rotation * Vector3.forward);
-            Vector3 viTriDuKien = diemNhin + huongCamera * khoangCachCamera;
 
-            Vector3 viTriCuoiCung;
-            if (Physics.Raycast(diemNhin, huongCamera, out RaycastHit hit, khoangCachCamera, layerVaChamCamera))
-                viTriCuoiCung = hit.point + hit.normal * 0.4f;
-            else
-                viTriCuoiCung = viTriDuKien;
+            // 5. Kiểm tra va chạm vật cản bằng SphereCastNonAlloc (Tự động bỏ qua collider của chính nhân vật)
+            float targetDistanceWithCollision = khoangCachCamera;
+            int hitCount = Physics.SphereCastNonAlloc(
+                diemNhinCuoiCung,
+                cameraCollisionRadius,
+                huongCamera,
+                cameraHitBuffer,
+                khoangCachCamera,
+                layerVaChamCamera,
+                QueryTriggerInteraction.Ignore
+            );
 
-            cameraTransform.position = viTriCuoiCung;
+            float minHitDist = khoangCachCamera;
+            bool coVaChamHopLe = false;
 
+            for (int i = 0; i < hitCount; i++)
+            {
+                RaycastHit h = cameraHitBuffer[i];
+                if (h.collider == null) continue;
+
+                // Bỏ qua nếu tia quét trúng chính cơ thể nhân vật, balo, vũ khí...
+                if (h.collider.transform.IsChildOf(transform) || h.collider.transform.root == transform.root)
+                    continue;
+
+                if (h.distance < minHitDist && h.distance > 0.05f)
+                {
+                    minHitDist = h.distance;
+                    coVaChamHopLe = true;
+                }
+            }
+
+            if (coVaChamHopLe)
+            {
+                targetDistanceWithCollision = Mathf.Clamp(minHitDist, khoangCachMin, khoangCachCamera);
+            }
+
+            // Làm mượt quá trình thu / phóng khoảng cách khi gặp vật cản
+            currentCollisionDistance = Mathf.SmoothDamp(currentCollisionDistance, targetDistanceWithCollision, ref collisionDistanceVelocity, collisionSmoothTime);
+
+            // 6. Gán vị trí cuối cùng mềm mại, không bị ghim cứng
+            cameraTransform.position = diemNhinCuoiCung + huongCamera * currentCollisionDistance;
+
+            // 7. FOV Camera (Tự nhiên khi chạy nhanh / ngắm bắn)
             if (playerCamera != null)
             {
                 float fovMucTieu = isSprinting ? fovChayNhanh : fovBinhThuong;
@@ -1214,7 +1301,16 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private System.Collections.IEnumerator TienTrinhSuDungItem(Item thongTinItem)
     {
         dangSuDungVatPham = true;
-        RPC_AnimTuongTac(true);
+
+        // 1. Phân loại animation theo loại tiêu hao của vật phẩm:
+        // 1: Drink (Bình máu/Thể lực), 2: Repair (Sửa giáp), 0: Tương tác mặc định
+        int animType = 0;
+        if (thongTinItem.loaiTieuHao == Item.LoaiTieuHao.HoiMau || thongTinItem.loaiTieuHao == Item.LoaiTieuHao.HoiTheLuc)
+            animType = 1;
+        else if (thongTinItem.loaiTieuHao == Item.LoaiTieuHao.SuaGiap)
+            animType = 2;
+
+        RPC_AnimSuDungVatPham(animType, true);
         float thoiGianConLai = thongTinItem.thoiGianDung;
 
         while (thoiGianConLai > 0)
@@ -1224,11 +1320,18 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (UI_TienTrinhDung.instance != null)
                 UI_TienTrinhDung.instance.CapNhatUI(thoiGianConLai, thongTinItem.thoiGianDung);
 
-            if (Mouse.current.leftButton.wasPressedThisFrame || isSprinting)
+            // Điều kiện hủy tiến trình:
+            // 1. Bấm chuột trái (tấn công)
+            // 2. Chạy nhanh (sprint)
+            // 3. Nhân vật chết (isDead)
+            // 4. Nếu là SỬA GIÁP (animType == 2): Không được di chuyển, bấm WASD / Nhảy / Dash sẽ hủy sửa giáp ngay lập tức
+            bool diChuyenKhiSuaGiap = (animType == 2 && (moveInputLocal.sqrMagnitude > 0.01f || jumpPressedLocal || dashPressedLocal));
+
+            if (Mouse.current.leftButton.wasPressedThisFrame || isSprinting || isDead || diChuyenKhiSuaGiap)
             {
                 if (UI_TienTrinhDung.instance != null) UI_TienTrinhDung.instance.AnUI();
                 dangSuDungVatPham = false;
-                RPC_AnimTuongTac(false);
+                RPC_AnimSuDungVatPham(0, false);
                 yield break;
             }
             yield return null;
@@ -1236,7 +1339,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         if (UI_TienTrinhDung.instance != null) UI_TienTrinhDung.instance.AnUI();
         dangSuDungVatPham = false;
-        RPC_AnimTuongTac(false);
+        RPC_AnimSuDungVatPham(0, false);
         RPC_HoanThanhDungVatPham(thongTinItem.itemID);
     }
 
@@ -1462,7 +1565,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             Item thongTinItem = InventoryManager.instance.TraCuuItem(idDangCam);
 
-            Transform viTriGhep = (idDangCam == 999 && viTriCamTayTrai != null) ? viTriCamTayTrai : viTriCamVuKhi;
+            // Cung tên (id 999) hoặc các vật phẩm uống (Hồi Máu, Hồi Thể Lực) sẽ được cầm bên TAY TRÁI (viTriCamTayTrai)
+            bool laDoCamTayTrai = (idDangCam == 999) || 
+                (thongTinItem != null && (thongTinItem.loaiTieuHao == Item.LoaiTieuHao.HoiMau || thongTinItem.loaiTieuHao == Item.LoaiTieuHao.HoiTheLuc));
+
+            Transform viTriGhep = (laDoCamTayTrai && viTriCamTayTrai != null) ? viTriCamTayTrai : viTriCamVuKhi;
 
             if (thongTinItem != null && thongTinItem.model3DPrefab != null && viTriGhep != null)
             {
@@ -2218,6 +2325,31 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void RPC_AnimTuongTac(NetworkBool isTuongTac) { if (animator != null) animator.SetBool("tuongtac", isTuongTac); }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_AnimSuDungVatPham(int actionType, NetworkBool isUsing)
+    {
+        if (animator == null) return;
+
+        if (!isUsing || actionType == 0)
+        {
+            animator.SetBool("isDrinking", false);
+            animator.SetBool("isRepairing", false);
+            animator.SetBool("tuongtac", false);
+        }
+        else if (actionType == 1) // Uống bình máu / thể lực
+        {
+            animator.SetBool("isDrinking", true);
+            animator.SetBool("isRepairing", false);
+            animator.SetBool("tuongtac", false); // Tắt tuongtac để Base Layer tiếp tục chạy BlendTree Movement (bước chân)
+        }
+        else if (actionType == 2) // Sửa giáp
+        {
+            animator.SetBool("isRepairing", true);
+            animator.SetBool("isDrinking", false);
+            animator.SetBool("tuongtac", false);
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_QuangPhaoVatLy(Vector3 diemBatDau, Vector3 huongNem)
     {
         if (animator != null)
@@ -2272,6 +2404,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             animator.SetInteger("BowState", 1);
             animator.SetBool("isDrawingBow", true);
             animator.SetBool("isHoldingBow", false);
+            PhatAmThanhKeoCung();
         }
         else if (stateIndex == 2) // Giữ cung (Holding)
         {
@@ -2285,6 +2418,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             animator.SetBool("isDrawingBow", false);
             animator.SetBool("isHoldingBow", false);
             animator.SetTrigger("ShootBow");
+            PhatAmThanhBanCung();
         }
         else // 0: Reset / Cancel
         {
@@ -2292,6 +2426,36 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             animator.SetBool("isDrawingBow", false);
             animator.SetBool("isHoldingBow", false);
             animator.ResetTrigger("ShootBow");
+        }
+    }
+
+    public void PhatAmThanhKeoCung()
+    {
+        if (arrowLoadingSound != null)
+        {
+            if (audioSource == null) audioSource = GetComponent<AudioSource>();
+            if (audioSource != null) audioSource.PlayOneShot(arrowLoadingSound);
+            else AudioSource.PlayClipAtPoint(arrowLoadingSound, transform.position);
+        }
+        else
+        {
+            PlayerAudioManager am = GetComponent<PlayerAudioManager>();
+            if (am != null) am.PhatTiengKeoCung();
+        }
+    }
+
+    public void PhatAmThanhBanCung()
+    {
+        if (arrowShotSound != null)
+        {
+            if (audioSource == null) audioSource = GetComponent<AudioSource>();
+            if (audioSource != null) audioSource.PlayOneShot(arrowShotSound);
+            else AudioSource.PlayClipAtPoint(arrowShotSound, transform.position);
+        }
+        else
+        {
+            PlayerAudioManager am = GetComponent<PlayerAudioManager>();
+            if (am != null) am.PhatTiengBanCung();
         }
     }
 

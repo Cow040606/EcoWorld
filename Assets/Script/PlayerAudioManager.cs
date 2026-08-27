@@ -44,6 +44,15 @@ public class PlayerAudioManager : MonoBehaviour
 
 
     // =========================================================
+    //                  ÂM THANH CUNG TÊN
+    // =========================================================
+
+    [Header("Âm Thanh Cung Tên")]
+    public AudioClip tiengKeoCung;
+    public AudioClip tiengBanCung;
+
+
+    // =========================================================
     //                  ÂM THANH DI CHUYỂN
     // =========================================================
 
@@ -386,6 +395,21 @@ public class PlayerAudioManager : MonoBehaviour
     public void PhatTiengBiThuong()
     {
         PhatAmThanh(tiengBiThuong);
+    }
+
+
+    // =========================================================
+    //                  ÂM THANH BẮN CUNG
+    // =========================================================
+
+    public void PhatTiengKeoCung()
+    {
+        PhatAmThanh(tiengKeoCung);
+    }
+
+    public void PhatTiengBanCung()
+    {
+        PhatAmThanh(tiengBanCung);
     }
 
 

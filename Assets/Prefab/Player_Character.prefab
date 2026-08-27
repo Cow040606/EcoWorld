@@ -606,6 +606,11 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0.053881627
       objectReference: {fileID: 0}
+    - target: {fileID: 515887453152361088, guid: 16621e0439f81934292e8185e3c4d466,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 549629850037182425, guid: 16621e0439f81934292e8185e3c4d466,
         type: 3}
       propertyPath: m_LocalRotation.w
@@ -772,6 +777,11 @@ PrefabInstance:
       value: Nhanvatnam
       objectReference: {fileID: 0}
     - target: {fileID: 1650851842829646330, guid: 16621e0439f81934292e8185e3c4d466,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1681210020655230645, guid: 16621e0439f81934292e8185e3c4d466,
         type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -1060,6 +1070,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: 0.021817243
+      objectReference: {fileID: 0}
+    - target: {fileID: 3709244865325137418, guid: 16621e0439f81934292e8185e3c4d466,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3947715238142863622, guid: 16621e0439f81934292e8185e3c4d466,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4058665732101813984, guid: 16621e0439f81934292e8185e3c4d466,
         type: 3}
@@ -8396,6 +8416,11 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0.025186092
       objectReference: {fileID: 0}
+    - target: {fileID: 6400559319310910248, guid: 16621e0439f81934292e8185e3c4d466,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6419227280408468062, guid: 16621e0439f81934292e8185e3c4d466,
         type: 3}
       propertyPath: m_LocalRotation.w
@@ -8675,6 +8700,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0.018747844
+      objectReference: {fileID: 0}
+    - target: {fileID: 8694419146340255607, guid: 16621e0439f81934292e8185e3c4d466,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8864580524032007757, guid: 16621e0439f81934292e8185e3c4d466,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9141881764434366268, guid: 16621e0439f81934292e8185e3c4d466,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9186,7 +9226,7 @@ MonoBehaviour:
     _value: 0
   _isDead:
     _value: 0
-  droppedBackpackPrefab: {fileID: 736204043963346399, guid: 4e051ee77a3500748a78730d7b987a3e,
+  droppedBackpackPrefab: {fileID: 1361181076786324, guid: 388d2ede35ec91345943f17a010818fc,
     type: 3}
   baseMaxHealth: 100
   baseMaxStamina: 100
@@ -9224,6 +9264,13 @@ MonoBehaviour:
   fovBinhThuong: 60
   fovChayNhanh: 70
   tocDoZoom: 1
+  cameraFollowSmoothTime: 0.08
+  cameraVerticalSmoothTime: 0.12
+  collisionSmoothTime: 0.05
+  cameraCollisionRadius: 0.2
+  aimCameraOffset: {x: 0.65, y: 0.1, z: 0}
+  aimCameraDistance: 2.2
+  tocDoChuyenGocAim: 8
   _Gold: 0
   _Gem: 0
   _HotbarIDs: 
@@ -9274,6 +9321,8 @@ MonoBehaviour:
   maxBowTension: 1.5
   maxShootForce: 40
   drawDuration: 0.4
+  arrowLoadingSound: {fileID: 0}
+  arrowShotSound: {fileID: 0}
   currentBowState: 0
 --- !u!114 &1843947881778020044
 MonoBehaviour:
@@ -9423,6 +9472,8 @@ MonoBehaviour:
   tiengChatCay: {fileID: 8300000, guid: a53f35461784ea84084737d6a7b66096, type: 3}
   tiengNhay: {fileID: 8300000, guid: b7cf106466df06a4d80f15e83f6740e6, type: 3}
   tiengBiThuong: {fileID: 8300000, guid: 5d17fc20dae41894e963d4b043c1b189, type: 3}
+  tiengKeoCung: {fileID: 8300000, guid: ad33a172b47c3954481ae9e1e2dddbeb, type: 3}
+  tiengBanCung: {fileID: 8300000, guid: 23fa0345360959d4bb309b25aefd2610, type: 3}
   tiengWalk: {fileID: 8300000, guid: 6a3eabc7a36dbcf429e6afaabaa76f77, type: 3}
   tiengRun: {fileID: 8300000, guid: 9493c36dc8a86b74eb0e4c8f4f80d456, type: 3}
 --- !u!82 &3125081616612146868
