@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -258,6 +258,23 @@ namespace DialogueEditor
 
             return value;
         }
+
+        public List<string> GetParameterNames()
+        {
+            List<string> names = new List<string>();
+            if (m_conversation != null && m_conversation.Parameters != null)
+            {
+                foreach (var p in m_conversation.Parameters)
+                {
+                    if (p != null && !string.IsNullOrEmpty(p.ParameterName))
+                    {
+                        names.Add(p.ParameterName);
+                    }
+                }
+            }
+            return names;
+        }
+
 
 
         //--------------------------------------

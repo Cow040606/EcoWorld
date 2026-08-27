@@ -259,7 +259,7 @@ public class EnemyAIOrc : NetworkBehaviour
             float dist = Vector3.Distance(transform.position, targetPlayer.position);
             if (dist <= attackRadius + 1f)
             {
-                Player_Controller player = targetPlayer.GetComponent<Player_Controller>();
+                Player_Controller player = targetPlayer.GetComponentInParent<Player_Controller>();
                 if (player != null) player.RPC_TakeDame(GetDamage(NetworkedLevel));
             }
         }
@@ -290,16 +290,18 @@ public class EnemyAIOrc : NetworkBehaviour
         for (int i = 0; i < numHits; i++)
         {
             Collider hit = detectionResults[i];
-            if (hit != null && hit.CompareTag("Player"))
+            if (hit != null)
             {
-                Player_Controller player = hit.GetComponent<Player_Controller>();
-                if (player != null && player.isDead) continue;
-                targetPlayer = hit.transform;
-                CurrentState = EnemyState.Scream;
-                stateTimer = 0f;
-                if (IsAgentValid()) agent.isStopped = true;
-                transform.LookAt(new Vector3(targetPlayer.position.x, transform.position.y, targetPlayer.position.z));
-                break;
+                Player_Controller player = hit.GetComponentInParent<Player_Controller>();
+                if (player != null && !player.isDead)
+                {
+                    targetPlayer = player.transform;
+                    CurrentState = EnemyState.Scream;
+                    stateTimer = 0f;
+                    if (IsAgentValid()) agent.isStopped = true;
+                    transform.LookAt(new Vector3(targetPlayer.position.x, transform.position.y, targetPlayer.position.z));
+                    break;
+                }
             }
         }
         // Dọn dẹp mảng để tránh giữ tham chiếu đối tượng
