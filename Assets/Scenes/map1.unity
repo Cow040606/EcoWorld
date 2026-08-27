@@ -19633,6 +19633,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1693094169485984b95003a4dcf558a2, type: 3}
+
+
 --- !u!114 &91312236 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4614780169515388193, guid: c065735999086d443bdffbea3f5dde5c,
@@ -19645,6 +19647,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+
 --- !u!1001 &95548861
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -45942,6 +45945,87 @@ Transform:
   m_Children: []
   m_Father: {fileID: 792592146}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+
+--- !u!1001 &328932443
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3498104630378677207, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: SortKey
+      value: 1021294739
+      objectReference: {fileID: 0}
+    - target: {fileID: 3885241281055047969, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: m_Name
+      value: spawnenemy (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2634.948
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 76.953415
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2075.7876
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8207176508345752025, guid: 886b38180b800c241b806cc98dc65f05,
+        type: 3}
+      propertyPath: uiTimeText
+      value: 
+      objectReference: {fileID: 1254668547}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 886b38180b800c241b806cc98dc65f05, type: 3}
+
+
 --- !u!1001 &335717589
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -159827,6 +159911,7 @@ Transform:
   m_Children:
   - {fileID: 1184839848}
   - {fileID: 1793842941}
+  - {fileID: 2043498292}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &683894846
@@ -340978,6 +341063,8 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1256768070}
   m_PrefabAsset: {fileID: 0}
+
+
 --- !u!1 &1441099495
 GameObject:
   m_ObjectHideFlags: 0
@@ -341050,6 +341137,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+
 --- !u!4 &1441625512 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4441966494965373325, guid: 961246f5a43263b4480e85cef330412c,
@@ -458678,6 +458766,107 @@ Transform:
   m_Children: []
   m_Father: {fileID: 792592146}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &2043498291
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 679327988}
+    m_Modifications:
+    - target: {fileID: 2249156629610490761, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: maxCarnivores
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2249156629610490761, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: maxHerbivores
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2249156629610490761, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: carnivore_Prefab
+      value: 
+      objectReference: {fileID: 837813898194340223, guid: a03d192645179b34bac6fdbaa59e476d,
+        type: 3}
+    - target: {fileID: 2249156629610490761, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: herbivore_Prefab
+      value: 
+      objectReference: {fileID: -5306761942532638105, guid: 6b9618394f47aa143b043f0150b6cceb,
+        type: 3}
+    - target: {fileID: 3188263412854048990, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: m_Name
+      value: animal (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3939332833838023700, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: SortKey
+      value: 9469484
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121589825552696253, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121589825552696253, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121589825552696253, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -170.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121589825552696253, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121589825552696253, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121589825552696253, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121589825552696253, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121589825552696253, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121589825552696253, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121589825552696253, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f9f183ae4b57cb742876a8cfc5d97ad8, type: 3}
+--- !u!4 &2043498292 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6121589825552696253, guid: f9f183ae4b57cb742876a8cfc5d97ad8,
+    type: 3}
+  m_PrefabInstance: {fileID: 2043498291}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2043951240
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -491669,7 +491858,7 @@ PrefabInstance:
         type: 3}
       propertyPath: uiTimeText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1254668547}
     - target: {fileID: 4689183083849043464, guid: e7470bc40cde9d946a06f07a81f7ef4e,
         type: 3}
       propertyPath: SortKey
@@ -493907,6 +494096,77 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6529112795165161678, guid: 1151ff966161e9b428c5b1609bc14b71,
+        type: 3}
+      propertyPath: json
+      value: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":false,"xPos":31.3332214,"yPos":78.33276},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"You
+        know who I am?","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":4}],"EditorInfo":{"isRoot":false,"xPos":-268.000275,"yPos":271.6662},"ID":3,"ParamActions":[],"TMPFontGUID":null,"Text":"Tell
+        me what I must do.","parentUIDs":[2],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":6}],"EditorInfo":{"isRoot":false,"xPos":-252.000336,"yPos":414.332977},"ID":5,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        will get them.","parentUIDs":[4],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":9}],"EditorInfo":{"isRoot":false,"xPos":128.666351,"yPos":597.6654},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        have the 20 Ores.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":12}],"EditorInfo":{"isRoot":false,"xPos":131.332855,"yPos":805.666138},"ID":11,"ParamActions":[],"TMPFontGUID":null,"Text":"Consider
+        it done.","parentUIDs":[10],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":14}],"EditorInfo":{"isRoot":false,"xPos":313.3328,"yPos":188.9997},"ID":13,"ParamActions":[],"TMPFontGUID":null,"Text":"Here
+        are the 10 potions.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":18}],"EditorInfo":{"isRoot":false,"xPos":804.6671,"yPos":339.667572},"ID":17,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        will destroy the beast.","parentUIDs":[16],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":21}],"EditorInfo":{"isRoot":false,"xPos":413.3331,"yPos":348.331879},"ID":20,"ParamActions":[],"TMPFontGUID":null,"Text":"The
+        Orc Hammer is dead","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":23}],"EditorInfo":{"isRoot":false,"xPos":-182.000336,"yPos":-41.0001831},"ID":22,"ParamActions":[],"TMPFontGUID":null,"Text":"i
+        am still working","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":25}],"EditorInfo":{"isRoot":false,"xPos":351.332916,"yPos":712.9999},"ID":24,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        am not ready for alchemy.","parentUIDs":[10],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":27}],"EditorInfo":{"isRoot":false,"xPos":972.0001,"yPos":282.333252},"ID":26,"ParamActions":[],"TMPFontGUID":null,"Text":"That
+        beast is too strong for me.","parentUIDs":[16],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":29}],"EditorInfo":{"isRoot":false,"xPos":295.332916,"yPos":-32.3334351},"ID":28,"ParamActions":[],"TMPFontGUID":null,"Text":"im
+        still hunting the beast","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":31}],"EditorInfo":{"isRoot":false,"xPos":-689.3334,"yPos":266.3332},"ID":30,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        am still crafting the 10 potions","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"talk2_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"daoquang_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"daoquang_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"craft2_DangLam
+        ","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"craft2_DaXong
+        ","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"bossfinal_DangLam
+        ","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"bossfinal_DaXong
+        ","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"Daoquangchuanhan","BoolValue":false}],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"Daoquangchuanhan","CheckType":0,"RequiredValue":true}],"NodeUID":1},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"daoquang_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":22},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"daoquang_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":8},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"craft2_DaXong
+        ","CheckType":0,"RequiredValue":true}],"NodeUID":13},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bossfinal_DaXong
+        ","CheckType":0,"RequiredValue":true}],"NodeUID":20},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"craft2_DangLam
+        ","CheckType":0,"RequiredValue":true}],"NodeUID":30},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bossfinal_DangLam
+        ","CheckType":0,"RequiredValue":true}],"NodeUID":28}],"EditorInfo":{"isRoot":true,"xPos":-559.666748,"yPos":86},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        have been waiting for you... The winds whispered of your arrival","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":3}],"EditorInfo":{"isRoot":false,"xPos":25.3329773,"yPos":207.332779},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"You
+        are the successor. The one destined to bear the ultimate power. But power
+        must be earned, not given.","parentUIDs":[1],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":5}],"EditorInfo":{"isRoot":false,"xPos":58.00009,"yPos":337.332855},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"First,
+        we temper your physical vessel. Bring me 20 Ores from the deep earth","parentUIDs":[3],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":24.66623,"yPos":458.000641},"ID":6,"ParamActions":[],"TMPFontGUID":null,"Text":"Go.
+        The earth does not yield its secrets to the weak.","parentUIDs":[5],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":10}],"EditorInfo":{"isRoot":false,"xPos":-252.000214,"yPos":682.665649},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"A
+        solid foundation. Your body is ready. Now, we test your mind.","parentUIDs":[8],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":11},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":24}],"EditorInfo":{"isRoot":false,"xPos":131.999847,"yPos":685.999146},"ID":10,"ParamActions":[],"TMPFontGUID":null,"Text":"To
+        survive the coming abyss, you must master alchemy. Craft 10 Health Potions","parentUIDs":[9],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-154.666779,"yPos":811.9989},"ID":12,"ParamActions":[],"TMPFontGUID":null,"Text":"Patience
+        and precision. Do not fail this task.","parentUIDs":[11],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":16}],"EditorInfo":{"isRoot":false,"xPos":616.0001,"yPos":84.66577},"ID":14,"ParamActions":[],"TMPFontGUID":null,"Text":"Your
+        mind is sharp. You are finally ready for the true test","parentUIDs":[13],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":17},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":26}],"EditorInfo":{"isRoot":false,"xPos":775.3342,"yPos":172.6668},"ID":16,"ParamActions":[],"TMPFontGUID":null,"Text":"The
+        final trial. Slay the world''s strongest beast: The Orc Hammer. Only then
+        will your true power awaken.","parentUIDs":[14],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":798.666748,"yPos":445.334},"ID":18,"ParamActions":[],"TMPFontGUID":null,"Text":"May
+        the stars guide your blade. Return only in victory","parentUIDs":[17],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":477.332367,"yPos":492.6662},"ID":21,"ParamActions":[],"TMPFontGUID":null,"Text":"The
+        prophecy is fulfilled. Arise, true Hero! The ultimate power is now yours.","parentUIDs":[20],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":33.33322,"yPos":-147.333618},"ID":23,"ParamActions":[],"TMPFontGUID":null,"Text":"Go.
+        The earth does not yield its secrets to the weak","parentUIDs":[22],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":413.3326,"yPos":823.333862},"ID":25,"ParamActions":[],"TMPFontGUID":null,"Text":"Then
+        you are not ready for the path of the ultimate power.","parentUIDs":[24],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":1100.0011,"yPos":403.332977},"ID":27,"ParamActions":[],"TMPFontGUID":null,"Text":"Fear
+        is the enemy of fate. You will never become the true Hero","parentUIDs":[26],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":554.666,"yPos":-64.00018},"ID":29,"ParamActions":[],"TMPFontGUID":null,"Text":"May
+        the stars guide your blade. Return only in victory","parentUIDs":[28],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-600,"yPos":369.999725},"ID":31,"ParamActions":[],"TMPFontGUID":null,"Text":"Patience
+        and precision. Do not fail this task.","parentUIDs":[30],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THE
+        MASTER ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6529112795165161678, guid: 1151ff966161e9b428c5b1609bc14b71,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6529112795165161678, guid: 1151ff966161e9b428c5b1609bc14b71,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 11400000, guid: dbfa2653e33b4974aa11b16391db07ea,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -499446,6 +499706,87 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+
+--- !u!1001 &8043448032862053591
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3498104630378677207, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: SortKey
+      value: 3228899371
+      objectReference: {fileID: 0}
+    - target: {fileID: 3885241281055047969, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: m_Name
+      value: spawnenemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2536.52
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 75.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1762.8185
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6358392597656937389, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8207176508345752025, guid: b5264bf9f5c053c46b9e1de1b16d2d02,
+        type: 3}
+      propertyPath: uiTimeText
+      value: 
+      objectReference: {fileID: 1254668547}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b5264bf9f5c053c46b9e1de1b16d2d02, type: 3}
+
+
 --- !u!1 &8055719699317254563
 GameObject:
   m_ObjectHideFlags: 0
@@ -502824,7 +503165,16 @@ SceneRoots:
   - {fileID: 1755606964}
   - {fileID: 2125366991}
   - {fileID: 1052833394}
+
   - {fileID: 1376470154}
   - {fileID: 1839916823}
   - {fileID: 2062607772}
   - {fileID: 736319108}
+
+
+  - {fileID: 328932443}
+  - {fileID: 107139076}
+  - {fileID: 8250193407026902554}
+
+
+
