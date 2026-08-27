@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using UnityEngine;
 using UnityEditor;
@@ -116,11 +116,14 @@ namespace EcoWorld.Editor
                 {
                     if (sceneTrig.gameObject.name.Contains("Character_Male_Wizard_01"))
                     {
-                        // Revert overrides on both components
-                        PrefabUtility.RevertObjectOverride(sceneTrig, InteractionMode.AutomatedAction);
+                        // Revert overrides on both components if part of prefab instance
+                        if (PrefabUtility.IsPartOfPrefabInstance(sceneTrig))
+                        {
+                            PrefabUtility.RevertObjectOverride(sceneTrig, InteractionMode.AutomatedAction);
+                        }
                         
                         NPC_QuestBridge sceneBridge = sceneTrig.GetComponent<NPC_QuestBridge>();
-                        if (sceneBridge != null)
+                        if (sceneBridge != null && PrefabUtility.IsPartOfPrefabInstance(sceneBridge))
                         {
                             PrefabUtility.RevertObjectOverride(sceneBridge, InteractionMode.AutomatedAction);
                         }
@@ -128,7 +131,10 @@ namespace EcoWorld.Editor
                         NodeEventHolder[] sceneHolders = sceneTrig.GetComponentsInChildren<NodeEventHolder>(true);
                         foreach (var sh in sceneHolders)
                         {
-                            PrefabUtility.RevertObjectOverride(sh, InteractionMode.AutomatedAction);
+                            if (PrefabUtility.IsPartOfPrefabInstance(sh))
+                            {
+                                PrefabUtility.RevertObjectOverride(sh, InteractionMode.AutomatedAction);
+                            }
                         }
 
                         // Force NPC ID directly

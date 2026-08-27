@@ -121,6 +121,14 @@ public class ObjectiveTarget : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        if (minimapIconObj != null)
+        {
+            minimapIconObj.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+        }
+    }
+
     private void OnDestroy()
     {
         if (activeWorldSpaceMarker != null) Destroy(activeWorldSpaceMarker);

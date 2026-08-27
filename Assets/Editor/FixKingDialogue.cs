@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -125,14 +125,20 @@ namespace EcoWorld.Editor
                     // Check if it belongs to the target NPC name/prefab instance
                     if (sceneConv.gameObject.name.Contains("SM_Chr_King_01"))
                     {
-                        // Revert overrides on the NPCConversation component to inherit clean values from prefab
-                        PrefabUtility.RevertObjectOverride(sceneConv, InteractionMode.AutomatedAction);
+                        // Revert overrides on the NPCConversation component if part of prefab instance
+                        if (PrefabUtility.IsPartOfPrefabInstance(sceneConv))
+                        {
+                            PrefabUtility.RevertObjectOverride(sceneConv, InteractionMode.AutomatedAction);
+                        }
                         
                         // Revert overrides on all NodeEventHolder components on the instance
                         NodeEventHolder[] sceneHolders = sceneConv.GetComponentsInChildren<NodeEventHolder>(true);
                         foreach (var sh in sceneHolders)
                         {
-                            PrefabUtility.RevertObjectOverride(sh, InteractionMode.AutomatedAction);
+                            if (PrefabUtility.IsPartOfPrefabInstance(sh))
+                            {
+                                PrefabUtility.RevertObjectOverride(sh, InteractionMode.AutomatedAction);
+                            }
                         }
 
                         // Just in case, force values on the scene instance directly too

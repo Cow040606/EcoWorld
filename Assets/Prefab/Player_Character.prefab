@@ -216,7 +216,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 261119
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -395,6 +395,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b54e864bea45c5f45b77fdfe5df70eca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+--- !u!1 &4279653126074556825
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1658908987766892708}
+  m_Layer: 7
+  m_Name: Diemcam
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1658908987766892708
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4279653126074556825}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.16295195, y: -0.68807465, z: 0.16295195, w: 0.68807465}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9210169185756081963}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 26.647}
 --- !u!1 &7522941174301873728
 GameObject:
   m_ObjectHideFlags: 0
@@ -8647,7 +8678,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6193493489899558870, guid: 16621e0439f81934292e8185e3c4d466,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1658908987766892708}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 16621e0439f81934292e8185e3c4d466, type: 3}
 --- !u!4 &1046070841150880125 stripped
@@ -8692,6 +8727,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b04f4ac1b776ff48b5f78a97b57f776, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Invector.FootstepSystem.vFootstepTrigger
+--- !u!4 &9210169185756081963 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6193493489899558870, guid: 16621e0439f81934292e8185e3c4d466,
+    type: 3}
+  m_PrefabInstance: {fileID: 3036179933158521085}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7077837149404535586
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9109,10 +9150,10 @@ CharacterController:
   m_Height: 1.6
   m_Radius: 0.2
   m_SlopeLimit: 45
-  m_StepOffset: 0.6
+  m_StepOffset: 0.2
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!114 &3029633544615895992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9188,6 +9229,7 @@ MonoBehaviour:
   _HotbarIDs: 
   _CurrentToolIndex: 0
   viTriCamVuKhi: {fileID: 1046070841150880125}
+  viTriCamTayTrai: {fileID: 1658908987766892708}
   banKinhNhat: 3
   interactRange: 4
   interactLayer:
@@ -9227,6 +9269,12 @@ MonoBehaviour:
   hintText: {fileID: 0}
   showChopDebug: 1
   showDebugRay: 1
+  ArrowPrefab: {fileID: 3067467854144060437, guid: 7fc89f693753d584db4bde684b4444be,
+    type: 3}
+  maxBowTension: 1.5
+  maxShootForce: 40
+  drawDuration: 0.4
+  currentBowState: 0
 --- !u!114 &1843947881778020044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9312,6 +9360,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player_QuestManager
   danhSachNhiemVu: []
   txtBangNhiemVu: {fileID: 0}
+  danhSachDaHoanThanh: 
 --- !u!114 &3280346451594188011
 MonoBehaviour:
   m_ObjectHideFlags: 0
