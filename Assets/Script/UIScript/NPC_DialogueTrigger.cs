@@ -4,6 +4,7 @@ using UnityEngine;
 using DialogueEditor; 
 using UnityEngine.InputSystem; 
 using UnityEngine.Playables; 
+using UnityEngine.AI;
 
 public class NPC_DialogueTrigger : MonoBehaviour
 {
@@ -36,6 +37,9 @@ public class NPC_DialogueTrigger : MonoBehaviour
     // =========================================================================
     [Header("Danh sách Model NPC cần ẨN LUÔN sau khi Cutscene")]
     public List<GameObject> danhSachModelNPCAnSauCutscene = new List<GameObject>();
+
+    [Header("Vị trí dịch chuyển NPC (Tùy chọn)")]
+    public Transform viTriDichChuyen;
 
     private List<Renderer> playerRenderersDaAn = new List<Renderer>();
 
@@ -163,6 +167,100 @@ public class NPC_DialogueTrigger : MonoBehaviour
             XuLyAnModelSauCutscene();
             
             Debug.Log($"<color=yellow>[NPC Cutscene]:</color> Đã tắt Cutscene GameObject: {objCutscene.name}");
+        }
+    }
+
+    // =========================================================================
+    // CÁC HÀM DỊCH CHUYỂN NPC ĐẾN VỊ TRÍ MỤC TIÊU
+    // =========================================================================
+
+    // 4. Dịch chuyển NPC này đến 1 GameObject vị trí cụ thể (Kéo GameObject mốc vị trí vào ô GameObject của Event)
+    public void DiChuyenNPCDenViTri(GameObject targetObj)
+    {
+        if (targetObj != null)
+        {
+            ThucHienDichChuyen(transform, targetObj.transform.position, targetObj.transform.rotation);
+            Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển NPC '{gameObject.name}' đến vị trí của '{targetObj.name}' ({targetObj.transform.position})");
+        }
+        else
+        {
+            Debug.LogWarning($"<color=yellow>[NPC Teleport]:</color> GameObject mục tiêu truyền vào bị Null trên NPC '{gameObject.name}'!");
+        }
+    }
+
+    // 5. Dịch chuyển NPC này đến 1 Transform vị trí cụ thể (Kéo Transform mốc vị trí vào ô Transform của Event)
+    public void DiChuyenNPCDenTransform(Transform targetTransform)
+    {
+        if (targetTransform != null)
+        {
+            ThucHienDichChuyen(transform, targetTransform.position, targetTransform.rotation);
+            Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển NPC '{gameObject.name}' đến Transform '{targetTransform.name}' ({targetTransform.position})");
+        }
+        else
+        {
+            Debug.LogWarning($"<color=yellow>[NPC Teleport]:</color> Transform mục tiêu truyền vào bị Null trên NPC '{gameObject.name}'!");
+        }
+    }
+
+    // 6. Dịch chuyển NPC này đến vị trí đã kéo sẵn trong Inspector (viTriDichChuyen)
+    public void DiChuyenNPCDenViTriDaChon()
+    {
+        if (viTriDichChuyen != null)
+        {
+            ThucHienDichChuyen(transform, viTriDichChuyen.position, viTriDichChuyen.rotation);
+            Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển NPC '{gameObject.name}' đến vị trí định sẵn '{viTriDichChuyen.name}' ({viTriDichChuyen.position})");
+        }
+        else
+        {
+            Debug.LogWarning($"<color=yellow>[NPC Teleport]:</color> Chưa gán 'viTriDichChuyen' trong Inspector của {gameObject.name}!");
+        }
+    }
+
+    // 7. Dịch chuyển một đối tượng bất kỳ đến vị trí của một GameObject khác
+    public void DiChuyenDoiTuong(GameObject doiTuongCanChuyen, GameObject viTriMoi)
+    {
+        if (doiTuongCanChuyen != null && viTriMoi != null)
+        {
+            ThucHienDichChuyen(doiTuongCanChuyen.transform, viTriMoi.transform.position, viTriMoi.transform.rotation);
+            Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển '{doiTuongCanChuyen.name}' đến vị trí của '{viTriMoi.name}'");
+        }
+    }
+
+    // Hàm phụ trợ thực hiện di chuyển: Hỗ trợ an toàn cho NavMeshAgent, CharacterController và Rigidbody
+    private void ThucHienDichChuyen(Transform doiTuong, Vector3 viTriMoi, Quaternion gocXoayMoi)
+    {
+        if (doiTuong == null) return;
+
+        // Nếu đối tượng có NavMeshAgent thì dùng Warp để tránh lỗi đồng bộ / snapping
+        NavMeshAgent agent = doiTuong.GetComponent<NavMeshAgent>();
+        if (agent != null && agent.enabled)
+        {
+            agent.Warp(viTriMoi);
+        }
+        else
+        {
+            // Nếu có CharacterController cần tắt tạm thời trước khi set position
+            CharacterController cc = doiTuong.GetComponent<CharacterController>();
+            if (cc != null)
+            {
+                cc.enabled = false;
+                doiTuong.position = viTriMoi;
+                cc.enabled = true;
+            }
+            else
+            {
+                doiTuong.position = viTriMoi;
+            }
+        }
+
+        doiTuong.rotation = gocXoayMoi;
+
+        // Reset vận tốc nếu có Rigidbody
+        Rigidbody rb = doiTuong.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
         }
     }
 
