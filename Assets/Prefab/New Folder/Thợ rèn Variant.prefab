@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 2544829291203372235}
   - component: {fileID: 8747205353453756960}
   - component: {fileID: 3863387153265684897}
+  - component: {fileID: 3869279871063350888}
+  - component: {fileID: 334355956085158822}
   m_Layer: 0
   m_Name: ConversationEventInfo
   m_TagString: Untagged
@@ -52,7 +54,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   NodeID: 0
-  TMPFont: {fileID: 0}
+  TMPFont: {fileID: 11400000, guid: 64ad1cd2117eed642bfc335379dac450, type: 2}
   Icon: {fileID: 0}
   Audio: {fileID: 0}
 --- !u!114 &1848614550677133071
@@ -141,6 +143,68 @@ MonoBehaviour:
         m_CallState: 2
   NodeID: 5
   TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
+--- !u!114 &3869279871063350888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5536590433431800712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: UI_TramCheTao, Assembly-CSharp
+        m_MethodName: OpenCraft
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  NodeID: 8
+  TMPFont: {fileID: 11400000, guid: 64ad1cd2117eed642bfc335379dac450, type: 2}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
+--- !u!114 &334355956085158822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5536590433431800712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: UI_Upgrade, Assembly-CSharp
+        m_MethodName: OpenUpgrade
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  NodeID: 9
+  TMPFont: {fileID: 11400000, guid: 64ad1cd2117eed642bfc335379dac450, type: 2}
   Icon: {fileID: 0}
   Audio: {fileID: 0}
 --- !u!1 &7388910361591875335
@@ -789,7 +853,9 @@ PrefabInstance:
     - target: {fileID: 2012643850776804270, guid: 7e0b6a910f3bd474aa68efe382485e04,
         type: 3}
       propertyPath: json
-      value: '{"Options":[],"Parameters":[],"SpeechNodes":[{"Connections":[],"EditorInfo":{"isRoot":true,"xPos":153.333344,"yPos":22},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":null,"parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":null,"OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
+      value: '{"Options":[{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":209.599976,"yPos":285.4},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"Craft","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":240.799988,"yPos":407},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"upgrade","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":8},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":9}],"EditorInfo":{"isRoot":true,"xPos":-64.20001,"yPos":377.2},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Heat''s
+        on! We crafting fresh gear to fight those fiends, or hammering your old tools
+        into something sharper?","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"BlackMisth","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
       objectReference: {fileID: 0}
     - target: {fileID: 2012643850776804270, guid: 7e0b6a910f3bd474aa68efe382485e04,
         type: 3}
@@ -799,12 +865,12 @@ PrefabInstance:
     - target: {fileID: 2012643850776804270, guid: 7e0b6a910f3bd474aa68efe382485e04,
         type: 3}
       propertyPath: CurrentIDCounter
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2012643850776804270, guid: 7e0b6a910f3bd474aa68efe382485e04,
         type: 3}
       propertyPath: NodeSerializedDataList.Array.size
-      value: 5
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2012643850776804270, guid: 7e0b6a910f3bd474aa68efe382485e04,
         type: 3}
@@ -833,8 +899,18 @@ PrefabInstance:
       objectReference: {fileID: 3863387153265684897}
     - target: {fileID: 2012643850776804270, guid: 7e0b6a910f3bd474aa68efe382485e04,
         type: 3}
+      propertyPath: 'NodeSerializedDataList.Array.data[5]'
+      value: 
+      objectReference: {fileID: 3869279871063350888}
+    - target: {fileID: 2012643850776804270, guid: 7e0b6a910f3bd474aa68efe382485e04,
+        type: 3}
+      propertyPath: 'NodeSerializedDataList.Array.data[6]'
+      value: 
+      objectReference: {fileID: 334355956085158822}
+    - target: {fileID: 2012643850776804270, guid: 7e0b6a910f3bd474aa68efe382485e04,
+        type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2012643850776804270, guid: 7e0b6a910f3bd474aa68efe382485e04,
         type: 3}
@@ -855,6 +931,21 @@ PrefabInstance:
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012643850776804270, guid: 7e0b6a910f3bd474aa68efe382485e04,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OpenUpgrade
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012643850776804270, guid: 7e0b6a910f3bd474aa68efe382485e04,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UI_Upgrade, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2012643850776804270, guid: 7e0b6a910f3bd474aa68efe382485e04,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 2025761695904032235, guid: 7e0b6a910f3bd474aa68efe382485e04,
         type: 3}
@@ -944,17 +1035,17 @@ PrefabInstance:
     - target: {fileID: 2494514890683686606, guid: 7e0b6a910f3bd474aa68efe382485e04,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2588.18
+      value: 2587.9216
       objectReference: {fileID: 0}
     - target: {fileID: 2494514890683686606, guid: 7e0b6a910f3bd474aa68efe382485e04,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 72.5
+      value: 72.418
       objectReference: {fileID: 0}
     - target: {fileID: 2494514890683686606, guid: 7e0b6a910f3bd474aa68efe382485e04,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1994.5
+      value: -1995.15
       objectReference: {fileID: 0}
     - target: {fileID: 2494514890683686606, guid: 7e0b6a910f3bd474aa68efe382485e04,
         type: 3}
@@ -2083,7 +2174,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.51
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -2092,9 +2183,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 15
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -2127,7 +2218,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
