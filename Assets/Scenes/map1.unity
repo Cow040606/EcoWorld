@@ -195224,6 +195224,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 6f5493f8cc6bf0f429dbbf19e95e9cf3,
         type: 2}
+    - target: {fileID: 2196239323120942263, guid: 5a4cdf6143bade348932c1a3325b7fde,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2196239323120942263, guid: 5a4cdf6143bade348932c1a3325b7fde,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2196239323120942263, guid: 5a4cdf6143bade348932c1a3325b7fde,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2267302913024042299, guid: 5a4cdf6143bade348932c1a3325b7fde,
         type: 3}
       propertyPath: diemDichChuyen
@@ -195777,6 +195792,11 @@ PrefabInstance:
     - target: {fileID: 8368114009265507108, guid: 5a4cdf6143bade348932c1a3325b7fde,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8417226754967947625, guid: 5a4cdf6143bade348932c1a3325b7fde,
+        type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8727596247978907183, guid: 5a4cdf6143bade348932c1a3325b7fde,
@@ -341806,6 +341826,7 @@ MonoBehaviour:
   thoiGianCutsceneThuCong: 0
   danhSachModelNPCCanAn: []
   danhSachModelNPCAnSauCutscene: []
+  viTriDichChuyen: {fileID: 0}
 --- !u!114 &1443082655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -401064,6 +401085,7 @@ PrefabInstance:
     - target: {fileID: 6048058943794212763, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: json
+
       value: "{\"Options\":[{\"Connections\":[{\"__type\":\"EditableSpeechConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":3}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":-222.400192,\"yPos\":96.59983},\"ID\":1,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Sure
         , i can \",\"parentUIDs\":[0],\"SpeechUID\":-1},{\"Connections\":[{\"__type\":\"EditableSpeechConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":4}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":-198.400131,\"yPos\":281.399841},\"ID\":2,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"No,
         I can't\",\"parentUIDs\":[0],\"SpeechUID\":-1},{\"Connections\":[{\"__type\":\"EditableSpeechConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":6}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":-208.800064,\"yPos\":450.999939},\"ID\":5,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"I\u2019m
@@ -401073,13 +401095,62 @@ PrefabInstance:
         you... I knew I could count on you.\",\"parentUIDs\":[1],\"AdvanceDialogueAutomatically\":false,\"AudioGUID\":null,\"AutoAdvanceShouldDisplayOption\":false,\"IconGUID\":null,\"Name\":\"WIFE\",\"OptionUIDs\":null,\"SpeechUID\":0,\"TimeUntilAdvance\":0,\"Volume\":0},{\"Connections\":[],\"EditorInfo\":{\"isRoot\":false,\"xPos\":87.99965,\"yPos\":264.799744},\"ID\":4,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"I
         understand\",\"parentUIDs\":[2],\"AdvanceDialogueAutomatically\":false,\"AudioGUID\":null,\"AutoAdvanceShouldDisplayOption\":false,\"IconGUID\":null,\"Name\":\"WIFE\",\"OptionUIDs\":null,\"SpeechUID\":0,\"TimeUntilAdvance\":0,\"Volume\":0},{\"Connections\":[{\"__type\":\"EditableSpeechConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":7}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":103.199783,\"yPos\":432.799866},\"ID\":6,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Thank
         you. You did it\\n\",\"parentUIDs\":[5],\"AdvanceDialogueAutomatically\":false,\"AudioGUID\":null,\"AutoAdvanceShouldDisplayOption\":false,\"IconGUID\":null,\"Name\":\"WIFE\",\"OptionUIDs\":null,\"SpeechUID\":0,\"TimeUntilAdvance\":0,\"Volume\":0},{\"Connections\":[{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":8}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":353.5998,\"yPos\":431.999756},\"ID\":7,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Here
+
+      value: "{\"Options\":[{\"Connections\":[{\"__type\":\"EditableSpeechConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":3}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":203.199829,\"yPos\":227.199875},\"ID\":1,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Sure
+        , i can \",\"parentUIDs\":[0],\"SpeechUID\":-1},{\"Connections\":[{\"__type\":\"EditableSpeechConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":4}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":227.19989,\"yPos\":411.999878},\"ID\":2,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"No,
+        I can't\",\"parentUIDs\":[0],\"SpeechUID\":-1},{\"Connections\":[{\"__type\":\"EditableSpeechConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":6}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":216.799957,\"yPos\":581.6},\"ID\":5,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"I\u2019m
+        done.\",\"parentUIDs\":[0],\"SpeechUID\":-1},{\"Connections\":[],\"EditorInfo\":{\"isRoot\":false,\"xPos\":1022.59961,\"yPos\":559.999756},\"ID\":8,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"End\",\"parentUIDs\":[7],\"SpeechUID\":-1},{\"Connections\":[],\"EditorInfo\":{\"isRoot\":false,\"xPos\":770.399963,\"yPos\":195.999924},\"ID\":9,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Alright
+        \",\"parentUIDs\":[3],\"SpeechUID\":-1}],\"Parameters\":[],\"SpeechNodes\":[{\"Connections\":[{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":1},{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":2},{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":5}],\"EditorInfo\":{\"isRoot\":true,\"xPos\":-41,\"yPos\":403},\"ID\":0,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Can
+        you have me ?\",\"parentUIDs\":[],\"AdvanceDialogueAutomatically\":false,\"AudioGUID\":null,\"AutoAdvanceShouldDisplayOption\":false,\"IconGUID\":null,\"Name\":\"WIFE\",\"OptionUIDs\":null,\"SpeechUID\":0,\"TimeUntilAdvance\":0,\"Volume\":0},{\"Connections\":[{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":9}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":495.999756,\"yPos\":184.1999},\"ID\":3,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Thank
+        you... I knew I could count on you.\",\"parentUIDs\":[1],\"AdvanceDialogueAutomatically\":false,\"AudioGUID\":null,\"AutoAdvanceShouldDisplayOption\":false,\"IconGUID\":null,\"Name\":\"WIFE\",\"OptionUIDs\":null,\"SpeechUID\":0,\"TimeUntilAdvance\":0,\"Volume\":0},{\"Connections\":[],\"EditorInfo\":{\"isRoot\":false,\"xPos\":513.599731,\"yPos\":395.39978},\"ID\":4,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"I
+        understand\",\"parentUIDs\":[2],\"AdvanceDialogueAutomatically\":false,\"AudioGUID\":null,\"AutoAdvanceShouldDisplayOption\":false,\"IconGUID\":null,\"Name\":\"WIFE\",\"OptionUIDs\":null,\"SpeechUID\":0,\"TimeUntilAdvance\":0,\"Volume\":0},{\"Connections\":[{\"__type\":\"EditableSpeechConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":7}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":528.7998,\"yPos\":563.3999},\"ID\":6,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Thank
+        you. You did it\\n\",\"parentUIDs\":[5],\"AdvanceDialogueAutomatically\":false,\"AudioGUID\":null,\"AutoAdvanceShouldDisplayOption\":false,\"IconGUID\":null,\"Name\":\"WIFE\",\"OptionUIDs\":null,\"SpeechUID\":0,\"TimeUntilAdvance\":0,\"Volume\":0},{\"Connections\":[{\"__type\":\"EditableOptionConnection:#DialogueEditor\",\"Conditions\":[],\"NodeUID\":8}],\"EditorInfo\":{\"isRoot\":false,\"xPos\":779.199951,\"yPos\":562.599854},\"ID\":7,\"ParamActions\":[],\"TMPFontGUID\":null,\"Text\":\"Here
+
         is your reward.\",\"parentUIDs\":[6],\"AdvanceDialogueAutomatically\":false,\"AudioGUID\":null,\"AutoAdvanceShouldDisplayOption\":false,\"IconGUID\":null,\"Name\":\"WIFE\",\"OptionUIDs\":null,\"SpeechUID\":0,\"TimeUntilAdvance\":0,\"Volume\":0}]}"
       objectReference: {fileID: 0}
     - target: {fileID: 6048058943794212763, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
+
+
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6048058943794212763, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6048058943794212763, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 1839916824}
+    - target: {fileID: 6048058943794212763, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6048058943794212763, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
+      value: DiChuyenNPCDenViTri
+      objectReference: {fileID: 0}
+    - target: {fileID: 6048058943794212763, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
+      value: NPC_DialogueTrigger, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6048058943794212763, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
+
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
       value: 
       objectReference: {fileID: 514860090}
+    - target: {fileID: 6048058943794212763, guid: da9c55adf8e0da744be9528231193c59,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.GameObject, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 7040151391589251020, guid: da9c55adf8e0da744be9528231193c59,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -401156,6 +401227,18 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: da9c55adf8e0da744be9528231193c59, type: 3}
+--- !u!114 &1839916824 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1962923911489737215, guid: da9c55adf8e0da744be9528231193c59,
+    type: 3}
+  m_PrefabInstance: {fileID: 1839916823}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ec9f29a5f4894d46b8864644b5e492c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPC_DialogueTrigger
 --- !u!1001 &1841066458
 PrefabInstance:
   m_ObjectHideFlags: 0
