@@ -149,9 +149,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     private void OnTuiDoChanged()
     {
-        if (HasInputAuthority && Player_QuestManager.localQuest != null)
+        if (HasInputAuthority)
         {
-            Player_QuestManager.localQuest.KiemTraTienDo();
+            if (Player_QuestManager.localQuest != null)
+            {
+                Player_QuestManager.localQuest.KiemTraTienDo();
+            }
+
+            if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo)
+            {
+                InventoryManager.instance.VeBaloRaManHinh(TuiDo);
+            }
         }
     }
     [Networked, OnChangedRender(nameof(OnHotbarChanged)), Capacity(6)] public NetworkArray<int> HotbarIDs { get; }
@@ -159,6 +167,13 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     private void OnHotbarChanged()
     {
         OnToolChanged();
+        if (HasInputAuthority)
+        {
+            for (int i = 0; i < HotbarIDs.Length; i++)
+            {
+                CapNhatUIHotbarLocal(i, HotbarIDs[i]);
+            }
+        }
     }
 
     [Header("Animation & Vũ Khí")]
@@ -2562,24 +2577,19 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (!Object.HasStateAuthority) return;
 
-        if (droppedBackpackPrefab == null)
-        {
-            Debug.LogWarning("Chưa gán droppedBackpackPrefab trong Player_Controller!");
-            return;
-        }
-
+        // 1. Kiểm tra và sao chép danh sách vật phẩm đang có trong túi đồ
         bool coDo = false;
+        O_VatPham[] danhSachDoTam = new O_VatPham[TuiDo.Length];
         for (int i = 0; i < TuiDo.Length; i++)
         {
+            danhSachDoTam[i] = TuiDo[i];
             if (TuiDo[i].ItemID != 0 && TuiDo[i].SoLuong > 0)
             {
                 coDo = true;
-                break;
             }
         }
 
-        if (!coDo) return;
-
+        // 2. Dọn sạch Hotbar
         for (int i = 0; i < HotbarIDs.Length; i++)
         {
             HotbarIDs.Set(i, 0);
@@ -2588,24 +2598,67 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
         CurrentToolIndex = -1;
 
+        // 3. Gửi RPC dọn sạch các ô trang bị trên người máy người chơi
         RPC_XoaToanBoTrangBiLocal();
 
-        var spawnedBackpack = Runner.Spawn(droppedBackpackPrefab, transform.position + Vector3.up * 0.2f, Quaternion.identity, PlayerRef.None);
-        if (spawnedBackpack != null)
+        // 4. Nếu có đồ trong túi -> Đẻ hòm đồ / balo rơi trên mạng
+        if (coDo)
         {
-            DroppedBackpack dbScript = spawnedBackpack.GetComponent<DroppedBackpack>();
-            if (dbScript != null)
+            GameObject prefabToSpawn = droppedBackpackPrefab;
+            if (prefabToSpawn == null)
             {
-                for (int i = 0; i < TuiDo.Length; i++)
+                prefabToSpawn = Resources.Load<GameObject>("xác người chơi");
+            }
+            if (prefabToSpawn == null)
+            {
+                prefabToSpawn = Resources.Load<GameObject>("DroppedBackpack");
+            }
+
+            if (prefabToSpawn != null)
+            {
+                Vector3 viTriRoi = transform.position + Vector3.up * 0.25f;
+
+                NetworkObject spawnedObj = Runner.Spawn(
+                    prefabToSpawn,
+                    viTriRoi,
+                    Quaternion.identity,
+                    PlayerRef.None
+                );
+
+                if (spawnedObj != null)
                 {
-                    dbScript.VatPhamDaRoi.Set(i, TuiDo[i]);
+                    DroppedBackpack dbScript = spawnedObj.GetComponent<DroppedBackpack>();
+                    if (dbScript != null)
+                    {
+                        int soLuongDaNap = 0;
+                        for (int i = 0; i < danhSachDoTam.Length && i < dbScript.VatPhamDaRoi.Length; i++)
+                        {
+                            dbScript.VatPhamDaRoi.Set(i, danhSachDoTam[i]);
+                            if (danhSachDoTam[i].ItemID != 0 && danhSachDoTam[i].SoLuong > 0)
+                            {
+                                soLuongDaNap++;
+                            }
+                        }
+                        Debug.Log($"<color=green>[Death Drop]:</color> Đã nạp thành công {soLuongDaNap} ô vật phẩm vào hòm đồ rơi!");
+                    }
                 }
 
-                for (int i = 0; i < TuiDo.Length; i++)
-                {
-                    TuiDo.Set(i, new O_VatPham { ItemID = 0, SoLuong = 0, UpgradeLevel = 0 });
-                }
+                Debug.Log($"<color=green>[Death Drop]:</color> Đã tạo hòm đồ rơi (Prefab: {prefabToSpawn.name}) tại vị trí {viTriRoi}!");
             }
+            else
+            {
+                Debug.LogError("<color=red>[Death Drop]:</color> Chưa gán 'droppedBackpackPrefab' trên Player_Controller Inspector và không tìm thấy trong Resources!");
+            }
+
+            // 5. Xóa sạch túi đồ trên Server để đồng bộ về Client
+            for (int i = 0; i < TuiDo.Length; i++)
+            {
+                TuiDo.Set(i, new O_VatPham { ItemID = 0, SoLuong = 0, UpgradeLevel = 0 });
+            }
+        }
+        else
+        {
+            Debug.Log("<color=yellow>[Death Drop]:</color> Người chơi không có vật phẩm nào trong túi đồ nên không tạo hòm đồ rơi.");
         }
     }
 
@@ -2616,9 +2669,26 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         isDead = false;
 
         Player_Runner runner = FindFirstObjectByType<Player_Runner>();
+        Vector3 diemHoiSinh = Vector3.zero;
+        bool timThayDiem = false;
+
         if (runner != null && runner.spawn != null)
         {
-            Vector3 diemHoiSinh = runner.spawn.transform.position;
+            diemHoiSinh = runner.spawn.transform.position;
+            timThayDiem = true;
+        }
+        else
+        {
+            GameObject diemSpawn = GameObject.FindWithTag("Respawn");
+            if (diemSpawn != null)
+            {
+                diemHoiSinh = diemSpawn.transform.position;
+                timThayDiem = true;
+            }
+        }
+
+        if (timThayDiem)
+        {
             if (character != null)
             {
                 character.Teleport(diemHoiSinh);
@@ -2644,6 +2714,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (InventoryManager.instance.slotNhan != null) InventoryManager.instance.slotNhan.XoaDoKhoiO();
 
             InventoryManager.instance.CapNhatLaiToanBoChiSo();
+
+            if (InventoryManager.instance.trangThaiBalo)
+            {
+                InventoryManager.instance.VeBaloRaManHinh(TuiDo);
+            }
+        }
+
+        // Cập nhật lại toàn bộ UI Hotbar về rỗng
+        for (int i = 0; i < 6; i++)
+        {
+            CapNhatUIHotbarLocal(i, 0);
         }
     }
 

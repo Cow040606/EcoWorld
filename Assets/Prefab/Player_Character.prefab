@@ -426,6 +426,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 9210169185756081963}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 26.647}
+--- !u!1 &6561533116281119594
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5218606499533596729}
+  m_Layer: 0
+  m_Name: VFXPOINT
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5218606499533596729
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6561533116281119594}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7328269318623296713}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7522941174301873728
 GameObject:
   m_ObjectHideFlags: 0
@@ -9105,6 +9136,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 340992312903056569}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5218606499533596729}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
@@ -9226,7 +9261,7 @@ MonoBehaviour:
     _value: 0
   _isDead:
     _value: 0
-  droppedBackpackPrefab: {fileID: 1361181076786324, guid: 388d2ede35ec91345943f17a010818fc,
+  droppedBackpackPrefab: {fileID: 736204043963346399, guid: 4e051ee77a3500748a78730d7b987a3e,
     type: 3}
   baseMaxHealth: 100
   baseMaxStamina: 100
@@ -9321,8 +9356,8 @@ MonoBehaviour:
   maxBowTension: 1.5
   maxShootForce: 40
   drawDuration: 0.4
-  arrowLoadingSound: {fileID: 0}
-  arrowShotSound: {fileID: 0}
+  arrowLoadingSound: {fileID: 8300000, guid: ad33a172b47c3954481ae9e1e2dddbeb, type: 3}
+  arrowShotSound: {fileID: 8300000, guid: 23fa0345360959d4bb309b25aefd2610, type: 3}
   currentBowState: 0
 --- !u!114 &1843947881778020044
 MonoBehaviour:

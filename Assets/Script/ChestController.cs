@@ -45,6 +45,7 @@ public class ChestController : MonoBehaviour
             if (Input.GetKey(KeyCode.F))
             {
                 holdTimer += Time.deltaTime;
+                Debug.Log($"[Chest] Holding F... Timer: {holdTimer}/{thoiGianMo}");
                 
                 // Hiển thị vòng tròn tiến trình (UI_TienTrinhDung)
                 if (UI_TienTrinhDung.instance != null)
@@ -57,6 +58,7 @@ public class ChestController : MonoBehaviour
                 // Nếu giữ đủ thời gian thì mở rương
                 if (holdTimer >= thoiGianMo)
                 {
+                    Debug.Log("[Chest] Hold timer reached. Calling MoRuong()");
                     MoRuong();
                 }
             }
@@ -65,6 +67,7 @@ public class ChestController : MonoBehaviour
                 // Nếu nhả phím F ra giữa chừng thì reset thời gian và ẩn UI tiến trình
                 if (holdTimer > 0)
                 {
+                    Debug.Log("[Chest] Released F, resetting timer.");
                     holdTimer = 0f;
                     if (UI_TienTrinhDung.instance != null)
                     {
@@ -114,16 +117,24 @@ public class ChestController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log($"[Chest] OnTriggerEnter: {other.gameObject.name}");
+        
         // Dùng GetComponentInParent để phòng trường hợp Collider nằm ở object con của Player
         Player_Controller player = other.GetComponentInParent<Player_Controller>();
         
         if (player != null)
         {
+            Debug.Log($"[Chest] Found Player_Controller on {player.gameObject.name}");
             // Kiểm tra an toàn cho Local Player (tránh lỗi khi test offline)
             bool isLocalPlayer = true;
             if (player.Object != null && player.Object.IsValid)
             {
                 isLocalPlayer = player.HasInputAuthority;
+                Debug.Log($"[Chest] Player Object is valid. HasInputAuthority: {isLocalPlayer}");
+            }
+            else
+            {
+                Debug.Log("[Chest] Player Object is null or not valid (offline mode?). Treating as local player.");
             }
 
             if (isLocalPlayer)
@@ -131,21 +142,34 @@ public class ChestController : MonoBehaviour
                 isPlayerNear = true;
                 currentPlayer = player;
                 
+                Debug.Log($"[Chest] isPlayerNear set to true. uiTrenDauRuong: {uiTrenDauRuong != null}, moNhieuLan: {moNhieuLan}, daMo: {daMo}");
+
                 if (uiTrenDauRuong != null && (moNhieuLan || !daMo))
                 {
                     uiTrenDauRuong.SetActive(true);
+                    Debug.Log("[Chest] Set Active UI true");
                 }
             }
+            else
+            {
+                 Debug.Log("[Chest] Not a local player, ignoring.");
+            }
+        }
+        else
+        {
+            Debug.Log($"[Chest] No Player_Controller found on {other.gameObject.name} or its parents.");
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
+        Debug.Log($"[Chest] OnTriggerExit: {other.gameObject.name}");
         Player_Controller player = other.GetComponentInParent<Player_Controller>();
         
         // Nếu đúng là người chơi đang đứng gần rương đi ra thì mới tắt
         if (player != null && player == currentPlayer)
         {
+            Debug.Log("[Chest] Player left the chest area. Resetting.");
             isPlayerNear = false;
             currentPlayer = null;
             holdTimer = 0f;

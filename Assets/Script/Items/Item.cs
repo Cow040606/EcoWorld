@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [CreateAssetMenu(fileName = "New_Item", menuName = "Items/Item Create")]
 public class Item : ScriptableObject
@@ -30,7 +30,6 @@ public class Item : ScriptableObject
     public float congThemGiap;
     public float congThemSatThuong;
 
-    
     public enum LoaiTieuHao { KhongPhai, HoiMau, HoiTheLuc, SuaGiap }
     [Header("Công cụ tiêu hao")]
     
@@ -46,7 +45,6 @@ public class Item : ScriptableObject
     [Header("--- YÊU CẦU NÂNG CẤP ---")]
     public int idNguyenLieuNangCap = 1;
     public int soLuongNguyenLieuNangCap = 5;   
-
 
     [Header("Mô tả chi tiết")]
     [TextArea(3, 10)] 
