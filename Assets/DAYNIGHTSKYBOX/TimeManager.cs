@@ -316,4 +316,26 @@ public class TimeManager : MonoBehaviour
             skyboxMaterial.SetFloat("_Blend", originalSkyBlend);
         }
     }
+    public void SetTime(float newTime) 
+    {
+        if (service != null)
+        {
+            service.SetTimeInSeconds(newTime * 3600f);
+            
+            UpdateTimeOfDay();
+            RotateSun();
+            UpdateLightSettings();
+            UpdateSkyBlend();
+        }
+    }
+
+    // Hàm gọi nhanh để ép trời tối luôn
+    public void SetNightForCutscene()
+    {
+        // Giả sử thang thời gian của bạn là 0-24h, 22f tức là 10 giờ đêm.
+        // Nếu thang của bạn là 0-1, hãy đổi thành 0.8f hoặc số tương ứng.
+        SetTime(22f); 
+        
+        Debug.Log("Đã chuyển sang ban đêm cho Cutscene!");
+    }
 }

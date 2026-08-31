@@ -20,12 +20,13 @@ public class DroppedBackpack : NetworkBehaviour
             {
                 int itemID = VatPhamDaRoi[i].ItemID;
                 int soLuong = VatPhamDaRoi[i].SoLuong;
+                int upgradeLvl = VatPhamDaRoi[i].UpgradeLevel;
 
-                // Thêm vào túi đồ người chơi
-                if (nguoiNhat.ThemDoVaoTui(itemID, soLuong))
+                // Thêm vào túi đồ người chơi (kèm level nâng cấp)
+                if (nguoiNhat.ThemDoVaoTui(itemID, soLuong, upgradeLvl))
                 {
-                    // Đánh dấu ô này đã được nhặt thành công (ID = 0, SoLuong = 0)
-                    VatPhamDaRoi.Set(i, new O_VatPham { ItemID = 0, SoLuong = 0 });
+                    // Đánh dấu ô này đã được nhặt thành công
+                    VatPhamDaRoi.Set(i, new O_VatPham { ItemID = 0, SoLuong = 0, UpgradeLevel = 0 });
                     coVatPhamNhatDuoc = true;
                 }
             }
