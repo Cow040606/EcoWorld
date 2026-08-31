@@ -320,8 +320,10 @@ public class TimeManager : MonoBehaviour
     {
         if (service != null)
         {
+            // Đổi số giờ (newTime) ra giây để set qua TimeService
             service.SetTimeInSeconds(newTime * 3600f);
             
+            // Cập nhật ngay lập tức các trạng thái
             UpdateTimeOfDay();
             RotateSun();
             UpdateLightSettings();

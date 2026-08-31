@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 //  IK Helper Tool 1.1 - Custom Inspector                                //
 //  Kevin Iglesias - https://www.keviniglesias.com/     			     //
 //  Contact Support: support@keviniglesias.com                           //
@@ -28,7 +28,6 @@ namespace KevinIglesias {
 			{
 				iKScript.stateIKs = new List<StateIK>();
 			}
-			List <StateIK> iStateIKs = new List<StateIK>(iKScript.stateIKs);
 	   
 			GUILayout.Space(5);
 	   
@@ -77,7 +76,7 @@ namespace KevinIglesias {
 					GUI.changed = true;
 					if(EditorGUI.EndChangeCheck()) 
 					{
-						Undo.RegisterUndo(target, "Removed State IK");
+						Undo.RecordObject(target, "Removed State IK");
 					}
 					iKScript.stateIKs.RemoveAt(i);
 					break;
@@ -116,7 +115,7 @@ namespace KevinIglesias {
 					EditorGUI.BeginChangeCheck();
 					string iName = EditorGUILayout.TextField("", iKScript.stateIKs[i].iKName);
 					if(EditorGUI.EndChangeCheck()) {
-						Undo.RegisterUndo(target, "IK State rename");
+						Undo.RecordObject(target, "IK State rename");
 						iKScript.stateIKs[i].iKName = iName;
 					}  
 					GUILayout.EndHorizontal();
@@ -147,7 +146,6 @@ namespace KevinIglesias {
 					
 					//IK Attachments
 					GUI.enabled = true;
-					List<IKAttachment> iIKAttachments = new List<IKAttachment>(iKScript.stateIKs[i].IKs);
 					for(int k = 0; k < iKScript.stateIKs[i].IKs.Count; k++)
 					{
                         int incompleteFields = 0;
@@ -180,7 +178,7 @@ namespace KevinIglesias {
 									GUI.changed = true;
 									if(EditorGUI.EndChangeCheck()) 
 									{
-										Undo.RegisterUndo(target, "Removed IK Attachment");
+										Undo.RecordObject(target, "Removed IK Attachment");
 									}
 									iKScript.stateIKs[i].IKs.RemoveAt(k);
 									break;
@@ -198,7 +196,7 @@ namespace KevinIglesias {
 						EditorGUI.BeginChangeCheck();
 						Transform iIKAttachment = EditorGUILayout.ObjectField("", iKScript.stateIKs[i].IKs[k].iKAttachment, typeof(Transform)) as Transform;
                         if(EditorGUI.EndChangeCheck()) {
-							Undo.RegisterUndo(target, "Change IK Attachment");
+							Undo.RecordObject(target, "Change IK Attachment");
 							iKScript.stateIKs[i].IKs[k].iKAttachment = iIKAttachment;
 						}
 						GUILayout.EndHorizontal();
@@ -219,7 +217,7 @@ namespace KevinIglesias {
 						EditorGUI.BeginChangeCheck();
 						bool iUseLocation = EditorGUILayout.Toggle("Use Location", iKScript.stateIKs[i].IKs[k].useLocation);
 						if(EditorGUI.EndChangeCheck()) {
-							Undo.RegisterUndo(target, "Change IK Use Location");
+							Undo.RecordObject(target, "Change IK Use Location");
 							iKScript.stateIKs[i].IKs[k].useLocation = iUseLocation;
 						}
 						GUILayout.EndHorizontal();
@@ -241,7 +239,7 @@ namespace KevinIglesias {
 						EditorGUI.BeginChangeCheck();
 						bool iUseRotation = EditorGUILayout.Toggle("Use Rotation", iKScript.stateIKs[i].IKs[k].useRotation);
 						if(EditorGUI.EndChangeCheck()) {
-							Undo.RegisterUndo(target, "Change IK Use Rotation");
+							Undo.RecordObject(target, "Change IK Use Rotation");
 							iKScript.stateIKs[i].IKs[k].useRotation = iUseRotation;
 						}
 						GUILayout.EndHorizontal();
@@ -286,7 +284,7 @@ namespace KevinIglesias {
 								GUI.changed = true;
 								
 								if(EditorGUI.EndChangeCheck()) {
-									Undo.RegisterUndo(target, "Pasted "+k.ToString("00")+" IK Pos/Rot");
+									Undo.RecordObject(target, "Pasted "+k.ToString("00")+" IK Pos/Rot");
 								}
 								
 								iKScript.stateIKs[i].IKs[k].iKAttachment.localPosition = IKHelperUtils.copiedPos;
@@ -315,7 +313,6 @@ namespace KevinIglesias {
 						GUILayout.BeginHorizontal();
 						GUILayout.Space(60);
 						
-						iIKAttachments = new List<IKAttachment>(iKScript.stateIKs[i].IKs);
 						buttonContent = new GUIContent("[+] Add IK Attachment", "Add a new IK attachment");
 						if(GUILayout.Button(buttonContent))
 						{
@@ -324,7 +321,7 @@ namespace KevinIglesias {
 							
 							if(EditorGUI.EndChangeCheck()) 
 							{
-								Undo.RegisterUndo(target, "Added IK Attachment");
+								Undo.RecordObject(target, "Added IK Attachment");
 							}
 							
 							iKScript.stateIKs[i].IKs.Add(new IKAttachment());
@@ -350,7 +347,6 @@ namespace KevinIglesias {
 			//[+] Add State IK Button	
 			GUILayout.BeginHorizontal();
 			GUILayout.Space(30);
-			iStateIKs = new List<StateIK>(iKScript.stateIKs);
 			buttonContent = new GUIContent("[+] Add State IK", "Add a new IK to take effect while in a state");
 			if(GUILayout.Button(buttonContent))
 			{
@@ -359,7 +355,7 @@ namespace KevinIglesias {
 				
 				if(EditorGUI.EndChangeCheck()) 
 				{
-					Undo.RegisterUndo(target, "Added State IK");
+					Undo.RecordObject(target, "Added State IK");
 				}
 				
 				iKScript.stateIKs.Add(new StateIK());
