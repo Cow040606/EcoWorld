@@ -1567,6 +1567,11 @@ MonoBehaviour:
   khoangCachHienThanhMau: 25
   thoiGianBienMat: 4
   _tocDoDiChuyen: 0
+  attackVFXPrefab: {fileID: 1893723492503102, guid: bf9f848a24682054e9fddc30f1184e46,
+    type: 3}
+  skillVFXPrefab: {fileID: 1644958980890870, guid: 5e841c48be9318145af9204a7658cc2e,
+    type: 3}
+  vfxSpawnPoint: {fileID: 3782298341244975935}
   _currentState: 0
 --- !u!114 &2023032572948147829
 MonoBehaviour:
@@ -1822,6 +1827,7 @@ Transform:
   m_Children:
   - {fileID: 3225545936025732962}
   - {fileID: 2000108852098772495}
+  - {fileID: 3782298341244975935}
   m_Father: {fileID: 2713260866073828236}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6172307879837953943
@@ -1888,6 +1894,37 @@ Transform:
   - {fileID: 1106282897598640067}
   m_Father: {fileID: 322433228340054345}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6328132740761284887
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3782298341244975935}
+  m_Layer: 13
+  m_Name: vitricam (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3782298341244975935
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6328132740761284887}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.14492594, y: -0.49135673, z: -0.6043879, w: 0.61014783}
+  m_LocalPosition: {x: 0.012, y: 0.286, z: 0.084}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5888478472628957880}
+  m_LocalEulerAnglesHint: {x: -50.425, y: -41.773, z: -69.086}
 --- !u!1 &6350413656837418217
 GameObject:
   m_ObjectHideFlags: 0

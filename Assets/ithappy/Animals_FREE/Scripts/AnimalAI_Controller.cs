@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Fusion;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,15 +11,15 @@ namespace ithappy.Animals_FREE
     [RequireComponent(typeof(NetworkObject))]
     public class AnimalAI_Controller : NetworkBehaviour
     {
-        [Header("Loại thú")]
+        [Header("Loáº¡i thÃº")]
         public AnimalType animalType = AnimalType.Herbivore;
 
-        [Header("Chỉ số & EXP")]
+        [Header("Chá»‰ sá»‘ & EXP")]
         public float maxHealth = 100f;
         [Networked] public float CurrentHealth { get; set; }
-        public float expReward = 20f; // CHỈNH EXP RỚT CHO ĐỘNG VẬT Ở ĐÂY
+        public float expReward = 20f; // CHá»ˆNH EXP Rá»šT CHO Äá»˜NG Váº¬T á»ž ÄÃ‚Y
 
-        [Header("Tốc độ & Phạm vi")]
+        [Header("Tá»‘c Ä‘á»™ & Pháº¡m vi")]
         public float wanderRadius = 10f;
         public float detectionRange = 8f;
         public float attackRange = 2f;
@@ -27,7 +27,7 @@ namespace ithappy.Animals_FREE
         public float attackCooldown = 1.5f;
         public float fleeDistance = 15f;
 
-        [Header("Thời gian")]
+        [Header("Thá»i gian")]
         public float wanderInterval = 3f;
         public float thinkInterval = 0.2f;
 
@@ -57,7 +57,7 @@ namespace ithappy.Animals_FREE
             _state = AnimalState.Wandering;
         }
 
-        public override void FixedUpdateNetwork()
+                public override void FixedUpdateNetwork()
         {
             if (!HasStateAuthority || _state == AnimalState.Dead) return;
 
@@ -70,6 +70,35 @@ namespace ithappy.Animals_FREE
                 UpdateAIState();
             }
             ExecuteCurrentState();
+
+            ClampPositionToNavMesh();
+        }
+
+                private void ClampPositionToNavMesh()
+        {
+            Vector3 currentPos = _transform.position;
+            if (UnityEngine.AI.NavMesh.SamplePosition(currentPos, out UnityEngine.AI.NavMeshHit hit, 1.5f, UnityEngine.AI.NavMesh.AllAreas))
+            {
+                // Chỉ snap tọa độ X và Z, giữ nguyên Y để CharacterController xử lý trọng lực và bám đất
+                Vector3 targetPos = new Vector3(hit.position.x, currentPos.y, hit.position.z);
+                
+                // Tính khoảng cách trên mặt phẳng ngang (X-Z)
+                float flatDistance = Vector2.Distance(new Vector2(currentPos.x, currentPos.z), new Vector2(hit.position.x, hit.position.z));
+                if (flatDistance > 0.05f)
+                {
+                    _transform.position = targetPos;
+                }
+            }
+            else
+            {
+                if (UnityEngine.AI.NavMesh.SamplePosition(_spawnPosition, out UnityEngine.AI.NavMeshHit spawnHit, 100f, UnityEngine.AI.NavMesh.AllAreas))
+                {
+                    _transform.position = spawnHit.position;
+                    _targetPosition = spawnHit.position;
+                    _state = AnimalState.Idle;
+                    Debug.LogWarning("[AnimalAI] Animal " + gameObject.name + " fell off NavMesh! Teleported back to spawn position.");
+                }
+            }
         }
 
         private void UpdateAIState()
@@ -84,8 +113,15 @@ namespace ithappy.Animals_FREE
             }
         }
 
-        private void UpdateHerbivoreState(Player_Controller player, float dist)
+                private void UpdateHerbivoreState(Player_Controller player, float dist)
         {
+            if (Vector3.Distance(_transform.position, _spawnPosition) > wanderRadius * 3f)
+            {
+                _targetPosition = _spawnPosition;
+                _state = AnimalState.Wandering;
+                return;
+            }
+
             if (_state == AnimalState.Fleeing)
             {
                 if (dist > fleeDistance || player == null) _state = AnimalState.Wandering;
@@ -104,8 +140,16 @@ namespace ithappy.Animals_FREE
             }
         }
 
-        private void UpdateCarnivoreState(Player_Controller player, float dist)
+                private void UpdateCarnivoreState(Player_Controller player, float dist)
         {
+            if (Vector3.Distance(_transform.position, _spawnPosition) > wanderRadius * 3f)
+            {
+                SetNewWanderTarget();
+                _wanderTimer = wanderInterval;
+                _state = AnimalState.Wandering;
+                return;
+            }
+
             if (player != null && dist <= detectionRange)
             {
                 if (dist <= attackRange)
@@ -142,9 +186,20 @@ namespace ithappy.Animals_FREE
                     if (Vector3.Distance(_transform.position, _targetPosition) < 1f) _state = AnimalState.Idle;
                     break;
                 case AnimalState.Fleeing: MoveTowards(_targetPosition, true); break;
-                case AnimalState.Chasing:
+                                case AnimalState.Chasing:
                     Player_Controller target = GetTargetPlayer();
-                    if (target != null) _targetPosition = target.transform.position;
+                    if (target != null)
+                    {
+                        Vector3 playerPos = target.transform.position;
+                        if (UnityEngine.AI.NavMesh.SamplePosition(playerPos, out UnityEngine.AI.NavMeshHit hit, detectionRange, UnityEngine.AI.NavMesh.AllAreas))
+                        {
+                            _targetPosition = hit.position;
+                        }
+                        else
+                        {
+                            _targetPosition = playerPos;
+                        }
+                    }
                     MoveTowards(_targetPosition, true);
                     break;
                 case AnimalState.Attacking:
@@ -154,7 +209,7 @@ namespace ithappy.Animals_FREE
             }
         }
 
-        private void MoveTowards(Vector3 destination, bool isRun)
+                        private void MoveTowards(Vector3 destination, bool isRun)
         {
             Vector3 direction = (destination - _transform.position);
             direction.y = 0;
@@ -164,9 +219,54 @@ namespace ithappy.Animals_FREE
                 return;
             }
             direction.Normalize();
-            Vector2 axis = new Vector2(Vector3.Dot(direction, _transform.right), Vector3.Dot(direction, _transform.forward));
-            Vector3 lookTarget = _transform.position + direction * 5f;
+
+            // Tính toán lực tránh nhau để không đè lên nhau khi đuổi player
+            Vector3 separation = CalculateSeparationForce();
+            Vector3 finalDirection = direction + separation;
+            if (finalDirection.sqrMagnitude > 0.01f)
+            {
+                finalDirection.Normalize();
+            }
+            else
+            {
+                finalDirection = direction;
+            }
+
+            // Đã sửa: Truyền vector tịnh tiến thẳng phía trước (0, 1) để tránh việc bị nhân lệch góc quay hai lần
+            Vector2 axis = new Vector2(0f, 1f);
+            Vector3 lookTarget = _transform.position + finalDirection * 5f;
             _mover.SetInput(axis, lookTarget, isRun, false);
+        }
+
+        private Vector3 CalculateSeparationForce()
+        {
+            Vector3 separation = Vector3.zero;
+            float personalSpace = 2.0f; // Khoảng cách tối thiểu giãn cách giữa các thú
+            
+            // Tìm các AnimalAI_Controller khác trong game
+            AnimalAI_Controller[] allAnimals = FindObjectsByType<AnimalAI_Controller>(FindObjectsSortMode.None);
+            int neighborsCount = 0;
+            
+            foreach (var other in allAnimals)
+            {
+                if (other == this || other._state == AnimalState.Dead) continue;
+                
+                float distance = Vector3.Distance(_transform.position, other.transform.position);
+                if (distance < personalSpace && distance > 0.05f)
+                {
+                    Vector3 pushDir = (_transform.position - other.transform.position).normalized;
+                    separation += pushDir * (personalSpace - distance);
+                    neighborsCount++;
+                }
+            }
+            
+            if (neighborsCount > 0)
+            {
+                separation /= neighborsCount;
+                separation = Vector3.ClampMagnitude(separation, 1.5f);
+            }
+            
+            return separation;
         }
 
         private void MoveAnimal(Vector2 axis, bool isRun)
@@ -200,17 +300,25 @@ namespace ithappy.Animals_FREE
             if (CurrentHealth <= 0)
             {
                 Die();
-                GiveExpToKiller(attackerRef, expReward); // CẤP KINH NGHIỆM
+                GiveExpToKiller(attackerRef, expReward); // Cáº¤P KINH NGHIá»†M
                 return;
             }
 
-            if (animalType == AnimalType.Herbivore)
+                        if (animalType == AnimalType.Herbivore)
             {
                 Player_Controller attacker = FindPlayerByRef(attackerRef);
                 if (attacker != null)
                 {
                     Vector3 fleeDir = (_transform.position - attacker.transform.position).normalized;
-                    _targetPosition = _transform.position + fleeDir * fleeDistance;
+                    Vector3 targetFlee = _transform.position + fleeDir * fleeDistance;
+                    if (UnityEngine.AI.NavMesh.SamplePosition(targetFlee, out UnityEngine.AI.NavMeshHit hit, fleeDistance, UnityEngine.AI.NavMesh.AllAreas))
+                    {
+                        _targetPosition = hit.position;
+                    }
+                    else
+                    {
+                        _targetPosition = _transform.position;
+                    }
                     _state = AnimalState.Fleeing;
                 }
             }
@@ -226,7 +334,7 @@ namespace ithappy.Animals_FREE
             }
         }
 
-        // ĐÃ FIX: Dùng playerRef == PlayerRef.None để không bị lỗi CS1061
+        // ÄÃƒ FIX: DÃ¹ng playerRef == PlayerRef.None Ä‘á»ƒ khÃ´ng bá»‹ lá»—i CS1061
         private void GiveExpToKiller(PlayerRef playerRef, float expAmount)
         {
             if (!HasStateAuthority || playerRef == PlayerRef.None) return;
@@ -297,10 +405,21 @@ namespace ithappy.Animals_FREE
             return netObj?.GetComponent<Player_Controller>();
         }
 
-        private void SetNewWanderTarget()
+                private void SetNewWanderTarget()
         {
             Vector2 randomCircle = Random.insideUnitCircle * wanderRadius;
-            _targetPosition = _spawnPosition + new Vector3(randomCircle.x, 0, randomCircle.y);
+            Vector3 randomPos = _spawnPosition + new Vector3(randomCircle.x, 0, randomCircle.y);
+            if (UnityEngine.AI.NavMesh.SamplePosition(randomPos, out UnityEngine.AI.NavMeshHit hit, wanderRadius, UnityEngine.AI.NavMesh.AllAreas))
+            {
+                _targetPosition = hit.position;
+            }
+            else
+            {
+                _targetPosition = _spawnPosition;
+            }
         }
     }
 }
+
+
+

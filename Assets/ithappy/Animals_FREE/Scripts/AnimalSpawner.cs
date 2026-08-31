@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Fusion;
 using System.Collections;
 
@@ -7,17 +7,17 @@ namespace ithappy.Animals_FREE
     public class AnimalSpawner : NetworkBehaviour
     {
         [Header("Prefabs")]
-        public NetworkObject herbivore_Prefab;  // Thú ăn cỏ (VD: Deer, Rabbit)
-        public NetworkObject carnivore_Prefab;  // Thú ăn thịt (VD: Wolf, Tiger)
+        public NetworkObject herbivore_Prefab;  // ThÃº Äƒn cá» (VD: Deer, Rabbit)
+        public NetworkObject carnivore_Prefab;  // ThÃº Äƒn thá»‹t (VD: Wolf, Tiger)
 
-        [Header("Vùng Spawn")]
-        public Transform spawnCenter;           // Tâm vùng spawn
-        public float spawnRadius = 30f;         // Bán kính vùng spawn
+        [Header("VÃ¹ng Spawn")]
+        public Transform spawnCenter;           // TÃ¢m vÃ¹ng spawn
+        public float spawnRadius = 30f;         // BÃ¡n kÃ­nh vÃ¹ng spawn
 
-        [Header("Số lượng")]
+        [Header("Sá»‘ lÆ°á»£ng")]
         public int maxHerbivores = 5;
         public int maxCarnivores = 3;
-        public float respawnDelay = 10f;        // Sau bao giây spawn lại
+        public float respawnDelay = 10f;        // Sau bao giÃ¢y spawn láº¡i
 
         private int _currentHerbivores = 0;
         private int _currentCarnivores = 0;
@@ -25,28 +25,28 @@ namespace ithappy.Animals_FREE
         public override void Spawned()
         {
             if (!HasStateAuthority) return;
-            // Spawn lần đầu xen kẽ
+            // Spawn láº§n Ä‘áº§u xen káº½
             StartCoroutine(InitialSpawn());
         }
 
         private IEnumerator InitialSpawn()
         {
-            yield return new WaitForSeconds(1f); // Chờ scene load xong
+            yield return new WaitForSeconds(1f); // Chá» scene load xong
 
-            // Spawn xen kẽ: 1 ăn cỏ, 1 ăn thịt, 1 ăn cỏ...
+            // Spawn xen káº½: 1 Äƒn cá», 1 Äƒn thá»‹t, 1 Äƒn cá»...
             int total = maxHerbivores + maxCarnivores;
             for (int i = 0; i < total; i++)
             {
-                // Xen kẽ: chẵn = ăn cỏ, lẻ = ăn thịt
+                // Xen káº½: cháºµn = Äƒn cá», láº» = Äƒn thá»‹t
                 if (i % 2 == 0 && _currentHerbivores < maxHerbivores)
                     SpawnAnimal(AnimalType.Herbivore);
                 else if (_currentCarnivores < maxCarnivores)
                     SpawnAnimal(AnimalType.Carnivore);
 
-                yield return new WaitForSeconds(0.2f); // Tránh spam
+                yield return new WaitForSeconds(0.2f); // TrÃ¡nh spam
             }
 
-            // Bắt đầu vòng lặp kiểm tra respawn
+            // Báº¯t Ä‘áº§u vÃ²ng láº·p kiá»ƒm tra respawn
             StartCoroutine(RespawnLoop());
         }
 
@@ -56,7 +56,7 @@ namespace ithappy.Animals_FREE
             {
                 yield return new WaitForSeconds(respawnDelay);
 
-                // Spawn thêm nếu thiếu, xen kẽ
+                // Spawn thÃªm náº¿u thiáº¿u, xen káº½
                 bool needHerb = _currentHerbivores < maxHerbivores;
                 bool needCarn = _currentCarnivores < maxCarnivores;
 
@@ -69,28 +69,28 @@ namespace ithappy.Animals_FREE
         {
             if (!HasStateAuthority) return;
 
-            // Lấy prefab đúng loại
+            // Láº¥y prefab Ä‘Ãºng loáº¡i
             NetworkObject prefab = (type == AnimalType.Herbivore)
                 ? herbivore_Prefab
                 : carnivore_Prefab;
 
             if (prefab == null)
             {
-                //Debug.LogWarning($"[Spawner] Chưa gán prefab cho {type}!");
+                //Debug.LogWarning($"[Spawner] ChÆ°a gÃ¡n prefab cho {type}!");
                 return;
             }
 
-            // Random vị trí trong vùng spawn
+            // Random vá»‹ trÃ­ trong vÃ¹ng spawn
             Vector3 spawnPos = GetRandomSpawnPosition();
 
-            // Fusion spawn qua mạng
+            // Fusion spawn qua máº¡ng
             NetworkObject spawnedObj = Runner.Spawn(
                 prefab,
                 spawnPos,
                 Quaternion.Euler(0, Random.Range(0f, 360f), 0)
             );
 
-            // Cập nhật bộ đếm
+            // Cáº­p nháº­t bá»™ Ä‘áº¿m
             AnimalAI_Controller ai = spawnedObj.GetComponent<AnimalAI_Controller>();
             if (ai != null)
             {
@@ -99,23 +99,29 @@ namespace ithappy.Animals_FREE
                 else _currentCarnivores++;
             }
 
-            //Debug.Log($"[Spawner] Spawned {type} tại {spawnPos}");
+            //Debug.Log($"[Spawner] Spawned {type} táº¡i {spawnPos}");
         }
 
-        private Vector3 GetRandomSpawnPosition()
+                private Vector3 GetRandomSpawnPosition()
         {
             Vector3 center = spawnCenter != null ? spawnCenter.position : Vector3.zero;
             Vector2 randomCircle = Random.insideUnitCircle * spawnRadius;
             Vector3 pos = center + new Vector3(randomCircle.x, 0, randomCircle.y);
 
-            // Snap xuống mặt đất
-            if (Physics.Raycast(pos + Vector3.up * 50f, Vector3.down, out RaycastHit hit, 100f))
-                pos.y = hit.point.y;
+            // Sử dụng NavMesh để đảm bảo vị trí spawn nằm trên đất liền có thể đi lại được
+            if (UnityEngine.AI.NavMesh.SamplePosition(pos, out UnityEngine.AI.NavMeshHit hit, spawnRadius, UnityEngine.AI.NavMesh.AllAreas))
+            {
+                return hit.position;
+            }
+
+            // Snap xuống mặt đất (Fallback)
+            if (Physics.Raycast(pos + Vector3.up * 50f, Vector3.down, out RaycastHit rHit, 100f))
+                pos.y = rHit.point.y;
 
             return pos;
         }
 
-        // Gọi hàm này khi 1 con thú chết để giảm bộ đếm
+        // Gá»i hÃ m nÃ y khi 1 con thÃº cháº¿t Ä‘á»ƒ giáº£m bá»™ Ä‘áº¿m
         public void OnAnimalDied(AnimalType type)
         {
             if (type == AnimalType.Herbivore) _currentHerbivores = Mathf.Max(0, _currentHerbivores - 1);

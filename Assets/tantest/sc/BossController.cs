@@ -70,6 +70,14 @@ public class BossController : NetworkBehaviour
 
     [Networked] public float tocDoDiChuyen { get; set; }
 
+    [Header("Visual Effects (VFX)")]
+    [Tooltip("VFX cho don danh thuong")]
+    public GameObject attackVFXPrefab;
+    [Tooltip("VFX cho don danh skill")]
+    public GameObject skillVFXPrefab;
+    [Tooltip("Vi tri de spawn VFX (thuong la o tay hoac kiem)")]
+    public Transform vfxSpawnPoint;
+
     private NavMeshAgent agent;
     private Animator animator;
     private Vector3 viTriGoc;
@@ -352,8 +360,32 @@ public class BossController : NetworkBehaviour
     #endregion
 
     #region ANIMATION EVENTS (GỌI TỪ ANIMATOR)
+    private void SpawnAttackVFX()
+    {
+        if (attackVFXPrefab != null)
+        {
+            Vector3 spawnPos = vfxSpawnPoint != null ? vfxSpawnPoint.position : (transform.position + transform.forward * 1.5f + Vector3.up * 1f);
+            Quaternion spawnRot = vfxSpawnPoint != null ? vfxSpawnPoint.rotation : transform.rotation;
+            GameObject vfx = Instantiate(attackVFXPrefab, spawnPos, spawnRot);
+            Destroy(vfx, 5f);
+        }
+    }
+
+    private void SpawnSkillVFX()
+    {
+        if (skillVFXPrefab != null)
+        {
+            Vector3 spawnPos = vfxSpawnPoint != null ? vfxSpawnPoint.position : (transform.position + transform.forward * 1.5f + Vector3.up * 1f);
+            Quaternion spawnRot = vfxSpawnPoint != null ? vfxSpawnPoint.rotation : transform.rotation;
+            GameObject vfx = Instantiate(skillVFXPrefab, spawnPos, spawnRot);
+            Destroy(vfx, 5f);
+        }
+    }
+
     public void AnimEvent_DealNormalDamage()
     {
+        SpawnAttackVFX();
+
         if (!HasStateAuthority) return;
 
         if (mucTieuHienTai != null && !mucTieuHienTai.isDead)
@@ -368,6 +400,8 @@ public class BossController : NetworkBehaviour
 
     public void AnimEvent_DealSkillDamage()
     {
+        SpawnSkillVFX();
+
         if (!HasStateAuthority) return;
 
         if (mucTieuHienTai != null && !mucTieuHienTai.isDead)
