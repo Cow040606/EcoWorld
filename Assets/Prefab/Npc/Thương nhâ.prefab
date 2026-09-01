@@ -9651,9 +9651,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NPCConversation
   CurrentIDCounter: 4
-  json: '{"Options":[{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":231.200012,"yPos":156.600021},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"Show
-    me what you have.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":218.4,"yPos":418.2},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"I''m
-    just looking around, thanks","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":1},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":true,"xPos":-35.4,"yPos":318.000061},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Welcome,
+  json: '{"Options":[{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":174.4,"yPos":123.799973},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"Show
+    me what you have.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":161.599976,"yPos":384.599976},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"I''m
+    just looking around, thanks","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":1},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":true,"xPos":-93.0000153,"yPos":283.6},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Welcome,
     traveler! You look weary from the road. Let''s see if I have something to help
     you on your journey!","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Merchant","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
   saveVersion: 110
@@ -9668,19 +9668,7 @@ MonoBehaviour:
   EndConversationFont: {fileID: 0}
   Event:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ShopUIController, Assembly-CSharp
-        m_MethodName: OpenShop
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &2816514215549032116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9702,6 +9690,7 @@ MonoBehaviour:
   thoiGianCutsceneThuCong: 0
   danhSachModelNPCCanAn: []
   danhSachModelNPCAnSauCutscene: []
+  viTriDichChuyen: {fileID: 0}
 --- !u!114 &8262480253507486300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33975,7 +33964,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   NodeID: 1
-  TMPFont: {fileID: 0}
+  TMPFont: {fileID: 11400000, guid: 64ad1cd2117eed642bfc335379dac450, type: 2}
   Icon: {fileID: 0}
   Audio: {fileID: 0}
 --- !u!114 &7336610206033551613
@@ -34013,7 +34002,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   NodeID: 2
-  TMPFont: {fileID: 0}
+  TMPFont: {fileID: 11400000, guid: 64ad1cd2117eed642bfc335379dac450, type: 2}
   Icon: {fileID: 0}
   Audio: {fileID: 0}
 --- !u!1 &4183663998188653932
