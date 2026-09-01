@@ -24,7 +24,7 @@ namespace SazenGames.Skeleton
             animator = GetComponent<Animator>();
             if (animator == null)
             {
-                Debug.LogError("Animator component not found on this GameObject!");
+                // Debug.LogError("Animator component not found on this GameObject!");
                 return;
             }
 

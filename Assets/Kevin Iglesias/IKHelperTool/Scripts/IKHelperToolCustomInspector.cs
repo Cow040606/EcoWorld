@@ -290,7 +290,7 @@ namespace KevinIglesias {
 								iKScript.stateIKs[i].IKs[k].iKAttachment.localPosition = IKHelperUtils.copiedPos;
 								iKScript.stateIKs[i].IKs[k].iKAttachment.localEulerAngles = IKHelperUtils.copiedRot;
 
-                                Debug.Log("Pasted IK Position/Rotation on IK Attachment "+k.ToString("00")+" in State "+i.ToString("00")+".");
+                                // Debug.Log("Pasted IK Position/Rotation on IK Attachment "+k.ToString("00")+" in State "+i.ToString("00")+".");
 							}	
 							GUI.enabled = true;
 						}

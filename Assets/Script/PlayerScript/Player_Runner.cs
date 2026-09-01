@@ -56,7 +56,7 @@ public class Player_Runner : NetworkBehaviour, IPlayerJoined, IPlayerLeft
                 Runner.Despawn(caiXac);
                 // Gạch tên nó khỏi sổ
                 danhSachDaDe.Remove(player);
-                Debug.Log($"<color=yellow>Server thông báo:</color> ID {player.PlayerId} đã out, dọn dẹp xác an toàn!");
+                // Debug.Log($"<color=yellow>Server thông báo:</color> ID {player.PlayerId} đã out, dọn dẹp xác an toàn!");
             }
         }
 

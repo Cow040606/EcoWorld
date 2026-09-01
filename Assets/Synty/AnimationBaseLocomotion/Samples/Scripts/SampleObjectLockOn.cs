@@ -25,7 +25,7 @@ namespace Synty.AnimationBaseLocomotion.Samples
 
             if (_meshRenderer == null)
             {
-                Debug.LogError("This script requires a MeshRenderer component on the GameObject.");
+                // Debug.LogError("This script requires a MeshRenderer component on the GameObject.");
             }
         }
 

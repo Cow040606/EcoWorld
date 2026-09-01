@@ -38,6 +38,21 @@ public class Menu_Fusion : MonoBehaviour
     [Tooltip("Tỷ lệ scale ban đầu khi bắt đầu mở pop-in")]
     public Vector3 animStartScale = new Vector3(0.85f, 0.85f, 0.85f);
 
+    [Header("UI Audio Settings")]
+    public AudioSource uiAudioSource; // Kéo AudioSource vào đây
+    public AudioClip hoverInSound;    // Âm thanh khi di chuột vào
+    public AudioClip hoverOutSound;   // Âm thanh khi di chuột ra
+    public AudioClip clickSound;      // Âm thanh khi bấm nút
+
+    // Hàm gọi âm thanh bấm nút (dùng cho sự kiện OnClick của Button)
+    public void PlayClickSound()
+    {
+        if (uiAudioSource != null && clickSound != null)
+        {
+            uiAudioSource.PlayOneShot(clickSound);
+        }
+    }
+
 
 
     // --- CÁC HÀM TÙY CHỈNH DỄ DÀNG CHO BÒ ---
@@ -216,7 +231,7 @@ public class Menu_Fusion : MonoBehaviour
         GameObject runnerObject = new GameObject("TienTrinhFusion");
         runner = runnerObject.AddComponent<NetworkRunner>();
 
-        Debug.Log("<color=green>Hệ Thống:</color> Đang phi vào phòng: " + tenPhong);
+        // Debug.Log("<color=green>Hệ Thống:</color> Đang phi vào phòng: " + tenPhong);
 
         if (activeLoadingScreen != null)
         {
@@ -245,7 +260,7 @@ public class Menu_Fusion : MonoBehaviour
             else
             {
                 string errorMsg = result.ShutdownReason.ToString();
-                Debug.LogError("<color=red>Hệ Thống:</color> Kết nối thất bại: " + errorMsg);
+                // Debug.LogError("<color=red>Hệ Thống:</color> Kết nối thất bại: " + errorMsg);
                 if (activeLoadingScreen != null)
                 {
                     activeLoadingScreen.ShowError(errorMsg);
@@ -254,7 +269,7 @@ public class Menu_Fusion : MonoBehaviour
         }
         catch (System.Exception ex)
         {
-            Debug.LogError("<color=red>Hệ Thống:</color> Lỗi ngoại lệ khi kết nối: " + ex.Message);
+            // Debug.LogError("<color=red>Hệ Thống:</color> Lỗi ngoại lệ khi kết nối: " + ex.Message);
             if (activeLoadingScreen != null)
             {
                 activeLoadingScreen.ShowError(ex.Message);
@@ -352,7 +367,7 @@ public class Menu_Fusion : MonoBehaviour
 
     public void ThucHienThoatGame()
     {
-        Debug.Log("<color=yellow>[Menu_Fusion]:</color> Bắt đầu thoát Game...");
+        // Debug.Log("<color=yellow>[Menu_Fusion]:</color> Bắt đầu thoát Game...");
         #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
         #else
@@ -550,6 +565,8 @@ public class Menu_Fusion : MonoBehaviour
         }
 
         buttonObj.transform.localScale = originalScales[buttonObj] * 1.1f;
+        
+        if (uiAudioSource != null && hoverInSound != null) uiAudioSource.PlayOneShot(hoverInSound);
     }
 
     public void DiChuotRaNen(GameObject buttonObj)
@@ -580,6 +597,8 @@ public class Menu_Fusion : MonoBehaviour
 
         DoiMauChuHover(buttonObj, true);
         buttonObj.transform.localScale = originalScales[buttonObj] * 1.1f;
+        
+        if (uiAudioSource != null && hoverInSound != null) uiAudioSource.PlayOneShot(hoverInSound);
     }
 
     public void DiChuotRaChu(GameObject buttonObj)
@@ -616,6 +635,8 @@ public class Menu_Fusion : MonoBehaviour
 
         DoiMauChuHover(buttonObj, true);
         buttonObj.transform.localScale = originalScales[buttonObj] * 1.1f;
+        
+        if (uiAudioSource != null && hoverInSound != null) uiAudioSource.PlayOneShot(hoverInSound);
     }
 
     public void DiChuotRa(GameObject buttonObj)

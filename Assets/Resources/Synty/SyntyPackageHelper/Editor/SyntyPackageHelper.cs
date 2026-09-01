@@ -41,7 +41,7 @@ public class SyntyPackageHelper
             }
         }
 
-        Debug.Log($"Loaded {configs.Count} ExamplePackConfig assets");
+        // Debug.Log($"Loaded {configs.Count} ExamplePackConfig assets");
 
         return configs.ToArray();
     }
@@ -152,7 +152,7 @@ public class SyntyPackageHelper
     {
         if(Request != null)
         {
-            Debug.LogError( "Trying to install a packages when when packages are already being installed." );
+            // Debug.LogError( "Trying to install a packages when when packages are already being installed." );
             return;
         }
 

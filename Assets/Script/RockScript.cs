@@ -62,7 +62,7 @@ public class RockScript : NetworkBehaviour
         // 🚨 CHỐT CHẶN AN TOÀN: Báo lỗi ra Console nếu quên kéo gán biến, giúp game không bị crash!
         if (rockVisual == null)
         {
-            Debug.LogError($"[Thiếu Biến] Cục đá {gameObject.name} chưa được gán Rock Visual trong Inspector!");
+            // Debug.LogError($"[Thiếu Biến] Cục đá {gameObject.name} chưa được gán Rock Visual trong Inspector!");
             return;
         }
 
@@ -127,7 +127,7 @@ public class RockScript : NetworkBehaviour
             // Rớt cao hơn vị trí đá 1 chút để không bị chìm xuống đất
             Vector3 viTriRot = transform.position + Vector3.up * 1f;
             Runner.Spawn(prefabQuangDa, viTriRot, Quaternion.identity);
-            Debug.Log("Keng! Đá vỡ, rớt ra khoáng sản!");
+            // Debug.Log("Keng! Đá vỡ, rớt ra khoáng sản!");
         }
     }
 

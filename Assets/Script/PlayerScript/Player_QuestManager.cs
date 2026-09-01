@@ -246,7 +246,7 @@ public class Player_QuestManager : NetworkBehaviour
         }
         else
         {
-            Debug.LogWarning($"<color=red>[Quest Security]</color> Chặn hành vi trả nhiệm vụ sai lệ: {questCanTra?.tenNhiemVu}. Player chưa làm xong hoặc quest không tồn tại!");
+            // Debug.LogWarning($"<color=red>[Quest Security]</color> Chặn hành vi trả nhiệm vụ sai lệ: {questCanTra?.tenNhiemVu}. Player chưa làm xong hoặc quest không tồn tại!");
         }
     }
 

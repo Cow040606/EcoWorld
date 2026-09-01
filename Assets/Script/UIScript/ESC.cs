@@ -55,7 +55,7 @@ public class ESC : MonoBehaviour
 
     private async Task ThucHienThoat(bool traVeMenu)
     {
-        Debug.Log("[ESC]: Bắt đầu tiến trình Lưu & Thoát...");
+        // Debug.Log("[ESC]: Bắt đầu tiến trình Lưu & Thoát...");
 
         // 1. Lưu dữ liệu người chơi
         if (Player_Controller.localPlayer != null)

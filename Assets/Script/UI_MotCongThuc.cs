@@ -87,7 +87,7 @@ public class UI_MotCongThuc : MonoBehaviour
         if (id3 > 0 && player.DemSoLuongVatPham(id3) < sl3) { Debug.Log("<color=red>Thiếu nguyên liệu 3!</color>"); return; }
 
         // ĐỦ ĐỒ -> RÈN THÔI!
-        Debug.Log("<color=green>Chế tạo thành công!</color>");
+        // Debug.Log("<color=green>Chế tạo thành công!</color>");
         player.RPC_ThucHienCheTao(congThucHienTai.monDoThuDuoc.itemID, congThucHienTai.soLuongThuDuoc, id1, sl1, id2, sl2, id3, sl3, congThucHienTai.giaTienXu);
     }
 }

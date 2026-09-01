@@ -1,4 +1,4 @@
-﻿// character randomizer version 1.30
+// character randomizer version 1.30
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -414,43 +414,43 @@ namespace PsychoticLab
             if (primary.Length != 0)
                 mat.SetColor("_Color_Primary", primary[Random.Range(0, primary.Length)]);
             else
-                Debug.Log("No Primary Colors Specified In The Inspector");
+                // Debug.Log("No Primary Colors Specified In The Inspector");
 
             // randomize and set secondary color
             if (secondary.Length != 0)
                 mat.SetColor("_Color_Secondary", secondary[Random.Range(0, secondary.Length)]);
             else
-                Debug.Log("No Secondary Colors Specified In The Inspector");
+                // Debug.Log("No Secondary Colors Specified In The Inspector");
 
             // randomize and set primary metal color
             if (metalPrimary.Length != 0)
                 mat.SetColor("_Color_Metal_Primary", metalPrimary[Random.Range(0, metalPrimary.Length)]);
             else
-                Debug.Log("No Primary Metal Colors Specified In The Inspector");
+                // Debug.Log("No Primary Metal Colors Specified In The Inspector");
 
             // randomize and set secondary metal color
             if (metalSecondary.Length != 0)
                 mat.SetColor("_Color_Metal_Secondary", metalSecondary[Random.Range(0, metalSecondary.Length)]);
             else
-                Debug.Log("No Secondary Metal Colors Specified In The Inspector");
+                // Debug.Log("No Secondary Metal Colors Specified In The Inspector");
 
             // randomize and set primary leather color
             if (leatherPrimary.Length != 0)
                 mat.SetColor("_Color_Leather_Primary", leatherPrimary[Random.Range(0, leatherPrimary.Length)]);
             else
-                Debug.Log("No Primary Leather Colors Specified In The Inspector");
+                // Debug.Log("No Primary Leather Colors Specified In The Inspector");
 
             // randomize and set secondary leather color
             if (leatherSecondary.Length != 0)
                 mat.SetColor("_Color_Leather_Secondary", leatherSecondary[Random.Range(0, leatherSecondary.Length)]);
             else
-                Debug.Log("No Secondary Leather Colors Specified In The Inspector");
+                // Debug.Log("No Secondary Leather Colors Specified In The Inspector");
 
             // randomize and set body art color
             if (bodyArt.Length != 0)
                 mat.SetColor("_Color_BodyArt", bodyArt[Random.Range(0, bodyArt.Length)]);
             else
-                Debug.Log("No Body Art Colors Specified In The Inspector");
+                // Debug.Log("No Body Art Colors Specified In The Inspector");
 
             // randomize and set body art amount
             mat.SetFloat("_BodyArt_Amount", Random.Range(0.0f, 1.0f));
@@ -465,7 +465,7 @@ namespace PsychoticLab
             }
             else
             {
-                Debug.Log("No " + info + " Skin Colors Specified In The Inspector");
+                // Debug.Log("No " + info + " Skin Colors Specified In The Inspector");
             }
 
             // randomize and set elf hair color
@@ -475,7 +475,7 @@ namespace PsychoticLab
             }
             else
             {
-                Debug.Log("No " + info + " Hair Colors Specified In The Inspector");
+                // Debug.Log("No " + info + " Hair Colors Specified In The Inspector");
             }
 
             // set stubble color

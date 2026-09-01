@@ -25,7 +25,7 @@ public class ZoneMusic : MonoBehaviour
             {
                 nguonPhatChinh.clip = nhacSukuna;
                 nguonPhatChinh.Play();
-                Debug.Log("<color=red>Cảnh Báo:</color> Đã vào lãnh địa Sukuna!");
+                // Debug.Log("<color=red>Cảnh Báo:</color> Đã vào lãnh địa Sukuna!");
             }
         }
     }
@@ -41,7 +41,7 @@ public class ZoneMusic : MonoBehaviour
             {
                 nguonPhatChinh.clip = nhacBinhThuong;
                 nguonPhatChinh.Play();
-                Debug.Log("<color=green>An Toàn:</color> Đã thoát khỏi lãnh địa, bật nhạc Chill~");
+                // Debug.Log("<color=green>An Toàn:</color> Đã thoát khỏi lãnh địa, bật nhạc Chill~");
             }
         }
     }

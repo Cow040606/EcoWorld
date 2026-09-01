@@ -132,7 +132,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
 
             StopAllCoroutines();
             StartCoroutine(TienTrinhTheoDoiCutscene(objCutscene, director));
-            Debug.Log($"<color=green>[NPC Cutscene]:</color> Bắt đầu phát Cutscene: {objCutscene.name}");
+            // Debug.Log($"<color=green>[NPC Cutscene]:</color> Bắt đầu phát Cutscene: {objCutscene.name}");
         }
     }
 
@@ -151,7 +151,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
 
             StopAllCoroutines();
             StartCoroutine(TienTrinhTheoDoiCutscene(timeline.gameObject, timeline));
-            Debug.Log($"<color=green>[NPC Cutscene]:</color> Đã phát Timeline Cutscene: {timeline.name}");
+            // Debug.Log($"<color=green>[NPC Cutscene]:</color> Đã phát Timeline Cutscene: {timeline.name}");
         }
     }
 
@@ -166,7 +166,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
             // CODE MỚI THÊM: Ẩn các model sau khi tắt thủ công
             XuLyAnModelSauCutscene();
             
-            Debug.Log($"<color=yellow>[NPC Cutscene]:</color> Đã tắt Cutscene GameObject: {objCutscene.name}");
+            // Debug.Log($"<color=yellow>[NPC Cutscene]:</color> Đã tắt Cutscene GameObject: {objCutscene.name}");
         }
     }
 
@@ -180,11 +180,11 @@ public class NPC_DialogueTrigger : MonoBehaviour
         if (targetObj != null)
         {
             ThucHienDichChuyen(transform, targetObj.transform.position, targetObj.transform.rotation);
-            Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển NPC '{gameObject.name}' đến vị trí của '{targetObj.name}' ({targetObj.transform.position})");
+            // Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển NPC '{gameObject.name}' đến vị trí của '{targetObj.name}' ({targetObj.transform.position})");
         }
         else
         {
-            Debug.LogWarning($"<color=yellow>[NPC Teleport]:</color> GameObject mục tiêu truyền vào bị Null trên NPC '{gameObject.name}'!");
+            // Debug.LogWarning($"<color=yellow>[NPC Teleport]:</color> GameObject mục tiêu truyền vào bị Null trên NPC '{gameObject.name}'!");
         }
     }
 
@@ -194,11 +194,11 @@ public class NPC_DialogueTrigger : MonoBehaviour
         if (targetTransform != null)
         {
             ThucHienDichChuyen(transform, targetTransform.position, targetTransform.rotation);
-            Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển NPC '{gameObject.name}' đến Transform '{targetTransform.name}' ({targetTransform.position})");
+            // Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển NPC '{gameObject.name}' đến Transform '{targetTransform.name}' ({targetTransform.position})");
         }
         else
         {
-            Debug.LogWarning($"<color=yellow>[NPC Teleport]:</color> Transform mục tiêu truyền vào bị Null trên NPC '{gameObject.name}'!");
+            // Debug.LogWarning($"<color=yellow>[NPC Teleport]:</color> Transform mục tiêu truyền vào bị Null trên NPC '{gameObject.name}'!");
         }
     }
 
@@ -208,11 +208,11 @@ public class NPC_DialogueTrigger : MonoBehaviour
         if (viTriDichChuyen != null)
         {
             ThucHienDichChuyen(transform, viTriDichChuyen.position, viTriDichChuyen.rotation);
-            Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển NPC '{gameObject.name}' đến vị trí định sẵn '{viTriDichChuyen.name}' ({viTriDichChuyen.position})");
+            // Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển NPC '{gameObject.name}' đến vị trí định sẵn '{viTriDichChuyen.name}' ({viTriDichChuyen.position})");
         }
         else
         {
-            Debug.LogWarning($"<color=yellow>[NPC Teleport]:</color> Chưa gán 'viTriDichChuyen' trong Inspector của {gameObject.name}!");
+            // Debug.LogWarning($"<color=yellow>[NPC Teleport]:</color> Chưa gán 'viTriDichChuyen' trong Inspector của {gameObject.name}!");
         }
     }
 
@@ -222,7 +222,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
         if (doiTuongCanChuyen != null && viTriMoi != null)
         {
             ThucHienDichChuyen(doiTuongCanChuyen.transform, viTriMoi.transform.position, viTriMoi.transform.rotation);
-            Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển '{doiTuongCanChuyen.name}' đến vị trí của '{viTriMoi.name}'");
+            // Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển '{doiTuongCanChuyen.name}' đến vị trí của '{viTriMoi.name}'");
         }
     }
 
@@ -398,7 +398,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
         // =========================================================================
         XuLyAnModelSauCutscene();
 
-        Debug.Log($"<color=green>[NPC Cutscene]:</color> Đã hoàn thành Cutscene. Tự tắt Cutscene {objCutscene?.name}, hiện lại UI và ẩn chuột.");
+        // Debug.Log($"<color=green>[NPC Cutscene]:</color> Đã hoàn thành Cutscene. Tự tắt Cutscene {objCutscene?.name}, hiện lại UI và ẩn chuột.");
     }
 
     // =========================================================================

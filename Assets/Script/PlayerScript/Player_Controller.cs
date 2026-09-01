@@ -1306,7 +1306,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             if (hit.collider.CompareTag("NPC"))
             {
-                Debug.Log("<color=cyan>Đã bấm F! Đang nói chuyện với NPC!</color>");
+                // Debug.Log("<color=cyan>Đã bấm F! Đang nói chuyện với NPC!</color>");
                 return true;
             }
         }
@@ -2479,7 +2479,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     {
         if (ArrowPrefab != null)
         {
-            GameObject arrow = Instantiate(ArrowPrefab, diemBatDau, Quaternion.LookRotation(huongBan));
+            GameObject arrow = SimpleObjectPool.Instance.SpawnFromPool("Arrow", ArrowPrefab, diemBatDau, Quaternion.LookRotation(huongBan));
             
             Rigidbody rb = arrow.GetComponent<Rigidbody>();
             if (rb != null) rb.AddForce(huongBan, ForceMode.Impulse);
@@ -2639,15 +2639,15 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                                 soLuongDaNap++;
                             }
                         }
-                        Debug.Log($"<color=green>[Death Drop]:</color> Đã nạp thành công {soLuongDaNap} ô vật phẩm vào hòm đồ rơi!");
+                        // Debug.Log($"<color=green>[Death Drop]:</color> Đã nạp thành công {soLuongDaNap} ô vật phẩm vào hòm đồ rơi!");
                     }
                 }
 
-                Debug.Log($"<color=green>[Death Drop]:</color> Đã tạo hòm đồ rơi (Prefab: {prefabToSpawn.name}) tại vị trí {viTriRoi}!");
+                // Debug.Log($"<color=green>[Death Drop]:</color> Đã tạo hòm đồ rơi (Prefab: {prefabToSpawn.name}) tại vị trí {viTriRoi}!");
             }
             else
             {
-                Debug.LogError("<color=red>[Death Drop]:</color> Chưa gán 'droppedBackpackPrefab' trên Player_Controller Inspector và không tìm thấy trong Resources!");
+                // Debug.LogError("<color=red>[Death Drop]:</color> Chưa gán 'droppedBackpackPrefab' trên Player_Controller Inspector và không tìm thấy trong Resources!");
             }
 
             // 5. Xóa sạch túi đồ trên Server để đồng bộ về Client
@@ -2658,7 +2658,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
         else
         {
-            Debug.Log("<color=yellow>[Death Drop]:</color> Người chơi không có vật phẩm nào trong túi đồ nên không tạo hòm đồ rơi.");
+            // Debug.Log("<color=yellow>[Death Drop]:</color> Người chơi không có vật phẩm nào trong túi đồ nên không tạo hòm đồ rơi.");
         }
     }
 

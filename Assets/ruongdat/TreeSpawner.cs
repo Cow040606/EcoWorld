@@ -85,7 +85,7 @@ public class TreeSpawner : NetworkBehaviour
             }
 
             // In báo cáo chi tiết ra Console
-            Debug.Log($"<color=cyan>[TreeSpawner]</color> Vùng {zone.zoneName}: Rải được {spawnedCount}/{zone.amount} cây. \n<color=yellow>Báo cáo {attempts} lần thử nghiệm bị từ chối do:</color> Bắn trượt mặt đất ({loiTiaLaser}), Đất quá dốc ({loiDoDoc}), Vướng vật cản ({loiVatCan}).");
+            // Debug.Log($"<color=cyan>[TreeSpawner]</color> Vùng {zone.zoneName}: Rải được {spawnedCount}/{zone.amount} cây. \n<color=yellow>Báo cáo {attempts} lần thử nghiệm bị từ chối do:</color> Bắn trượt mặt đất ({loiTiaLaser}), Đất quá dốc ({loiDoDoc}), Vướng vật cản ({loiVatCan}).");
         }
     }
 

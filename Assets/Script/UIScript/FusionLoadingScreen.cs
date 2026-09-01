@@ -199,9 +199,9 @@ public class FusionLoadingScreen : MonoBehaviour
     {
         if (videoPlayer == null)
         {
-            Debug.LogWarning(
-                "[FusionLoadingScreen] Video Player chưa được gắn!"
-            );
+            // Debug.LogWarning(
+            //    "[FusionLoadingScreen] Video Player chưa được gắn!"
+            // );
 
             return;
         }
@@ -219,9 +219,9 @@ public class FusionLoadingScreen : MonoBehaviour
 
         videoPlayer.Play();
 
-        Debug.Log(
-            "[FusionLoadingScreen] Loading Video đang phát."
-        );
+        // Debug.Log(
+        //    "[FusionLoadingScreen] Loading Video đang phát."
+        // );
     }
 
     // =========================================================

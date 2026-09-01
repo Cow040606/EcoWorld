@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 //  IK Helper Tool 1.1 - IK Remover StateMachineBehaviour                //
 //  Kevin Iglesias - https://www.keviniglesias.com/     			     //
 //  Contact Support: support@keviniglesias.com                           //
@@ -165,7 +165,7 @@ namespace KevinIglesias {
 					SMBScript.delay = IKHelperUtils.savedRemoverSMB.delay;
 					SMBScript.speed = IKHelperUtils.savedRemoverSMB.speed;
                     
-                    Debug.Log("Pasted variables.");
+                    // Debug.Log("Pasted variables.");
 				}	
 				GUI.enabled = true;
 			}

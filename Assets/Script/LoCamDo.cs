@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using UnityEngine.UI; 
@@ -12,15 +12,15 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
     public LoaiLo loaiCuaO; 
     public int slotIndex;   
 
-    [Header("Hiệu ứng sáng đèn")]
+    [Header("Hi?u ?ng s�ng d�n")]
     public GameObject khungSang; 
 
-    [Header("Cài đặt Nhấp Nháy")]
+    [Header("C�i d?t Nh?p Nh�y")]
     public float tocDo = 3f;           
     public float doMoThapNhat = 0.2f;  
     private Image anhVien; 
 
-    [Header("Hiển thị hình ảnh & Số lượng")]
+    [Header("Hi?n th? h�nh ?nh & S? lu?ng")]
     public Image anhIcon;
     public TextMeshProUGUI txtSoLuong; 
     public int idDangMac = 0;
@@ -102,7 +102,7 @@ public class LoCamDo : MonoBehaviour, IDropHandler, IPointerClickHandler
                 }
                 else
                 {
-                    Debug.Log("<color=red>Sai loại ô rồi Bò ơi!</color>");
+                    // Debug.Log("<color=red>Sai lo?i � r?i B� oi!</color>");
                 }
             }
         }
