@@ -72,7 +72,7 @@ public class RockSpawner : NetworkBehaviour
             }
         }
 
-        Debug.Log($"[Spawner] Đã rải thành công {spawnedCount}/{numberOfRocks} cục đá.");
+        // Debug.Log($"[Spawner] Đã rải thành công {spawnedCount}/{numberOfRocks} cục đá.");
     }
 
     // Vẽ hình tròn ranh giới màu xanh lá cây trong cửa sổ Scene để dễ căn chỉnh

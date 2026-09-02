@@ -22,7 +22,7 @@ public class SharedDayNightCycle : NetworkBehaviour
         
         if (sunLight == null)
         {
-            Debug.LogError("Script này phải được gắn trực tiếp vào Directional Light (Mặt trời)!");
+            // Debug.LogError("Script này phải được gắn trực tiếp vào Directional Light (Mặt trời)!");
         }
     }
 

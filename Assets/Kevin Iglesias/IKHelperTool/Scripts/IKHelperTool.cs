@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 //  IK Helper Tool 1.1 - Core Script / MonoBehaviour                     //
 //  Kevin Iglesias - https://www.keviniglesias.com/       			     //
 //  Contact Support: support@keviniglesias.com                           //
@@ -36,7 +36,7 @@ namespace KevinIglesias {
 			//Check humanoid avatar animator
 			if(!animator.isHuman)
 			{
-				Debug.Log("Warning: Animator Avatar is not Human. IK Helper Tool may not work properly.");
+				// Debug.Log("Warning: Animator Avatar is not Human. IK Helper Tool may not work properly.");
 			}
 			
 			editingIK = false;
@@ -299,13 +299,13 @@ namespace KevinIglesias {
 				
 				if(stateIKs[id].IKs.Count <= iKSequence[j].attachment)
 				{
-					Debug.Log("No IK attachments with ID:"+(iKSequence[j].attachment.ToString("00"))+" found in State IK: "+stateIKs[id].iKName+" - "+this.gameObject.name);
+					// Debug.Log("No IK attachments with ID:"+(iKSequence[j].attachment.ToString("00"))+" found in State IK: "+stateIKs[id].iKName+" - "+this.gameObject.name);
 					break;
 				}
 				
 				if(stateIKs[id].IKs[iKSequence[j].attachment].iKAttachment == null )
 				{
-					Debug.Log("Missing attachment Transform with ID:"+(iKSequence[j].attachment.ToString("00"))+" found in State IK: "+stateIKs[id].iKName+" - "+this.gameObject.name);
+					// Debug.Log("Missing attachment Transform with ID:"+(iKSequence[j].attachment.ToString("00"))+" found in State IK: "+stateIKs[id].iKName+" - "+this.gameObject.name);
 					break;
 				}
 
@@ -555,25 +555,25 @@ namespace KevinIglesias {
 		{
 			if(stateIKs == null || stateIKs.Count <= 0)
 			{
-				Debug.Log("No State IKs found in "+this.gameObject.name);
+				// Debug.Log("No State IKs found in "+this.gameObject.name);
 				return false;
 			}
 			
 			if(stateIKs.Count <= id)
 			{
-				Debug.Log("No State IK with ID:"+(id.ToString("00"))+" found in "+this.gameObject.name);
+				// Debug.Log("No State IK with ID:"+(id.ToString("00"))+" found in "+this.gameObject.name);
 				return false;
 			}
 			
 			if(stateIKs[id].IKs == null || stateIKs[id].IKs.Count <= 0)
 			{
-				Debug.Log("No IK attachments found in State IK: "+stateIKs[id].iKName+" - "+this.gameObject.name);
+				// Debug.Log("No IK attachments found in State IK: "+stateIKs[id].iKName+" - "+this.gameObject.name);
 				return false;
 			}
 			
 			if(stateIKs[id].IKs[0].iKAttachment == null)
 			{
-				Debug.Log("IK attachment Transform missing in State IK: "+stateIKs[id].iKName+" - "+this.gameObject.name);
+				// Debug.Log("IK attachment Transform missing in State IK: "+stateIKs[id].iKName+" - "+this.gameObject.name);
 				return false;
 			}
 			

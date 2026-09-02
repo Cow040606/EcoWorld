@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -1483,7 +1483,7 @@ namespace DialogueEditor
         private static void Log(string str)
         {
 #if DIALOGUE_DEBUG
-            Debug.Log("[DialogueEditor]: " + str);
+            // Debug.Log("[DialogueEditor]: " + str);
 #endif
         }
 

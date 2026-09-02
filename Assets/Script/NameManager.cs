@@ -16,7 +16,7 @@ public class NameManager : MonoBehaviour
         // Nếu Bò bấm lưu mà lỡ để trống thì dẹp, không làm gì cả
         if (string.IsNullOrEmpty(tenCanDoi))
         {
-            Debug.LogWarning("<color=yellow>Hệ Thống:</color> Bò chưa nhập tên kìa!");
+            // Debug.LogWarning("<color=yellow>Hệ Thống:</color> Bò chưa nhập tên kìa!");
             return;
         }
 
@@ -38,7 +38,7 @@ public class NameManager : MonoBehaviour
                 // Gọi điện báo Server đổi tên ngay lập tức
                 nguoiChoi.RPC_SetPlayerName(tenCanDoi); 
                 
-                Debug.Log($"<color=cyan>Hệ Thống:</color> Đã gắn tên [{tenCanDoi}] vào nhân vật thành công!");
+                // Debug.Log($"<color=cyan>Hệ Thống:</color> Đã gắn tên [{tenCanDoi}] vào nhân vật thành công!");
                 daTimThayChinhChu = true;
                 
                 // Tìm thấy rồi thì nghỉ, không quét nữa cho nhẹ máy
@@ -48,7 +48,7 @@ public class NameManager : MonoBehaviour
 
         if (!daTimThayChinhChu)
         {
-            Debug.LogError("<color=red>LỖI:</color> Không tìm thấy nhân vật của Bò để đổi tên. Chắc chưa Spawn ra rồi!");
+            // Debug.LogError("<color=red>LỖI:</color> Không tìm thấy nhân vật của Bò để đổi tên. Chắc chưa Spawn ra rồi!");
         }
     }
     private void OnEnable()

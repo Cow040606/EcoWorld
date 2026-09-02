@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 //  IK Helper Tool 1.1 - Single IK StateMachineBehaviour                 //
 //  Kevin Iglesias - https://www.keviniglesias.com/     			     //
 //  Contact Support: support@keviniglesias.com                           //
@@ -201,7 +201,7 @@ namespace KevinIglesias {
 					SMBScript.speed = IKHelperUtils.savedSingleSMB.speed;
 					SMBScript.defaultState = IKHelperUtils.savedSingleSMB.defaultState;
                     SMBScript.clearOnExit = IKHelperUtils.savedSingleSMB.clearOnExit;
-                    Debug.Log("Pasted variables.");
+                    // Debug.Log("Pasted variables.");
 				}	
 				GUI.enabled = true;
 			}

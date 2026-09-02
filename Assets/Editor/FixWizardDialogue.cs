@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using UnityEngine;
 using UnityEditor;
@@ -24,7 +24,7 @@ namespace EcoWorld.Editor
         {
             try
             {
-                Debug.Log("<color=cyan>[FixWizardDialogue]</color> Starting dialogue fix process...");
+                // Debug.Log("<color=cyan>[FixWizardDialogue]</color> Starting dialogue fix process...");
 
                 // 1. Load Quest Assets
                 QuestSO daoquang = LoadQuestAsset("4451efa8b92cfc04ab7aff92a3a59bc9");
@@ -33,7 +33,7 @@ namespace EcoWorld.Editor
 
                 if (daoquang == null || craft2 == null || bossfinal == null)
                 {
-                    Debug.LogError("<color=red>[FixWizardDialogue]</color> One or more QuestSO assets could not be loaded!");
+                    // Debug.LogError("<color=red>[FixWizardDialogue]</color> One or more QuestSO assets could not be loaded!");
                     return;
                 }
 
@@ -41,21 +41,21 @@ namespace EcoWorld.Editor
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PREFAB_PATH);
                 if (prefab == null)
                 {
-                    Debug.LogError("<color=red>[FixWizardDialogue]</color> Prefab not found at path: " + PREFAB_PATH);
+                    // Debug.LogError("<color=red>[FixWizardDialogue]</color> Prefab not found at path: " + PREFAB_PATH);
                     return;
                 }
 
                 NPC_DialogueTrigger trigger = prefab.GetComponentInChildren<NPC_DialogueTrigger>();
                 if (trigger == null)
                 {
-                    Debug.LogError("<color=red>[FixWizardDialogue]</color> NPC_DialogueTrigger component not found in prefab!");
+                    // Debug.LogError("<color=red>[FixWizardDialogue]</color> NPC_DialogueTrigger component not found in prefab!");
                     return;
                 }
 
                 NPC_QuestBridge bridge = prefab.GetComponentInChildren<NPC_QuestBridge>();
                 if (bridge == null)
                 {
-                    Debug.LogError("<color=red>[FixWizardDialogue]</color> NPC_QuestBridge component not found in prefab!");
+                    // Debug.LogError("<color=red>[FixWizardDialogue]</color> NPC_QuestBridge component not found in prefab!");
                     return;
                 }
 
@@ -64,7 +64,7 @@ namespace EcoWorld.Editor
                 soTrigger.Update();
                 soTrigger.FindProperty("npcID").intValue = 11;
                 soTrigger.ApplyModifiedProperties();
-                Debug.Log("<color=green>[FixWizardDialogue]</color> NPC ID set to 11.");
+                // Debug.Log("<color=green>[FixWizardDialogue]</color> NPC ID set to 11.");
 
                 // Fix persistent calls for prefab NodeEventHolders
                 NodeEventHolder[] holders = prefab.GetComponentsInChildren<NodeEventHolder>(true);
@@ -106,7 +106,7 @@ namespace EcoWorld.Editor
                 // Save Prefab changes
                 EditorUtility.SetDirty(prefab);
                 AssetDatabase.SaveAssets();
-                Debug.Log("<color=green>[FixWizardDialogue]</color> Prefab asset updated successfully.");
+                // Debug.Log("<color=green>[FixWizardDialogue]</color> Prefab asset updated successfully.");
 
                 // 3. Fix active Scene instances
                 NPC_DialogueTrigger[] sceneTriggers = GameObject.FindObjectsByType<NPC_DialogueTrigger>(FindObjectsSortMode.None);
@@ -151,18 +151,18 @@ namespace EcoWorld.Editor
                 if (sceneFixCount > 0)
                 {
                     UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
-                    Debug.Log($"<color=green>[FixWizardDialogue]</color> Reverted overrides and updated {sceneFixCount} scene instances.");
+                    // Debug.Log($"<color=green>[FixWizardDialogue]</color> Reverted overrides and updated {sceneFixCount} scene instances.");
                 }
                 else
                 {
-                    Debug.LogWarning("<color=orange>[FixWizardDialogue]</color> No Wizard instances found in the active scene.");
+                    // Debug.LogWarning("<color=orange>[FixWizardDialogue]</color> No Wizard instances found in the active scene.");
                 }
 
-                Debug.Log("<color=green>[FixWizardDialogue]</color> All Wizard fixes applied successfully!");
+                // Debug.Log("<color=green>[FixWizardDialogue]</color> All Wizard fixes applied successfully!");
             }
             catch (Exception ex)
             {
-                Debug.LogError("<color=red>[FixWizardDialogue]</color> Exception during dialogue fix: " + ex.ToString());
+                // Debug.LogError("<color=red>[FixWizardDialogue]</color> Exception during dialogue fix: " + ex.ToString());
             }
         }
 

@@ -16,10 +16,13 @@ public class BossUIManager : MonoBehaviour
 
     void Update()
     {
-        // 1. Nếu chưa có Boss, tìm Boss trên Scene
+        // 1. Nếu chưa có Boss, tìm Boss trên Scene (Nhưng chỉ tìm mỗi giây 1 lần để tránh giật lag)
         if (currentBoss == null)
         {
-            currentBoss = FindObjectOfType<BossController>();
+            if (Time.frameCount % 60 == 0) // Chỉ tìm 1 lần mỗi 60 frame (khoảng 1 giây)
+            {
+                currentBoss = FindObjectOfType<BossController>();
+            }
             if (uiContainer.activeSelf) uiContainer.SetActive(false);
             return;
         }

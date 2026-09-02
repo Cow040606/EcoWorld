@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Fusion;
 using System.Collections;
 using System.Collections.Generic;
@@ -96,7 +96,8 @@ namespace ithappy.Animals_FREE
                     _transform.position = spawnHit.position;
                     _targetPosition = spawnHit.position;
                     _state = AnimalState.Idle;
-                    Debug.LogWarning("[AnimalAI] Animal " + gameObject.name + " fell off NavMesh! Teleported back to spawn position.");
+                    // Bỏ comment dòng dưới để tránh spam Console gây lag tụt FPS
+                    // Debug.LogWarning("[AnimalAI] Animal " + gameObject.name + " fell off NavMesh! Teleported back to spawn position.");
                 }
             }
         }
@@ -243,13 +244,14 @@ namespace ithappy.Animals_FREE
             Vector3 separation = Vector3.zero;
             float personalSpace = 2.0f; // Khoảng cách tối thiểu giãn cách giữa các thú
             
-            // Tìm các AnimalAI_Controller khác trong game
-            AnimalAI_Controller[] allAnimals = FindObjectsByType<AnimalAI_Controller>(FindObjectsSortMode.None);
+            // Tối ưu hóa cực độ: Dùng Physics.OverlapSphere thay vì FindObjectsByType để tránh lag
+            Collider[] colliders = Physics.OverlapSphere(_transform.position, personalSpace);
             int neighborsCount = 0;
             
-            foreach (var other in allAnimals)
+            foreach (var col in colliders)
             {
-                if (other == this || other._state == AnimalState.Dead) continue;
+                AnimalAI_Controller other = col.GetComponent<AnimalAI_Controller>();
+                if (other == null || other == this || other._state == AnimalState.Dead) continue;
                 
                 float distance = Vector3.Distance(_transform.position, other.transform.position);
                 if (distance < personalSpace && distance > 0.05f)

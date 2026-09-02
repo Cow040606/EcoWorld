@@ -12,7 +12,7 @@ public class TeleportWaypoint : MonoBehaviour
         // Kiểm tra xem Bò đã kéo Object vào chưa, chống lỗi văng game
         if (diemDichChuyen == null)
         {
-            Debug.Log("<color=red>Lỗi: Bò chưa kéo Object đích vào nút dịch chuyển này!</color>");
+            // Debug.Log("<color=red>Lỗi: Bò chưa kéo Object đích vào nút dịch chuyển này!</color>");
             return;
         }
 
@@ -25,7 +25,7 @@ public class TeleportWaypoint : MonoBehaviour
         }
         else
         {
-            Debug.Log("Không tìm thấy Nhân vật của bạn!");
+            // Debug.Log("Không tìm thấy Nhân vật của bạn!");
         }
     }
 }

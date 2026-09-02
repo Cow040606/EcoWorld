@@ -53,7 +53,7 @@ public class WeatherController : NetworkBehaviour
                 IsRaining = false;
                 float waitTime = Random.Range(minTimeBetweenRain, maxTimeBetweenRain);
                 WeatherTimer = TickTimer.CreateFromSeconds(Runner, waitTime);
-                Debug.Log($"[Host] Trời nắng. Cơn mưa tiếp theo sẽ đến sau: {waitTime / 60f} phút.");
+                // Debug.Log($"[Host] Trời nắng. Cơn mưa tiếp theo sẽ đến sau: {waitTime / 60f} phút.");
             }
 
             // Kiểm tra xem bộ đếm thời gian đã chạy hết chưa
@@ -65,7 +65,7 @@ public class WeatherController : NetworkBehaviour
                     IsRaining = false;
                     float waitTime = Random.Range(minTimeBetweenRain, maxTimeBetweenRain);
                     WeatherTimer = TickTimer.CreateFromSeconds(Runner, waitTime);
-                    Debug.Log($"[Host] Đã tạnh mưa. Nắng trong {waitTime / 60f} phút.");
+                    // Debug.Log($"[Host] Đã tạnh mưa. Nắng trong {waitTime / 60f} phút.");
                 }
                 else
                 {
@@ -73,7 +73,7 @@ public class WeatherController : NetworkBehaviour
                     IsRaining = true;
                     float rainTime = Random.Range(minRainDuration, maxRainDuration);
                     WeatherTimer = TickTimer.CreateFromSeconds(Runner, rainTime);
-                    Debug.Log($"[Host] Bắt đầu mưa. Mưa kéo dài trong {rainTime / 60f} phút.");
+                    // Debug.Log($"[Host] Bắt đầu mưa. Mưa kéo dài trong {rainTime / 60f} phút.");
                 }
             }
         }

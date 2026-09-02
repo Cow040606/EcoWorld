@@ -150,7 +150,7 @@ public class SaveManager : MonoBehaviour
             }
             catch (Exception ex)
             {
-                Debug.LogWarning("[SaveManager]: Error reading existing save file, creating new. " + ex.Message);
+                // Debug.LogWarning("[SaveManager]: Error reading existing save file, creating new. " + ex.Message);
             }
         }
 
@@ -180,11 +180,11 @@ public class SaveManager : MonoBehaviour
         {
             string json = JsonUtility.ToJson(saveData, true);
             File.WriteAllText(path, json);
-            Debug.Log($"<color=green>[SaveManager]:</color> Đã lưu game thành công vào {path}");
+            // Debug.Log($"<color=green>[SaveManager]:</color> Đã lưu game thành công vào {path}");
         }
         catch (Exception ex)
         {
-            Debug.LogError("[SaveManager]: Error writing save file: " + ex.Message);
+            // Debug.LogError("[SaveManager]: Error writing save file: " + ex.Message);
         }
     }
 
@@ -223,7 +223,7 @@ public class SaveManager : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.LogError("[SaveManager]: Error loading save file: " + ex.Message);
+            // Debug.LogError("[SaveManager]: Error loading save file: " + ex.Message);
             return null;
         }
     }
@@ -248,7 +248,7 @@ public class SaveManager : MonoBehaviour
             }
             catch (Exception ex)
             {
-                Debug.LogWarning("[SaveManager]: Skip corrupted save file: " + file + " Error: " + ex.Message);
+                // Debug.LogWarning("[SaveManager]: Skip corrupted save file: " + file + " Error: " + ex.Message);
             }
         }
 

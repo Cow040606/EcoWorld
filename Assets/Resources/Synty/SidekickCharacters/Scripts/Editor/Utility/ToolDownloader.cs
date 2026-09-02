@@ -194,7 +194,7 @@ namespace Synty.SidekickCharacters
                 }
                 else
                 {
-                    Debug.LogError("Error downloading file: " + e.Error.Message);
+                    // Debug.LogError("Error downloading file: " + e.Error.Message);
                 }
             };
 
@@ -222,7 +222,7 @@ namespace Synty.SidekickCharacters
                 }
                 else
                 {
-                    Debug.LogError("Error downloading file: " + e.Error.Message);
+                    // Debug.LogError("Error downloading file: " + e.Error.Message);
                 }
             };
 
@@ -281,8 +281,8 @@ namespace Synty.SidekickCharacters
             }
             catch (Exception ex)
             {
-                Debug.LogWarning("Sidekicks Tool menu item not found. Please verify installation.");
-                Debug.LogWarning("Exception details: " + ex.Message);
+                // Debug.LogWarning("Sidekicks Tool menu item not found. Please verify installation.");
+                // Debug.LogWarning("Exception details: " + ex.Message);
             }
         }
     }

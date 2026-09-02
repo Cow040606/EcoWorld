@@ -97,9 +97,9 @@ public class TimeManager : MonoBehaviour
             originalSkyBlend = skyboxMaterial.GetFloat("_Blend");
         }
 
-        OnSunrise += () => Debug.Log("Sunrise");
-        OnSunset += () => Debug.Log("Sunset");
-        OnHourChange += () => Debug.Log("Hour change");
+        // OnSunrise += () => Debug.Log("Sunrise");
+        // OnSunset += () => Debug.Log("Sunset");
+        // OnHourChange += () => Debug.Log("Hour change");
 
         if (dial != null)
         {
@@ -338,6 +338,6 @@ public class TimeManager : MonoBehaviour
         // Nếu thang của bạn là 0-1, hãy đổi thành 0.8f hoặc số tương ứng.
         SetTime(22f); 
         
-        Debug.Log("Đã chuyển sang ban đêm cho Cutscene!");
+        // Debug.Log("Đã chuyển sang ban đêm cho Cutscene!");
     }
 }

@@ -45,6 +45,7 @@ public class EnemySpawner : NetworkBehaviour
         }
     }
 
+    private float _uiCheckTimer = 0f;
     // Dùng Update thường để lấy giờ từ UI liên tục mà không ảnh hưởng tới Network Tick
     private void Update()
     {
@@ -55,7 +56,12 @@ public class EnemySpawner : NetworkBehaviour
         }
         else if (uiTimeText != null && !string.IsNullOrEmpty(uiTimeText.text))
         {
-            ParseTimeFromUI(uiTimeText.text);
+            _uiCheckTimer -= Time.deltaTime;
+            if (_uiCheckTimer <= 0f)
+            {
+                ParseTimeFromUI(uiTimeText.text);
+                _uiCheckTimer = 1f; // Chỉ đọc chữ UI 1 giây 1 lần để chống lag rác (GC Allocation)
+            }
         }
     }
 
@@ -128,7 +134,7 @@ public class EnemySpawner : NetworkBehaviour
         }
         catch
         {
-            Debug.LogWarning("[EnemySpawner] Lỗi đọc định dạng thời gian từ UI.");
+            // Debug.LogWarning("[EnemySpawner] Lỗi đọc định dạng thời gian từ UI.");
         }
     }
 

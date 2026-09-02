@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 //  IK Helper Tool 1.1 - Sequence IK StateMachineBehaviour               //
 //  Kevin Iglesias - https://www.keviniglesias.com/     			     //
 //  Contact Support: support@keviniglesias.com                           //
@@ -289,7 +289,7 @@ namespace KevinIglesias {
                     SMBScript.isLoop = IKHelperUtils.savedSequenceSMB.isLoop;
 					SMBScript.iKSequence = new List<IKSequence>(IKHelperUtils.savedSequenceSMB.iKSequence);
                     
-                    Debug.Log("Pasted variables.");
+                    // Debug.Log("Pasted variables.");
 				}	
 				GUI.enabled = true;
 			}

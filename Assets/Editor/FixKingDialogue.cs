@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ namespace EcoWorld.Editor
         {
             try
             {
-                Debug.Log("<color=cyan>[FixKingDialogue]</color> Starting dialogue fix process...");
+                // Debug.Log("<color=cyan>[FixKingDialogue]</color> Starting dialogue fix process...");
 
                 // 1. Load Quest Assets
                 QuestSO findKing = LoadQuestAsset("0131099c81e23f641a21d869bd57e951");
@@ -37,7 +37,7 @@ namespace EcoWorld.Editor
 
                 if (findKing == null || lv20 == null || boss2 == null || talk2 == null)
                 {
-                    Debug.LogError("<color=red>[FixKingDialogue]</color> One or more QuestSO assets could not be loaded!");
+                    // Debug.LogError("<color=red>[FixKingDialogue]</color> One or more QuestSO assets could not be loaded!");
                     return;
                 }
 
@@ -45,21 +45,21 @@ namespace EcoWorld.Editor
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PREFAB_PATH);
                 if (prefab == null)
                 {
-                    Debug.LogError("<color=red>[FixKingDialogue]</color> Prefab not found at path: " + PREFAB_PATH);
+                    // Debug.LogError("<color=red>[FixKingDialogue]</color> Prefab not found at path: " + PREFAB_PATH);
                     return;
                 }
 
                 NPCConversation prefabConv = prefab.GetComponentInChildren<NPCConversation>();
                 if (prefabConv == null)
                 {
-                    Debug.LogError("<color=red>[FixKingDialogue]</color> NPCConversation component not found in prefab!");
+                    // Debug.LogError("<color=red>[FixKingDialogue]</color> NPCConversation component not found in prefab!");
                     return;
                 }
 
                 NPC_QuestBridge bridge = prefab.GetComponentInChildren<NPC_QuestBridge>();
                 if (bridge == null)
                 {
-                    Debug.LogError("<color=red>[FixKingDialogue]</color> NPC_QuestBridge component not found in prefab!");
+                    // Debug.LogError("<color=red>[FixKingDialogue]</color> NPC_QuestBridge component not found in prefab!");
                     return;
                 }
 
@@ -114,7 +114,7 @@ namespace EcoWorld.Editor
                 // Save Prefab changes
                 EditorUtility.SetDirty(prefab);
                 AssetDatabase.SaveAssets();
-                Debug.Log("<color=green>[FixKingDialogue]</color> Prefab asset updated successfully.");
+                // Debug.Log("<color=green>[FixKingDialogue]</color> Prefab asset updated successfully.");
 
                 // 3. Fix active Scene instances
                 NPCConversation[] sceneConvs = GameObject.FindObjectsByType<NPCConversation>(FindObjectsSortMode.None);
@@ -156,18 +156,18 @@ namespace EcoWorld.Editor
                 if (sceneFixCount > 0)
                 {
                     UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
-                    Debug.Log($"<color=green>[FixKingDialogue]</color> Reverted overrides and updated {sceneFixCount} scene instances.");
+                    // Debug.Log($"<color=green>[FixKingDialogue]</color> Reverted overrides and updated {sceneFixCount} scene instances.");
                 }
                 else
                 {
-                    Debug.LogWarning("<color=orange>[FixKingDialogue]</color> No King instances found in the active scene. (Make sure you have map1 active!)");
+                    // Debug.LogWarning("<color=orange>[FixKingDialogue]</color> No King instances found in the active scene. (Make sure you have map1 active!)");
                 }
 
-                Debug.Log("<color=green>[FixKingDialogue]</color> All fixes applied successfully! Please open/reopen the Dialogue Editor window now.");
+                // Debug.Log("<color=green>[FixKingDialogue]</color> All fixes applied successfully! Please open/reopen the Dialogue Editor window now.");
             }
             catch (Exception ex)
             {
-                Debug.LogError("<color=red>[FixKingDialogue]</color> Exception during dialogue fix: " + ex.ToString());
+                // Debug.LogError("<color=red>[FixKingDialogue]</color> Exception during dialogue fix: " + ex.ToString());
             }
         }
 

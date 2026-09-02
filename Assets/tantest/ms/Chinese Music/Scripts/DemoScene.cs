@@ -34,7 +34,7 @@ namespace bitemegames.chinesemusic
             }
             else
             {
-                Debug.LogError("Invalid song index: " + index);
+                // Debug.LogError("Invalid song index: " + index);
             }
         }
     }

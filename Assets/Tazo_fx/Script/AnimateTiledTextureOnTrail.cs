@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
  
@@ -32,8 +32,8 @@ public class AnimateTiledTextureOnTrail : MonoBehaviour
         // If events are enabled, add the callback function to the event list
         if (_enableEvents)
             _voidEventCallbackList.Add(cbFunction);
-        else
-			Debug.LogWarning("AnimateTiledTextureOnTrail: You are attempting to register a callback but the events of this object are not enabled!");
+        else {}
+			// Debug.LogWarning("AnimateTiledTextureOnTrail: You are attempting to register a callback but the events of this object are not enabled!");
     }
  
     // Use this function to unregister a callback function with this script
@@ -42,8 +42,8 @@ public class AnimateTiledTextureOnTrail : MonoBehaviour
         // If events are enabled, unregister the callback function from the event list
         if (_enableEvents)
             _voidEventCallbackList.Remove(cbFunction);
-        else
-			Debug.LogWarning("AnimateTiledTextureOnTrail: You are attempting to un-register a callback but the events of this object are not enabled!");
+        else {}
+			// Debug.LogWarning("AnimateTiledTextureOnTrail: You are attempting to un-register a callback but the events of this object are not enabled!");
     }
  
     public void Play()

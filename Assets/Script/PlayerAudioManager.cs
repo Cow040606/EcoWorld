@@ -89,9 +89,9 @@ public class PlayerAudioManager : MonoBehaviour
         // Kiểm tra AudioSource
         if (loaNhanVat == null)
         {
-            Debug.LogWarning(
-                "PlayerAudioManager: Player chưa có AudioSource!"
-            );
+            // Debug.LogWarning(
+            //    "PlayerAudioManager: Player chưa có AudioSource!"
+            // );
         }
     }
 
@@ -368,10 +368,10 @@ public class PlayerAudioManager : MonoBehaviour
 
             default:
 
-                Debug.LogWarning(
-                    "Chưa có âm thanh cho hành động: "
-                    + tenHanhDong
-                );
+                // Debug.LogWarning(
+                //    "Chưa có âm thanh cho hành động: "
+                //    + tenHanhDong
+                // );
 
                 break;
         }

@@ -26,7 +26,7 @@ public class NPC_QuestBridge : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"<color=red>[LỖI SKIP]</color> Người chơi cố gắng skip/trả nhiệm vụ '{quest.tenNhiemVu}' nhưng chưa đủ điều kiện!");
+                // Debug.LogWarning($"<color=red>[LỖI SKIP]</color> Người chơi cố gắng skip/trả nhiệm vụ '{quest.tenNhiemVu}' nhưng chưa đủ điều kiện!");
             }
         }
     }
@@ -117,7 +117,7 @@ public class NPC_QuestBridge : MonoBehaviour
             DialogueEditor.ConversationManager.Instance.SetBool("DangLamQ1", dangLam);
             DialogueEditor.ConversationManager.Instance.SetBool("DaXongQ1", daXong);
 
-            Debug.Log($"[Dialogue Bridge] Cập nhật Quest 1: ChuaNhan={chuaNhan}, DangLam={dangLam}, DaXong={daXong}");
+            // Debug.Log($"[Dialogue Bridge] Cập nhật Quest 1: ChuaNhan={chuaNhan}, DangLam={dangLam}, DaXong={daXong}");
         }
     }
 
@@ -135,7 +135,7 @@ public class NPC_QuestBridge : MonoBehaviour
             DialogueEditor.ConversationManager.Instance.SetBool("DangLamQ2", dangLam);
             DialogueEditor.ConversationManager.Instance.SetBool("DaXongQ2", daXong);
 
-            Debug.Log($"[Dialogue Bridge] Cập nhật Quest 2: DangLam={dangLam}, DaXong={daXong}");
+            // Debug.Log($"[Dialogue Bridge] Cập nhật Quest 2: DangLam={dangLam}, DaXong={daXong}");
         }
     }
 
@@ -166,7 +166,7 @@ public class NPC_QuestBridge : MonoBehaviour
         // 2. Tìm kiếm thông minh dựa trên danh sách tham số đang có trong Conversation
         SmartMapQuestStatus(questName, chuaNhan, dangLam, daXong);
 
-        Debug.Log($"[Dialogue Bridge] Auto-Set Parameter: {questName}_ChuaNhan={chuaNhan}, {questName}_DangLam={dangLam}, {questName}_DaXong={daXong}");
+        // Debug.Log($"[Dialogue Bridge] Auto-Set Parameter: {questName}_ChuaNhan={chuaNhan}, {questName}_DangLam={dangLam}, {questName}_DaXong={daXong}");
     }
 
     // Cập nhật thông số cho tất cả QuestSO có trong game vào Dialogue parameters
@@ -215,7 +215,7 @@ public class NPC_QuestBridge : MonoBehaviour
         // 2. Tìm kiếm thông minh dựa trên danh sách tham số đang có trong Conversation
         SmartMapQuestStatus(questName, chuaNhan, dangLam, daXong);
 
-        Debug.Log($"[Dialogue Bridge] Auto-Set Parameter Internal: {questName}_ChuaNhan={chuaNhan}, {questName}_DangLam={dangLam}, {questName}_DaXong={daXong}");
+        // Debug.Log($"[Dialogue Bridge] Auto-Set Parameter Internal: {questName}_ChuaNhan={chuaNhan}, {questName}_DangLam={dangLam}, {questName}_DaXong={daXong}");
     }
 
     // ==========================================
@@ -244,17 +244,17 @@ public class NPC_QuestBridge : MonoBehaviour
                 if (statusType == "chuanhan")
                 {
                     DialogueEditor.ConversationManager.Instance.SetBool(param, chuaNhan);
-                    Debug.Log($"[Smart Quest Map] Mapped parameter '{param}' to quest '{questName}' ChuaNhan={chuaNhan}");
+                    // Debug.Log($"[Smart Quest Map] Mapped parameter '{param}' to quest '{questName}' ChuaNhan={chuaNhan}");
                 }
                 else if (statusType == "danglam")
                 {
                     DialogueEditor.ConversationManager.Instance.SetBool(param, dangLam);
-                    Debug.Log($"[Smart Quest Map] Mapped parameter '{param}' to quest '{questName}' DangLam={dangLam}");
+                    // Debug.Log($"[Smart Quest Map] Mapped parameter '{param}' to quest '{questName}' DangLam={dangLam}");
                 }
                 else if (statusType == "daxong")
                 {
                     DialogueEditor.ConversationManager.Instance.SetBool(param, daXong);
-                    Debug.Log($"[Smart Quest Map] Mapped parameter '{param}' to quest '{questName}' DaXong={daXong}");
+                    // Debug.Log($"[Smart Quest Map] Mapped parameter '{param}' to quest '{questName}' DaXong={daXong}");
                 }
             }
         }
