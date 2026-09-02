@@ -1,19 +1,35 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SimpleObjectPool : MonoBehaviour
 {
-    public static SimpleObjectPool Instance { get; private set; }
+    private static SimpleObjectPool _instance;
+    public static SimpleObjectPool Instance 
+    { 
+        get 
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<SimpleObjectPool>();
+                if (_instance == null)
+                {
+                    GameObject obj = new GameObject("SimpleObjectPool");
+                    _instance = obj.AddComponent<SimpleObjectPool>();
+                }
+            }
+            return _instance;
+        }
+    }
 
     private Dictionary<string, Queue<GameObject>> poolDictionary = new Dictionary<string, Queue<GameObject>>();
 
     private void Awake()
     {
-        if (Instance == null)
+        if (_instance == null)
         {
-            Instance = this;
+            _instance = this;
         }
-        else
+        else if (_instance != this)
         {
             Destroy(gameObject);
         }

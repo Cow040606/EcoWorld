@@ -505,5 +505,12 @@ public class NPC_DialogueTrigger : MonoBehaviour
         {
             iconDauChamCam.SetActive(hienIcon);
         }
+
+        ObjectiveTarget objTarget = GetComponent<ObjectiveTarget>();
+        if (objTarget != null)
+        {
+            if (hienIcon) objTarget.ShowMarker();
+            else objTarget.HideMarker();
+        }
     }
 }

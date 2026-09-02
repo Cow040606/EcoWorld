@@ -62,6 +62,11 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     [Header("Trạng Thái Sinh Mệnh")]
     [Networked] public NetworkBool isDead { get; set; }
     [Networked] public TickTimer dongHoHoiSinh { get; set; }
+    [Networked] public NetworkBool isTeleporting { get; set; }
+    [Networked] public TickTimer dongHoChayVFX_Di { get; set; }
+    [Networked] public TickTimer dongHoChayVFX_Den { get; set; }
+    [Networked] public Vector3 diemDichChuyenPending { get; set; }
+    [Networked] public NetworkBool dangChoVFX_Den { get; set; }
 
     [Header("Balo Rơi Khi Chết")]
     public GameObject droppedBackpackPrefab;
@@ -252,6 +257,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     public enum BowState { Idle, Drawing, Holding, Shooting }
     public BowState currentBowState = BowState.Idle;
+
+    [Header("Hiệu Ứng (VFX)")]
+    public GameObject healVFXPrefab;
+    public GameObject levelUpVFXPrefab;
+    public GameObject rockHitVFXPrefab;
+    public GameObject teleportDepartVFXPrefab;
+    public GameObject teleportArriveVFXPrefab;
+    public AudioClip teleportDepartSFX;
+    public AudioClip teleportArriveSFX;
+    public float thoiGianChayVFX_Di = 1.5f;
+    public float thoiGianChayVFX_Den = 1.0f;
     #endregion
 
     #region 2. KHỞI TẠO & VÒNG LẶP CHÍNH
@@ -364,6 +380,34 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
                 jumpPressedLocal = false;
                 dashPressedLocal = false;
                 sprintPressedLocal = false;
+                
+                if (InventoryManager.instance != null && InventoryManager.instance.trangThaiBalo)
+                {
+                    InventoryManager.instance.BatTatBalo(TuiDo, this);
+                }
+                return;
+            }
+
+            if (isTeleporting)
+            {
+                moveInputLocal = Vector2.zero;
+                jumpPressedLocal = false;
+                dashPressedLocal = false;
+                sprintPressedLocal = false;
+
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                yRotation += Mouse.current.delta.x.ReadValue() * mouseSensitivity;
+                xRotation -= Mouse.current.delta.y.ReadValue() * mouseSensitivity;
+                xRotation = Mathf.Clamp(xRotation, -60f, 60f);
+
+                float scrollValue = Mouse.current.scroll.y.ReadValue();
+                if (scrollValue != 0)
+                {
+                    khoangCachMucTieu -= Mathf.Sign(scrollValue) * tocDoZoomChuot;
+                    khoangCachMucTieu = Mathf.Clamp(khoangCachMucTieu, khoangCachMin, khoangCachMax);
+                }
+
                 return;
             }
 
@@ -499,6 +543,39 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             {
                 dongHoHoiSinh = TickTimer.None;
                 HoiSinhNhanVat();
+            }
+            return;
+        }
+
+        if (isTeleporting)
+        {
+            character.Move(Vector3.zero); // Bắt buộc phải gọi Move để KCC cập nhật Transform và va chạm!
+            isrun = isSprinting = isJumping = false;
+            
+            if (HasStateAuthority)
+            {
+                if (!dangChoVFX_Den)
+                {
+                    if (dongHoChayVFX_Di.Expired(Runner))
+                    {
+                        dongHoChayVFX_Di = TickTimer.None;
+                        character.Teleport(diemDichChuyenPending);
+                        character.Velocity = Vector3.zero;
+                        
+                        dangChoVFX_Den = true;
+                        dongHoChayVFX_Den = TickTimer.CreateFromSeconds(Runner, thoiGianChayVFX_Den);
+                        RPC_HienThiVFXTeleport(diemDichChuyenPending, false);
+                    }
+                }
+                else
+                {
+                    if (dongHoChayVFX_Den.Expired(Runner))
+                    {
+                        dongHoChayVFX_Den = TickTimer.None;
+                        isTeleporting = false;
+                        dangChoVFX_Den = false;
+                    }
+                }
             }
             return;
         }
@@ -1283,6 +1360,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (cucDa != null)
             {
                 cucDa.RPC_NhanSatThuongCuoc(25f);
+                Vector3 hitPoint = col.ClosestPoint(hitboxCenter);
+                RPC_HienThiVFXDaoDa(hitPoint);
             }
         }
     }
@@ -1799,6 +1878,7 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (daLenCap)
         {
             RPC_CapNhatNhiemVuLevel();
+            RPC_HienThiVFXLevelUp();
         }
     }
 
@@ -1816,6 +1896,36 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public void RPC_AddExp(float exp)
     {
         Server_AddExp(exp);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_HienThiVFXLevelUp()
+    {
+        if (levelUpVFXPrefab != null)
+        {
+            GameObject vfx = Instantiate(levelUpVFXPrefab, transform.position, Quaternion.identity, transform);
+            Destroy(vfx, 3f);
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_HienThiVFXHeal()
+    {
+        if (healVFXPrefab != null)
+        {
+            GameObject vfx = Instantiate(healVFXPrefab, transform.position, Quaternion.identity, transform);
+            Destroy(vfx, 3f);
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_HienThiVFXDaoDa(Vector3 viTri)
+    {
+        if (rockHitVFXPrefab != null)
+        {
+            GameObject vfx = Instantiate(rockHitVFXPrefab, viTri, Quaternion.identity);
+            Destroy(vfx, 3f);
+        }
     }
 
     public int DemSoLuongVatPham(int itemID)
@@ -2023,7 +2133,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             if (thongTin.loaiTieuHao == Item.LoaiTieuHao.SuaGiap)
                 CurrentArmor = Mathf.Clamp(CurrentArmor + thongTin.luongHoiPhuc, 0, MaxArmor);
             else if (thongTin.loaiTieuHao == Item.LoaiTieuHao.HoiMau)
+            {
                 CurrentHealth = Mathf.Clamp(CurrentHealth + thongTin.luongHoiPhuc, 0, MaxHealth);
+                RPC_HienThiVFXHeal();
+            }
             else if (thongTin.loaiTieuHao == Item.LoaiTieuHao.HoiTheLuc)
                 CurrentStamina = Mathf.Clamp(CurrentStamina + thongTin.luongHoiPhuc, 0, MaxStamina);
         }
@@ -2499,16 +2612,40 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         if (Phaocauca != null) currentphaocauca = Instantiate(Phaocauca, viTriMatNuoc, Quaternion.identity);
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_XinPhepDichChuyen(Vector3 toaDoMoi)
-    {
-        if (character != null) character.Teleport(toaDoMoi);
-    }
-
     public void ThucHienDichChuyen(Vector3 toaDoMoi)
     {
-        if (Object.HasStateAuthority) { if (character != null) character.Teleport(toaDoMoi); }
-        else RPC_XinPhepDichChuyen(toaDoMoi);
+        if (HasInputAuthority)
+        {
+            RPC_BatDauDichChuyen(toaDoMoi);
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_BatDauDichChuyen(Vector3 toaDoMoi)
+    {
+        diemDichChuyenPending = toaDoMoi;
+        dangChoVFX_Den = false;
+        isTeleporting = true;
+        dongHoChayVFX_Di = TickTimer.CreateFromSeconds(Runner, thoiGianChayVFX_Di);
+        RPC_HienThiVFXTeleport(transform.position, true);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_HienThiVFXTeleport(Vector3 viTri, NetworkBool isDepart)
+    {
+        GameObject prefab = isDepart ? teleportDepartVFXPrefab : teleportArriveVFXPrefab;
+        AudioClip sfx = isDepart ? teleportDepartSFX : teleportArriveSFX;
+
+        if (prefab != null)
+        {
+            GameObject vfx = Instantiate(prefab, viTri, Quaternion.identity);
+            Destroy(vfx, 3f);
+        }
+
+        if (sfx != null)
+        {
+            AudioSource.PlayClipAtPoint(sfx, viTri);
+        }
     }
 
     public void Click_NutBanGo()

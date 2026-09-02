@@ -10,6 +10,8 @@ public class ESC : MonoBehaviour
     public static ESC instance;
     public GameObject khungESC; 
     public bool isESC_Open; 
+    [Header("Các UI sẽ bị ẩn khi mở ESC")]
+    public List<GameObject> uisToHide;
     
     void Awake()
     {
@@ -28,6 +30,17 @@ public class ESC : MonoBehaviour
         if (khungESC != null) 
         {
             khungESC.SetActive(isESC_Open);
+        }
+
+        if (uisToHide != null)
+        {
+            foreach (GameObject ui in uisToHide)
+            {
+                if (ui != null)
+                {
+                    ui.SetActive(!isESC_Open);
+                }
+            }
         }
 
         if (isESC_Open && Player_Controller.localPlayer != null)

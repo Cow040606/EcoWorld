@@ -8820,17 +8820,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2587.374
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 72.306885
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1984.3146
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
@@ -9261,6 +9261,11 @@ MonoBehaviour:
     _value: 0
   _isDead:
     _value: 0
+  _isTeleporting:
+    _value: 0
+  _diemDichChuyenPending: {x: 0, y: 0, z: 0}
+  _dangChoVFX_Den:
+    _value: 0
   droppedBackpackPrefab: {fileID: 736204043963346399, guid: 4e051ee77a3500748a78730d7b987a3e,
     type: 3}
   baseMaxHealth: 100
@@ -9295,7 +9300,7 @@ MonoBehaviour:
   tocDoZoomChuot: 0.5
   layerVaChamCamera:
     serializedVersion: 2
-    m_Bits: 67071
+    m_Bits: 71167
   fovBinhThuong: 60
   fovChayNhanh: 70
   tocDoZoom: 1
@@ -9359,6 +9364,20 @@ MonoBehaviour:
   arrowLoadingSound: {fileID: 8300000, guid: ad33a172b47c3954481ae9e1e2dddbeb, type: 3}
   arrowShotSound: {fileID: 8300000, guid: 23fa0345360959d4bb309b25aefd2610, type: 3}
   currentBowState: 0
+  healVFXPrefab: {fileID: 1592372973558972, guid: 721cfe8018b2cd04abd0748143d2a312,
+    type: 3}
+  levelUpVFXPrefab: {fileID: 1343423572576872, guid: 85d6ef735eaa04e41ac9800900084d28,
+    type: 3}
+  rockHitVFXPrefab: {fileID: 1509486939602526, guid: 2bdfafb54af034a46815013e96d908d0,
+    type: 3}
+  teleportDepartVFXPrefab: {fileID: 1658448689254514, guid: 1d45734a67e531c43b87d8b56a4dcff5,
+    type: 3}
+  teleportArriveVFXPrefab: {fileID: 2811559171390492949, guid: 7ada66e14a4aec34292b67dabd608e9d,
+    type: 3}
+  teleportDepartSFX: {fileID: 8300000, guid: 6f883c891e63cad45a4f31456878bc3d, type: 3}
+  teleportArriveSFX: {fileID: 8300000, guid: bffd04c63c968ad4fb0e13f0e411bace, type: 3}
+  thoiGianChayVFX_Di: 1
+  thoiGianChayVFX_Den: 1
 --- !u!114 &1843947881778020044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9503,7 +9522,7 @@ MonoBehaviour:
   danhSachTiengChatCay:
   - {fileID: 8300000, guid: efa9a58e2d381af458ca340bdcf5c9d3, type: 3}
   tiengCauCa: {fileID: 8300000, guid: 385a63505e95421489c7584279768f3c, type: 3}
-  tiengDaoKhoang: {fileID: 8300000, guid: c50cfac9d348aab4f8a785117b08e295, type: 3}
+  tiengDaoKhoang: {fileID: 8300000, guid: de7334b2addd37a4a84c317b1b09331b, type: 3}
   tiengChatCay: {fileID: 8300000, guid: a53f35461784ea84084737d6a7b66096, type: 3}
   tiengNhay: {fileID: 8300000, guid: b7cf106466df06a4d80f15e83f6740e6, type: 3}
   tiengBiThuong: {fileID: 8300000, guid: 5d17fc20dae41894e963d4b043c1b189, type: 3}

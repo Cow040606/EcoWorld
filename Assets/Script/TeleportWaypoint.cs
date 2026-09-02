@@ -18,10 +18,12 @@ public class TeleportWaypoint : MonoBehaviour
 
         if (Player_Controller.localPlayer != null)
         {
-            // Lấy tọa độ (position) của cái Object đó truyền vào hàm
             Player_Controller.localPlayer.ThucHienDichChuyen(diemDichChuyen.position);
             
-            // TODO: Bò có thể gọi lệnh đóng Map ở đây nếu muốn
+            if (MapManager.Instance != null)
+            {
+                MapManager.Instance.DongMap();
+            }
         }
         else
         {

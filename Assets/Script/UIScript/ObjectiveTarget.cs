@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class ObjectiveTarget : MonoBehaviour
@@ -12,6 +12,10 @@ public class ObjectiveTarget : MonoBehaviour
     public Color iconColor = Color.white; 
     public Vector3 markerOffset = new Vector3(0, 2f, 0);
     public string canvasName = "UI_Canvas";
+
+    [Header("Quest & Default State")]
+    [Tooltip("Tích vào đây nếu Object này là NPC giao nhiệm vụ. Nó sẽ ẩn đi ban đầu và chỉ hiện khi có Quest.")]
+    public bool hideOnStart = false;
 
     [Header("Minimap Settings")]
     [Tooltip("Bật nếu bạn dùng Minimap dạng Camera chiếu từ trên xuống (Render Texture)")]
@@ -27,7 +31,10 @@ public class ObjectiveTarget : MonoBehaviour
 
     private void Start()
     {
-        CreateMarkers();
+        if (!hideOnStart)
+        {
+            CreateMarkers();
+        }
     }
 
     public void CreateMarkers()
