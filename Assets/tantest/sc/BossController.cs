@@ -8,7 +8,7 @@ public class BossController : NetworkBehaviour
     [Header("Định danh Boss")]
     [Tooltip("ID của Boss. Dùng để đối chiếu với targetID trong Nhiệm Vụ.")]
     public int bossID = 100;
-    public string tenBoss = "Quỷ Khổng Lồ";
+    public string tenBoss = "Quái Khổng Lồ";
     public Sprite avatarBoss;
 
     [Header("Chỉ số Boss")]
@@ -22,7 +22,7 @@ public class BossController : NetworkBehaviour
     [Tooltip("Danh sách các vật phẩm có thể rớt (Bắt buộc phải có component NetworkObject)")]
     public List<GameObject> dropItems;
 
-    [Tooltip("Tỉ lệ rớt đồ (0 đến 100%)")]
+    [Tooltip("Tỷ lệ rớt đồ (0 đến 100%)")]
     [Range(0f, 100f)] public float dropChance = 100f;
 
     [Header("Âm Thanh (Audio)")]
@@ -38,7 +38,7 @@ public class BossController : NetworkBehaviour
 
     [Header("Cơ chế Vùng & Di chuyển (NavMesh)")]
     public float tocDoTuanTra = 1.5f;
-    public float tocDoDuoiTheo = 2f;
+    public float tocDoDuoiTheo = 2.5f;
     public float banKinhTuanTra = 15f;
     public float banKinhPhatHien = 20f;
     public float banKinhTanCong = 3f;
@@ -52,7 +52,10 @@ public class BossController : NetworkBehaviour
     public int soDonDeTungSkill = 3;
     public float skillDamage = 80f;
     public float thoiGianHoiSkill = 3.5f;
+    [Tooltip("Thời gian hồi chiêu tối thiểu giữa các lần tung skill để tránh spam")]
+    public float skillCooldown = 8f;
     [Networked] private int hitCount { get; set; }
+    [Networked] private TickTimer skillCooldownTimer { get; set; }
 
     [Header("Bị Đánh & Kháng Choáng (Chống Spam)")]
     public float thoiGianChoang = 1f;
@@ -64,7 +67,7 @@ public class BossController : NetworkBehaviour
     public float khoangCachHienThanhMau = 25f;
     public static BossController currentActiveBoss;
 
-    [Header("Cài Đặt Despawn")]
+    [Header("Cài đặt Despawn")]
     public float thoiGianBienMat = 4f;
     [Networked] private TickTimer despawnTimer { get; set; }
 
@@ -85,7 +88,7 @@ public class BossController : NetworkBehaviour
     private float heSoScale = 1f;
     private TickTimer scanTargetTimer;
     private TickTimer updatePathTimer;
-    private Collider[] scanResults = new Collider[32];
+    private Collider[] scanResults = new Collider[64];
 
     private readonly int hashSpeed = Animator.StringToHash("Speed");
     private readonly int hashAttack = Animator.StringToHash("Attack");
@@ -117,6 +120,14 @@ public class BossController : NetworkBehaviour
 
         if (HasStateAuthority)
         {
+            if (agent != null)
+            {
+                agent.enabled = true;
+                if (!agent.isOnNavMesh && NavMesh.SamplePosition(transform.position, out NavMeshHit navHit, 5f, NavMesh.AllAreas))
+                {
+                    agent.Warp(navHit.position);
+                }
+            }
             CurrentHealth = maxHealth;
             currentState = BossState.TuanTra;
             hitCount = 0;
@@ -147,7 +158,7 @@ public class BossController : NetworkBehaviour
         TimMucTieuGanNhat();
         CapNhatTrangThaiAI();
 
-        if (agent.enabled) tocDoDiChuyen = agent.velocity.magnitude;
+        if (agent != null && agent.enabled) tocDoDiChuyen = agent.velocity.magnitude;
     }
 
     public override void Render()
@@ -239,6 +250,8 @@ public class BossController : NetworkBehaviour
     #region LOGIC AI
     private void CapNhatTrangThaiAI()
     {
+        if (agent == null || !agent.enabled) return;
+
         switch (currentState)
         {
             case BossState.BiDanh:
@@ -254,12 +267,14 @@ public class BossController : NetworkBehaviour
                 if (mucTieuHienTai != null)
                 {
                     currentState = BossState.DiTheo;
+                    agent.isStopped = false; // Luôn mở lại isStopped để dí mục tiêu
                     updatePathTimer = TickTimer.None;
                 }
                 else if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance) PhatSinhDiemTuanTraMoi();
                 break;
             case BossState.DiTheo:
                 agent.speed = tocDoDuoiTheo;
+                if (agent.isStopped) agent.isStopped = false; // Đảm bảo luôn di chuyển khi ở trạng thái DiTheo
                 if (mucTieuHienTai == null)
                 {
                     currentState = BossState.TuanTra;
@@ -273,7 +288,8 @@ public class BossController : NetworkBehaviour
                         updatePathTimer = TickTimer.CreateFromSeconds(Runner, 0.25f);
                     }
                     float khoangCachToiPlayer = Vector3.Distance(transform.position, mucTieuHienTai.transform.position);
-                    if (khoangCachToiPlayer <= banKinhTanCong * heSoScale)
+                    float tamDanhThucTe = Mathf.Max(banKinhTanCong * heSoScale, agent.radius + 1.2f);
+                    if (khoangCachToiPlayer <= tamDanhThucTe)
                     {
                         currentState = BossState.TanCong;
                         agent.isStopped = true;
@@ -281,7 +297,8 @@ public class BossController : NetworkBehaviour
                 }
                 break;
             case BossState.TanCong:
-                if (mucTieuHienTai == null || Vector3.Distance(transform.position, mucTieuHienTai.transform.position) > banKinhTanCong * heSoScale)
+                float tamDanh = Mathf.Max(banKinhTanCong * heSoScale, agent.radius + 1.2f);
+                if (mucTieuHienTai == null || Vector3.Distance(transform.position, mucTieuHienTai.transform.position) > tamDanh + 1.0f)
                 {
                     currentState = BossState.DiTheo;
                     agent.isStopped = false;
@@ -291,7 +308,10 @@ public class BossController : NetworkBehaviour
                 {
                     Vector3 huongNhin = (mucTieuHienTai.transform.position - transform.position).normalized;
                     huongNhin.y = 0;
-                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(huongNhin), Runner.DeltaTime * 10f);
+                    if (huongNhin != Vector3.zero)
+                    {
+                        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(huongNhin), Runner.DeltaTime * 10f);
+                    }
                     if (attackTimer.ExpiredOrNotRunning(Runner)) ThucHienDanhPlayer();
                 }
                 break;
@@ -303,16 +323,25 @@ public class BossController : NetworkBehaviour
         if (!scanTargetTimer.ExpiredOrNotRunning(Runner)) return;
         scanTargetTimer = TickTimer.CreateFromSeconds(Runner, 0.5f);
 
-        float tamPhatHienThucTe = banKinhPhatHien * heSoScale;
+        // Đảm bảo bán kính phát hiện tối thiểu 15m để tránh trường hợp cấu hình prefab quá thấp (như ork2 = 5m)
+        float tamPhatHienThucTe = Mathf.Max(banKinhPhatHien * heSoScale, 15f);
+        // Tầm mất dấu rộng hơn tầm phát hiện để quái tiếp tục dí khi player vừa lùi lại
+        float tamMatDau = tamPhatHienThucTe * 1.5f;
+
         if (mucTieuHienTai != null)
         {
-            if (mucTieuHienTai.isDead || Vector3.Distance(transform.position, mucTieuHienTai.transform.position) > tamPhatHienThucTe) mucTieuHienTai = null;
+            if (mucTieuHienTai.isDead || Vector3.Distance(transform.position, mucTieuHienTai.transform.position) > tamMatDau)
+            {
+                mucTieuHienTai = null;
+            }
         }
 
         if (mucTieuHienTai == null)
         {
-            int numHits = Physics.OverlapSphereNonAlloc(transform.position, tamPhatHienThucTe, scanResults);
             float khoangCachNganNhat = Mathf.Infinity;
+
+            // 1. Quét theo vật lý OverlapSphereNonAlloc
+            int numHits = Physics.OverlapSphereNonAlloc(transform.position, tamPhatHienThucTe, scanResults);
             for (int i = 0; i < numHits; i++)
             {
                 Collider hit = scanResults[i];
@@ -331,11 +360,31 @@ public class BossController : NetworkBehaviour
                 }
             }
             System.Array.Clear(scanResults, 0, numHits);
+
+            // 2. Dự phòng: Nếu OverlapSphere bị che chắn bởi vật thể môi trường, quét danh sách Player trong phòng
+            if (mucTieuHienTai == null)
+            {
+                Player_Controller[] players = FindObjectsOfType<Player_Controller>();
+                foreach (var p in players)
+                {
+                    if (p != null && !p.isDead)
+                    {
+                        float d = Vector3.Distance(transform.position, p.transform.position);
+                        if (d <= tamPhatHienThucTe && d < khoangCachNganNhat)
+                        {
+                            khoangCachNganNhat = d;
+                            mucTieuHienTai = p;
+                        }
+                    }
+                }
+            }
         }
     }
 
     private void PhatSinhDiemTuanTraMoi()
     {
+        if (agent == null || !agent.enabled) return;
+
         float tamTuanTraThucTe = banKinhTuanTra * heSoScale;
         Vector3 diemRandom = viTriGoc + Random.insideUnitSphere * tamTuanTraThucTe;
         if (NavMesh.SamplePosition(diemRandom, out NavMeshHit navHit, tamTuanTraThucTe, NavMesh.AllAreas)) agent.SetDestination(navHit.position);
@@ -345,11 +394,13 @@ public class BossController : NetworkBehaviour
     private void ThucHienDanhPlayer()
     {
         hitCount++;
-        if (hitCount >= soDonDeTungSkill)
+        // Chỉ tung skill khi đủ số đòn VÀ đã hết thời gian hồi chiêu skill
+        if (hitCount >= soDonDeTungSkill && skillCooldownTimer.ExpiredOrNotRunning(Runner))
         {
             RPC_AnimSkill();
             hitCount = 0;
             attackTimer = TickTimer.CreateFromSeconds(Runner, thoiGianHoiSkill);
+            skillCooldownTimer = TickTimer.CreateFromSeconds(Runner, skillCooldown); // Khóa hồi chiêu skill
         }
         else
         {
@@ -371,14 +422,19 @@ public class BossController : NetworkBehaviour
         }
     }
 
+    private float lastSkillVfxTime = -999f;
     private void SpawnSkillVFX()
     {
+        // Chống gọi lặp đè VFX nhiều lần trong một nhịp tung chiêu
+        if (Time.time < lastSkillVfxTime + 3f) return;
+        lastSkillVfxTime = Time.time;
+
         if (skillVFXPrefab != null)
         {
             Vector3 spawnPos = vfxSpawnPoint != null ? vfxSpawnPoint.position : (transform.position + transform.forward * 1.5f + Vector3.up * 1f);
             Quaternion spawnRot = vfxSpawnPoint != null ? vfxSpawnPoint.rotation : transform.rotation;
             GameObject vfx = Instantiate(skillVFXPrefab, spawnPos, spawnRot);
-            Destroy(vfx, 5f);
+            Destroy(vfx, 3.5f);
         }
     }
 
@@ -391,7 +447,8 @@ public class BossController : NetworkBehaviour
         if (mucTieuHienTai != null && !mucTieuHienTai.isDead)
         {
             float distance = Vector3.Distance(transform.position, mucTieuHienTai.transform.position);
-            if (distance <= banKinhTanCong * heSoScale + 1f)
+            float tamDanh = Mathf.Max(banKinhTanCong * heSoScale, (agent != null ? agent.radius : 0.5f) + 1.2f) + 1.5f;
+            if (distance <= tamDanh)
             {
                 mucTieuHienTai.Server_TakeDamageFromBoss(attackDamage);
             }
@@ -407,7 +464,8 @@ public class BossController : NetworkBehaviour
         if (mucTieuHienTai != null && !mucTieuHienTai.isDead)
         {
             float distance = Vector3.Distance(transform.position, mucTieuHienTai.transform.position);
-            if (distance <= (banKinhTanCong * heSoScale) + 2f)
+            float tamDanh = Mathf.Max(banKinhTanCong * heSoScale, (agent != null ? agent.radius : 0.5f) + 1.2f) + 2.5f;
+            if (distance <= tamDanh)
             {
                 mucTieuHienTai.Server_TakeDamageFromBoss(skillDamage);
             }
@@ -427,7 +485,7 @@ public class BossController : NetworkBehaviour
         if (CurrentHealth <= 0)
         {
             currentState = BossState.Chet;
-            if (agent.isActiveAndEnabled) agent.isStopped = true;
+            if (agent != null && agent.isActiveAndEnabled) agent.isStopped = true;
             RPC_AnimDead();
             despawnTimer = TickTimer.CreateFromSeconds(Runner, thoiGianBienMat);
 
@@ -445,7 +503,7 @@ public class BossController : NetworkBehaviour
             if (mienChoangTimer.ExpiredOrNotRunning(Runner))
             {
                 currentState = BossState.BiDanh;
-                if (agent.isActiveAndEnabled) agent.isStopped = true;
+                if (agent != null && agent.isActiveAndEnabled) agent.isStopped = true;
                 stunTimer = TickTimer.CreateFromSeconds(Runner, thoiGianChoang);
                 mienChoangTimer = TickTimer.CreateFromSeconds(Runner, thoiGianChoang + thoiGianMienChoang);
                 RPC_AnimHurt();
@@ -553,7 +611,7 @@ public class BossController : NetworkBehaviour
     {
         float tiLe = Application.isPlaying ? heSoScale : Mathf.Max(transform.lossyScale.x, transform.lossyScale.z);
         Gizmos.color = Color.green; Gizmos.DrawWireSphere(Application.isPlaying ? viTriGoc : transform.position, banKinhTuanTra * tiLe);
-        Gizmos.color = Color.yellow; Gizmos.DrawWireSphere(transform.position, banKinhPhatHien * tiLe);
+        Gizmos.color = Color.yellow; Gizmos.DrawWireSphere(transform.position, Mathf.Max(banKinhPhatHien * tiLe, 15f));
         Gizmos.color = Color.red; Gizmos.DrawWireSphere(transform.position, banKinhTanCong * tiLe);
     }
 }

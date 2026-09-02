@@ -9,7 +9,7 @@ using UnityEngine.AI;
 public class NPC_DialogueTrigger : MonoBehaviour
 {
     [Header("Định danh NPC")]
-    public int npcID; // ID NPC (khớp với targetID trong QuestSO)
+    public int npcID; 
 
     [Header("Kéo thả cuộc hội thoại vào đây")]
     public NPCConversation cuocHoiThoaiCuaNPC; 
@@ -18,7 +18,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
     public float tamHoatDong = 5f; 
 
     [Header("Icon Dấu Chấm Cảm (!) Nhiệm Vụ")]
-    public GameObject iconDauChamCam; // GameObject icon ! trên đầu NPC hoặc trên Map
+    public GameObject iconDauChamCam; 
 
     [Header("Danh Sách UI Cần Ẩn Khi Chạy Cutscene")]
     public List<GameObject> danhSachUIAnKhiChayCutscene = new List<GameObject>();
@@ -32,15 +32,9 @@ public class NPC_DialogueTrigger : MonoBehaviour
     [Header("Danh sách Model NPC cần ẩn khi chạy cutscene")]
     public List<GameObject> danhSachModelNPCCanAn = new List<GameObject>();
 
-    // =========================================================================
-    // CODE: Danh sách Model sẽ bị ẨN LUÔN sau khi Cutscene (chung) kết thúc
-    // =========================================================================
     [Header("Danh sách Model NPC cần ẨN LUÔN sau khi Cutscene")]
     public List<GameObject> danhSachModelNPCAnSauCutscene = new List<GameObject>();
 
-    // =========================================================================
-    // CODE MỚI THÊM: Danh sách Model ẨN LUÔN dành riêng cho Cutscene thứ 3
-    // =========================================================================
     [Header("Danh sách Model NPC cần ẨN LUÔN sau Cutscene thứ 3")]
     public List<GameObject> danhSachModelNPCAnSauCutscene3 = new List<GameObject>();
 
@@ -48,8 +42,10 @@ public class NPC_DialogueTrigger : MonoBehaviour
     public Transform viTriDichChuyen;
 
     private List<Renderer> playerRenderersDaAn = new List<Renderer>();
-
     private bool dangNóiChuyenVoiNPCNay = false;
+    
+    // Biến đánh dấu riêng cho cutscene thứ 3
+    private bool dangChayCutscene3 = false;
 
     private void OnEnable()
     {
@@ -63,7 +59,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
 
     private void Start()
     {
-        // Ẩn icon ban đầu
         CapNhatIconNhiemVu(false);
     }
 
@@ -87,7 +82,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
                         dangNóiChuyenVoiNPCNay = true;
                         ConversationManager.Instance.StartConversation(cuocHoiThoaiCuaNPC);
 
-                        // Tự động cập nhật thông số cho tất cả nhiệm vụ khi bắt đầu đối thoại
                         NPC_QuestBridge bridge = FindFirstObjectByType<NPC_QuestBridge>();
                         if (bridge != null)
                         {
@@ -105,7 +99,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
         {
             dangNóiChuyenVoiNPCNay = false;
 
-            // Báo cho QuestManager hoàn thành nhiệm vụ và tự nhận thưởng!
             if (Player_QuestManager.localQuest != null)
             {
                 Player_QuestManager.localQuest.HoanThanhNhiemVuNPC(npcID);
@@ -114,10 +107,20 @@ public class NPC_DialogueTrigger : MonoBehaviour
     }
 
     // =========================================================================
-    // CÁC HÀM DÙNG GẮN VÀO EVENT TRONG DIALOGUE EDITOR (OPTION NODE / SPEECH NODE)
+    // HÀM MỚI: DÙNG ĐỂ CHẠY RIÊNG TIMELINE THỨ 3 VÀ TỰ ĐỘNG ẨN MODEL
     // =========================================================================
+    public void ChayTimelineThu3VaAnModel(PlayableDirector timeline)
+    {
+        dangChayCutscene3 = true; // Bật cờ đánh dấu
+        ChayTimelineCuThe(timeline); // Vẫn gọi hàm chạy Timeline như cũ
+    }
+    
+    public void ChayCutsceneThu3VaAnModel_GameObject(GameObject objCutscene)
+    {
+        dangChayCutscene3 = true; // Bật cờ đánh dấu
+        ChayCutsceneCuThe(objCutscene);
+    }
 
-    // 1. Chạy 1 GameObject Cutscene CỤ THỂ (Tự ẩn UI, hiện chuột, chạy xong tự tắt Cutscene & hiện lại UI)
     public void ChayCutsceneCuThe(GameObject objCutscene)
     {
         if (objCutscene != null)
@@ -130,7 +133,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
 
             if (director != null)
             {
-                // QUAN TRỌNG: Đảm bảo Timeline vẫn chạy mượt mà ngay cả khi Hội thoại (Dialogue Editor) làm dừng game (Time.timeScale = 0)
                 director.timeUpdateMode = DirectorUpdateMode.UnscaledGameTime;
                 director.time = 0;
                 director.Play();
@@ -138,11 +140,9 @@ public class NPC_DialogueTrigger : MonoBehaviour
 
             StopAllCoroutines();
             StartCoroutine(TienTrinhTheoDoiCutscene(objCutscene, director));
-            // Debug.Log($"<color=green>[NPC Cutscene]:</color> Bắt đầu phát Cutscene: {objCutscene.name}");
         }
     }
 
-    // 2. Phát 1 Timeline PlayableDirector CỤ THỂ
     public void ChayTimelineCuThe(PlayableDirector timeline)
     {
         if (timeline != null)
@@ -150,81 +150,52 @@ public class NPC_DialogueTrigger : MonoBehaviour
             AnDanhSachUI();
             timeline.gameObject.SetActive(true);
             
-            // Cấu hình UnscaledGameTime để không bị đóng băng
             timeline.timeUpdateMode = DirectorUpdateMode.UnscaledGameTime;
             timeline.time = 0;
             timeline.Play();
 
             StopAllCoroutines();
             StartCoroutine(TienTrinhTheoDoiCutscene(timeline.gameObject, timeline));
-            // Debug.Log($"<color=green>[NPC Cutscene]:</color> Đã phát Timeline Cutscene: {timeline.name}");
         }
     }
 
-    // 3. Ẩn/Tắt 1 GameObject Cutscene CỤ THỂ bất kỳ thủ công
     public void TatCutsceneCuThe(GameObject objCutscene)
     {
         if (objCutscene != null)
         {
             objCutscene.SetActive(false);
             HienDanhSachUI();
-            
-            // Ẩn các model sau khi tắt thủ công
             XuLyAnModelSauCutscene();
-            
-            // Debug.Log($"<color=yellow>[NPC Cutscene]:</color> Đã tắt Cutscene GameObject: {objCutscene.name}");
         }
     }
 
-    // =========================================================================
-    // CÁC HÀM DỊCH CHUYỂN NPC ĐẾN VỊ TRÍ MỤC TIÊU
-    // =========================================================================
-
-    // 4. Dịch chuyển NPC này đến 1 GameObject vị trí cụ thể
     public void DiChuyenNPCDenViTri(GameObject targetObj)
     {
-        if (targetObj != null)
-        {
-            ThucHienDichChuyen(transform, targetObj.transform.position, targetObj.transform.rotation);
-        }
+        if (targetObj != null) ThucHienDichChuyen(transform, targetObj.transform.position, targetObj.transform.rotation);
     }
 
-    // 5. Dịch chuyển NPC này đến 1 Transform vị trí cụ thể
     public void DiChuyenNPCDenTransform(Transform targetTransform)
     {
-        if (targetTransform != null)
-        {
-            ThucHienDichChuyen(transform, targetTransform.position, targetTransform.rotation);
-        }
+        if (targetTransform != null) ThucHienDichChuyen(transform, targetTransform.position, targetTransform.rotation);
     }
 
-    // 6. Dịch chuyển NPC này đến vị trí đã kéo sẵn trong Inspector (viTriDichChuyen)
     public void DiChuyenNPCDenViTriDaChon()
     {
-        if (viTriDichChuyen != null)
-        {
-            ThucHienDichChuyen(transform, viTriDichChuyen.position, viTriDichChuyen.rotation);
-        }
+        if (viTriDichChuyen != null) ThucHienDichChuyen(transform, viTriDichChuyen.position, viTriDichChuyen.rotation);
     }
 
-    // 7. Dịch chuyển một đối tượng bất kỳ đến vị trí của một GameObject khác
     public void DiChuyenDoiTuong(GameObject doiTuongCanChuyen, GameObject viTriMoi)
     {
-        if (doiTuongCanChuyen != null && viTriMoi != null)
-        {
-            ThucHienDichChuyen(doiTuongCanChuyen.transform, viTriMoi.transform.position, viTriMoi.transform.rotation);
-        }
+        if (doiTuongCanChuyen != null && viTriMoi != null) ThucHienDichChuyen(doiTuongCanChuyen.transform, viTriMoi.transform.position, viTriMoi.transform.rotation);
     }
 
-    // =========================================================================
-    // CODE MỚI THÊM: HÀM GỌI ĐỂ ẨN MODEL CHO CUTSCENE 3 (GẮN VÀO EVENT DIALOGUE)
-    // =========================================================================
     public void AnModelSauCutsceneThu3()
     {
         if (danhSachModelNPCAnSauCutscene3 != null && danhSachModelNPCAnSauCutscene3.Count > 0)
         {
             foreach (var model in danhSachModelNPCAnSauCutscene3)
             {
+                // LƯU Ý QUAN TRỌNG CHO BẠN: model ở đây phải là MESH/MODEL con, chứ không phải GameObject chứa script này.
                 if (model != null)
                 {
                     model.SetActive(false);
@@ -233,7 +204,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
         }
     }
 
-    // Hàm phụ trợ thực hiện di chuyển: Hỗ trợ an toàn cho NavMeshAgent, CharacterController và Rigidbody
     private void ThucHienDichChuyen(Transform doiTuong, Vector3 viTriMoi, Quaternion gocXoayMoi)
     {
         if (doiTuong == null) return;
@@ -270,7 +240,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
 
     public static bool isCutsceneActive = false;
 
-    // --- HÀM ẨN / HIỆN UI & QUẢN LÝ CHUỘT ---
     public void AnDanhSachUI()
     {
         isCutsceneActive = true;
@@ -380,6 +349,15 @@ public class NPC_DialogueTrigger : MonoBehaviour
 
         HienDanhSachUI();
         XuLyAnModelSauCutscene();
+
+        // =====================================================================
+        // KIỂM TRA: NẾU ĐÂY LÀ CUTSCENE 3, ẨN MODEL XONG RỒI TẮT CỜ ĐI
+        // =====================================================================
+        if (dangChayCutscene3)
+        {
+            AnModelSauCutsceneThu3();
+            dangChayCutscene3 = false;
+        }
     }
 
     private void XuLyAnModelSauCutscene()
@@ -388,10 +366,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
         {
             foreach (var model in danhSachModelNPCAnSauCutscene)
             {
-                if (model != null)
-                {
-                    model.SetActive(false);
-                }
+                if (model != null) model.SetActive(false);
             }
         }
     }
@@ -402,10 +377,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
         {
             foreach (var ui in danhSachUIAnKhiChayCutscene)
             {
-                if (ui != null && ui.activeSelf) 
-                {
-                    ui.SetActive(false);
-                }
+                if (ui != null && ui.activeSelf) ui.SetActive(false);
             }
         }
         
@@ -413,10 +385,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
         {
             foreach (var ui in danhSachUIHienKhiChayCutscene)
             {
-                if (ui != null && !ui.activeSelf) 
-                {
-                    ui.SetActive(true);
-                }
+                if (ui != null && !ui.activeSelf) ui.SetActive(true);
             }
         }
 
@@ -460,10 +429,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
 
         foreach (var r in playerRenderersDaAn)
         {
-            if (r != null)
-            {
-                r.enabled = true;
-            }
+            if (r != null) r.enabled = true;
         }
         playerRenderersDaAn.Clear();
     }
@@ -474,10 +440,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
         {
             foreach (var model in danhSachModelNPCCanAn)
             {
-                if (model != null && model.activeSelf)
-                {
-                    model.SetActive(false);
-                }
+                if (model != null && model.activeSelf) model.SetActive(false);
             }
         }
 

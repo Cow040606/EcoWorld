@@ -15,7 +15,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2635629072821055117
 Transform:
   m_ObjectHideFlags: 0
@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 565555762580504288}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2536.52, y: 75.12, z: -1762.8185}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -70,13 +70,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3738029132089265062}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.024005447, y: 0.8158562, z: 0.015141613, w: 0.5775579}
-  m_LocalPosition: {x: 34.552, y: 0.295, z: -197.195}
+  m_LocalRotation: {x: -0.0042947326, y: 0.9748403, z: 0.01025269, w: 0.22262724}
+  m_LocalPosition: {x: 35.361084, y: 0.34500122, z: -195.94604}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2635629072821055117}
-  m_LocalEulerAnglesHint: {x: -3.006, y: 469.44202, z: -1.244}
+  m_LocalEulerAnglesHint: {x: -1.255, y: 514.274, z: -0.218}
 --- !u!20 &5131385070912215027
 Camera:
   m_ObjectHideFlags: 0
@@ -2992,6 +2992,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2142624047827826923, guid: b784161688fde4b4bbf3873dba861153,
+        type: 3}
+      propertyPath: skillVFXPrefab
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2342448584906741412, guid: b784161688fde4b4bbf3873dba861153,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3280,7 +3285,12 @@ PrefabInstance:
     - target: {fileID: 4452568451886490296, guid: b784161688fde4b4bbf3873dba861153,
         type: 3}
       propertyPath: m_WarningMessage
-      value: 
+      value: "\nBinding warning: Some generic clip(s) animate transforms that are
+        already bound by a Humanoid avatar. These transforms can only be changed
+        by Humanoid clips.\n\tTransform 'IndexFinger_02'\n\tTransform 'Finger_02
+        1'\n\tTransform 'Elbow_R'\n\tTransform 'Finger_02'\n\tTransform 'Finger_03'\n\tTransform
+        'Ball_L'\n\tTransform 'Finger_03 1'\n\tTransform 'Thumb_02'\n\tTransform
+        'Ball_R'\n\tTransform 'Clavicle_L'\n\tand more ..."
       objectReference: {fileID: 0}
     - target: {fileID: 4485296644413008833, guid: b784161688fde4b4bbf3873dba861153,
         type: 3}
@@ -3500,7 +3510,7 @@ PrefabInstance:
     - target: {fileID: 6443896642951593970, guid: b784161688fde4b4bbf3873dba861153,
         type: 3}
       propertyPath: SortKey
-      value: 489822553
+      value: 1398191603
       objectReference: {fileID: 0}
     - target: {fileID: 6443896642951593970, guid: b784161688fde4b4bbf3873dba861153,
         type: 3}
