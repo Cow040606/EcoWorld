@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 using UnityEngine.AI;
-using TMPro; // Dùng để đọc UI Time
+using TMPro;
 
 public class EnemySpawner : NetworkBehaviour
 {
@@ -20,6 +20,9 @@ public class EnemySpawner : NetworkBehaviour
     public float spawnInterval = 3f;
 
     [Header("Time Settings (Cài đặt thời gian)")]
+    [Tooltip("Chỉ sinh quái vào ban đêm (19h - 6h sáng). Bỏ chọn để luôn luôn sinh quái bất kể ngày đêm.")]
+    public bool spawnOnlyAtNight = false;
+
     [Tooltip("Kéo object Time chứa component TextMeshPro vào đây")]
     public TextMeshProUGUI uiTimeText;
 
@@ -41,12 +44,11 @@ public class EnemySpawner : NetworkBehaviour
     {
         if (HasStateAuthority)
         {
-            spawnTimer = TickTimer.CreateFromSeconds(Runner, spawnInterval);
+            spawnTimer = TickTimer.CreateFromSeconds(Runner, 1f);
         }
     }
 
     private float _uiCheckTimer = 0f;
-    // Dùng Update thường để lấy giờ từ UI liên tục mà không ảnh hưởng tới Network Tick
     private void Update()
     {
         if (TimeController.Instance != null)
@@ -60,14 +62,13 @@ public class EnemySpawner : NetworkBehaviour
             if (_uiCheckTimer <= 0f)
             {
                 ParseTimeFromUI(uiTimeText.text);
-                _uiCheckTimer = 1f; // Chỉ đọc chữ UI 1 giây 1 lần để chống lag rác (GC Allocation)
+                _uiCheckTimer = 1f;
             }
         }
     }
 
     public override void FixedUpdateNetwork()
     {
-        // Chỉ Server/Host mới có quyền tính toán và Spawn quái
         if (!HasStateAuthority) return;
 
         if (TimeController.Instance != null)
@@ -76,69 +77,107 @@ public class EnemySpawner : NetworkBehaviour
             currentHour = Mathf.FloorToInt(totalSeconds / 3600f) % 24;
         }
 
-        // Xóa các quái vật đã bị tiêu diệt (bị Despawn = null) khỏi danh sách
         activeEnemies.RemoveAll(item => item == null);
 
-        // Kiểm tra điều kiện thời gian: Từ 19h tối đến 6h sáng
         bool isNightTime = (currentHour >= startSpawnHour) || (currentHour < endSpawnHour);
+        bool canSpawn = !spawnOnlyAtNight || isNightTime;
 
-        if (isNightTime)
+        if (canSpawn)
         {
-            // Nếu chưa đủ số lượng quái và đã hết thời gian chờ
-            if (activeEnemies.Count < maxEnemies && spawnTimer.Expired(Runner))
+            if (activeEnemies.Count < maxEnemies && spawnTimer.ExpiredOrNotRunning(Runner))
             {
                 SpawnEnemy();
-                // Đặt lại đồng hồ đếm ngược cho con quái tiếp theo
                 spawnTimer = TickTimer.CreateFromSeconds(Runner, spawnInterval);
             }
-        }
-        else
-        {
-            // Tùy chọn: Nếu bạn muốn sáng ra quái tự chết sạch, có thể xử lý ở đây
-            // Nhưng hiện tại mình đang để chúng giữ nguyên, chỉ KHÔNG spawn thêm.
         }
     }
 
     private void SpawnEnemy()
     {
-        // Tìm một điểm ngẫu nhiên trong bán kính
-        Vector3 randomPos = transform.position + Random.insideUnitSphere * spawnRadius;
-        randomPos.y = transform.position.y; // Giữ nguyên độ cao cơ bản
-
-        // Sử dụng NavMesh để đảm bảo quái vật được rớt trúng mặt đất, không lọt ra ngoài map
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomPos, out hit, spawnRadius, NavMesh.AllAreas))
+        if (!enemyPrefab.IsValid)
         {
-            // Spawn quái qua hệ thống mạng
-            NetworkObject spawnedEnemy = Runner.Spawn(enemyPrefab, hit.position, Quaternion.identity);
+            Debug.LogWarning("[EnemySpawner] enemyPrefab chưa được gán hoặc không hợp lệ!");
+            return;
+        }
 
+        Vector3 spawnPos = Vector3.zero;
+        bool foundValidPos = false;
+
+        // Thử 10 lần tìm vị trí ngẫu nhiên không bị đè lên quái đã sinh trước đó
+        for (int attempts = 0; attempts < 10; attempts++)
+        {
+            Vector2 circle = Random.insideUnitCircle * spawnRadius;
+            // Tránh tập trung quá sát tâm
+            if (circle.magnitude < 2.5f) circle = circle.normalized * 3f;
+
+            Vector3 searchPos = transform.position + new Vector3(circle.x, 0f, circle.y);
+
+            // 1. Thử lấy vị trí trên NavMesh
+            if (NavMesh.SamplePosition(searchPos, out NavMeshHit hit, 10f, NavMesh.AllAreas))
+            {
+                bool tooClose = false;
+                foreach (var active in activeEnemies)
+                {
+                    if (active != null && Vector3.Distance(active.transform.position, hit.position) < 2f)
+                    {
+                        tooClose = true;
+                        break;
+                    }
+                }
+
+                if (!tooClose)
+                {
+                    spawnPos = hit.position;
+                    foundValidPos = true;
+                    break;
+                }
+                else if (spawnPos == Vector3.zero)
+                {
+                    spawnPos = hit.position;
+                }
+            }
+            // 2. Dự phòng: Raycast dò mặt đất nếu spawner bị lệch trục Y
+            else if (Physics.Raycast(searchPos + Vector3.up * 30f, Vector3.down, out RaycastHit groundHit, 60f))
+            {
+                if (NavMesh.SamplePosition(groundHit.point, out hit, 10f, NavMesh.AllAreas))
+                {
+                    spawnPos = hit.position;
+                    foundValidPos = true;
+                    break;
+                }
+            }
+        }
+
+        if (foundValidPos || spawnPos != Vector3.zero)
+        {
+            NetworkObject spawnedEnemy = Runner.Spawn(enemyPrefab, spawnPos, Quaternion.Euler(0, Random.Range(0, 360), 0));
             if (spawnedEnemy != null)
             {
                 activeEnemies.Add(spawnedEnemy);
+                Debug.Log($"[EnemySpawner] Đã spawn quái tại {spawnPos} ({activeEnemies.Count}/{maxEnemies})");
             }
+        }
+        else
+        {
+            Debug.LogWarning($"[EnemySpawner] Không tìm thấy điểm NavMesh thích hợp quanh {transform.position} để spawn quái!");
         }
     }
 
-    // Hàm phân tích chuỗi thời gian từ TextMeshPro (VD: "19:30" hoặc "19:00 PM")
     private void ParseTimeFromUI(string timeString)
     {
         try
         {
-            // Tách chuỗi theo dấu ":" để lấy phần số giờ ở đầu tiên
             string[] timeParts = timeString.Split(':');
             if (timeParts.Length > 0)
             {
-                // Loại bỏ khoảng trắng và chuyển thành số nguyên
                 int.TryParse(timeParts[0].Trim(), out currentHour);
             }
         }
         catch
         {
-            // Debug.LogWarning("[EnemySpawner] Lỗi đọc định dạng thời gian từ UI.");
         }
     }
 
-    // Vẽ vòng tròn bán kính Spawn trong cửa sổ Scene (để dễ thiết kế map)
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

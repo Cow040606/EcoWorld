@@ -1760,19 +1760,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     public void Server_TakeDamageFromBoss(float damage)
     {
-        if (!Object.HasStateAuthority) return;
-        if (isInvincible && damage > 0) return;
-
-        if (damage > 0)
-        {
-            if (CurrentArmor >= damage) CurrentArmor -= damage;
-            else
-            {
-                float satThuongDu = damage - CurrentArmor;
-                CurrentArmor = 0;
-                CurrentHealth = Mathf.Clamp(CurrentHealth - satThuongDu, 0, MaxHealth);
-            }
-        }
+        // Gọi qua RPC_TakeDame để đảm bảo trừ máu chính xác trên máy sở hữu StateAuthority của Player
+        RPC_TakeDame(damage);
     }
 
     #endregion
