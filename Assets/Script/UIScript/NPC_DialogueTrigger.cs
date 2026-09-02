@@ -33,10 +33,16 @@ public class NPC_DialogueTrigger : MonoBehaviour
     public List<GameObject> danhSachModelNPCCanAn = new List<GameObject>();
 
     // =========================================================================
-    // CODE MỚI THÊM: Danh sách Model sẽ bị ẨN LUÔN sau khi Cutscene kết thúc
+    // CODE: Danh sách Model sẽ bị ẨN LUÔN sau khi Cutscene (chung) kết thúc
     // =========================================================================
     [Header("Danh sách Model NPC cần ẨN LUÔN sau khi Cutscene")]
     public List<GameObject> danhSachModelNPCAnSauCutscene = new List<GameObject>();
+
+    // =========================================================================
+    // CODE MỚI THÊM: Danh sách Model ẨN LUÔN dành riêng cho Cutscene thứ 3
+    // =========================================================================
+    [Header("Danh sách Model NPC cần ẨN LUÔN sau Cutscene thứ 3")]
+    public List<GameObject> danhSachModelNPCAnSauCutscene3 = new List<GameObject>();
 
     [Header("Vị trí dịch chuyển NPC (Tùy chọn)")]
     public Transform viTriDichChuyen;
@@ -163,7 +169,7 @@ public class NPC_DialogueTrigger : MonoBehaviour
             objCutscene.SetActive(false);
             HienDanhSachUI();
             
-            // CODE MỚI THÊM: Ẩn các model sau khi tắt thủ công
+            // Ẩn các model sau khi tắt thủ công
             XuLyAnModelSauCutscene();
             
             // Debug.Log($"<color=yellow>[NPC Cutscene]:</color> Đã tắt Cutscene GameObject: {objCutscene.name}");
@@ -174,31 +180,21 @@ public class NPC_DialogueTrigger : MonoBehaviour
     // CÁC HÀM DỊCH CHUYỂN NPC ĐẾN VỊ TRÍ MỤC TIÊU
     // =========================================================================
 
-    // 4. Dịch chuyển NPC này đến 1 GameObject vị trí cụ thể (Kéo GameObject mốc vị trí vào ô GameObject của Event)
+    // 4. Dịch chuyển NPC này đến 1 GameObject vị trí cụ thể
     public void DiChuyenNPCDenViTri(GameObject targetObj)
     {
         if (targetObj != null)
         {
             ThucHienDichChuyen(transform, targetObj.transform.position, targetObj.transform.rotation);
-            // Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển NPC '{gameObject.name}' đến vị trí của '{targetObj.name}' ({targetObj.transform.position})");
-        }
-        else
-        {
-            // Debug.LogWarning($"<color=yellow>[NPC Teleport]:</color> GameObject mục tiêu truyền vào bị Null trên NPC '{gameObject.name}'!");
         }
     }
 
-    // 5. Dịch chuyển NPC này đến 1 Transform vị trí cụ thể (Kéo Transform mốc vị trí vào ô Transform của Event)
+    // 5. Dịch chuyển NPC này đến 1 Transform vị trí cụ thể
     public void DiChuyenNPCDenTransform(Transform targetTransform)
     {
         if (targetTransform != null)
         {
             ThucHienDichChuyen(transform, targetTransform.position, targetTransform.rotation);
-            // Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển NPC '{gameObject.name}' đến Transform '{targetTransform.name}' ({targetTransform.position})");
-        }
-        else
-        {
-            // Debug.LogWarning($"<color=yellow>[NPC Teleport]:</color> Transform mục tiêu truyền vào bị Null trên NPC '{gameObject.name}'!");
         }
     }
 
@@ -208,11 +204,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
         if (viTriDichChuyen != null)
         {
             ThucHienDichChuyen(transform, viTriDichChuyen.position, viTriDichChuyen.rotation);
-            // Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển NPC '{gameObject.name}' đến vị trí định sẵn '{viTriDichChuyen.name}' ({viTriDichChuyen.position})");
-        }
-        else
-        {
-            // Debug.LogWarning($"<color=yellow>[NPC Teleport]:</color> Chưa gán 'viTriDichChuyen' trong Inspector của {gameObject.name}!");
         }
     }
 
@@ -222,7 +213,23 @@ public class NPC_DialogueTrigger : MonoBehaviour
         if (doiTuongCanChuyen != null && viTriMoi != null)
         {
             ThucHienDichChuyen(doiTuongCanChuyen.transform, viTriMoi.transform.position, viTriMoi.transform.rotation);
-            // Debug.Log($"<color=cyan>[NPC Teleport]:</color> Đã dịch chuyển '{doiTuongCanChuyen.name}' đến vị trí của '{viTriMoi.name}'");
+        }
+    }
+
+    // =========================================================================
+    // CODE MỚI THÊM: HÀM GỌI ĐỂ ẨN MODEL CHO CUTSCENE 3 (GẮN VÀO EVENT DIALOGUE)
+    // =========================================================================
+    public void AnModelSauCutsceneThu3()
+    {
+        if (danhSachModelNPCAnSauCutscene3 != null && danhSachModelNPCAnSauCutscene3.Count > 0)
+        {
+            foreach (var model in danhSachModelNPCAnSauCutscene3)
+            {
+                if (model != null)
+                {
+                    model.SetActive(false);
+                }
+            }
         }
     }
 
@@ -231,7 +238,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
     {
         if (doiTuong == null) return;
 
-        // Nếu đối tượng có NavMeshAgent thì dùng Warp để tránh lỗi đồng bộ / snapping
         NavMeshAgent agent = doiTuong.GetComponent<NavMeshAgent>();
         if (agent != null && agent.enabled)
         {
@@ -239,7 +245,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
         }
         else
         {
-            // Nếu có CharacterController cần tắt tạm thời trước khi set position
             CharacterController cc = doiTuong.GetComponent<CharacterController>();
             if (cc != null)
             {
@@ -255,7 +260,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
 
         doiTuong.rotation = gocXoayMoi;
 
-        // Reset vận tốc nếu có Rigidbody
         Rigidbody rb = doiTuong.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -289,7 +293,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
 
         AnModelNhanVat();
 
-        // Ép chuột hiển thị
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
@@ -316,61 +319,47 @@ public class NPC_DialogueTrigger : MonoBehaviour
         
         HienModelNhanVat();
 
-        // Khóa lại chuột khi xong Cutscene
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
     private IEnumerator TienTrinhTheoDoiCutscene(GameObject objCutscene, PlayableDirector director)
     {
-        // Đợi 1 frame để Timeline bắt đầu Play()
         yield return null; 
 
-        // Ẩn danh sách UI lần đầu
         AnDanhSachUI();
 
-        // NẾU NGƯỜI DÙNG NHẬP THỜI GIAN THỦ CÔNG (> 0)
         if (thoiGianCutsceneThuCong > 0f)
         {
             float timer = 0f;
             while (objCutscene != null && objCutscene.activeSelf && timer < thoiGianCutsceneThuCong)
             {
                 timer += Time.unscaledDeltaTime;
-                
-                // ÉP TRẠNG THÁI UI LIÊN TỤC MỖI FRAME
                 EpTrangThaiUILienTuc();
-
                 isCutsceneActive = true;
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
                 yield return null;
             }
         }
-        // NẾU DÙNG TỰ ĐỘNG BẰNG TIMELINE
         else if (director != null)
         {
             while (director != null && objCutscene != null && objCutscene.activeSelf && director.state == PlayState.Playing)
             {
-                // ÉP TRẠNG THÁI UI LIÊN TỤC MỖI FRAME
                 EpTrangThaiUILienTuc();
-
                 isCutsceneActive = true;
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
                 yield return null;
             }
         }
-        // DỰ PHÒNG NẾU KHÔNG CÓ TIMELINE MÀ CŨNG KHÔNG NHẬP SỐ GIÂY (Mặc định 5s)
         else
         {
             float timer = 0f;
             while (objCutscene != null && objCutscene.activeSelf && timer < 5f)
             {
                 timer += Time.unscaledDeltaTime;
-                
-                // ÉP TRẠNG THÁI UI LIÊN TỤC MỖI FRAME
                 EpTrangThaiUILienTuc();
-
                 isCutsceneActive = true;
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
@@ -378,13 +367,11 @@ public class NPC_DialogueTrigger : MonoBehaviour
             }
         }
 
-        // Tự động tắt Cutscene khi hoàn thành
         if (objCutscene != null)
         {
             objCutscene.SetActive(false);
         }
         
-        // Gọi hàm HideDialogue() để ẩn panel UI của DialogueUI.cs
         DialogueUI dialogueUI = FindFirstObjectByType<DialogueUI>();
         if (dialogueUI != null)
         {
@@ -392,18 +379,9 @@ public class NPC_DialogueTrigger : MonoBehaviour
         }
 
         HienDanhSachUI();
-
-        // =========================================================================
-        // CODE MỚI THÊM: Gọi hàm ẩn danh sách Model vĩnh viễn sau khi Cutscene chạy xong
-        // =========================================================================
         XuLyAnModelSauCutscene();
-
-        // Debug.Log($"<color=green>[NPC Cutscene]:</color> Đã hoàn thành Cutscene. Tự tắt Cutscene {objCutscene?.name}, hiện lại UI và ẩn chuột.");
     }
 
-    // =========================================================================
-    // CODE MỚI THÊM: Hàm duyệt qua danh sách và tắt các model
-    // =========================================================================
     private void XuLyAnModelSauCutscene()
     {
         if (danhSachModelNPCAnSauCutscene != null && danhSachModelNPCAnSauCutscene.Count > 0)
@@ -420,7 +398,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
 
     private void EpTrangThaiUILienTuc()
     {
-        // 1. Ép Ẩn
         if (danhSachUIAnKhiChayCutscene != null)
         {
             foreach (var ui in danhSachUIAnKhiChayCutscene)
@@ -432,7 +409,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
             }
         }
         
-        // 2. Ép Hiện
         if (danhSachUIHienKhiChayCutscene != null)
         {
             foreach (var ui in danhSachUIHienKhiChayCutscene)
@@ -457,7 +433,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
             }
         }
 
-        // Tìm tất cả Player hiện có để ẩn model
         Player_Controller[] players = FindObjectsOfType<Player_Controller>();
         foreach (var p in players)
         {
@@ -483,7 +458,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
             }
         }
 
-        // Hiện lại tất cả model player đã ẩn
         foreach (var r in playerRenderersDaAn)
         {
             if (r != null)
@@ -496,7 +470,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
 
     private void EpTrangThaiModelLienTuc()
     {
-        // Ép ẩn NPC Model liên tục
         if (danhSachModelNPCCanAn != null)
         {
             foreach (var model in danhSachModelNPCCanAn)
@@ -508,7 +481,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
             }
         }
 
-        // Quét tìm Player mới sau mỗi 10 frame để tối ưu hiệu suất (nếu người chơi mới vào thế giới khi đang có cutscene)
         if (Time.frameCount % 10 == 0)
         {
             Player_Controller[] players = FindObjectsOfType<Player_Controller>();
@@ -517,7 +489,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
                 Renderer[] renderers = p.GetComponentsInChildren<Renderer>();
                 foreach (var r in renderers)
                 {
-                    // Nếu renderer đang bật và chưa có trong danh sách đã ẩn
                     if (r.enabled && !playerRenderersDaAn.Contains(r))
                     {
                         r.enabled = false;
@@ -528,7 +499,6 @@ public class NPC_DialogueTrigger : MonoBehaviour
         }
     }
 
-    // Hàm bật / ẩn Icon dấu chấm cảm !
     public void CapNhatIconNhiemVu(bool hienIcon)
     {
         if (iconDauChamCam != null)
