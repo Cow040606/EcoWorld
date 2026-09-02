@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4133156c9c7213042a7f98fdd98efeca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  txtGem: {fileID: 5165680307740352626}
+  txtGold: []
 --- !u!1 &2575277082000530177
 GameObject:
   m_ObjectHideFlags: 0
@@ -381,7 +381,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &6284564863368405572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -412,6 +412,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   khungBalo: {fileID: 5380850391000611150}
+  khungStats: {fileID: 0}
   trangThaiBalo: 0
   itemHolder: {fileID: 2767074144710284913}
   itemPrefab: {fileID: 1947997932705012632, guid: 19094cecb5a1f894bbf5253e07e462cf,
@@ -419,6 +420,15 @@ MonoBehaviour:
   khoDuLieu:
   - {fileID: 11400000, guid: 28d0135570edd9d4aa3d9649548a8001, type: 2}
   - {fileID: 11400000, guid: a302668e88b0b4f42a9048d60f41e8af, type: 2}
+  slotMu: {fileID: 0}
+  slotAo: {fileID: 0}
+  slotQuan: {fileID: 0}
+  slotVuKhi: {fileID: 0}
+  slotDayChuyen: {fileID: 0}
+  slotGiay: {fileID: 0}
+  slotNhan: {fileID: 0}
+  danhSachUI_CanAn: []
+  tabHienTai: 1
 --- !u!1 &3192541053375763299
 GameObject:
   m_ObjectHideFlags: 0
@@ -467,7 +477,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca8a1c8e9a6f5a24c8f1a6b64d2a0492, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoneyUI
-  txtGold: {fileID: 6456508132483143019}
+  txtGold:
+  - {fileID: 0}
 --- !u!1 &3237645999673208742
 GameObject:
   m_ObjectHideFlags: 0
@@ -576,7 +587,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0007324219, y: -285.9}
+  m_AnchoredPosition: {x: -0.0007324219, y: -285.41568}
   m_SizeDelta: {x: -37.4455, y: 531.8582}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5069050027750995587
@@ -723,8 +734,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4433691217144875369}
   m_HandleRect: {fileID: 3873470631130138397}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.99999666
+  m_Value: 0
+  m_Size: 0.9968478
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
