@@ -2761,13 +2761,15 @@ MonoBehaviour:
   _CurrentState: 0
   _Health: 100
   _NetworkedLevel: 0
+  _CurrentMoveSpeed: 0
+  _NetworkSpawnPosition: {x: 0, y: 0, z: 0}
   enemyID: 10
   enemyName: Skeleton
   expReward: 50
   audioSource: {fileID: 9142973219369339701}
   attackSound: {fileID: 8300000, guid: 448fad744e99c044da3d35ebbef34a40, type: 3}
   hurtSound: {fileID: 8300000, guid: 184cdb70665a42545a889e691ff9d909, type: 3}
-  screamSound: {fileID: 8300000, guid: 32fe857c37a669c449fa61c32260d0f4, type: 3}
+  screamSound: {fileID: 0}
   deathSound: {fileID: 8300000, guid: 3bb2e82a41ef7c44aa2b9b79283fd0d7, type: 3}
   minLevel: 1
   maxLevel: 5
@@ -2780,8 +2782,9 @@ MonoBehaviour:
   loseRadius: 15
   attackRadius: 2
   idleWaitTime: 5
-  screamDuration: 2
   attackCooldown: 0.5
+  chaseSpeed: 4.5
+  walkSpeed: 2.5
   healthCanvas: {fileID: 2510702842401461285}
   healthSlider: {fileID: 8382920471206050082}
   nameText: {fileID: 2928972698214179824}
