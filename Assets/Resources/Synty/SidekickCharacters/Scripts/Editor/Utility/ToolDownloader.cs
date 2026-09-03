@@ -87,15 +87,17 @@ namespace Synty.SidekickCharacters
 
         public async void BackgroundUpdateCheck()
         {
-            _version = await CheckAvailableVersion();
+            try
+            {
+                _version = await CheckAvailableVersion();
 
-            if (_latestVersion != null)
-            {
-                _latestVersion.text = "Latest Version: " + _version;
+                if (_latestVersion != null)
+                {
+                    _latestVersion.text = "Latest Version: " + _version;
+                }
             }
-            if (IsNewVersionAvailable(_version))
+            catch
             {
-                DownloaderBackgroundService.ShowToolDownloaderWindow();
             }
         }
 
@@ -168,17 +170,35 @@ namespace Synty.SidekickCharacters
 
         private void SaveCurrentInstalledVersion(string version)
         {
-            File.WriteAllText(_VERSION_FILE, version);
+            try
+            {
+                string dir = Path.GetDirectoryName(_VERSION_FILE);
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                File.WriteAllText(_VERSION_FILE, version);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning("[ToolDownloader] Could not save version: " + ex.Message);
+            }
         }
 
         private string LoadCurrentInstalledVersion()
         {
-            if (File.Exists(_VERSION_FILE))
+            try
             {
-                return File.ReadAllText(_VERSION_FILE);
+                if (File.Exists(_VERSION_FILE))
+                {
+                    return File.ReadAllText(_VERSION_FILE);
+                }
+            }
+            catch
+            {
             }
             
-            return null;
+            return "1.0.0";
         }
 
         private void DownloadLatestDBVersion()

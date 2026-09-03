@@ -18,6 +18,7 @@ public class EnemyAI_Fusion : NetworkBehaviour
     private Transform mucTieuCuaQuai;
 
     [Networked] private TickTimer attackTimer { get; set; }
+    [Networked] public float CurrentMoveSpeed { get; set; }
 
     // Biến nội bộ
     private Vector3 viTriBanDau;
@@ -25,18 +26,48 @@ public class EnemyAI_Fusion : NetworkBehaviour
     private Collider[] nguoiChoiResults = new Collider[16];
     private Animator animator;
 
+    private void Awake()
+    {
+        Physics.IgnoreLayerCollision(13, 13, true);
+        Physics.IgnoreLayerCollision(13, 14, true);
+        Physics.IgnoreLayerCollision(13, 0, true);
+
+        CapsuleCollider col = GetComponent<CapsuleCollider>();
+        if (col != null)
+        {
+            col.isTrigger = true;
+            col.center = new Vector3(0f, 1.0f, 0f);
+            col.height = 1.8f;
+            col.radius = 0.4f;
+        }
+    }
+
     public override void Spawned()
     {
         viTriBanDau = transform.position;
         animator = GetComponentInChildren<Animator>();
 
+        if (animator != null)
+        {
+            animator.applyRootMotion = false;
+        }
+
+        agent = GetComponent<NavMeshAgent>();
+        if (agent != null)
+        {
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.LowQualityObstacleAvoidance;
+            agent.angularSpeed = 720f;
+            agent.acceleration = 45f;
+            agent.baseOffset = 0.05f;
+            agent.autoRepath = true;
+        }
+
         if (HasStateAuthority)
         {
-            agent = GetComponent<NavMeshAgent>();
             if (agent != null)
             {
                 agent.enabled = true;
-                if (!agent.isOnNavMesh && NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+                if (!agent.isOnNavMesh && NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 6f, NavMesh.AllAreas))
                 {
                     agent.Warp(hit.position);
                 }
@@ -49,16 +80,26 @@ public class EnemyAI_Fusion : NetworkBehaviour
         }
         else
         {
-            NavMeshAgent clientAgent = GetComponent<NavMeshAgent>();
-            if (clientAgent != null) clientAgent.enabled = false;
+            if (agent != null) agent.enabled = false;
         }
+    }
+
+    public override void Render()
+    {
+        if (animator == null) return;
+        float speed = HasStateAuthority && agent != null && agent.enabled ? agent.velocity.magnitude : CurrentMoveSpeed;
+        bool isMoving = speed > 0.2f;
+        animator.SetBool("isWalking", isMoving && !dangDuoiTheo);
+        animator.SetBool("isRunning", isMoving && dangDuoiTheo);
     }
 
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority || agent == null || !agent.enabled || !agent.isOnNavMesh) return;
 
-        if (Runner.Tick % 10 != 0) return;
+        CurrentMoveSpeed = agent.velocity.magnitude;
+
+        if (Runner.Tick % 5 != 0) return;
 
         LayerMask effectiveLayer = layerPlayer == 0 ? ~0 : layerPlayer;
         int numHits = Physics.OverlapSphereNonAlloc(transform.position, banKinhPhatHien, nguoiChoiResults, effectiveLayer);
@@ -78,7 +119,6 @@ public class EnemyAI_Fusion : NetworkBehaviour
         }
         System.Array.Clear(nguoiChoiResults, 0, numHits);
 
-        // Fallback quét trực tiếp danh sách player nếu không trúng collider
         if (playerTarget == null)
         {
             Player_Controller[] players = FindObjectsOfType<Player_Controller>();
@@ -114,7 +154,12 @@ public class EnemyAI_Fusion : NetworkBehaviour
             else
             {
                 agent.isStopped = false;
-                agent.SetDestination(mucTieuCuaQuai.position);
+                Vector3 targetPos = mucTieuCuaQuai.position;
+                if (NavMesh.SamplePosition(targetPos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+                {
+                    targetPos = hit.position;
+                }
+                agent.SetDestination(targetPos);
             }
         }
         else
@@ -127,10 +172,9 @@ public class EnemyAI_Fusion : NetworkBehaviour
             }
             else
             {
-                if (diemTuanTra != null && diemTuanTra.Length > 0 && agent.remainingDistance < 0.5f && !agent.pathPending)
+                if (diemTuanTra != null && diemTuanTra.Length > 0 && agent.remainingDistance < 0.6f && !agent.pathPending)
                 {
-                    diemHienTai++;
-                    if (diemHienTai >= diemTuanTra.Length) diemHienTai = 0;
+                    diemHienTai = (diemHienTai + 1) % diemTuanTra.Length;
                     agent.SetDestination(diemTuanTra[diemHienTai].position);
                 }
             }

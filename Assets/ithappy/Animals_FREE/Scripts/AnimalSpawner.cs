@@ -104,7 +104,8 @@ namespace ithappy.Animals_FREE
 
                 private Vector3 GetRandomSpawnPosition()
         {
-            Vector3 center = spawnCenter != null ? spawnCenter.position : Vector3.zero;
+            Vector3 center = spawnCenter != null ? spawnCenter.position : transform.position;
+            if (center == Vector3.zero) center = transform.position;
             Vector2 randomCircle = Random.insideUnitCircle * spawnRadius;
             Vector3 pos = center + new Vector3(randomCircle.x, 0, randomCircle.y);
 

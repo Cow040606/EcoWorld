@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 using UnityEngine.AI;
@@ -17,6 +17,28 @@ public class EnemyAIOrc : NetworkBehaviour
 
     [Networked, OnChangedRender(nameof(OnLevelChanged))]
     public int NetworkedLevel { get; set; }
+
+    // Đồng bộ vận tốc di chuyển thực tế cho Client render animation
+    [Networked] public float CurrentMoveSpeed { get; set; }
+
+    [Networked] public Vector3 NetworkSpawnPosition { get; set; }
+
+    public void SetSpawnPosition(Vector3 pos)
+    {
+        if (pos.sqrMagnitude > 1f)
+        {
+            startPosition = pos;
+            NetworkSpawnPosition = pos;
+            if (agent != null && agent.enabled && agent.isOnNavMesh)
+            {
+                agent.Warp(pos);
+            }
+            else
+            {
+                transform.position = pos;
+            }
+        }
+    }
 
     [Header("Enemy Info")]
     [Tooltip("ID của quái vật. Dùng để đối chiếu với targetID trong Nhiệm Vụ.")]
@@ -47,7 +69,7 @@ public class EnemyAIOrc : NetworkBehaviour
     public float detectionRadius = 16f;
     public float loseRadius = 32f;
     public float attackRadius = 2f;
-    public float idleWaitTime = 4f;
+    public float idleWaitTime = 3f;
     public float attackCooldown = 1.0f;
     public float chaseSpeed = 4.5f;
     public float walkSpeed = 2.5f;
@@ -74,15 +96,31 @@ public class EnemyAIOrc : NetworkBehaviour
     private TickTimer updatePathTimer;
     private float lastDetectSoundTime = -999f;
 
+    // Biến chống kẹt và đệm tính toán đường
+    private float patrolWaitPathTimer = 0f;
+    private float stuckTimer = 0f;
+    private Vector3 lastStuckPos = Vector3.zero;
+
     public int GetMaxHealth(int level) => baseHealth + ((Mathf.Max(1, level) - 1) * healthPerLevel);
     public float GetDamage(int level) => baseDamage + ((Mathf.Max(1, level) - 1) * damagePerLevel);
 
     private void Awake()
     {
-        // Loại bỏ va chạm vật lý giữa Enemy với Enemy và giữa Enemy với Động vật (Gà, Chó)
-        // để tránh tình trạng các quái ép nhau, xô đẩy nhau văng khỏi sàn
+        // 1. Loại bỏ va chạm vật lý giữa Enemy với nhau và với động vật
         Physics.IgnoreLayerCollision(13, 13, true); // 13: Enemy
         Physics.IgnoreLayerCollision(13, 14, true); // 14: Animal
+        // 2. Bỏ qua va chạm vật lý với Layer 0 (Default/Terrain) để NavMeshAgent toàn quyền di chuyển mượt mà trên dốc
+        Physics.IgnoreLayerCollision(13, 0, true);
+
+        // 3. Đảm bảo CapsuleCollider là Trigger an toàn và nâng đáy khỏi mặt đất
+        CapsuleCollider col = GetComponent<CapsuleCollider>();
+        if (col != null)
+        {
+            col.isTrigger = true;
+            col.center = new Vector3(0f, 1.0f, 0f);
+            col.height = 1.8f;
+            col.radius = 0.4f;
+        }
     }
 
     public override void Spawned()
@@ -91,7 +129,13 @@ public class EnemyAIOrc : NetworkBehaviour
         animator = GetComponentInChildren<Animator>();
         mainCamera = Camera.main;
 
-        // Khóa Rigidbody để PhysX không tác động lực đẩy văng hay kéo tụt trọng lực
+        // Tắt Root Motion để NavMeshAgent kiểm soát vị trí chính xác
+        if (animator != null)
+        {
+            animator.applyRootMotion = false;
+        }
+
+        // Khóa Rigidbody
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -99,14 +143,18 @@ public class EnemyAIOrc : NetworkBehaviour
             rb.useGravity = false;
         }
 
-        // Cấu hình NavMeshAgent linh hoạt trên địa hình gồ ghề
+        // Cấu hình NavMeshAgent cực nhạy và tối ưu trên địa hình nhấp nhô
         if (agent != null)
         {
-            agent.obstacleAvoidanceType = ObstacleAvoidanceType.LowQualityObstacleAvoidance;
-            agent.avoidancePriority = Random.Range(30, 70);
-            agent.angularSpeed = 360f; // Quay người nhanh, không bị đơ khi đổi hướng
-            agent.acceleration = 16f;  // Khởi động di chuyển nhanh
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.MedQualityObstacleAvoidance;
+            agent.avoidancePriority = Random.Range(10, 90);
+            agent.radius = 0.45f;
+            agent.angularSpeed = 720f;  // Xoay tức thì, không bị khựng đơ tại chỗ khi rẽ
+            agent.acceleration = 45f;   // Khởi động di chuyển lập tức, triệt tiêu độ trễ
+            agent.baseOffset = 0.05f;   // Nâng nhẹ chân tránh cọ lún vào gờ mép dốc
+            agent.autoRepath = true;
             agent.speed = walkSpeed;
+            agent.stoppingDistance = 0.2f;
         }
 
         if (audioSource == null)
@@ -124,23 +172,37 @@ public class EnemyAIOrc : NetworkBehaviour
 
         if (HasStateAuthority)
         {
-            startPosition = transform.position;
+            if (NetworkSpawnPosition.sqrMagnitude > 1f)
+            {
+                startPosition = NetworkSpawnPosition;
+            }
+            else if (transform.position.sqrMagnitude > 1f)
+            {
+                startPosition = transform.position;
+                NetworkSpawnPosition = transform.position;
+            }
 
             if (agent != null)
             {
                 agent.enabled = true;
-                if (!agent.isOnNavMesh && NavMesh.SamplePosition(transform.position, out NavMeshHit navHit, 5f, NavMesh.AllAreas))
+                if (!agent.isOnNavMesh)
                 {
-                    agent.Warp(navHit.position);
-                    startPosition = navHit.position;
+                    Vector3 testPos = startPosition.sqrMagnitude > 1f ? startPosition : transform.position;
+                    if (testPos.sqrMagnitude > 1f && NavMesh.SamplePosition(testPos, out NavMeshHit navHit, 6f, NavMesh.AllAreas))
+                    {
+                        agent.Warp(navHit.position);
+                        startPosition = navHit.position;
+                        NetworkSpawnPosition = navHit.position;
+                    }
                 }
-                agent.isStopped = true; // Dừng yên tại chỗ ban đầu
+                agent.isStopped = true;
             }
 
             NetworkedLevel = Random.Range(minLevel, maxLevel + 1);
             Health = GetMaxHealth(NetworkedLevel);
             CurrentState = EnemyState.Idle;
             stateTimer = 0f;
+            lastStuckPos = transform.position;
         }
         else
         {
@@ -160,9 +222,43 @@ public class EnemyAIOrc : NetworkBehaviour
 
     private bool IsAgentValid() => agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh;
 
+    public override void Render()
+    {
+        if (animator == null || CurrentState == EnemyState.Dead) return;
+
+        // Vận tốc di chuyển thực tế: Authority đọc từ agent.velocity, Client đọc từ networked CurrentMoveSpeed
+        float speed = HasStateAuthority && IsAgentValid() ? agent.velocity.magnitude : CurrentMoveSpeed;
+
+        // CHỈ PHÁT ANIMATION KHI THỰC SỰ DI CHUYỂN
+        bool isMoving = speed > 0.2f;
+
+        if (isMoving)
+        {
+            if (CurrentState == EnemyState.Chase)
+            {
+                animator.SetBool("isRunning", true);
+                animator.SetBool("isWalking", false);
+            }
+            else
+            {
+                animator.SetBool("isWalking", true);
+                animator.SetBool("isRunning", false);
+            }
+        }
+        else
+        {
+            // Đang đứng yên, xoay người hoặc đợi lệnh -> chuyển về IDLE ngay lập tức, không diễn hoạt ảnh di chuyển tại chỗ
+            animator.SetBool("isWalking", false);
+            animator.SetBool("isRunning", false);
+        }
+    }
+
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority) return;
+
+        // Cập nhật vận tốc thực tế để đồng bộ cho các Client
+        CurrentMoveSpeed = IsAgentValid() ? agent.velocity.magnitude : 0f;
 
         if (CurrentState == EnemyState.Dead)
         {
@@ -178,8 +274,23 @@ public class EnemyAIOrc : NetworkBehaviour
             return;
         }
 
-        // Lưới bảo hiểm: Nếu quái bị rớt khỏi độ cao sàn hoặc bị đẩy quá xa điểm spawn
-        if (transform.position.y < startPosition.y - 8f || Vector3.Distance(transform.position, startPosition) > Mathf.Max(loseRadius * 2f, 50f))
+        // Cập nhật startPosition an toàn nếu lúc Spawned chưa kịp nhận tọa độ
+        if (startPosition.sqrMagnitude < 1f)
+        {
+            if (NetworkSpawnPosition.sqrMagnitude > 1f)
+            {
+                startPosition = NetworkSpawnPosition;
+            }
+            else if (transform.position.sqrMagnitude > 1f)
+            {
+                startPosition = transform.position;
+                NetworkSpawnPosition = transform.position;
+            }
+        }
+
+        // Lưới bảo hiểm: CHỈ khi quái thực sự rơi lọt qua map xuống vực sâu (Y < -30)
+        // và đã có startPosition hợp lệ trong map (không bị warp về 0,0,0)
+        if (transform.position.y < -30f && startPosition.sqrMagnitude > 10f)
         {
             if (NavMesh.SamplePosition(startPosition, out NavMeshHit safeHit, 15f, NavMesh.AllAreas))
             {
@@ -220,11 +331,37 @@ public class EnemyAIOrc : NetworkBehaviour
                 {
                     if (agent.isStopped) agent.isStopped = false;
                     agent.speed = walkSpeed;
-                    if (!agent.pathPending && agent.remainingDistance < 0.6f)
+
+                    if (patrolWaitPathTimer > 0f)
                     {
-                        CurrentState = EnemyState.Idle;
-                        stateTimer = 0f;
-                        agent.isStopped = true;
+                        patrolWaitPathTimer -= Runner.DeltaTime;
+                    }
+                    else
+                    {
+                        // Kiểm tra kẹt địa hình khi tuần tra
+                        if (Vector3.Distance(transform.position, lastStuckPos) < 0.1f)
+                        {
+                            stuckTimer += Runner.DeltaTime;
+                            if (stuckTimer >= 3.0f) // Quá 3s không di chuyển được
+                            {
+                                CurrentState = EnemyState.Idle;
+                                stateTimer = 0f;
+                                agent.isStopped = true;
+                                stuckTimer = 0f;
+                            }
+                        }
+                        else
+                        {
+                            stuckTimer = 0f;
+                            lastStuckPos = transform.position;
+                        }
+
+                        if (!agent.pathPending && agent.remainingDistance < 0.6f)
+                        {
+                            CurrentState = EnemyState.Idle;
+                            stateTimer = 0f;
+                            agent.isStopped = true;
+                        }
                     }
                 }
                 DetectPlayer();
@@ -290,18 +427,9 @@ public class EnemyAIOrc : NetworkBehaviour
                         if (agent.isStopped) agent.isStopped = false;
                         agent.speed = chaseSpeed;
 
-                        // Quay người tức thì về hướng mục tiêu để không bị khựng đơ khi rẽ hướng trên địa hình
-                        Vector3 lookDir = targetPlayer.position - transform.position;
-                        lookDir.y = 0;
-                        if (lookDir != Vector3.zero)
-                        {
-                            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDir), Runner.DeltaTime * 12f);
-                        }
-
                         if (updatePathTimer.ExpiredOrNotRunning(Runner))
                         {
                             Vector3 targetNavPos = targetPlayer.position;
-                            // Luôn snap điểm đích vào NavMesh gần nhất dưới chân Player để vượt địa hình dốc/mấp mô
                             if (NavMesh.SamplePosition(targetPlayer.position, out NavMeshHit pNavHit, 6f, NavMesh.AllAreas))
                             {
                                 targetNavPos = pNavHit.position;
@@ -309,6 +437,25 @@ public class EnemyAIOrc : NetworkBehaviour
 
                             agent.SetDestination(targetNavPos);
                             updatePathTimer = TickTimer.CreateFromSeconds(Runner, 0.25f);
+                        }
+
+                        // Tự gỡ kẹt khi đang rượt đuổi trên địa hình nhấp nhô
+                        if (Vector3.Distance(transform.position, lastStuckPos) < 0.08f)
+                        {
+                            stuckTimer += Runner.DeltaTime;
+                            if (stuckTimer >= 2.5f)
+                            {
+                                if (NavMesh.SamplePosition(transform.position, out NavMeshHit unStuckHit, 4f, NavMesh.AllAreas))
+                                {
+                                    agent.Warp(unStuckHit.position);
+                                }
+                                stuckTimer = 0f;
+                            }
+                        }
+                        else
+                        {
+                            stuckTimer = 0f;
+                            lastStuckPos = transform.position;
                         }
                     }
                 }
@@ -339,9 +486,10 @@ public class EnemyAIOrc : NetworkBehaviour
                     stateTimer += Runner.DeltaTime;
                     if (stateTimer >= attackCooldown)
                     {
-                        float attackRange = Mathf.Max(attackRadius, (agent != null ? agent.radius : 0.5f) + 0.8f);
+                        stateTimer = 0f;
                         float dist = Vector3.Distance(transform.position, targetPlayer.position);
-                        if (dist > attackRange + 0.8f)
+                        float inAtkRadius = Mathf.Max(attackRadius, (agent != null ? agent.radius : 0.5f) + 0.8f);
+                        if (dist > inAtkRadius)
                         {
                             CurrentState = EnemyState.Chase;
                             if (IsAgentValid())
@@ -349,11 +497,9 @@ public class EnemyAIOrc : NetworkBehaviour
                                 agent.isStopped = false;
                                 agent.speed = chaseSpeed;
                             }
-                            updatePathTimer = TickTimer.None;
                         }
                         else
                         {
-                            stateTimer = 0f;
                             RPC_PlayAttackAnim();
                         }
                     }
@@ -367,7 +513,7 @@ public class EnemyAIOrc : NetworkBehaviour
             case EnemyState.Return:
                 if (IsAgentValid())
                 {
-                    agent.isStopped = false;
+                    if (agent.isStopped) agent.isStopped = false;
                     agent.speed = walkSpeed;
                     if (!agent.pathPending && agent.remainingDistance < 0.6f)
                     {
@@ -381,59 +527,80 @@ public class EnemyAIOrc : NetworkBehaviour
         }
     }
 
-    public void EnemyDoDamage()
+    private float lastDamageSwingTime = -999f;
+    private HashSet<Player_Controller> hitPlayersThisSwing = new HashSet<Player_Controller>();
+
+    public void EnemyDoDamage() => AnimEvent_DealDamage();
+
+    public void AnimEvent_DealDamage()
     {
-        if (!HasStateAuthority) return;
+        if (!HasStateAuthority || CurrentState == EnemyState.Dead) return;
 
-        Transform target = targetPlayer;
-        if (target == null)
-        {
-            Player_Controller[] players = FindObjectsOfType<Player_Controller>();
-            foreach (var p in players)
-            {
-                if (p != null && !p.isDead && Vector3.Distance(transform.position, p.transform.position) <= attackRadius + 2f)
-                {
-                    target = p.transform;
-                    break;
-                }
-            }
-        }
+        // Chống lặp sát thương: Đảm bảo cú chém của quái này chỉ gây sát thương 1 lần trong 0.5 giây
+        if (Time.time < lastDamageSwingTime + 0.5f) return;
+        lastDamageSwingTime = Time.time;
 
-        if (target != null)
+        Collider[] hits = Physics.OverlapSphere(transform.position + transform.forward * 1.2f, attackRadius);
+        hitPlayersThisSwing.Clear();
+
+        foreach (var target in hits)
         {
-            float dist = Vector3.Distance(transform.position, target.position);
-            if (dist <= attackRadius + 2f)
+            if (target == null) continue;
+
+            Player_Controller player = target.GetComponentInParent<Player_Controller>();
+            if (player != null && !player.isDead && !hitPlayersThisSwing.Contains(player))
             {
-                Player_Controller player = target.GetComponentInParent<Player_Controller>();
-                if (player != null && !player.isDead)
-                {
-                    player.RPC_TakeDame(GetDamage(NetworkedLevel));
-                }
+                hitPlayersThisSwing.Add(player);
+                player.RPC_TakeDame(GetDamage(NetworkedLevel));
             }
         }
     }
 
     private void StartPatrol()
     {
-        Vector2 rnd = Random.insideUnitCircle * patrolRadius;
-        Vector3 randomDirection = new Vector3(rnd.x, 0, rnd.y);
-        Vector3 targetPos = startPosition + randomDirection;
+        if (!IsAgentValid()) return;
 
-        if (NavMesh.SamplePosition(targetPos, out NavMeshHit hit, patrolRadius * 1.5f, NavMesh.AllAreas))
+        for (int attempts = 0; attempts < 6; attempts++)
         {
-            if (IsAgentValid())
+            Vector2 rnd = Random.insideUnitCircle * patrolRadius;
+            if (rnd.magnitude < 2.5f) rnd = rnd.normalized * 3f;
+
+            // Dò độ cao mặt đất thực tế bằng raycast từ trên cao xuống
+            Vector3 rayStart = startPosition + new Vector3(rnd.x, 25f, rnd.y);
+            Vector3 targetPos = startPosition + new Vector3(rnd.x, 0f, rnd.y);
+
+            if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hitInfo, 50f, ~((1 << 13) | (1 << 14))))
             {
-                agent.isStopped = false;
-                agent.speed = walkSpeed;
-                agent.SetDestination(hit.position);
-                CurrentState = EnemyState.Patrol;
+                targetPos.y = hitInfo.point.y;
+            }
+
+            if (NavMesh.SamplePosition(targetPos, out NavMeshHit hit, 8f, NavMesh.AllAreas))
+            {
+                NavMeshPath path = new NavMeshPath();
+                if (agent.CalculatePath(hit.position, path) && path.status == NavMeshPathStatus.PathComplete)
+                {
+                    agent.isStopped = false;
+                    agent.speed = walkSpeed;
+                    agent.SetPath(path);
+                    CurrentState = EnemyState.Patrol;
+                    stateTimer = 0f;
+                    patrolWaitPathTimer = 0.4f; // Đệm thời gian không check remainingDistance ngay tick đầu
+                    stuckTimer = 0f;
+                    lastStuckPos = transform.position;
+                    return;
+                }
             }
         }
+
+        // Nếu khu vực quá hiểm trở không tìm được đường, đứng nghỉ ngơi rồi thử lại sau
+        CurrentState = EnemyState.Idle;
+        stateTimer = 0f;
+        agent.isStopped = true;
     }
 
     private void DetectPlayer()
     {
-        if (Runner.Tick % 5 != 0) return; // Quét mỗi 5 ticks (nhanh hơn để bắt kịp chuyển động)
+        if (Runner.Tick % 5 != 0) return;
 
         float effectiveRadius = Mathf.Max(detectionRadius, 16f);
 
@@ -454,7 +621,7 @@ public class EnemyAIOrc : NetworkBehaviour
         }
         System.Array.Clear(detectionResults, 0, numHits);
 
-        // Dự phòng nếu OverlapSphere bị cản bởi collider cảnh quan
+        // Dự phòng quét trực tiếp danh sách players
         if (foundPlayer == null)
         {
             Player_Controller[] players = FindObjectsOfType<Player_Controller>();
@@ -473,22 +640,21 @@ public class EnemyAIOrc : NetworkBehaviour
             }
         }
 
-        // KHI PHÁT HIỆN PLAYER
         if (foundPlayer != null)
         {
             targetPlayer = foundPlayer.transform;
 
-            // 1. Chỉ phát âm thanh phát hiện 1 lần duy nhất khi vừa phát hiện (có hồi chiêu 10s để chống spam)
             if (Time.time >= lastDetectSoundTime + 10f)
             {
                 lastDetectSoundTime = Time.time;
                 RPC_PlayDetectSound();
             }
 
-            // 2. Chuyển NGAY LẬP TỨC sang trạng thái Chase để dí player, không đứng 1 chỗ chạy tại chỗ
             CurrentState = EnemyState.Chase;
             stateTimer = 0f;
             updatePathTimer = TickTimer.None;
+            stuckTimer = 0f;
+            lastStuckPos = transform.position;
 
             if (IsAgentValid())
             {
@@ -523,10 +689,8 @@ public class EnemyAIOrc : NetworkBehaviour
             if (IsAgentValid()) agent.isStopped = true;
             DropItem();
 
-            // TRẢ KINH NGHIỆM CHO NGƯỜI KẾT LIỄU
             GiveExpToKiller(info.Source, expReward);
 
-            // ----> CODE GỌI QUEST <----
             if (Player_QuestManager.localQuest != null)
             {
                 Player_QuestManager.localQuest.TangTienDoNhiemVu(LoaiNhiemVu.TieuDietQuai, enemyID, 1);
@@ -598,26 +762,17 @@ public class EnemyAIOrc : NetworkBehaviour
             foreach (var col in colliders) col.enabled = false;
 
             if (healthCanvas != null) healthCanvas.gameObject.SetActive(false);
-        }
 
-        if (animator == null) return;
-
-        animator.SetBool("isWalking", false);
-        animator.SetBool("isRunning", false);
-
-        switch (CurrentState)
-        {
-            case EnemyState.Patrol:
-            case EnemyState.Return:
-                animator.SetBool("isWalking", true); break;
-            case EnemyState.Chase:
-                animator.SetBool("isRunning", true); break;
-            case EnemyState.Scream:
-                animator.SetTrigger("scream"); 
-                break;
-            case EnemyState.Dead:
+            if (animator != null)
+            {
+                animator.SetBool("isWalking", false);
+                animator.SetBool("isRunning", false);
                 animator.SetTrigger("death");
-                break;
+            }
+        }
+        else if (CurrentState == EnemyState.Scream)
+        {
+            if (animator != null) animator.SetTrigger("scream");
         }
     }
 
@@ -636,7 +791,6 @@ public class EnemyAIOrc : NetworkBehaviour
 
     public void AnimEvent_PlayScreamSound()
     {
-        // Âm thanh phát hiện đã được phát chính xác 1 lần trong code khi phát hiện Player
     }
 
     public void AnimEvent_PlayDeathSound()

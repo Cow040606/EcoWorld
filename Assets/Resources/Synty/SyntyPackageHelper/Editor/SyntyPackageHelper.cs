@@ -75,14 +75,21 @@ public class SyntyPackageHelper
         packagesToInstall.Clear();
         requiredPackageCount = 0;
 
+        bool hasNewPrompt = false;
         foreach(var config in configs)
         {
-            BuildInstallList(config, forceInstall);
-            config.hasPromptedUser = true;
+            if (!config.hasPromptedUser || forceInstall)
+            {
+                BuildInstallList(config, forceInstall);
+                config.hasPromptedUser = true;
+                hasNewPrompt = true;
+            }
         }
 
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
+        if (hasNewPrompt)
+        {
+            AssetDatabase.SaveAssets();
+        }
 
         if(packagesToInstall.Count == 0)
         {
