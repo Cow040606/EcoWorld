@@ -1,400 +1,291 @@
-using System;
-using System.Reflection;
-using System.Collections;
-using System.Collections.Generic;
-using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.TestTools;
-using UnityEngine.SceneManagement;
-
-public class NPCDialogueQuestTest
-{
-    // L?p helper Reflection d? g?i code c?a game chÌnh khÙng c?n tham chi?u tr?c ti?p
-    public static class Refl
-    {
-        private static Assembly gameAssembly;
-        public static Assembly GameAssembly
-        {
-            get
-            {
-                if (gameAssembly == null)
-                {
-                    gameAssembly = Assembly.Load("Assembly-CSharp");
-                }
-                return gameAssembly;
-            }
-        }
-
-        public static Type GetType(string fullName)
-        {
-            return GameAssembly.GetType(fullName);
-        }
-
-        public static object GetStaticField(string typeName, string fieldName)
-        {
-            Type t = GetType(typeName);
-            FieldInfo f = t.GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-            return f.GetValue(null);
-        }
-
-        public static object GetField(object obj, string fieldName)
-        {
-            FieldInfo f = obj.GetType().GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            return f.GetValue(obj);
-        }
-
-        public static void SetField(object obj, string fieldName, object value)
-        {
-            FieldInfo f = obj.GetType().GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            f.SetValue(obj, value);
-        }
-
-        public static object CallMethod(object obj, string methodName, params object[] args)
-        {
-            MethodInfo m = obj.GetType().GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            return m.Invoke(obj, args);
-        }
-
-        public static object CallStaticMethod(string typeName, string methodName, params object[] args)
-        {
-            Type t = GetType(typeName);
-            MethodInfo m = t.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-            return m.Invoke(null, args);
-        }
-    }
-
-    [UnityTest]
-    public IEnumerator RunNPCDialogueQuestLineMultipleTimes()
-    {
-        // 1. T?i scene map1
-        // Debug.Log("[TEST] Loading map1 scene...");
-        SceneManager.LoadScene("Scenes/map1");
-        yield return new WaitForSeconds(2.0f); // Ch? load map
-
-        // 2. Ch? Player v‡ c·c NPC xu?t hi?n trong Scene
-        GameObject player = null;
-        float timeOut = 12f;
-        while (player == null && timeOut > 0)
-        {
-            player = GameObject.FindWithTag("Player");
-            if (player == null) yield return new WaitForSeconds(0.5f);
-            timeOut -= 0.5f;
-        }
-        Assert.IsNotNull(player, "[TEST] Player was not found after timeout!");
-        // Debug.Log("[TEST] Player found successfully!");
-
-        // L?y c·c singleton instances c?a game chÌnh
-        var localQuest = Refl.GetStaticField("Player_QuestManager", "localQuest");
-        var localPlayer = Refl.GetStaticField("Player_Controller", "localPlayer");
-        Assert.IsNotNull(localQuest, "[TEST] Player_QuestManager.localQuest is null!");
-        Assert.IsNotNull(localPlayer, "[TEST] Player_Controller.localPlayer is null!");
-
-        // TÏm 3 NPC trong scene d?a trÍn npcID c?a h?
-        var npcTriggers = GameObject.FindObjectsByType(Refl.GetType("NPC_DialogueTrigger"), FindObjectsSortMode.None);
-        Assert.Greater(npcTriggers.Length, 0, "[TEST] No NPC_DialogueTrigger components found in the scene!");
-
-        object princeTrigger = null;
-        object kingTrigger = null;
-        object wizardTrigger = null;
-
-        foreach (var trigger in npcTriggers)
-        {
-            int npcID = (int)Refl.GetField(trigger, "npcID");
-            if (npcID == 3) princeTrigger = trigger;
-            else if (npcID == 10) kingTrigger = trigger;
-            else if (npcID == 11) wizardTrigger = trigger;
-        }
-
-        Assert.IsNotNull(princeTrigger, "[TEST] NPC Prince (ID 3) not found!");
-        Assert.IsNotNull(kingTrigger, "[TEST] NPC King (ID 10) not found!");
-        Assert.IsNotNull(wizardTrigger, "[TEST] NPC Wizard (ID 11) not found!");
-        // Debug.Log("[TEST] All 3 NPCs (Prince, King, Wizard) located successfully!");
-
-        // Ch?y ki?m th? to‡n b? chu?i nhi?m v? 3 l?n liÍn ti?p d? d?m b?o khÙng b? l?i luu tr?ng th·i ho?c reset
-        for (int run = 1; run <= 3; run++)
-        {
-            // Debug.Log($"<color=cyan>[TEST] Starting Run #{run}/3...</color>");
-
-            // Reset tr?ng th·i nhi?m v? v‡ thÙng s? nh‚n v?t c?a Player
-            ResetPlayerState(localQuest, localPlayer);
-            yield return new WaitForSeconds(0.5f);
-
+Ôªøusing System;
+using System.Reflection;
+using System.Collections;
+using System.Collections.Generic;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
+using UnityEngine.SceneManagement;
+
+public class NPCDialogueQuestTest
+{
+    // L?p helper Reflection d? g?i code c?a game ch√≠nh kh√¥ng c?n tham chi?u tr?c ti?p
+    public static class Refl
+    {
+        private static Assembly gameAssembly;
+        public static Assembly GameAssembly
+        {
+            get
+            {
+                if (gameAssembly == null)
+                {
+                    gameAssembly = Assembly.Load("Assembly-CSharp");
+                }
+                return gameAssembly;
+            }
+        }
+
+        public static Type GetType(string fullName)
+        {
+            return GameAssembly.GetType(fullName);
+        }
+
+        public static object GetStaticField(string typeName, string fieldName)
+        {
+            Type t = GetType(typeName);
+            FieldInfo f = t.GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            return f.GetValue(null);
+        }
+
+        public static object GetField(object obj, string fieldName)
+        {
+            FieldInfo f = obj.GetType().GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            return f.GetValue(obj);
+        }
+
+        public static void SetField(object obj, string fieldName, object value)
+        {
+            FieldInfo f = obj.GetType().GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            f.SetValue(obj, value);
+        }
+
+        public static object CallMethod(object obj, string methodName, params object[] args)
+        {
+            MethodInfo m = obj.GetType().GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            return m.Invoke(obj, args);
+        }
+
+        public static object CallStaticMethod(string typeName, string methodName, params object[] args)
+        {
+            Type t = GetType(typeName);
+            MethodInfo m = t.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            return m.Invoke(null, args);
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator RunNPCDialogueQuestLineMultipleTimes()
+    {
+        // 1. T?i scene map1
+        // Debug.Log("[TEST] Loading map1 scene...");
+        SceneManager.LoadScene("Scenes/map1");
+        yield return new WaitForSeconds(2.0f); // Ch? load map
+
+        // 2. Ch? Player v√† c√°c NPC xu?t hi?n trong Scene
+        GameObject player = null;
+        float timeOut = 12f;
+        while (player == null && timeOut > 0)
+        {
+            player = GameObject.FindWithTag("Player");
+            if (player == null) yield return new WaitForSeconds(0.5f);
+            timeOut -= 0.5f;
+        }
+        Assert.IsNotNull(player, "[TEST] Player was not found after timeout!");
+        // Debug.Log("[TEST] Player found successfully!");
+
+        // L?y c√°c singleton instances c?a game ch√≠nh
+        var localQuest = Refl.GetStaticField("Player_QuestManager", "localQuest");
+        var localPlayer = Refl.GetStaticField("Player_Controller", "localPlayer");
+        Assert.IsNotNull(localQuest, "[TEST] Player_QuestManager.localQuest is null!");
+        Assert.IsNotNull(localPlayer, "[TEST] Player_Controller.localPlayer is null!");
+
+        // TÃÅm 3 NPC trong scene d?a tr√™n npcID c?a h?
+        var npcTriggers = GameObject.FindObjectsByType(Refl.GetType("NPC_DialogueTrigger"), FindObjectsSortMode.None);
+        Assert.Greater(npcTriggers.Length, 0, "[TEST] No NPC_DialogueTrigger components found in the scene!");
+
+        object princeTrigger = null;
+        object kingTrigger = null;
+        object wizardTrigger = null;
+
+        foreach (var trigger in npcTriggers)
+        {
+            int npcID = (int)Refl.GetField(trigger, "npcID");
+            if (npcID == 3) princeTrigger = trigger;
+            else if (npcID == 10) kingTrigger = trigger;
+            else if (npcID == 11) wizardTrigger = trigger;
+        }
+
+        Assert.IsNotNull(princeTrigger, "[TEST] NPC Prince (ID 3) not found!");
+        Assert.IsNotNull(kingTrigger, "[TEST] NPC King (ID 10) not found!");
+        Assert.IsNotNull(wizardTrigger, "[TEST] NPC Wizard (ID 11) not found!");
+        // Debug.Log("[TEST] All 3 NPCs (Prince, King, Wizard) located successfully!");
+
+        // Ch?y ki?m th? to√†n b? chu?i nhi?m v? 3 l?n li√™n ti?p d? d?m b?o kh√¥ng b? l?i luu tr?ng th√°i ho?c reset
+        for (int run = 1; run <= 3; run++)
+        {
+            // Debug.Log($"<color=cyan>[TEST] Starting Run #{run}/3...</color>");
+
+            // Reset tr?ng th√°i nhi?m v? v√† th√¥ng s? nh√¢n v?t c?a Player
+            ResetPlayerState(localQuest, localPlayer);
+            yield return new WaitForSeconds(0.5f);
+
             // =========================================================================
-            // BU?C 1: NÛi chuy?n v?i Prince d? nh?n nhi?m v? gi?t skeleton (LEVEL UP!!!!)
-            // =========================================================================
-            // Debug.Log("[TEST] Step 1: Interacting with Prince to get KIll ske quest...");
-            yield return StartNPCConversation(princeTrigger);
-            yield return SimulateDialogueChoice();
-
-            // Ki?m tra: Player d„ nh?n quest 6 (KIll ske) chua
-            Assert.IsTrue(HasQuest(localQuest, 6), "[TEST] Failed to receive KIll ske quest!");
-            Assert.IsFalse(IsQuestCompleted(localQuest, 6), "[TEST] Quest should not be completed yet.");
-
-            // =========================================================================
-            // BU?C 2: TiÍu di?t 2 Skeletons v‡ quay l?i Prince
-            // =========================================================================
-            // Debug.Log("[TEST] Step 2: Simulating killing 2 Skeletons...");
-            Refl.CallMethod(localQuest, "TangTienDoNhiemVu", 1, 10, 2); // LoaiNhiemVu.TieuDietQuai = 1, skeleton ID = 10
-            Assert.IsTrue(IsQuestCompleted(localQuest, 6), "[TEST] KIll ske quest should be marked completed now.");
-
-            // NÛi chuy?n v?i Prince d? tr? quest 6 v‡ t? d?ng nh?n quest 8 (KILL ORC KING)
-            // Debug.Log("[TEST] Step 2: Interacting with Prince to submit and get bosskill quest...");
-            yield return StartNPCConversation(princeTrigger);
-            yield return SimulateDialogueChoice();
-
-            Assert.IsFalse(HasQuest(localQuest, 6), "[TEST] KIll ske quest was not turned in!");
-            Assert.IsTrue(HasQuest(localQuest, 8), "[TEST] Failed to receive bosskill quest!");
-
-            // =========================================================================
-            // BU?C 3: TiÍu di?t Orc King v‡ quay l?i Prince
-            // =========================================================================
-            // Debug.Log("[TEST] Step 3: Simulating killing Orc King...");
-            Refl.CallMethod(localQuest, "TangTienDoNhiemVu", 1, 3, 1); // LoaiNhiemVu.TieuDietQuai = 1, Orc King ID = 3
-            Assert.IsTrue(IsQuestCompleted(localQuest, 8), "[TEST] bosskill quest should be marked completed.");
-
-            // NÛi chuy?n v?i Prince d? tr? quest 8 v‡ t? d?ng nh?n quest 11 (FIND THE KING)
-            // Debug.Log("[TEST] Step 3: Interacting with Prince to submit and get find king quest...");
-            yield return StartNPCConversation(princeTrigger);
-            yield return SimulateDialogueChoice();
-
-            Assert.IsFalse(HasQuest(localQuest, 8), "[TEST] bosskill quest was not turned in!");
-            Assert.IsTrue(HasQuest(localQuest, 11), "[TEST] Failed to receive find king quest!");
-
-            // =========================================================================
-            // BU?C 4: –?n l‚u d‡i v‡ nÛi chuy?n v?i King
-            // =========================================================================
-            // Debug.Log("[TEST] Step 4: Interacting with King to submit find king and get LV20 quest...");
-            yield return StartNPCConversation(kingTrigger);
-            yield return SimulateDialogueChoice();
-
-            Assert.IsFalse(HasQuest(localQuest, 11), "[TEST] find king quest was not turned in!");
-            Assert.IsTrue(HasQuest(localQuest, 17), "[TEST] Failed to receive LV20 (UPDATE YOUR SELF) quest!");
-
-            // =========================================================================
-            // BU?C 5: –?t c?p d? 10 v‡ quay l?i King
-            // =========================================================================
-            // Debug.Log("[TEST] Step 5: Simulating leveling up to Level 10...");
-            Refl.SetField(localPlayer, "level", 10);
-            Refl.CallMethod(localQuest, "KiemTraTienDo");
-            Assert.IsTrue(IsQuestCompleted(localQuest, 17), "[TEST] LV20 quest should be marked completed.");
-
-            // NÛi chuy?n v?i King d? tr? quest 17 v‡ nh?n quest 12 (DEFEAT KNIGHT HERO)
-            // Debug.Log("[TEST] Step 5: Interacting with King to submit and get boss2 quest...");
-            yield return StartNPCConversation(kingTrigger);
-            yield return SimulateDialogueChoice();
-
-            Assert.IsFalse(HasQuest(localQuest, 17), "[TEST] LV20 quest was not turned in!");
-            Assert.IsTrue(HasQuest(localQuest, 12), "[TEST] Failed to receive boss2 quest!");
-
-            // =========================================================================
-            // BU?C 6: TiÍu di?t Knight Hero v‡ quay l?i King
-            // =========================================================================
-            // Debug.Log("[TEST] Step 6: Simulating killing Knight Hero...");
-            Refl.CallMethod(localQuest, "TangTienDoNhiemVu", 1, 2, 1); // LoaiNhiemVu.TieuDietQuai = 1, Knight Hero ID = 2
-            Assert.IsTrue(IsQuestCompleted(localQuest, 12), "[TEST] boss2 quest should be marked completed.");
-
-            // NÛi chuy?n v?i King d? tr? quest 12 v‡ nh?n quest 13 (Find The Master)
-            // Debug.Log("[TEST] Step 6: Interacting with King to submit and get talk2 quest...");
-            yield return StartNPCConversation(kingTrigger);
-            yield return SimulateDialogueChoice();
-
-            Assert.IsFalse(HasQuest(localQuest, 12), "[TEST] boss2 quest was not turned in!");
-            Assert.IsTrue(HasQuest(localQuest, 13), "[TEST] Failed to receive talk2 quest!");
-
-            // =========================================================================
-            // BU?C 7: TÏm d?n g?p Wizard
-            // =========================================================================
-            // Debug.Log("[TEST] Step 7: Interacting with Wizard to submit talk2 and get daoquang quest...");
-            yield return StartNPCConversation(wizardTrigger);
-            yield return SimulateDialogueChoice();
-
-            Assert.IsFalse(HasQuest(localQuest, 13), "[TEST] talk2 quest was not turned in!");
-            Assert.IsTrue(HasQuest(localQuest, 16), "[TEST] Failed to receive daoquang (ores) quest!");
-
-            // =========================================================================
-            // BU?C 8: Thu th?p 20 qu?ng v‡ quay l?i Wizard
+            // BU·ªöC 8: Thu th·∫≠p 20 qu·∫∑ng v√† quay l·∫°i Wizard (B·ªè qua ch·∫ø thu·ªëc, ƒëi th·∫≥ng ƒë·∫øn Boss Final)
             // =========================================================================
             // Debug.Log("[TEST] Step 8: Simulating gathering 20 ores...");
             SetInventoryItem(localPlayer, 7, 20); // Ore ItemID = 7, qty = 20
             Refl.CallMethod(localQuest, "KiemTraTienDo");
             Assert.IsTrue(IsQuestCompleted(localQuest, 16), "[TEST] daoquang quest should be marked completed.");
 
-            // NÛi chuy?n v?i Wizard d? tr? quest 16 v‡ nh?n quest 18 (Craft 10 Potions)
-            // Debug.Log("[TEST] Step 8: Interacting with Wizard to submit and get craft2 quest...");
+            // N√≥i chuy·ªán v·ªõi Wizard ƒë·ªÉ tr·∫£ quest 16 v√† nh·∫≠n tr·ª±c ti·∫øp quest 15 (THE END / Boss Final)
+            // Debug.Log("[TEST] Step 8: Interacting with Wizard to submit daoquang and get bossfinal quest directly...");
             yield return StartNPCConversation(wizardTrigger);
             yield return SimulateDialogueChoice();
 
             Assert.IsFalse(HasQuest(localQuest, 16), "[TEST] daoquang quest was not turned in!");
-            Assert.IsTrue(HasQuest(localQuest, 18), "[TEST] Failed to receive craft2 quest!");
+            Assert.IsTrue(HasQuest(localQuest, 15), "[TEST] Failed to receive bossfinal quest directly!");
 
             // =========================================================================
-            // BU?C 9: Ch? t?o 10 bÏnh m·u v‡ quay l?i Wizard
+            // BU·ªöC 9: Ti√™u di·ªát Boss Cu·ªëi (Final Boss) v√† quay l·∫°i Wizard
             // =========================================================================
-            // Debug.Log("[TEST] Step 9: Simulating crafting 10 potions...");
-            // XÛa qu?ng v‡ d?t potion v‡o t˙i d? d? vu?t qua bu?c CheckTienDo c?a GiaoVatPham n?u cÛ,
-            // –?ng th?i tang ti?n d? c?a nhi?m v? ch? t?o (LoaiNhiemVu.CheTao = 6, Potion ID = 1001)
+            // Debug.Log("[TEST] Step 9: Simulating killing Final Boss...");
             SetInventoryItem(localPlayer, 0, 0); 
-            Refl.CallMethod(localQuest, "TangTienDoNhiemVu", 6, 1001, 10);
-            Assert.IsTrue(IsQuestCompleted(localQuest, 18), "[TEST] craft2 quest should be marked completed.");
-
-            // NÛi chuy?n v?i Wizard d? tr? quest 18 v‡ nh?n quest 15 (THE END)
-            // Debug.Log("[TEST] Step 9: Interacting with Wizard to submit and get bossfinal quest...");
-            yield return StartNPCConversation(wizardTrigger);
-            yield return SimulateDialogueChoice();
-
-            Assert.IsFalse(HasQuest(localQuest, 18), "[TEST] craft2 quest was not turned in!");
-            Assert.IsTrue(HasQuest(localQuest, 15), "[TEST] Failed to receive bossfinal quest!");
-
-            // =========================================================================
-            // BU?C 10: TiÍu di?t Boss Cu?i (Final Boss) v‡ quay l?i Wizard
-            // =========================================================================
-            // Debug.Log("[TEST] Step 10: Simulating killing Final Boss...");
             Refl.CallMethod(localQuest, "TangTienDoNhiemVu", 1, 1, 1); // LoaiNhiemVu.TieuDietQuai = 1, Final Boss ID = 1
             Assert.IsTrue(IsQuestCompleted(localQuest, 15), "[TEST] bossfinal quest should be marked completed.");
 
-            // NÛi chuy?n v?i Wizard d? tr? quest 15
-            // Debug.Log("[TEST] Step 10: Interacting with Wizard to turn in final quest...");
+            // N√≥i chuy·ªán v·ªõi Wizard ƒë·ªÉ tr·∫£ quest 15
+            // Debug.Log("[TEST] Step 9: Interacting with Wizard to turn in final quest...");
             yield return StartNPCConversation(wizardTrigger);
             yield return SimulateDialogueChoice();
 
-            Assert.IsFalse(HasQuest(localQuest, 15), "[TEST] bossfinal quest was not turned in!");
-            // Debug.Log($"[TEST] Run #{run}/3 completed successfully!");
-        }
-
-        // Debug.Log("[TEST] ALL 3 RUNS COMPLETED SUCCESSFULLY! Dialogue & Quests are fully functioning!");
-    }
-
-    // Helper: Reset to‡n b? tr?ng th·i nhi?m v? v‡ level c?a player
-    private void ResetPlayerState(object localQuest, object localPlayer)
-    {
-        // XÛa danh s·ch nhi?m v? dang l‡m
-        var activeList = (System.Collections.IList)Refl.GetField(localQuest, "danhSachNhiemVu");
-        activeList.Clear();
-
-        // XÛa danh s·ch nhi?m v? d„ ho‡n th‡nh
-        var completedList = (System.Collections.IList)Refl.GetField(localQuest, "danhSachDaHoanThanh");
-        completedList.Clear();
-
-        // –?t level c?a player v? 1
-        Refl.SetField(localPlayer, "level", 1);
-
-        // XÛa s?ch hÚm d?
-        var tuiDo = Refl.GetField(localPlayer, "TuiDo");
-        Type oVatPhamType = Refl.GetType("O_VatPham");
-        var setMethod = tuiDo.GetType().GetMethod("Set", new Type[] { typeof(int), oVatPhamType });
-        int length = (int)tuiDo.GetType().GetProperty("Length").GetValue(tuiDo);
-        for (int i = 0; i < length; i++)
-        {
-            object emptyItem = Activator.CreateInstance(oVatPhamType);
-            oVatPhamType.GetField("ItemID").SetValue(emptyItem, 0);
-            oVatPhamType.GetField("SoLuong").SetValue(emptyItem, 0);
-            oVatPhamType.GetField("UpgradeLevel").SetValue(emptyItem, 0);
-            setMethod.Invoke(tuiDo, new object[] { i, emptyItem });
-        }
-
-        // C?p nh?t l?i UI b?ng nhi?m v?
-        Refl.CallMethod(localQuest, "KiemTraTienDo");
-    }
-
-    // Helper: ThÍm v?t ph?m v‡o t˙i d?
-    private void SetInventoryItem(object localPlayer, int itemId, int qty)
-    {
-        var tuiDo = Refl.GetField(localPlayer, "TuiDo");
-        Type oVatPhamType = Refl.GetType("O_VatPham");
-        var setMethod = tuiDo.GetType().GetMethod("Set", new Type[] { typeof(int), oVatPhamType });
-        
-        object item = Activator.CreateInstance(oVatPhamType);
-        oVatPhamType.GetField("ItemID").SetValue(item, itemId);
-        oVatPhamType.GetField("SoLuong").SetValue(item, qty);
-        oVatPhamType.GetField("UpgradeLevel").SetValue(item, 0);
-        
-        setMethod.Invoke(tuiDo, new object[] { 0, item });
-    }
-
-    // Helper: Ki?m tra player cÛ dang gi? nhi?m v? n‡o khÙng
-    private bool HasQuest(object localQuest, int questID)
-    {
-        var activeList = (System.Collections.IList)Refl.GetField(localQuest, "danhSachNhiemVu");
-        foreach (var item in activeList)
-        {
-            var duLieuQuest = Refl.GetField(item, "duLieuQuest");
-            int id = (int)Refl.GetField(duLieuQuest, "idNhiemVu");
-            if (id == questID) return true;
-        }
-        return false;
-    }
-
-    // Helper: Ki?m tra xem nhi?m v? c? th? d„ d?t yÍu c?u chua
-    private bool IsQuestCompleted(object localQuest, int questID)
-    {
-        var activeList = (System.Collections.IList)Refl.GetField(localQuest, "danhSachNhiemVu");
-        foreach (var item in activeList)
-        {
-            var duLieuQuest = Refl.GetField(item, "duLieuQuest");
-            int id = (int)Refl.GetField(duLieuQuest, "idNhiemVu");
-            if (id == questID)
-            {
-                return (bool)Refl.GetField(item, "daDatYeuCau");
-            }
-        }
-        return false;
-    }
-
-    // Helper: B?t d?u h?i tho?i v?i NPC
-    private IEnumerator StartNPCConversation(object npcTrigger)
-    {
-        // Gi? l?p dangNoiChuyenVoiNPCNay = true
-        Refl.SetField(npcTrigger, "dangNoiChuyenVoiNPCNay", true);
-
-        // L?y cu?c h?i tho?i
-        var cuocHoiThoai = Refl.GetField(npcTrigger, "cuocHoiThoaiCuaNPC");
-        var convManagerInstance = Refl.GetStaticField("DialogueEditor.ConversationManager", "Instance");
-
-        // G?i StartConversation
-        Refl.CallMethod(convManagerInstance, "StartConversation", cuocHoiThoai);
-        yield return new WaitForSeconds(0.2f);
-    }
-
-    // Helper: Gi? l?p l?a ch?n v‡ nh?n phÌm di ti?p trong h?i tho?i cho d?n khi k?t th˙c h?i tho?i
-    private IEnumerator SimulateDialogueChoice()
-    {
-        var convManagerInstance = Refl.GetStaticField("DialogueEditor.ConversationManager", "Instance");
-        Assert.IsNotNull(convManagerInstance, "ConversationManager Instance is null!");
-
-        float timer = 0f;
-        while ((bool)Refl.GetField(convManagerInstance, "IsConversationActive") && timer < 10f)
-        {
-            // Tr?ng th·i m_state = 3 nghia l‡ Idle (ch? ngu?i choi tuong t·c)
-            var state = Refl.GetField(convManagerInstance, "m_state");
-            if ((int)state == 3)
-            {
-                var uiOptionsList = (System.Collections.IList)Refl.GetField(convManagerInstance, "m_uiOptions");
-                if (uiOptionsList.Count > 0)
-                {
-                    // T? d?ng ch?n option d?u tiÍn h?p l?
-                    Refl.CallMethod(convManagerInstance, "PressSelectedOption");
-                }
-                else
-                {
-                    // N?u khÙng cÛ danh s·ch l?a ch?n, tÏm xem cÛ button Speech (Continue) hay End trong Scene khÙng v‡ click nÛ
-                    var uiButtons = GameObject.FindObjectsByType(Refl.GetType("DialogueEditor.UIConversationButton"), FindObjectsSortMode.None);
-                    if (uiButtons.Length > 0)
-                    {
-                        // G?i click
-                        Refl.CallMethod(uiButtons[0], "OnButtonPressed");
-                    }
-                    else
-                    {
-                        // Fallback: k?t th˙c cu?c h?i tho?i tr?c ti?p
-                        Refl.CallMethod(convManagerInstance, "EndConversation");
-                    }
-                }
-            }
-            yield return new WaitForSeconds(0.1f);
-            timer += 0.1f;
-        }
-
-        // Ch? thÍm 1 ch˙t d? c·c event k?t th˙c h?i tho?i ho‡n th‡nh
-        yield return new WaitForSeconds(0.3f);
-    }
-}
+            Assert.IsFalse(HasQuest(localQuest, 15), "[TEST] bossfinal quest was not turned in!");
+            // Debug.Log($"[TEST] Run #{run}/3 completed successfully!");
+        }
+
+        // Debug.Log("[TEST] ALL 3 RUNS COMPLETED SUCCESSFULLY! Dialogue & Quests are fully functioning!");
+    }
+
+    // Helper: Reset to√†n b? tr?ng th√°i nhi?m v? v√† level c?a player
+    private void ResetPlayerState(object localQuest, object localPlayer)
+    {
+        // X√≥a danh s√°ch nhi?m v? dang l√†m
+        var activeList = (System.Collections.IList)Refl.GetField(localQuest, "danhSachNhiemVu");
+        activeList.Clear();
+
+        // X√≥a danh s√°ch nhi?m v? dƒÉ ho√†n th√†nh
+        var completedList = (System.Collections.IList)Refl.GetField(localQuest, "danhSachDaHoanThanh");
+        completedList.Clear();
+
+        // ƒê?t level c?a player v? 1
+        Refl.SetField(localPlayer, "level", 1);
+
+        // X√≥a s?ch hÃ£m d?
+        var tuiDo = Refl.GetField(localPlayer, "TuiDo");
+        Type oVatPhamType = Refl.GetType("O_VatPham");
+        var setMethod = tuiDo.GetType().GetMethod("Set", new Type[] { typeof(int), oVatPhamType });
+        int length = (int)tuiDo.GetType().GetProperty("Length").GetValue(tuiDo);
+        for (int i = 0; i < length; i++)
+        {
+            object emptyItem = Activator.CreateInstance(oVatPhamType);
+            oVatPhamType.GetField("ItemID").SetValue(emptyItem, 0);
+            oVatPhamType.GetField("SoLuong").SetValue(emptyItem, 0);
+            oVatPhamType.GetField("UpgradeLevel").SetValue(emptyItem, 0);
+            setMethod.Invoke(tuiDo, new object[] { i, emptyItem });
+        }
+
+        // C?p nh?t l?i UI b?ng nhi?m v?
+        Refl.CallMethod(localQuest, "KiemTraTienDo");
+    }
+
+    // Helper: Th√™m v?t ph?m v√†o t√∫i d?
+    private void SetInventoryItem(object localPlayer, int itemId, int qty)
+    {
+        var tuiDo = Refl.GetField(localPlayer, "TuiDo");
+        Type oVatPhamType = Refl.GetType("O_VatPham");
+        var setMethod = tuiDo.GetType().GetMethod("Set", new Type[] { typeof(int), oVatPhamType });
+        
+        object item = Activator.CreateInstance(oVatPhamType);
+        oVatPhamType.GetField("ItemID").SetValue(item, itemId);
+        oVatPhamType.GetField("SoLuong").SetValue(item, qty);
+        oVatPhamType.GetField("UpgradeLevel").SetValue(item, 0);
+        
+        setMethod.Invoke(tuiDo, new object[] { 0, item });
+    }
+
+    // Helper: Ki?m tra player c√≥ dang gi? nhi?m v? n√†o kh√¥ng
+    private bool HasQuest(object localQuest, int questID)
+    {
+        var activeList = (System.Collections.IList)Refl.GetField(localQuest, "danhSachNhiemVu");
+        foreach (var item in activeList)
+        {
+            var duLieuQuest = Refl.GetField(item, "duLieuQuest");
+            int id = (int)Refl.GetField(duLieuQuest, "idNhiemVu");
+            if (id == questID) return true;
+        }
+        return false;
+    }
+
+    // Helper: Ki?m tra xem nhi?m v? c? th? dƒÉ d?t y√™u c?u chua
+    private bool IsQuestCompleted(object localQuest, int questID)
+    {
+        var activeList = (System.Collections.IList)Refl.GetField(localQuest, "danhSachNhiemVu");
+        foreach (var item in activeList)
+        {
+            var duLieuQuest = Refl.GetField(item, "duLieuQuest");
+            int id = (int)Refl.GetField(duLieuQuest, "idNhiemVu");
+            if (id == questID)
+            {
+                return (bool)Refl.GetField(item, "daDatYeuCau");
+            }
+        }
+        return false;
+    }
+
+    // Helper: B?t d?u h?i tho?i v?i NPC
+    private IEnumerator StartNPCConversation(object npcTrigger)
+    {
+        // Gi? l?p dangNoiChuyenVoiNPCNay = true
+        Refl.SetField(npcTrigger, "dangNoiChuyenVoiNPCNay", true);
+
+        // L?y cu?c h?i tho?i
+        var cuocHoiThoai = Refl.GetField(npcTrigger, "cuocHoiThoaiCuaNPC");
+        var convManagerInstance = Refl.GetStaticField("DialogueEditor.ConversationManager", "Instance");
+
+        // G?i StartConversation
+        Refl.CallMethod(convManagerInstance, "StartConversation", cuocHoiThoai);
+        yield return new WaitForSeconds(0.2f);
+    }
+
+    // Helper: Gi? l?p l?a ch?n v√† nh?n ph√≠m di ti?p trong h?i tho?i cho d?n khi k?t th√∫c h?i tho?i
+    private IEnumerator SimulateDialogueChoice()
+    {
+        var convManagerInstance = Refl.GetStaticField("DialogueEditor.ConversationManager", "Instance");
+        Assert.IsNotNull(convManagerInstance, "ConversationManager Instance is null!");
+
+        float timer = 0f;
+        while ((bool)Refl.GetField(convManagerInstance, "IsConversationActive") && timer < 10f)
+        {
+            // Tr?ng th√°i m_state = 3 nghia l√† Idle (ch? ngu?i choi tuong t√°c)
+            var state = Refl.GetField(convManagerInstance, "m_state");
+            if ((int)state == 3)
+            {
+                var uiOptionsList = (System.Collections.IList)Refl.GetField(convManagerInstance, "m_uiOptions");
+                if (uiOptionsList.Count > 0)
+                {
+                    // T? d?ng ch?n option d?u ti√™n h?p l?
+                    Refl.CallMethod(convManagerInstance, "PressSelectedOption");
+                }
+                else
+                {
+                    // N?u kh√¥ng c√≥ danh s√°ch l?a ch?n, tÃÅm xem c√≥ button Speech (Continue) hay End trong Scene kh√¥ng v√† click n√≥
+                    var uiButtons = GameObject.FindObjectsByType(Refl.GetType("DialogueEditor.UIConversationButton"), FindObjectsSortMode.None);
+                    if (uiButtons.Length > 0)
+                    {
+                        // G?i click
+                        Refl.CallMethod(uiButtons[0], "OnButtonPressed");
+                    }
+                    else
+                    {
+                        // Fallback: k?t th√∫c cu?c h?i tho?i tr?c ti?p
+                        Refl.CallMethod(convManagerInstance, "EndConversation");
+                    }
+                }
+            }
+            yield return new WaitForSeconds(0.1f);
+            timer += 0.1f;
+        }
+
+        // Ch? th√™m 1 ch√∫t d? c√°c event k?t th√∫c h?i tho?i ho√†n th√†nh
+        yield return new WaitForSeconds(0.3f);
+    }
+}
