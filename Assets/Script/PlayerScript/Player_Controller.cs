@@ -2511,7 +2511,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             currentphaocauca = Instantiate(Phaocauca, diemBatDau, Quaternion.identity);
             Rigidbody rb = currentphaocauca.GetComponent<Rigidbody>();
-            if (rb != null) rb.AddForce(huongNem, ForceMode.Impulse);
+            if (rb != null) 
+            {
+                rb.isKinematic = false;
+                rb.useGravity = true;
+                rb.AddForce(huongNem, ForceMode.Impulse);
+            }
 
             PhaoCauCa_Logic logic = currentphaocauca.GetComponent<PhaoCauCa_Logic>();
             if (logic == null) logic = currentphaocauca.AddComponent<PhaoCauCa_Logic>();
