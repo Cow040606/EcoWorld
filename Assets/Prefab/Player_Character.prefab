@@ -9152,6 +9152,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       insertIndex: -1
+      addedObject: {fileID: -2207010805019731502}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
+        type: 3}
+      insertIndex: -1
       addedObject: {fileID: 1843947881778020044}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
@@ -9173,10 +9177,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 6231373445032760394}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: -2207010805019731502}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
         type: 3}
       insertIndex: -1
@@ -9376,8 +9376,37 @@ MonoBehaviour:
     type: 3}
   teleportDepartSFX: {fileID: 8300000, guid: 6f883c891e63cad45a4f31456878bc3d, type: 3}
   teleportArriveSFX: {fileID: 8300000, guid: bffd04c63c968ad4fb0e13f0e411bace, type: 3}
+  usePotionSFX: {fileID: 8300000, guid: 5874b3cb4976bfc47aa52565aa217e8c, type: 3}
+  levelUpSFX: {fileID: 8300000, guid: dbf543c744ef39040aa7baf9ddb51ac0, type: 3}
   thoiGianChayVFX_Di: 1
   thoiGianChayVFX_Den: 1
+--- !u!114 &-2207010805019731502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7996403590029583987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aa3591d8a0031d43a446eb3cd8c51de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  loaNhanVat: {fileID: 3125081616612146868}
+  tiengChem1: {fileID: 8300000, guid: 9afa6745d29dfbb4b9aea174abb184ac, type: 3}
+  tiengChem2: {fileID: 8300000, guid: d7972477888cb404eab1245d4c9957f6, type: 3}
+  tiengChem3: {fileID: 8300000, guid: dc5c22b59a32dbf438147de5cd248bea, type: 3}
+  danhSachTiengChatCay:
+  - {fileID: 8300000, guid: efa9a58e2d381af458ca340bdcf5c9d3, type: 3}
+  tiengCauCa: {fileID: 8300000, guid: 385a63505e95421489c7584279768f3c, type: 3}
+  tiengDaoKhoang: {fileID: 8300000, guid: de7334b2addd37a4a84c317b1b09331b, type: 3}
+  tiengChatCay: {fileID: 8300000, guid: a53f35461784ea84084737d6a7b66096, type: 3}
+  tiengNhay: {fileID: 8300000, guid: b7cf106466df06a4d80f15e83f6740e6, type: 3}
+  tiengBiThuong: {fileID: 8300000, guid: 5d17fc20dae41894e963d4b043c1b189, type: 3}
+  tiengKeoCung: {fileID: 8300000, guid: ad33a172b47c3954481ae9e1e2dddbeb, type: 3}
+  tiengBanCung: {fileID: 8300000, guid: 23fa0345360959d4bb309b25aefd2610, type: 3}
+  tiengWalk: {fileID: 8300000, guid: 6a3eabc7a36dbcf429e6afaabaa76f77, type: 3}
+  tiengRun: {fileID: 8300000, guid: 9493c36dc8a86b74eb0e4c8f4f80d456, type: 3}
 --- !u!114 &1843947881778020044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9503,33 +9532,6 @@ MonoBehaviour:
   debugTextureName: 0
   defaultSurface: {fileID: 11400000, guid: 710c74baecce50746bd56b9711c851e7, type: 2}
   customSurfaces: []
---- !u!114 &-2207010805019731502
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7996403590029583987}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7aa3591d8a0031d43a446eb3cd8c51de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  loaNhanVat: {fileID: 3125081616612146868}
-  tiengChem1: {fileID: 8300000, guid: 9afa6745d29dfbb4b9aea174abb184ac, type: 3}
-  tiengChem2: {fileID: 8300000, guid: d7972477888cb404eab1245d4c9957f6, type: 3}
-  tiengChem3: {fileID: 8300000, guid: dc5c22b59a32dbf438147de5cd248bea, type: 3}
-  danhSachTiengChatCay:
-  - {fileID: 8300000, guid: efa9a58e2d381af458ca340bdcf5c9d3, type: 3}
-  tiengCauCa: {fileID: 8300000, guid: 385a63505e95421489c7584279768f3c, type: 3}
-  tiengDaoKhoang: {fileID: 8300000, guid: de7334b2addd37a4a84c317b1b09331b, type: 3}
-  tiengChatCay: {fileID: 8300000, guid: a53f35461784ea84084737d6a7b66096, type: 3}
-  tiengNhay: {fileID: 8300000, guid: b7cf106466df06a4d80f15e83f6740e6, type: 3}
-  tiengBiThuong: {fileID: 8300000, guid: 5d17fc20dae41894e963d4b043c1b189, type: 3}
-  tiengKeoCung: {fileID: 8300000, guid: ad33a172b47c3954481ae9e1e2dddbeb, type: 3}
-  tiengBanCung: {fileID: 8300000, guid: 23fa0345360959d4bb309b25aefd2610, type: 3}
-  tiengWalk: {fileID: 8300000, guid: 6a3eabc7a36dbcf429e6afaabaa76f77, type: 3}
-  tiengRun: {fileID: 8300000, guid: 9493c36dc8a86b74eb0e4c8f4f80d456, type: 3}
 --- !u!82 &3125081616612146868
 AudioSource:
   m_ObjectHideFlags: 0

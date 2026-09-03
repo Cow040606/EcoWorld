@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Arrow_Logic : MonoBehaviour
 {
@@ -115,10 +115,23 @@ public class Arrow_Logic : MonoBehaviour
         // Bo qua neu trung chinh nguoi vua ban
         if (chuSohuu != null && (other.gameObject == chuSohuu.gameObject || other.transform.IsChildOf(chuSohuu.transform))) return;
         
-        // Bo qua cac trigger
-        if (other.isTrigger) return; 
+        // Bo qua cac trigger KHONG thuoc layer co the tan cong duoc
+        if (other.isTrigger)
+        {
+            if (chuSohuu != null)
+            {
+                if ((chuSohuu.attackLayer.value & (1 << other.gameObject.layer)) == 0)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
 
-        hasHit = true;
+hasHit = true;
         if (windTrail != null) windTrail.emitting = false;
 
         bool isCrit = (damage >= 40f);
@@ -199,3 +212,4 @@ public class Arrow_Logic : MonoBehaviour
         }
     }
 }
+

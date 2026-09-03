@@ -13,6 +13,12 @@ public class InventoryManager : MonoBehaviour
     public GameObject khungStats; // UI Stats trong Balo 
     public bool trangThaiBalo = false; 
 
+    [Header("Âm Thanh Balo")]
+    public AudioClip openBaloSFX;
+    public AudioClip closeBaloSFX;
+    public AudioClip clickButtonSFX;
+    public AudioSource audioSource;
+
     [Header("Cấu hình Ô UI")]
     public Transform itemHolder;  // Khung chứa các ô (Grid Layout Group)
     public GameObject itemPrefab; // Prefab của 1 ô (có hình, chữ...)
@@ -160,6 +166,7 @@ public class InventoryManager : MonoBehaviour
 
     public void BamChuyenTab(int idTab)
     {
+        PhatAmThanhClick();
         tabHienTai = (TabBalo)idTab;
         
         // Nếu Balo đang mở thì load lại hình ảnh ngay lập tức
@@ -179,12 +186,26 @@ public class InventoryManager : MonoBehaviour
         return null; 
     }
 
+    public void PhatAmThanhClick()
+    {
+        if (audioSource != null && clickButtonSFX != null) 
+        {
+            audioSource.PlayOneShot(clickButtonSFX);
+        }
+    }
+
     private Player_Controller chuSoHuuBalo;
 
     public void BatTatBalo(NetworkArray<O_VatPham> tuiDoCuaPlayer, Player_Controller player)
     {
         chuSoHuuBalo = player; 
         trangThaiBalo = !trangThaiBalo;
+
+        if (audioSource != null)
+        {
+            if (trangThaiBalo && openBaloSFX != null) audioSource.PlayOneShot(openBaloSFX);
+            else if (!trangThaiBalo && closeBaloSFX != null) audioSource.PlayOneShot(closeBaloSFX);
+        }
 
         if (khungStats != null && trangThaiBalo) khungStats.SetActive(true);
 
@@ -212,6 +233,8 @@ public class InventoryManager : MonoBehaviour
         if (!trangThaiBalo)
         {
             trangThaiBalo = true;
+            if (audioSource != null && openBaloSFX != null) audioSource.PlayOneShot(openBaloSFX);
+            
             foreach (GameObject ui in danhSachUI_CanAn) { if (ui != null) ui.SetActive(false); }
             VeBaloRaManHinh(player.TuiDo);
             if (khungBalo != null) khungBalo.SetActive(true);
@@ -225,6 +248,8 @@ public class InventoryManager : MonoBehaviour
         if (trangThaiBalo)
         {
             trangThaiBalo = false;
+            if (audioSource != null && closeBaloSFX != null) audioSource.PlayOneShot(closeBaloSFX);
+
             foreach (GameObject ui in danhSachUI_CanAn) { if (ui != null) ui.SetActive(true); }
             if (khungBalo != null) khungBalo.SetActive(false);
         }

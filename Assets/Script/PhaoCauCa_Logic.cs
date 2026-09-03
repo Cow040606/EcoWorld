@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PhaoCauCa_Logic : MonoBehaviour
 {
@@ -12,11 +12,28 @@ public class PhaoCauCa_Logic : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
+    void Start()
+    {
+        if (chuSohuu != null)
+        {
+            Collider[] playerColliders = chuSohuu.GetComponentsInChildren<Collider>();
+            Collider[] myColliders = GetComponentsInChildren<Collider>();
+            
+            foreach (var myCol in myColliders)
+            {
+                foreach (var pCol in playerColliders)
+                {
+                    Physics.IgnoreCollision(myCol, pCol);
+                }
+            }
+        }
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (!isLocal || daChamCaiGiDo || chuSohuu == null) return;
         
-        // Gọi hàm kiểm tra xem có phải đụng nhầm nhân vật không
+        // Gá»i hÃ m kiá»ƒm tra xem cÃ³ pháº£i Ä‘á»¥ng nháº§m nhÃ¢n váº­t khÃ´ng
         if (KiemTraVatTheVoHinh(other.gameObject)) return;
 
         if (((1 << other.gameObject.layer) & chuSohuu.waterLayer) != 0)
@@ -35,7 +52,7 @@ public class PhaoCauCa_Logic : MonoBehaviour
     {
         if (!isLocal || daChamCaiGiDo || chuSohuu == null) return;
 
-        // Gọi hàm kiểm tra xem có phải đụng nhầm nhân vật không
+        // Gá»i hÃ m kiá»ƒm tra xem cÃ³ pháº£i Ä‘á»¥ng nháº§m nhÃ¢n váº­t khÃ´ng
         if (KiemTraVatTheVoHinh(collision.gameObject)) return;
 
         if (((1 << collision.gameObject.layer) & chuSohuu.waterLayer) != 0)
@@ -54,21 +71,21 @@ public class PhaoCauCa_Logic : MonoBehaviour
         chuSohuu.PhaoRotTrenCan();
     }
 
-    // --- BỘ LỌC CỰC MẠNH: Bỏ qua Player, Camera, và các vật thể linh tinh ---
+    // --- Bá»˜ Lá»ŒC Cá»°C Máº NH: Bá» qua Player, Camera, vÃ  cÃ¡c váº­t thá»ƒ linh tinh ---
     private bool KiemTraVatTheVoHinh(GameObject vatCham)
     {
-        // 1. Nếu đụng trúng cơ thể, tay chân, phụ kiện của chính nhân vật (cùng chung 1 gốc)
+        // 1. Náº¿u Ä‘á»¥ng trÃºng cÆ¡ thá»ƒ, tay chÃ¢n, phá»¥ kiá»‡n cá»§a chÃ­nh nhÃ¢n váº­t (cÃ¹ng chung 1 gá»‘c)
         if (vatCham.transform.root == chuSohuu.transform.root) return true;
 
-        // 2. Nếu đụng trúng bất kỳ ai có gán Tag "Player"
+        // 2. Náº¿u Ä‘á»¥ng trÃºng báº¥t ká»³ ai cÃ³ gÃ¡n Tag "Player"
         if (vatCham.CompareTag("Player")) return true;
 
-        // 3. Nếu đụng trúng vật thể thuộc Layer "Player" (Đề phòng vũ khí, áo choàng bị lọt lưới)
+        // 3. Náº¿u Ä‘á»¥ng trÃºng váº­t thá»ƒ thuá»™c Layer "Player" (Äá» phÃ²ng vÅ© khÃ­, Ã¡o choÃ ng bá»‹ lá»t lÆ°á»›i)
         if (vatCham.layer == LayerMask.NameToLayer("Player")) return true;
         
-        // 4. Bỏ qua Layer "Ignore Raycast" (Thường là Camera, lưới của UI, v.v...)
+        // 4. Bá» qua Layer "Ignore Raycast" (ThÆ°á»ng lÃ  Camera, lÆ°á»›i cá»§a UI, v.v...)
         if (vatCham.layer == LayerMask.NameToLayer("Ignore Raycast")) return true;
 
-        return false; // Không kẹt cái nào ở trên thì mới tính là chạm đất/nước thực sự
+        return false; // KhÃ´ng káº¹t cÃ¡i nÃ o á»Ÿ trÃªn thÃ¬ má»›i tÃ­nh lÃ  cháº¡m Ä‘áº¥t/nÆ°á»›c thá»±c sá»±
     }
 }

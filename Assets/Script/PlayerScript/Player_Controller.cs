@@ -266,6 +266,8 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     public GameObject teleportArriveVFXPrefab;
     public AudioClip teleportDepartSFX;
     public AudioClip teleportArriveSFX;
+    public AudioClip usePotionSFX;
+    public AudioClip levelUpSFX;
     public float thoiGianChayVFX_Di = 1.5f;
     public float thoiGianChayVFX_Den = 1.0f;
     #endregion
@@ -1895,6 +1897,10 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             GameObject vfx = Instantiate(levelUpVFXPrefab, transform.position, Quaternion.identity, transform);
             Destroy(vfx, 3f);
         }
+        if (levelUpSFX != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(levelUpSFX);
+        }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -2140,6 +2146,17 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             }
             else if (thongTin.loaiTieuHao == Item.LoaiTieuHao.HoiTheLuc)
                 CurrentStamina = Mathf.Clamp(CurrentStamina + thongTin.luongHoiPhuc, 0, MaxStamina);
+
+            RPC_PlaySFXDungThuoc();
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_PlaySFXDungThuoc()
+    {
+        if (usePotionSFX != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(usePotionSFX);
         }
     }
 
@@ -2494,7 +2511,12 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         {
             currentphaocauca = Instantiate(Phaocauca, diemBatDau, Quaternion.identity);
             Rigidbody rb = currentphaocauca.GetComponent<Rigidbody>();
-            if (rb != null) rb.AddForce(huongNem, ForceMode.Impulse);
+            if (rb != null) 
+            {
+                rb.isKinematic = false;
+                rb.useGravity = true;
+                rb.AddForce(huongNem, ForceMode.Impulse);
+            }
 
             PhaoCauCa_Logic logic = currentphaocauca.GetComponent<PhaoCauCa_Logic>();
             if (logic == null) logic = currentphaocauca.AddComponent<PhaoCauCa_Logic>();
