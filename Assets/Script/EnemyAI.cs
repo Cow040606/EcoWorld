@@ -17,20 +17,51 @@ public class EnemyAI : NetworkBehaviour
     [Networked] private int currentPatrolIndex { get; set; }
     [Networked] private NetworkObject targetPlayer { get; set; }
     [Networked] private TickTimer attackTimer { get; set; }
+    [Networked] public float CurrentMoveSpeed { get; set; }
 
     private Animator animator;
+
+    private void Awake()
+    {
+        Physics.IgnoreLayerCollision(13, 13, true);
+        Physics.IgnoreLayerCollision(13, 14, true);
+        Physics.IgnoreLayerCollision(13, 0, true);
+
+        CapsuleCollider col = GetComponent<CapsuleCollider>();
+        if (col != null)
+        {
+            col.isTrigger = true;
+            col.center = new Vector3(0f, 1.0f, 0f);
+            col.height = 1.8f;
+            col.radius = 0.4f;
+        }
+    }
 
     public override void Spawned()
     {
         if (agent == null) agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
 
+        if (animator != null)
+        {
+            animator.applyRootMotion = false;
+        }
+
+        if (agent != null)
+        {
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.LowQualityObstacleAvoidance;
+            agent.angularSpeed = 720f;
+            agent.acceleration = 45f;
+            agent.baseOffset = 0.05f;
+            agent.autoRepath = true;
+        }
+
         if (Object.HasStateAuthority)
         {
             if (agent != null)
             {
                 agent.enabled = true;
-                if (!agent.isOnNavMesh && NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+                if (!agent.isOnNavMesh && NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 6f, NavMesh.AllAreas))
                 {
                     agent.Warp(hit.position);
                 }
@@ -38,7 +69,6 @@ public class EnemyAI : NetworkBehaviour
         }
         else
         {
-            // Tắt NavMeshAgent ở các máy Client để NetworkTransform toàn quyền điều khiển vị trí
             if (agent != null)
             {
                 agent.enabled = false;
@@ -46,11 +76,21 @@ public class EnemyAI : NetworkBehaviour
         }
     }
 
+    public override void Render()
+    {
+        if (animator == null) return;
+        float speed = Object.HasStateAuthority && agent != null && agent.enabled ? agent.velocity.magnitude : CurrentMoveSpeed;
+        bool isMoving = speed > 0.2f;
+        animator.SetBool("isWalking", isMoving && targetPlayer == null);
+        animator.SetBool("isRunning", isMoving && targetPlayer != null);
+    }
+
     public override void FixedUpdateNetwork()
     {
-        // Trong Shared Mode, chỉ người có quyền điều khiển (StateAuthority) mới tính toán AI
         if (Object.HasStateAuthority)
         {
+            CurrentMoveSpeed = (agent != null && agent.enabled) ? agent.velocity.magnitude : 0f;
+
             FindNearestPlayer();
 
             if (targetPlayer != null)
@@ -81,7 +121,6 @@ public class EnemyAI : NetworkBehaviour
         Player_Controller closest = null;
         float minDistance = float.MaxValue;
 
-        // Tìm tất cả Player_Controller hoạt động trong phòng
         Player_Controller[] players = FindObjectsOfType<Player_Controller>();
         foreach (var player in players)
         {
@@ -103,7 +142,12 @@ public class EnemyAI : NetworkBehaviour
         if (targetPlayer != null && agent != null && agent.enabled && agent.isOnNavMesh)
         {
             agent.isStopped = false;
-            agent.SetDestination(targetPlayer.transform.position);
+            Vector3 targetPos = targetPlayer.transform.position;
+            if (NavMesh.SamplePosition(targetPos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+            {
+                targetPos = hit.position;
+            }
+            agent.SetDestination(targetPos);
         }
     }
 
@@ -145,7 +189,7 @@ public class EnemyAI : NetworkBehaviour
         {
             agent.SetDestination(patrolPoints[currentPatrolIndex].position);
 
-            if (!agent.pathPending && agent.remainingDistance < 0.5f)
+            if (!agent.pathPending && agent.remainingDistance < 0.6f)
             {
                 currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
             }

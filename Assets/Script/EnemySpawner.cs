@@ -154,6 +154,18 @@ public class EnemySpawner : NetworkBehaviour
             if (spawnedEnemy != null)
             {
                 activeEnemies.Add(spawnedEnemy);
+
+                EnemyAIOrc orcAI = spawnedEnemy.GetComponent<EnemyAIOrc>();
+                if (orcAI != null)
+                {
+                    orcAI.SetSpawnPosition(spawnPos);
+                }
+
+                BossController bossCtrl = spawnedEnemy.GetComponent<BossController>();
+                if (bossCtrl != null)
+                {
+                    bossCtrl.SetViTriGoc(spawnPos);
+                }
                 Debug.Log($"[EnemySpawner] Đã spawn quái tại {spawnPos} ({activeEnemies.Count}/{maxEnemies})");
             }
         }

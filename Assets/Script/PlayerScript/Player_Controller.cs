@@ -2014,10 +2014,22 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
         }
     }
 
+    private float lastTakeDamageTime = -999f;
+
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_TakeDame(float Dame)
     {
+        if (isDead) return;
         if (isInvincible && Dame > 0) return;
+
+        // Chống dồn sát thương lặp (Damage Stacking / Multi-hit glitch cùng frame):
+        // Giữa 2 lần nhận sát thương phải cách nhau tối thiểu 0.25 giây để tránh bị x10 dame trong 1 nhát chém
+        if (Dame > 0)
+        {
+            if (Time.time < lastTakeDamageTime + 0.25f) return;
+            lastTakeDamageTime = Time.time;
+        }
+
         if (Dame > 0)
         {
             if (CurrentArmor >= Dame) CurrentArmor -= Dame;
