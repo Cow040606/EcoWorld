@@ -9185,6 +9185,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 3318347428971164434}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 175abce4628c6784cbddb19be0e5bca3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1374696182056438446}
   m_SourcePrefab: {fileID: 100100000, guid: 175abce4628c6784cbddb19be0e5bca3, type: 3}
 --- !u!95 &3698320381410715315 stripped
 Animator:
@@ -9261,6 +9265,10 @@ MonoBehaviour:
     _value: 0
   _isDead:
     _value: 0
+  deathUI: {fileID: 0}
+  deathAudioSource: {fileID: 1374696182056438446}
+  deathSound: {fileID: 8300000, guid: 43395d1c8e2b02542ace2e0c2bf789a2, type: 3}
+  tocDoHienUIDeath: 1.5
   _isTeleporting:
     _value: 0
   _diemDichChuyenPending: {x: 0, y: 0, z: 0}
@@ -9393,11 +9401,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   loaNhanVat: {fileID: 3125081616612146868}
+  loaHanhDong: {fileID: 1374696182056438446}
   tiengChem1: {fileID: 8300000, guid: 9afa6745d29dfbb4b9aea174abb184ac, type: 3}
   tiengChem2: {fileID: 8300000, guid: d7972477888cb404eab1245d4c9957f6, type: 3}
   tiengChem3: {fileID: 8300000, guid: dc5c22b59a32dbf438147de5cd248bea, type: 3}
   danhSachTiengChatCay:
   - {fileID: 8300000, guid: efa9a58e2d381af458ca340bdcf5c9d3, type: 3}
+  - {fileID: 8300000, guid: 77985f1b9b2240a4ab8cdbbf48ea414c, type: 3}
+  - {fileID: 8300000, guid: 55cbc4a95bb726d44ab200ce2059f27a, type: 3}
   tiengCauCa: {fileID: 8300000, guid: 385a63505e95421489c7584279768f3c, type: 3}
   tiengDaoKhoang: {fileID: 8300000, guid: de7334b2addd37a4a84c317b1b09331b, type: 3}
   tiengChatCay: {fileID: 8300000, guid: a53f35461784ea84084737d6a7b66096, type: 3}
@@ -9646,3 +9657,100 @@ MonoBehaviour:
   rootAnimator: {fileID: 3698320381410715315}
   avatarNam: {fileID: 9000000, guid: d49c65de9fce66146b5d0e164b1f9d2d, type: 3}
   avatarNu: {fileID: 9000000, guid: aeb00aa9822ab824699f23ba3178d813, type: 3}
+--- !u!82 &1374696182056438446
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7996403590029583987}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

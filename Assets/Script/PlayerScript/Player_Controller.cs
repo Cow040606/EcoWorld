@@ -61,6 +61,56 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     [Header("Trạng Thái Sinh Mệnh")]
     [Networked] public NetworkBool isDead { get; set; }
+
+    [Header("Giao Diện Chết (Death UI)")]
+    public CanvasGroup deathUI;
+    public AudioSource deathAudioSource;
+    public AudioClip deathSound;
+    public float tocDoHienUIDeath = 1.5f;
+    private bool _localIsDead = false;
+
+    public void ShowDeathUI()
+    {
+        if (deathUI == null)
+        {
+            GameObject uiObj = GameObject.Find("Die");
+            if (uiObj != null) deathUI = uiObj.GetComponent<CanvasGroup>();
+        }
+
+        if (deathUI != null)
+        {
+            deathUI.blocksRaycasts = true;
+            StartCoroutine(FadeDeathUI(0f, 1f));
+        }
+        
+        if (deathAudioSource != null && deathSound != null)
+        {
+            deathAudioSource.PlayOneShot(deathSound);
+        }
+    }
+
+    public void HideDeathUI()
+    {
+        if (deathUI != null)
+        {
+            deathUI.alpha = 0f;
+            deathUI.blocksRaycasts = false;
+        }
+    }
+
+    private System.Collections.IEnumerator FadeDeathUI(float startAlpha, float targetAlpha)
+    {
+        float t = 0;
+        deathUI.alpha = startAlpha;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * tocDoHienUIDeath;
+            deathUI.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
+            yield return null;
+        }
+        deathUI.alpha = targetAlpha;
+    }
+    
     [Networked] public TickTimer dongHoHoiSinh { get; set; }
     [Networked] public NetworkBool isTeleporting { get; set; }
     [Networked] public TickTimer dongHoChayVFX_Di { get; set; }
@@ -366,6 +416,20 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
 
     void Update()
     {
+        if (this == Player_Controller.localPlayer)
+        {
+            if (isDead && !_localIsDead)
+            {
+                _localIsDead = true;
+                ShowDeathUI();
+            }
+            else if (!isDead && _localIsDead)
+            {
+                _localIsDead = false;
+                HideDeathUI();
+            }
+        }
+
         if (HasInputAuthority && Keyboard.current != null && Mouse.current != null)
         {
             if (isDead)
@@ -2450,10 +2514,20 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    public void RPC_AnimChatCay() { if (animator != null) animator.SetTrigger("Chatcay"); }
+    public void RPC_AnimChatCay() 
+    { 
+        if (animator != null) animator.SetTrigger("Chatcay"); 
+        PlayerAudioManager am = GetComponent<PlayerAudioManager>();
+        if (am != null) am.PhatTiengHanhDong("ChatCay");
+    }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    public void RPC_AnimDapDa() { if (animator != null) animator.SetTrigger("dapda"); }
+    public void RPC_AnimDapDa() 
+    { 
+        if (animator != null) animator.SetTrigger("dapda"); 
+        PlayerAudioManager am = GetComponent<PlayerAudioManager>();
+        if (am != null) am.PhatTiengHanhDong("DaoKhoang");
+    }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_AnimSlash(int comboStep)
@@ -2463,6 +2537,9 @@ public class Player_Controller : NetworkBehaviour, INetworkRunnerCallbacks
             animator.SetInteger("ComboStep", comboStep);
             animator.SetTrigger("slash");
         }
+        
+        PlayerAudioManager am = GetComponent<PlayerAudioManager>();
+        if (am != null) am.PhatTiengChem(comboStep);
     }
     [Rpc(RpcSources.All, RpcTargets.All)]
     public void RPC_AnimDash() { if (animator != null) animator.SetTrigger("dash"); }

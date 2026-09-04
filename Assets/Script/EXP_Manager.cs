@@ -27,11 +27,11 @@ public class EXP_Manager : MonoBehaviour
     {
         Player_Controller myPlayer = Player_Controller.localPlayer;
 
-        if(sliderExp != null && myPlayer != null) 
+        if(myPlayer != null) 
         {
-            sliderExp.value = myPlayer.ExpCurrent / myPlayer.expToLevelUp;
-            sliderExp2.value = myPlayer.ExpCurrent / myPlayer.expToLevelUp;
-            ExpText.text = myPlayer.level.ToString();
+            if (sliderExp != null) sliderExp.value = myPlayer.ExpCurrent / myPlayer.expToLevelUp;
+            if (sliderExp2 != null) sliderExp2.value = myPlayer.ExpCurrent / myPlayer.expToLevelUp;
+            if (ExpText != null) ExpText.text = myPlayer.level.ToString();
 
             // Khởi tạo level ban đầu khi vừa vào game
             if (currentLevel == -1) 

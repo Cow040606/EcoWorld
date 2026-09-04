@@ -4,6 +4,7 @@ public class PlayerAudioManager : MonoBehaviour
 {
     [Header("Loa của nhân vật")]
     public AudioSource loaNhanVat;
+    public AudioSource loaHanhDong;
 
 
     // =========================================================
@@ -31,7 +32,6 @@ public class PlayerAudioManager : MonoBehaviour
     [Header("Tiếng Kỹ Năng Sống Khác")]
     public AudioClip tiengCauCa;
     public AudioClip tiengDaoKhoang;
-    public AudioClip tiengChatCay;
 
 
     // =========================================================
@@ -84,6 +84,12 @@ public class PlayerAudioManager : MonoBehaviour
         if (loaNhanVat == null)
         {
             loaNhanVat = GetComponent<AudioSource>();
+        }
+
+        if (loaHanhDong == null)
+        {
+            loaHanhDong = gameObject.AddComponent<AudioSource>();
+            loaHanhDong.spatialBlend = 0f; // 2D sound for local actions
         }
 
         // Kiểm tra AudioSource
@@ -267,21 +273,21 @@ public class PlayerAudioManager : MonoBehaviour
 
     public void PhatTiengChem(int buocChem)
     {
-        if (loaNhanVat == null)
+        if (loaHanhDong == null)
             return;
 
 
         if (buocChem == 1 && tiengChem1 != null)
         {
-            loaNhanVat.PlayOneShot(tiengChem1);
+            loaHanhDong.PlayOneShot(tiengChem1);
         }
         else if (buocChem == 2 && tiengChem2 != null)
         {
-            loaNhanVat.PlayOneShot(tiengChem2);
+            loaHanhDong.PlayOneShot(tiengChem2);
         }
         else if (buocChem == 3 && tiengChem3 != null)
         {
-            loaNhanVat.PlayOneShot(tiengChem3);
+            loaHanhDong.PlayOneShot(tiengChem3);
         }
     }
 
@@ -310,10 +316,6 @@ public class PlayerAudioManager : MonoBehaviour
 
     public void PhatTiengChatCay()
     {
-        if (loaNhanVat == null)
-            return;
-
-
         if (danhSachTiengChatCay != null &&
             danhSachTiengChatCay.Length > 0)
         {
@@ -325,14 +327,10 @@ public class PlayerAudioManager : MonoBehaviour
 
             if (danhSachTiengChatCay[rand] != null)
             {
-                loaNhanVat.PlayOneShot(
+                PhatAmThanh(
                     danhSachTiengChatCay[rand]
                 );
             }
-        }
-        else
-        {
-            PhatAmThanh(tiengChatCay);
         }
     }
 
@@ -419,7 +417,7 @@ public class PlayerAudioManager : MonoBehaviour
 
     private void PhatAmThanh(AudioClip amThanh)
     {
-        if (loaNhanVat == null)
+        if (loaHanhDong == null)
             return;
 
         if (amThanh == null)

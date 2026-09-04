@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 using UnityEngine.AI;
@@ -687,6 +687,7 @@ public class EnemyAIOrc : NetworkBehaviour
         {
             CurrentState = EnemyState.Dead;
             if (IsAgentValid()) agent.isStopped = true;
+
             DropItem();
 
             GiveExpToKiller(info.Source, expReward);
