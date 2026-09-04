@@ -191,7 +191,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2697246506008687551
 RectTransform:
   m_ObjectHideFlags: 0
@@ -495,7 +495,7 @@ Animator:
   m_GameObject: {fileID: 472682788658967323}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: cef1a67a5bafdb34fa6dce98924fe4a9, type: 3}
-  m_Controller: {fileID: 9100000, guid: 253ffca8804938447abf6f955dd41fd3, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6230dac79c404084c9253c85685c5176, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -514,7 +514,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 472682788658967323}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ec9f29a5f4894d46b8864644b5e492c, type: 3}
   m_Name: 
@@ -537,7 +537,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 472682788658967323}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 436de8c271868aa479a2bdcdd0eb0d51, type: 3}
   m_Name: 
@@ -549,41 +549,163 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 472682788658967323}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NPCConversation
-  CurrentIDCounter: 31
-  json: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":false,"xPos":-464.333466,"yPos":302.333252},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    have arrived, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":18}],"EditorInfo":{"isRoot":false,"xPos":-531,"yPos":518.333},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    will do it, Your Majesty.","parentUIDs":[2],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":24}],"EditorInfo":{"isRoot":false,"xPos":126.333221,"yPos":112.333084},"ID":6,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    have reached Level 20, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":25}],"EditorInfo":{"isRoot":false,"xPos":80.99983,"yPos":469.665161},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    will bring his head.","parentUIDs":[8],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":26}],"EditorInfo":{"isRoot":false,"xPos":370.333221,"yPos":432.999023},"ID":10,"ParamActions":[],"TMPFontGUID":null,"Text":"It''s
-    too dangerous.","parentUIDs":[8],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":29}],"EditorInfo":{"isRoot":false,"xPos":148.3331,"yPos":-50.3349762},"ID":12,"ParamActions":[],"TMPFontGUID":null,"Text":"The
-    Knight Hero is defeated, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":20}],"EditorInfo":{"isRoot":false,"xPos":-737.3334,"yPos":432.999756},"ID":19,"ParamActions":[],"TMPFontGUID":null,"Text":"Maybe
-    later","parentUIDs":[2],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":5}],"EditorInfo":{"isRoot":false,"xPos":-141.333252,"yPos":277.666626},"ID":22,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    am still working on my strength, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":28}],"EditorInfo":{"isRoot":false,"xPos":-256.0001,"yPos":24.9999237},"ID":27,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    am hunting the traitor, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":395.999481,"yPos":73.66661},"ID":30,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    will go, Your Majesty.","parentUIDs":[15],"SpeechUID":-1}],"Parameters":[{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"find
-    king_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"LV20_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"LV20_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"craft_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"boss2_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"boss2_DaXong","BoolValue":false}],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"find
-    king_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":1},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"LV20_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":22},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"LV20_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":6},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"boss2_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":27},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"boss2_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":12}],"EditorInfo":{"isRoot":true,"xPos":-295.333282,"yPos":164.666672},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Welcome,
-    new knight. No time to celebrate. Our kingdom is in peril, and I need you.","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":4},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":19}],"EditorInfo":{"isRoot":false,"xPos":-481.666718,"yPos":389.999329},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"You
-    have arrived? You are the successor of the Hero. Now go and increase your strength,
-    and go defeat the Knight Hero. The Knight Hero is the country''s hero, but due
-    to his greed for vanity, he betrayed us and must be defeated.","parentUIDs":[1],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-156.333374,"yPos":378.666077},"ID":5,"ParamActions":[],"TMPFontGUID":null,"Text":"Come
-    back when you are ready.","parentUIDs":[22],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":9},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":10}],"EditorInfo":{"isRoot":false,"xPos":235.666718,"yPos":309.332581},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"Now,
-    execute ''The HERO''. He is a traitor blinded by glory.","parentUIDs":[24],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":119.666107,"yPos":784.6659},"ID":13,"ParamActions":[],"TMPFontGUID":null,"Text":"Excellent
-    work! The kingdom owes you.","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":30}],"EditorInfo":{"isRoot":false,"xPos":397.666229,"yPos":-69.33455},"ID":15,"ParamActions":[],"TMPFontGUID":null,"Text":"One
-    last thing. Seek the Old Wizard to awaken your true power. Go now.","parentUIDs":[29],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-606.666748,"yPos":601.9994},"ID":18,"ParamActions":[],"TMPFontGUID":null,"Text":"Go,
-    and do not fail me.","parentUIDs":[4],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-879.3334,"yPos":529.999756},"ID":20,"ParamActions":[],"TMPFontGUID":null,"Text":null,"parentUIDs":[19],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Do
-    not make me wait ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":8}],"EditorInfo":{"isRoot":false,"xPos":231.999969,"yPos":191.999908},"ID":24,"ParamActions":[],"TMPFontGUID":null,"Text":"Impressive.
-    Now go and defeat the Knight Hero.","parentUIDs":[6],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-159.3335,"yPos":525.333},"ID":25,"ParamActions":[],"TMPFontGUID":null,"Text":"Very
-    good","parentUIDs":[9],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":479.999939,"yPos":311.33313},"ID":26,"ParamActions":[],"TMPFontGUID":null,"Text":"It
-    must be done","parentUIDs":[10],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING
-    ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-112.66687,"yPos":-103.999954},"ID":28,"ParamActions":[],"TMPFontGUID":null,"Text":"Find
-    him and end this threat.","parentUIDs":[27],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":15}],"EditorInfo":{"isRoot":false,"xPos":256.6664,"yPos":-198.66658},"ID":29,"ParamActions":[],"TMPFontGUID":null,"Text":"Excellent
-    work! The kingdom owes you.","parentUIDs":[12],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
+  CurrentIDCounter: 35
+  json: '{"Options": [{"Connections": [{"__type": "EditableSpeechConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 2}], "EditorInfo": {"isRoot": false, "xPos": -464.333466,
+    "yPos": 302.333252}, "ID": 1, "ParamActions": [], "TMPFontGUID": null, "Text":
+    "I have arrived, Your Majesty.", "parentUIDs": [0], "SpeechUID": -1}, {"Connections":
+    [{"__type": "EditableSpeechConnection:#DialogueEditor", "Conditions": [], "NodeUID":
+    18}], "EditorInfo": {"isRoot": false, "xPos": -531, "yPos": 518.333}, "ID": 4,
+    "ParamActions": [], "TMPFontGUID": null, "Text": "I will do it, Your Majesty.",
+    "parentUIDs": [2], "SpeechUID": -1}, {"Connections": [{"__type": "EditableSpeechConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 24}], "EditorInfo": {"isRoot": false, "xPos": 126.333221,
+    "yPos": 112.333084}, "ID": 6, "ParamActions": [], "TMPFontGUID": null, "Text":
+    "I have reached Level 20, Your Majesty.", "parentUIDs": [0], "SpeechUID": -1},
+    {"Connections": [{"__type": "EditableSpeechConnection:#DialogueEditor", "Conditions":
+    [], "NodeUID": 25}], "EditorInfo": {"isRoot": false, "xPos": 80.99983, "yPos":
+    469.665161}, "ID": 9, "ParamActions": [], "TMPFontGUID": null, "Text": "I will
+    bring his head.", "parentUIDs": [8], "SpeechUID": -1}, {"Connections": [{"__type":
+    "EditableSpeechConnection:#DialogueEditor", "Conditions": [], "NodeUID": 26}],
+    "EditorInfo": {"isRoot": false, "xPos": 370.333221, "yPos": 432.999023}, "ID":
+    10, "ParamActions": [], "TMPFontGUID": null, "Text": "It''s too dangerous.",
+    "parentUIDs": [8], "SpeechUID": -1}, {"Connections": [{"__type": "EditableSpeechConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 29}], "EditorInfo": {"isRoot": false, "xPos": 148.3331,
+    "yPos": -50.3349762}, "ID": 12, "ParamActions": [], "TMPFontGUID": null, "Text":
+    "The Knight Hero is defeated, Your Majesty.", "parentUIDs": [0], "SpeechUID":
+    -1}, {"Connections": [{"__type": "EditableSpeechConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 20}], "EditorInfo": {"isRoot": false, "xPos": -737.3334,
+    "yPos": 432.999756}, "ID": 19, "ParamActions": [], "TMPFontGUID": null, "Text":
+    "Maybe later", "parentUIDs": [2], "SpeechUID": -1}, {"Connections": [{"__type":
+    "EditableSpeechConnection:#DialogueEditor", "Conditions": [], "NodeUID": 5}],
+    "EditorInfo": {"isRoot": false, "xPos": -141.333252, "yPos": 277.666626}, "ID":
+    22, "ParamActions": [], "TMPFontGUID": null, "Text": "I am still working on my
+    strength, Your Majesty.", "parentUIDs": [0], "SpeechUID": -1}, {"Connections":
+    [{"__type": "EditableSpeechConnection:#DialogueEditor", "Conditions": [], "NodeUID":
+    28}], "EditorInfo": {"isRoot": false, "xPos": -256.0001, "yPos": 24.9999237},
+    "ID": 27, "ParamActions": [], "TMPFontGUID": null, "Text": "I am hunting the
+    traitor, Your Majesty.", "parentUIDs": [0], "SpeechUID": -1}, {"Connections":
+    [], "EditorInfo": {"isRoot": false, "xPos": 395.999481, "yPos": 73.66661}, "ID":
+    30, "ParamActions": [], "TMPFontGUID": null, "Text": "I will go, Your Majesty.",
+    "parentUIDs": [15], "SpeechUID": -1}, {"Connections": [{"__type": "EditableSpeechConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 32}], "EditorInfo": {"isRoot": false, "xPos": -100.0,
+    "yPos": 500.0}, "ID": 31, "ParamActions": [], "TMPFontGUID": null, "Text": "I''m
+    back.", "parentUIDs": [0], "SpeechUID": -1}, {"Connections": [], "EditorInfo":
+    {"isRoot": false, "xPos": 650.0, "yPos": 500.0}, "ID": 34, "ParamActions": [],
+    "TMPFontGUID": null, "Text": "pledge of loyalty", "parentUIDs": [33], "SpeechUID":
+    -1}], "Parameters": [{"__type": "EditableBoolParameter:#DialogueEditor", "ParameterName":
+    "find king_DangLam", "BoolValue": false}, {"__type": "EditableBoolParameter:#DialogueEditor",
+    "ParameterName": "LV20_DangLam", "BoolValue": false}, {"__type": "EditableBoolParameter:#DialogueEditor",
+    "ParameterName": "LV20_DaXong", "BoolValue": false}, {"__type": "EditableBoolParameter:#DialogueEditor",
+    "ParameterName": "craft_DaXong", "BoolValue": false}, {"__type": "EditableBoolParameter:#DialogueEditor",
+    "ParameterName": "boss2_DangLam", "BoolValue": false}, {"__type": "EditableBoolParameter:#DialogueEditor",
+    "ParameterName": "boss2_DaXong", "BoolValue": false}, {"__type": "EditableBoolParameter:#DialogueEditor",
+    "ParameterName": "find King_DangLam", "BoolValue": false}, {"__type": "EditableBoolParameter:#DialogueEditor",
+    "ParameterName": "NhiemVu_Moi 1_DangLam", "BoolValue": false}], "SpeechNodes":
+    [{"Connections": [{"__type": "EditableOptionConnection:#DialogueEditor", "Conditions":
+    [{"__type": "EditableBoolCondition:#DialogueEditor", "ParameterName": "find king_DangLam",
+    "CheckType": 0, "RequiredValue": true}], "NodeUID": 1}, {"__type": "EditableOptionConnection:#DialogueEditor",
+    "Conditions": [{"__type": "EditableBoolCondition:#DialogueEditor", "ParameterName":
+    "LV20_DangLam", "CheckType": 0, "RequiredValue": true}], "NodeUID": 22}, {"__type":
+    "EditableOptionConnection:#DialogueEditor", "Conditions": [{"__type": "EditableBoolCondition:#DialogueEditor",
+    "ParameterName": "LV20_DaXong", "CheckType": 0, "RequiredValue": true}], "NodeUID":
+    6}, {"__type": "EditableOptionConnection:#DialogueEditor", "Conditions": [{"__type":
+    "EditableBoolCondition:#DialogueEditor", "ParameterName": "boss2_DangLam", "CheckType":
+    0, "RequiredValue": true}], "NodeUID": 27}, {"__type": "EditableOptionConnection:#DialogueEditor",
+    "Conditions": [{"__type": "EditableBoolCondition:#DialogueEditor", "ParameterName":
+    "boss2_DaXong", "CheckType": 0, "RequiredValue": true}], "NodeUID": 12}, {"__type":
+    "EditableOptionConnection:#DialogueEditor", "Conditions": [{"__type": "EditableBoolCondition:#DialogueEditor",
+    "ParameterName": "find King_DangLam", "CheckType": 0, "RequiredValue": true}],
+    "NodeUID": 31}], "EditorInfo": {"isRoot": true, "xPos": -295.333282, "yPos":
+    164.666672}, "ID": 0, "ParamActions": [], "TMPFontGUID": null, "Text": "Welcome,
+    new knight. No time to celebrate. Our kingdom is in peril, and I need you.",
+    "parentUIDs": [], "AdvanceDialogueAutomatically": false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption":
+    false, "IconGUID": null, "Name": "KING", "OptionUIDs": null, "SpeechUID": 0,
+    "TimeUntilAdvance": 0, "Volume": 0}, {"Connections": [{"__type": "EditableOptionConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 4}, {"__type": "EditableOptionConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 19}], "EditorInfo": {"isRoot": false, "xPos": -481.666718,
+    "yPos": 389.999329}, "ID": 2, "ParamActions": [], "TMPFontGUID": null, "Text":
+    "You have arrived? You are the successor of the Hero. Now go and increase your
+    strength, and go defeat the Knight Hero. The Knight Hero is the country''s hero,
+    but due to his greed for vanity, he betrayed us and must be defeated.", "parentUIDs":
+    [1], "AdvanceDialogueAutomatically": false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption":
+    false, "IconGUID": null, "Name": "KING", "OptionUIDs": null, "SpeechUID": 0,
+    "TimeUntilAdvance": 0, "Volume": 0}, {"Connections": [], "EditorInfo": {"isRoot":
+    false, "xPos": -156.333374, "yPos": 378.666077}, "ID": 5, "ParamActions": [],
+    "TMPFontGUID": null, "Text": "Come back when you are ready.", "parentUIDs": [22],
+    "AdvanceDialogueAutomatically": false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption":
+    false, "IconGUID": null, "Name": "KING", "OptionUIDs": null, "SpeechUID": 0,
+    "TimeUntilAdvance": 0, "Volume": 0}, {"Connections": [{"__type": "EditableOptionConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 9}, {"__type": "EditableOptionConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 10}], "EditorInfo": {"isRoot": false, "xPos": 235.666718,
+    "yPos": 309.332581}, "ID": 8, "ParamActions": [], "TMPFontGUID": null, "Text":
+    "Now, execute ''The HERO''. He is a traitor blinded by glory.", "parentUIDs":
+    [24], "AdvanceDialogueAutomatically": false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption":
+    false, "IconGUID": null, "Name": "KING", "OptionUIDs": null, "SpeechUID": 0,
+    "TimeUntilAdvance": 0, "Volume": 0}, {"Connections": [], "EditorInfo": {"isRoot":
+    false, "xPos": 119.666107, "yPos": 784.6659}, "ID": 13, "ParamActions": [], "TMPFontGUID":
+    null, "Text": "Excellent work! The kingdom owes you.", "parentUIDs": [], "AdvanceDialogueAutomatically":
+    false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption": false, "IconGUID":
+    null, "Name": "KING", "OptionUIDs": null, "SpeechUID": 0, "TimeUntilAdvance":
+    0, "Volume": 0}, {"Connections": [{"__type": "EditableOptionConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 30}], "EditorInfo": {"isRoot": false, "xPos": 397.666229,
+    "yPos": -69.33455}, "ID": 15, "ParamActions": [], "TMPFontGUID": null, "Text":
+    "One last thing. Seek the Old Wizard to awaken your true power. Go now.", "parentUIDs":
+    [29], "AdvanceDialogueAutomatically": false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption":
+    false, "IconGUID": null, "Name": "KING", "OptionUIDs": null, "SpeechUID": 0,
+    "TimeUntilAdvance": 0, "Volume": 0}, {"Connections": [], "EditorInfo": {"isRoot":
+    false, "xPos": -606.666748, "yPos": 601.9994}, "ID": 18, "ParamActions": [],
+    "TMPFontGUID": null, "Text": "Go, and do not fail me.", "parentUIDs": [4], "AdvanceDialogueAutomatically":
+    false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption": false, "IconGUID":
+    null, "Name": "KING", "OptionUIDs": null, "SpeechUID": 0, "TimeUntilAdvance":
+    0, "Volume": 0}, {"Connections": [], "EditorInfo": {"isRoot": false, "xPos":
+    -879.3334, "yPos": 529.999756}, "ID": 20, "ParamActions": [], "TMPFontGUID":
+    null, "Text": null, "parentUIDs": [19], "AdvanceDialogueAutomatically": false,
+    "AudioGUID": null, "AutoAdvanceShouldDisplayOption": false, "IconGUID": null,
+    "Name": "Do not make me wait ", "OptionUIDs": null, "SpeechUID": 0, "TimeUntilAdvance":
+    0, "Volume": 0}, {"Connections": [{"__type": "EditableSpeechConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 8}], "EditorInfo": {"isRoot": false, "xPos": 231.999969,
+    "yPos": 191.999908}, "ID": 24, "ParamActions": [], "TMPFontGUID": null, "Text":
+    "Impressive. Now go and defeat the Knight Hero.", "parentUIDs": [6], "AdvanceDialogueAutomatically":
+    false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption": false, "IconGUID":
+    null, "Name": "", "OptionUIDs": null, "SpeechUID": 0, "TimeUntilAdvance": 0,
+    "Volume": 0}, {"Connections": [], "EditorInfo": {"isRoot": false, "xPos": -159.3335,
+    "yPos": 525.333}, "ID": 25, "ParamActions": [], "TMPFontGUID": null, "Text":
+    "Very good", "parentUIDs": [9], "AdvanceDialogueAutomatically": false, "AudioGUID":
+    null, "AutoAdvanceShouldDisplayOption": false, "IconGUID": null, "Name": "KING",
+    "OptionUIDs": null, "SpeechUID": 0, "TimeUntilAdvance": 0, "Volume": 0}, {"Connections":
+    [], "EditorInfo": {"isRoot": false, "xPos": 479.999939, "yPos": 311.33313}, "ID":
+    26, "ParamActions": [], "TMPFontGUID": null, "Text": "It must be done", "parentUIDs":
+    [10], "AdvanceDialogueAutomatically": false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption":
+    false, "IconGUID": null, "Name": "KING ", "OptionUIDs": null, "SpeechUID": 0,
+    "TimeUntilAdvance": 0, "Volume": 0}, {"Connections": [], "EditorInfo": {"isRoot":
+    false, "xPos": -112.66687, "yPos": -103.999954}, "ID": 28, "ParamActions": [],
+    "TMPFontGUID": null, "Text": "Find him and end this threat.", "parentUIDs": [27],
+    "AdvanceDialogueAutomatically": false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption":
+    false, "IconGUID": null, "Name": "KING", "OptionUIDs": null, "SpeechUID": 0,
+    "TimeUntilAdvance": 0, "Volume": 0}, {"Connections": [{"__type": "EditableSpeechConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 15}], "EditorInfo": {"isRoot": false, "xPos": 256.6664,
+    "yPos": -198.66658}, "ID": 29, "ParamActions": [], "TMPFontGUID": null, "Text":
+    "Excellent work! The kingdom owes you.", "parentUIDs": [12], "AdvanceDialogueAutomatically":
+    false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption": false, "IconGUID":
+    null, "Name": "KING", "OptionUIDs": null, "SpeechUID": 0, "TimeUntilAdvance":
+    0, "Volume": 0}, {"Connections": [{"__type": "EditableSpeechConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 33}], "EditorInfo": {"isRoot": false, "xPos": 150.0,
+    "yPos": 500.0}, "ID": 32, "ParamActions": [], "TMPFontGUID": null, "Text": "You''re
+    doing a great job, my hero.", "parentUIDs": [31], "AdvanceDialogueAutomatically":
+    false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption": false, "IconGUID":
+    null, "Name": "KING", "OptionUIDs": null, "SpeechUID": 0, "TimeUntilAdvance":
+    0, "Volume": 0}, {"Connections": [{"__type": "EditableOptionConnection:#DialogueEditor",
+    "Conditions": [], "NodeUID": 34}], "EditorInfo": {"isRoot": false, "xPos": 400.0,
+    "yPos": 500.0}, "ID": 33, "ParamActions": [], "TMPFontGUID": null, "Text": "I
+    shall confer upon you the title of Count.", "parentUIDs": [32], "AdvanceDialogueAutomatically":
+    false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption": false, "IconGUID":
+    null, "Name": "KING", "OptionUIDs": null, "SpeechUID": 0, "TimeUntilAdvance":
+    0, "Volume": 0}]}'
   saveVersion: 110
   DefaultName: 
   DefaultSprite: {fileID: 0}
@@ -612,19 +734,22 @@ MonoBehaviour:
   - {fileID: 7407521395791665621}
   - {fileID: 2170247936676378264}
   - {fileID: 8951312247718791027}
+  - {fileID: 1999403140848279675}
+  - {fileID: 4309746063564652806}
+  - {fileID: 1712171074688707646}
+  - {fileID: 2077164760549527605}
   ContinueFont: {fileID: 0}
   EndConversationFont: {fileID: 0}
   Event:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4738562381666888480}
-        m_TargetAssemblyTypeName: NPC_QuestBridge, Assembly-CSharp
-        m_MethodName: ThuHoiViecTuPlayer
-        m_Mode: 2
+      - m_Target: {fileID: 4582212416549114705}
+        m_TargetAssemblyTypeName: NPC_DialogueTrigger, Assembly-CSharp
+        m_MethodName: ChayTimeline4
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: d070433017888474ba4b740e11e96d70,
-            type: 2}
-          m_ObjectArgumentAssemblyTypeName: QuestSO, Assembly-CSharp
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -647,7 +772,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
   m_Height: 2.5158267
@@ -660,7 +785,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 472682788658967323}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d68fd377073aea942b6e0e3b05f85be1, type: 3}
   m_Name: 
@@ -4596,6 +4721,10 @@ GameObject:
   - component: {fileID: 7407521395791665621}
   - component: {fileID: 2170247936676378264}
   - component: {fileID: 8951312247718791027}
+  - component: {fileID: 1999403140848279675}
+  - component: {fileID: 4309746063564652806}
+  - component: {fileID: 1712171074688707646}
+  - component: {fileID: 2077164760549527605}
   m_Layer: 0
   m_Name: ConversationEventInfo
   m_TagString: Untagged
@@ -5673,6 +5802,107 @@ MonoBehaviour:
   TMPFont: {fileID: 0}
   Icon: {fileID: 0}
   Audio: {fileID: 0}
+--- !u!114 &1999403140848279675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6653250475248827003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4738562381666888480}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: ThuHoiViecTuPlayer
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11400000, guid: d070433017888474ba4b740e11e96d70,
+            type: 2}
+          m_ObjectArgumentAssemblyTypeName: QuestSO, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  NodeID: 31
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
+--- !u!114 &4309746063564652806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6653250475248827003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+  NodeID: 32
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 124148247, guid: 2296e7f53a27c0845a47e06e0136e5ab, type: 3}
+  Audio: {fileID: 0}
+--- !u!114 &1712171074688707646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6653250475248827003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+  NodeID: 33
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 124148247, guid: 2296e7f53a27c0845a47e06e0136e5ab, type: 3}
+  Audio: {fileID: 0}
+--- !u!114 &2077164760549527605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6653250475248827003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4582212416549114705}
+        m_TargetAssemblyTypeName: NPC_DialogueTrigger, Assembly-CSharp
+        m_MethodName: ChayTimeline4
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  NodeID: 34
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
 --- !u!1 &6679610793057168959
 GameObject:
   m_ObjectHideFlags: 0
@@ -6038,7 +6268,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1346954248895476626
 RectTransform:
   m_ObjectHideFlags: 0

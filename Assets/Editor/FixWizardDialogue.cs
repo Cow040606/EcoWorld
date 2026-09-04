@@ -29,6 +29,7 @@ namespace EcoWorld.Editor
                 // 1. Load Quest Assets
                 QuestSO daoquang = LoadQuestAsset("4451efa8b92cfc04ab7aff92a3a59bc9");
                 QuestSO bossfinal = LoadQuestAsset("02b9e432cd5119d44a604af5dbcc1fc0");
+                QuestSO returnKing = LoadQuestAsset("d070433017888474ba4b740e11e96d70"); // NhiemVu_Moi 1: find King
 
                 if (daoquang == null || bossfinal == null)
                 {
@@ -99,9 +100,13 @@ namespace EcoWorld.Editor
                     {
                         SetupPersistentCall(calls, bridge, "GiaoViecChoPlayer", bossfinal);
                     }
-                    else if (holder.NodeID == 20) // Reclaim bossfinal
+                    else if (holder.NodeID == 20) // Reclaim bossfinal AND give return to King quest
                     {
                         SetupPersistentCall(calls, bridge, "ThuHoiViecTuPlayer", bossfinal);
+                        if (returnKing != null)
+                        {
+                            AddPersistentCall(calls, bridge, "GiaoViecChoPlayer", returnKing);
+                        }
                     }
                     
                     soHolder.ApplyModifiedProperties();
@@ -181,6 +186,23 @@ namespace EcoWorld.Editor
             string path = AssetDatabase.GUIDToAssetPath(guid);
             if (string.IsNullOrEmpty(path)) return null;
             return AssetDatabase.LoadAssetAtPath<QuestSO>(path);
+        }
+
+                private static void AddPersistentCall(SerializedProperty callsList, MonoBehaviour target, string methodName, QuestSO argument)
+        {
+            int index = callsList.arraySize;
+            callsList.InsertArrayElementAtIndex(index);
+            SerializedProperty call = callsList.GetArrayElementAtIndex(index);
+            
+            call.FindPropertyRelative("m_Target").objectReferenceValue = target;
+            call.FindPropertyRelative("m_MethodName").stringValue = methodName;
+            call.FindPropertyRelative("m_Mode").enumValueIndex = 2; // Object argument mode
+            
+            SerializedProperty args = call.FindPropertyRelative("m_Arguments");
+            args.FindPropertyRelative("m_ObjectArgument").objectReferenceValue = argument;
+            args.FindPropertyRelative("m_ObjectArgumentAssemblyTypeName").stringValue = "QuestSO, Assembly-CSharp";
+            
+            call.FindPropertyRelative("m_CallState").enumValueIndex = 2; // EditorAndRuntime
         }
 
         private static void SetupPersistentCall(SerializedProperty callsList, MonoBehaviour target, string methodName, QuestSO argument)
