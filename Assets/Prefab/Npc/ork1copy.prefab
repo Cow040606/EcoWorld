@@ -1880,7 +1880,7 @@ GameObject:
   - component: {fileID: 6906410412656096511}
   - component: {fileID: 341297481063120522}
   - component: {fileID: 2142624047827826923}
-  - component: {fileID: 5421378156559465154}
+  - component: {fileID: 566141799115888980}
   m_Layer: 13
   m_Name: ork1copy
   m_TagString: Untagged
@@ -2041,8 +2041,8 @@ MonoBehaviour:
     type: 3}
   vfxSpawnPoint: {fileID: 1722610800182267836}
   _currentState: 0
---- !u!64 &5421378156559465154
-MeshCollider:
+--- !u!136 &566141799115888980
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2059,10 +2059,11 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5509453125134705123
 GameObject:
   m_ObjectHideFlags: 0
