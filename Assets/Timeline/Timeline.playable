@@ -3387,7 +3387,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: audio (1)
   - m_Version: 1
-    m_Start: 32.648666666666664
+    m_Start: 33.016666666666666
     m_ClipIn: 0
     m_Asset: {fileID: 5806653254195478507}
     m_Duration: 8.77
@@ -3569,7 +3569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c38f6fa1940124db1ab7f6fe7268d1, type: 3}
   m_Name: Signal Emitter
   m_EditorClassIdentifier: Unity.Timeline::UnityEngine.Timeline.SignalEmitter
-  m_Time: 17.856666666666666
+  m_Time: 18.166666666666668
   m_Retroactive: 0
   m_EmitOnce: 0
   m_Asset: {fileID: 11400000, guid: fcc136a589470d3449820428984afbbe, type: 2}
@@ -3668,7 +3668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c38f6fa1940124db1ab7f6fe7268d1, type: 3}
   m_Name: Signal Emitter
   m_EditorClassIdentifier: Unity.Timeline::UnityEngine.Timeline.SignalEmitter
-  m_Time: 32.666666666666664
+  m_Time: 33.016666666666666
   m_Retroactive: 0
   m_EmitOnce: 0
   m_Asset: {fileID: 11400000, guid: fcc136a589470d3449820428984afbbe, type: 2}
@@ -3863,10 +3863,10 @@ MonoBehaviour:
   m_Children: []
   m_Clips:
   - m_Version: 1
-    m_Start: 17.856666666666666
+    m_Start: 18.166666666666668
     m_ClipIn: 0
     m_Asset: {fileID: 5931570002006882278}
-    m_Duration: 5.592
+    m_Duration: 5.2819999999999965
     m_TimeScale: 1
     m_ParentTrack: {fileID: -3288413383299651337}
     m_EaseInDuration: 0
@@ -4690,7 +4690,25 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
