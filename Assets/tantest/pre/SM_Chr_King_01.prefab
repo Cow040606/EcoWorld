@@ -625,12 +625,11 @@ MonoBehaviour:
     0, "RequiredValue": true}], "NodeUID": 27}, {"__type": "EditableOptionConnection:#DialogueEditor",
     "Conditions": [{"__type": "EditableBoolCondition:#DialogueEditor", "ParameterName":
     "boss2_DaXong", "CheckType": 0, "RequiredValue": true}], "NodeUID": 12}, {"__type":
-    "EditableOptionConnection:#DialogueEditor", "Conditions": [{"__type": "EditableBoolCondition:#DialogueEditor",
-    "ParameterName": "find King_DangLam", "CheckType": 0, "RequiredValue": true}],
-    "NodeUID": 31}], "EditorInfo": {"isRoot": true, "xPos": -295.333282, "yPos":
-    164.666672}, "ID": 0, "ParamActions": [], "TMPFontGUID": null, "Text": "Welcome,
-    new knight. No time to celebrate. Our kingdom is in peril, and I need you.",
-    "parentUIDs": [], "AdvanceDialogueAutomatically": false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption":
+    "EditableOptionConnection:#DialogueEditor", "Conditions": [], "NodeUID": 31}],
+    "EditorInfo": {"isRoot": true, "xPos": -295.333282, "yPos": 164.666672}, "ID":
+    0, "ParamActions": [], "TMPFontGUID": null, "Text": "Welcome, new knight. No
+    time to celebrate. Our kingdom is in peril, and I need you.", "parentUIDs": [],
+    "AdvanceDialogueAutomatically": false, "AudioGUID": null, "AutoAdvanceShouldDisplayOption":
     false, "IconGUID": null, "Name": "KING", "OptionUIDs": null, "SpeechUID": 0,
     "TimeUntilAdvance": 0, "Volume": 0}, {"Connections": [{"__type": "EditableOptionConnection:#DialogueEditor",
     "Conditions": [], "NodeUID": 4}, {"__type": "EditableOptionConnection:#DialogueEditor",
@@ -749,6 +748,7 @@ MonoBehaviour:
   EndConversationFont: {fileID: 0}
   Event:
     m_PersistentCalls:
+
       m_Calls:
       - m_Target: {fileID: 4738562381666888480}
         m_TargetAssemblyTypeName: 
@@ -763,6 +763,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+
+      m_Calls: []
+
 --- !u!136 &1499109546000924706
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5900,11 +5903,19 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 4582212416549114705}
         m_TargetAssemblyTypeName: 
+
         m_MethodName: ChayCutsceneCuThe
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+
+        m_MethodName: ChayTimeline4
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
