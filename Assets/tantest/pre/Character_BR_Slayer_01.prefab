@@ -1117,8 +1117,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4449479763087930162}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.081787236, y: 0.10445319, z: 0.13846439, w: 0.98144186}
-  m_LocalPosition: {x: -0.007389613, y: 0.73511964, z: -0.09646824}
+  m_LocalRotation: {x: 0.08178723, y: 0.10445324, z: 0.13846439, w: 0.9814418}
+  m_LocalPosition: {x: -0.0073693236, y: 0.73511934, z: -0.096442714}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1562,13 +1562,14 @@ MonoBehaviour:
   soDonDeTungSkill: 3
   skillDamage: 80
   thoiGianHoiSkill: 3.5
+  skillCooldown: 8
   thoiGianChoang: 1
   thoiGianMienChoang: 2
   khoangCachHienThanhMau: 25
   thoiGianBienMat: 4
   _tocDoDiChuyen: 0
-  attackVFXPrefab: {fileID: 1893723492503102, guid: bf9f848a24682054e9fddc30f1184e46,
-    type: 3}
+  _NetworkViTriGoc: {x: 0, y: 0, z: 0}
+  attackVFXPrefab: {fileID: 0}
   skillVFXPrefab: {fileID: 1644958980890870, guid: 5e841c48be9318145af9204a7658cc2e,
     type: 3}
   vfxSpawnPoint: {fileID: 3782298341244975935}
