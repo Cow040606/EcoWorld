@@ -38,6 +38,9 @@ GameObject:
   - component: {fileID: 3252823090020246499}
   - component: {fileID: 2205300276849942486}
   - component: {fileID: 7482551749886012750}
+  - component: {fileID: 6498350626498691708}
+  - component: {fileID: 2261487370369383147}
+  - component: {fileID: 7039944711230540533}
   m_Layer: 0
   m_Name: ConversationEventInfo
   m_TagString: Untagged
@@ -714,6 +717,89 @@ MonoBehaviour:
   NodeID: 31
   TMPFont: {fileID: 0}
   Icon: {fileID: 1501876877, guid: 7ae90371f00dc484f8e93b8c9b4ca76f, type: 3}
+  Audio: {fileID: 0}
+--- !u!114 &6498350626498691708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127397385939702908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2315384767545804143}
+        m_TargetAssemblyTypeName: NPC_QuestBridge, Assembly-CSharp
+        m_MethodName: GiaoViecChoPlayer
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11400000, guid: 70716c44e344ded4490152d57acff759,
+            type: 2}
+          m_ObjectArgumentAssemblyTypeName: QuestSO, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  NodeID: 32
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 1501876877, guid: 7ae90371f00dc484f8e93b8c9b4ca76f, type: 3}
+  Audio: {fileID: 0}
+--- !u!114 &2261487370369383147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127397385939702908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+  NodeID: 33
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
+--- !u!114 &7039944711230540533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127397385939702908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2315384767545804143}
+        m_TargetAssemblyTypeName: NPC_QuestBridge, Assembly-CSharp
+        m_MethodName: GiaoViecChoPlayer
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11400000, guid: e37dd3aa83212d5458e8e4f9ec1932fe,
+            type: 2}
+          m_ObjectArgumentAssemblyTypeName: QuestSO, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  NodeID: 34
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
   Audio: {fileID: 0}
 --- !u!1 &4633869811666852402
 GameObject:
@@ -2304,6 +2390,14 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 4141469585878212248}
+    - targetCorrespondingSourceObject: {fileID: 193682, guid: aea27ca7a35042c419065833e8daf224,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 43080511995660641}
+    - targetCorrespondingSourceObject: {fileID: 193682, guid: aea27ca7a35042c419065833e8daf224,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4159848542697329514}
   m_SourcePrefab: {fileID: 100100000, guid: aea27ca7a35042c419065833e8daf224, type: 3}
 --- !u!1 &5849677912962347839 stripped
 GameObject:
@@ -2358,7 +2452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NPCConversation
-  CurrentIDCounter: 32
+  CurrentIDCounter: 35
   json: '{"Options": [{"Connections": [{"__type": "EditableSpeechConnection:#DialogueEditor",
     "Conditions": [], "NodeUID": 2}], "EditorInfo": {"isRoot": false, "xPos": 23.0000763,
     "yPos": 234.999527}, "ID": 1, "ParamActions": [], "TMPFontGUID": null, "Text":
@@ -2511,6 +2605,9 @@ MonoBehaviour:
   - {fileID: 3252823090020246499}
   - {fileID: 2205300276849942486}
   - {fileID: 7482551749886012750}
+  - {fileID: 6498350626498691708}
+  - {fileID: 2261487370369383147}
+  - {fileID: 7039944711230540533}
   ContinueFont: {fileID: 0}
   EndConversationFont: {fileID: 0}
   Event:
@@ -2518,10 +2615,10 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2315384767545804143}
         m_TargetAssemblyTypeName: NPC_QuestBridge, Assembly-CSharp
-        m_MethodName: ThuHoiViecTuPlayer
+        m_MethodName: GiaoViecChoPlayer
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: bc22d1c6b91cb9d4ab50d8090969568b,
+          m_ObjectArgument: {fileID: 11400000, guid: e37dd3aa83212d5458e8e4f9ec1932fe,
             type: 2}
           m_ObjectArgumentAssemblyTypeName: QuestSO, Assembly-CSharp
           m_IntArgument: 0
@@ -2552,6 +2649,50 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &43080511995660641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5849677912962347839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d68fd377073aea942b6e0e3b05f85be1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectiveTarget
+  worldSpaceMarkerPrefab: {fileID: 0}
+  compassIconPrefab: {fileID: 0}
+  iconSprite: {fileID: 21300000, guid: d45648334e1db434387ba9cd9a6e282e, type: 3}
+  iconColor: {r: 0.8980392, g: 0.8392157, b: 0.29411766, a: 1}
+  markerOffset: {x: 0, y: 2, z: 0}
+  canvasName: UI_Canvas
+  hideOnStart: 0
+  showOnMinimap: 1
+  minimapIconScale: {x: 5, y: 5, z: 5}
+  minimapLayerName: Minimap
+--- !u!114 &4159848542697329514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5849677912962347839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d68fd377073aea942b6e0e3b05f85be1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectiveTarget
+  worldSpaceMarkerPrefab: {fileID: 0}
+  compassIconPrefab: {fileID: 0}
+  iconSprite: {fileID: 21300000, guid: d45648334e1db434387ba9cd9a6e282e, type: 3}
+  iconColor: {r: 0.8980392, g: 0.8392157, b: 0.29411766, a: 1}
+  markerOffset: {x: 0, y: 2, z: 0}
+  canvasName: UI_Canvas
+  hideOnStart: 0
+  showOnMinimap: 1
+  minimapIconScale: {x: 5, y: 5, z: 5}
+  minimapLayerName: Minimap
 --- !u!4 &5849677912962610217 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 455556, guid: aea27ca7a35042c419065833e8daf224,
