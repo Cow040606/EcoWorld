@@ -27,9 +27,9 @@ public class OnlineOpeningCutscene : MonoBehaviour
         StartCoroutine(ChayCutsceneOnline());
     }
 
-    void Start()
+    void OnEnable()
     {
-        
+        StartCoroutine(ChayCutsceneOnline());
     }
 
     IEnumerator ChayCutsceneOnline()
