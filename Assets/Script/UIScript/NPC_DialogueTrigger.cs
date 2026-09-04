@@ -121,6 +121,58 @@ public class NPC_DialogueTrigger : MonoBehaviour
         ChayCutsceneCuThe(objCutscene);
     }
 
+public void ChayTimeline4()
+    {
+        GameObject tl4 = null;
+        // 1. Tìm qua PlayableDirector trong Scene (quét cả các object đang bị Inactive/Ẩn)
+        PlayableDirector[] directors = FindObjectsByType<PlayableDirector>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var d in directors)
+        {
+            if (d.gameObject.name.Contains("TIMELINE_04") || d.gameObject.name.Contains("TIME") ||
+                (d.transform.parent != null && d.transform.parent.name.Contains("TIMELINE_04")))
+            {
+                tl4 = (d.transform.parent != null && d.transform.parent.name.Contains("TIMELINE_04")) ? d.transform.parent.gameObject : d.gameObject;
+                break;
+            }
+        }
+        // 2. Dự phòng: Tìm qua Root GameObjects của Scene (quét cả Inactive)
+        if (tl4 == null)
+        {
+            var activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            foreach (var root in activeScene.GetRootGameObjects())
+            {
+                if (root.name.Contains("TIMELINE_04") || root.name.Contains("TIME"))
+                {
+                    tl4 = root;
+                    break;
+                }
+                Transform child = root.transform.Find("TIMELINE_04");
+                if (child != null)
+                {
+                    tl4 = child.gameObject;
+                    break;
+                }
+            }
+        }
+        // 3. Tiến hành phát cutscene Timeline 4
+        if (tl4 != null)
+        {
+            ChayCutsceneCuThe(tl4);
+        }
+        else
+        {
+            Debug.LogError("[NPC_DialogueTrigger] Không tìm thấy đối tượng TIMELINE_04 trong Scene (kể cả trong các object bị ẩn)!");
+        }
+    }
+    // Hàm nhận tham số nếu bạn muốn kéo thả thủ công:
+    public void ChayCutsceneThu4_GameObject(GameObject objCutscene)
+    {
+        ChayCutsceneCuThe(objCutscene);
+    }
+    public void ChayTimelineThu4(PlayableDirector timeline)
+    {
+        ChayTimelineCuThe(timeline);
+    }
     public void ChayCutsceneCuThe(GameObject objCutscene)
     {
         if (objCutscene != null)
