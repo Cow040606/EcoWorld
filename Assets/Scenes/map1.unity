@@ -25371,18 +25371,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 464662738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &157513184 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4738562381666888480, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-    type: 3}
-  m_PrefabInstance: {fileID: 1281337698}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 436de8c271868aa479a2bdcdd0eb0d51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPC_QuestBridge
 --- !u!4 &158930592 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7240230777359875429, guid: 7c4e4ca6fcf72e140a37569511cca94b,
@@ -200633,6 +200621,118 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1507612240}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &805868122
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 805868123}
+  - component: {fileID: 805868126}
+  - component: {fileID: 805868125}
+  - component: {fileID: 805868124}
+  m_Layer: 0
+  m_Name: Cube (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &805868123
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805868122}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.0034965267, y: -0.0006811915, z: -0.36674005, w: 0.9303167}
+  m_LocalPosition: {x: -53.713135, y: 18.4915, z: -22.349854}
+  m_LocalScale: {x: 4.012827, y: 1, z: 3.9997668}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 361387240}
+  m_LocalEulerAnglesHint: {x: -0.401, y: 0.074, z: -43.03}
+--- !u!65 &805868124
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805868122}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &805868125
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805868122}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &805868126
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805868122}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1001 &806130246
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -294017,35 +294117,35 @@ PrefabInstance:
     - target: {fileID: 629247614972793616, guid: a8884fa09da891440a328b0212cd9ad4,
         type: 3}
       propertyPath: json
-      value: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":18}],"EditorInfo":{"isRoot":false,"xPos":-297.86673,"yPos":489.933228},"ID":17,"ParamActions":[],"TMPFontGUID":null,"Text":"what
-        happen ","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-487.2001,"yPos":788.601},"ID":21,"ParamActions":[],"TMPFontGUID":null,"Text":"NO\n","parentUIDs":[19],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":26}],"EditorInfo":{"isRoot":false,"xPos":-275.199982,"yPos":824.601},"ID":22,"ParamActions":[],"TMPFontGUID":null,"Text":"OK\n","parentUIDs":[19],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":26}],"EditorInfo":{"isRoot":false,"xPos":-4.066742,"yPos":522.5999},"ID":25,"ParamActions":[],"TMPFontGUID":null,"Text":"About
-        Skeletons","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-32.2001038,"yPos":727.934753},"ID":27,"ParamActions":[],"TMPFontGUID":null,"Text":"lets
-        go","parentUIDs":[26],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":29}],"EditorInfo":{"isRoot":false,"xPos":286.4669,"yPos":781.2679},"ID":28,"ParamActions":[],"TMPFontGUID":null,"Text":"Done","parentUIDs":[26],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":31}],"EditorInfo":{"isRoot":false,"xPos":221.800232,"yPos":523.266541},"ID":30,"ParamActions":[],"TMPFontGUID":null,"Text":"About
-        Orc King","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":239.133484,"yPos":701.2681},"ID":33,"ParamActions":[],"TMPFontGUID":null,"Text":"Alright,
-        let''s do this","parentUIDs":[31],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":483.133575,"yPos":685.934753},"ID":34,"ParamActions":[],"TMPFontGUID":null,"Text":"I''m
-        a little scared","parentUIDs":[31],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":36}],"EditorInfo":{"isRoot":false,"xPos":323.1334,"yPos":410.599945},"ID":35,"ParamActions":[],"TMPFontGUID":null,"Text":"Report
-        Boss Defeated","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":38}],"EditorInfo":{"isRoot":false,"xPos":648.465942,"yPos":617.267151},"ID":37,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-        need more power first","parentUIDs":[36],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":40}],"EditorInfo":{"isRoot":false,"xPos":99.93338,"yPos":302.6001},"ID":39,"ParamActions":[],"TMPFontGUID":null,"Text":"What''s
+      value: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":18}],"EditorInfo":{"isRoot":false,"xPos":-69.86676,"yPos":469.9333},"ID":17,"ParamActions":[],"TMPFontGUID":null,"Text":"what
+        happen ","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-259.200134,"yPos":768.6011},"ID":21,"ParamActions":[],"TMPFontGUID":null,"Text":"NO\n","parentUIDs":[19],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":26}],"EditorInfo":{"isRoot":false,"xPos":-47.2000122,"yPos":804.6011},"ID":22,"ParamActions":[],"TMPFontGUID":null,"Text":"OK\n","parentUIDs":[19],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":26}],"EditorInfo":{"isRoot":false,"xPos":223.933228,"yPos":502.599976},"ID":25,"ParamActions":[],"TMPFontGUID":null,"Text":"About
+        Skeletons","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":195.799866,"yPos":707.9348},"ID":27,"ParamActions":[],"TMPFontGUID":null,"Text":"lets
+        go","parentUIDs":[26],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":29}],"EditorInfo":{"isRoot":false,"xPos":514.466858,"yPos":761.267944},"ID":28,"ParamActions":[],"TMPFontGUID":null,"Text":"Done","parentUIDs":[26],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":31}],"EditorInfo":{"isRoot":false,"xPos":449.8002,"yPos":503.2666},"ID":30,"ParamActions":[],"TMPFontGUID":null,"Text":"About
+        Orc King","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":467.133453,"yPos":681.2682},"ID":33,"ParamActions":[],"TMPFontGUID":null,"Text":"Alright,
+        let''s do this","parentUIDs":[31],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":711.133545,"yPos":665.9348},"ID":34,"ParamActions":[],"TMPFontGUID":null,"Text":"I''m
+        a little scared","parentUIDs":[31],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":36}],"EditorInfo":{"isRoot":false,"xPos":551.133362,"yPos":390.6},"ID":35,"ParamActions":[],"TMPFontGUID":null,"Text":"Report
+        Boss Defeated","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":38}],"EditorInfo":{"isRoot":false,"xPos":876.4659,"yPos":597.2672},"ID":37,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        need more power first","parentUIDs":[36],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":40}],"EditorInfo":{"isRoot":false,"xPos":327.93335,"yPos":282.600159},"ID":39,"ParamActions":[],"TMPFontGUID":null,"Text":"What''s
         next?","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"
         KIll ske_ChuaNhan","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"KIll
         ske_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"KIll
-        ske_DaXong ","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"bosskill_ChuaNhan","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"bosskill_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"bosskill_DangLam","BoolValue":false}],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":17},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bosskill_ChuaNhan","CheckType":0,"RequiredValue":true}],"NodeUID":25},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bosskill_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":30},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bosskill_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":35},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bosskill_ChuaNhan","CheckType":0,"RequiredValue":false},{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bosskill_DaXong","CheckType":0,"RequiredValue":false},{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bosskill_DangLam","CheckType":0,"RequiredValue":false}],"NodeUID":39}],"EditorInfo":{"isRoot":true,"xPos":-44.19998,"yPos":415.599945},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"HUHUHU","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":19}],"EditorInfo":{"isRoot":false,"xPos":-285.8666,"yPos":574.267},"ID":18,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-        had a wife, but she was killed by the Orc King.","parentUIDs":[17],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":21},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":22}],"EditorInfo":{"isRoot":false,"xPos":-283.8666,"yPos":700.9349},"ID":19,"ParamActions":[],"TMPFontGUID":null,"Text":"Please
+        ske_DaXong ","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"bosskill_ChuaNhan","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"bosskill_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"bosskill_DangLam","BoolValue":false}],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":17},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bosskill_ChuaNhan","CheckType":0,"RequiredValue":true}],"NodeUID":25},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bosskill_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":30},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bosskill_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":35},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bosskill_ChuaNhan","CheckType":0,"RequiredValue":false},{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bosskill_DaXong","CheckType":0,"RequiredValue":false},{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bosskill_DangLam","CheckType":0,"RequiredValue":false}],"NodeUID":39}],"EditorInfo":{"isRoot":true,"xPos":183.799988,"yPos":395.6},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"HUHUHU","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":19}],"EditorInfo":{"isRoot":false,"xPos":-57.86664,"yPos":554.2671},"ID":18,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        had a wife, but she was killed by the Orc King.","parentUIDs":[17],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":21},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":22}],"EditorInfo":{"isRoot":false,"xPos":-55.86664,"yPos":680.934937},"ID":19,"ParamActions":[],"TMPFontGUID":null,"Text":"Please
         take revenge for me.","parentUIDs":[18],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":27},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"KIll
-        ske_DaXong ","CheckType":0,"RequiredValue":true}],"NodeUID":28}],"EditorInfo":{"isRoot":false,"xPos":-14.1999817,"yPos":609.6004},"ID":26,"ParamActions":[],"TMPFontGUID":null,"Text":"First,
-        reach level 2 by killing 2  skeletons.","parentUIDs":[22,25],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":19.7999573,"yPos":792.2679},"ID":29,"ParamActions":[],"TMPFontGUID":null,"Text":"Very
-        good. Now, find the Orc King and eliminate him.","parentUIDs":[28],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":33},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":34}],"EditorInfo":{"isRoot":false,"xPos":237.80011,"yPos":587.6003},"ID":31,"ParamActions":[],"TMPFontGUID":null,"Text":"Very
-        good. Now, find the Orc King and eliminate him.","parentUIDs":[30],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":37}],"EditorInfo":{"isRoot":false,"xPos":569.7999,"yPos":492.93335},"ID":36,"ParamActions":[],"TMPFontGUID":null,"Text":"You
-        did it. Thank you; I will send you the reward.","parentUIDs":[35],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":722.4667,"yPos":704.26825},"ID":38,"ParamActions":[],"TMPFontGUID":null,"Text":"Wise
-        choice. Go to the royal castle and meet the King.","parentUIDs":[37],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":41}],"EditorInfo":{"isRoot":false,"xPos":259.1335,"yPos":158.933243},"ID":40,"ParamActions":[],"TMPFontGUID":null,"Text":"Wise
-        choice. Go to the royal castle and meet the King.","parentUIDs":[39],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":327.800262,"yPos":54.933136},"ID":41,"ParamActions":[],"TMPFontGUID":null,"Text":"He
+        ske_DaXong ","CheckType":0,"RequiredValue":true}],"NodeUID":28}],"EditorInfo":{"isRoot":false,"xPos":213.799988,"yPos":589.600464},"ID":26,"ParamActions":[],"TMPFontGUID":null,"Text":"First,
+        reach level 2 by killing 2  skeletons.","parentUIDs":[22,25],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":247.799927,"yPos":772.267944},"ID":29,"ParamActions":[],"TMPFontGUID":null,"Text":"Very
+        good. Now, find the Orc King and eliminate him.","parentUIDs":[28],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":33},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":34}],"EditorInfo":{"isRoot":false,"xPos":465.800079,"yPos":567.600342},"ID":31,"ParamActions":[],"TMPFontGUID":null,"Text":"Very
+        good. Now, find the Orc King and eliminate him.","parentUIDs":[30],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":37}],"EditorInfo":{"isRoot":false,"xPos":797.799866,"yPos":472.9334},"ID":36,"ParamActions":[],"TMPFontGUID":null,"Text":"You
+        did it. Thank you; I will send you the reward.","parentUIDs":[35],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":950.4666,"yPos":684.2683},"ID":38,"ParamActions":[],"TMPFontGUID":null,"Text":"Wise
+        choice. Go to the royal castle and meet the King.","parentUIDs":[37],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":41}],"EditorInfo":{"isRoot":false,"xPos":487.133484,"yPos":138.9333},"ID":40,"ParamActions":[],"TMPFontGUID":null,"Text":"Wise
+        choice. Go to the royal castle and meet the King.","parentUIDs":[39],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":555.800232,"yPos":34.933197},"ID":41,"ParamActions":[],"TMPFontGUID":null,"Text":"He
         will grant you the strength you need.","parentUIDs":[40],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
       objectReference: {fileID: 0}
     - target: {fileID: 629247614972793616, guid: a8884fa09da891440a328b0212cd9ad4,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 11400000, guid: d070433017888474ba4b740e11e96d70,
+      objectReference: {fileID: 11400000, guid: 0131099c81e23f641a21d869bd57e951,
         type: 2}
     - target: {fileID: 8222087532306567291, guid: a8884fa09da891440a328b0212cd9ad4,
         type: 3}
@@ -314127,736 +314227,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 122061833578930193, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_Avatar
-      value: 
-      objectReference: {fileID: 9000000, guid: 9d545e43681431348908eab98e78aa45, type: 3}
-    - target: {fileID: 122061833578930193, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: cc8d52bf2fbc55b488f6ddc5a277b61a, type: 2}
     - target: {fileID: 472682788658967323, guid: 29695b20b0eac0b43b5c6c2a413edee3,
         type: 3}
       propertyPath: m_Name
       value: SM_Chr_King_01
-      objectReference: {fileID: 0}
-    - target: {fileID: 502141190717567609, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.035133254
-      objectReference: {fileID: 0}
-    - target: {fileID: 502141190717567609, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.00000025425106
-      objectReference: {fileID: 0}
-    - target: {fileID: 502141190717567609, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.000000013969839
-      objectReference: {fileID: 0}
-    - target: {fileID: 502141190717567609, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.95707774
-      objectReference: {fileID: 0}
-    - target: {fileID: 502141190717567609, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.0019746514
-      objectReference: {fileID: 0}
-    - target: {fileID: 502141190717567609, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.02723519
-      objectReference: {fileID: 0}
-    - target: {fileID: 502141190717567609, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.28854203
-      objectReference: {fileID: 0}
-    - target: {fileID: 916952391669634515, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.026920708
-      objectReference: {fileID: 0}
-    - target: {fileID: 916952391669634515, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.15910004
-      objectReference: {fileID: 0}
-    - target: {fileID: 916952391669634515, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.034021474
-      objectReference: {fileID: 0}
-    - target: {fileID: 916952391669634515, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.6353803
-      objectReference: {fileID: 0}
-    - target: {fileID: 916952391669634515, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.7548652
-      objectReference: {fileID: 0}
-    - target: {fileID: 1038499782794834516, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.18151172
-      objectReference: {fileID: 0}
-    - target: {fileID: 1038499782794834516, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.000000029802322
-      objectReference: {fileID: 0}
-    - target: {fileID: 1038499782794834516, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.000000013969839
-      objectReference: {fileID: 0}
-    - target: {fileID: 1038499782794834516, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.000009619202
-      objectReference: {fileID: 0}
-    - target: {fileID: 1038499782794834516, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.9964187
-      objectReference: {fileID: 0}
-    - target: {fileID: 1038499782794834516, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.08454877
-      objectReference: {fileID: 0}
-    - target: {fileID: 1038499782794834516, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.0011555987
-      objectReference: {fileID: 0}
-    - target: {fileID: 1082635407330786300, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.11284034
-      objectReference: {fileID: 0}
-    - target: {fileID: 1082635407330786300, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.000000018626451
-      objectReference: {fileID: 0}
-    - target: {fileID: 1082635407330786300, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.000000007450581
-      objectReference: {fileID: 0}
-    - target: {fileID: 1082635407330786300, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.962856
-      objectReference: {fileID: 0}
-    - target: {fileID: 1082635407330786300, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.0000000014645707
-      objectReference: {fileID: 0}
-    - target: {fileID: 1082635407330786300, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.0000000067971175
-      objectReference: {fileID: 0}
-    - target: {fileID: 1082635407330786300, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.27001545
-      objectReference: {fileID: 0}
-    - target: {fileID: 1343382463067748327, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.03514051
-      objectReference: {fileID: 0}
-    - target: {fileID: 1343382463067748327, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.011706873
-      objectReference: {fileID: 0}
-    - target: {fileID: 1343382463067748327, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.98210907
-      objectReference: {fileID: 0}
-    - target: {fileID: 1343382463067748327, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.009819818
-      objectReference: {fileID: 0}
-    - target: {fileID: 1343382463067748327, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.16121683
-      objectReference: {fileID: 0}
-    - target: {fileID: 1343382463067748327, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.096822664
-      objectReference: {fileID: 0}
-    - target: {fileID: 1357996760735741380, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.3721935
-      objectReference: {fileID: 0}
-    - target: {fileID: 1357996760735741380, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.57394874
-      objectReference: {fileID: 0}
-    - target: {fileID: 1357996760735741380, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.63682914
-      objectReference: {fileID: 0}
-    - target: {fileID: 1357996760735741380, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.3556734
-      objectReference: {fileID: 0}
-    - target: {fileID: 1364243434205216893, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.10393268
-      objectReference: {fileID: 0}
-    - target: {fileID: 1364243434205216893, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1364243434205216893, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1364243434205216893, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.000045054127
-      objectReference: {fileID: 0}
-    - target: {fileID: 1364243434205216893, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.984949
-      objectReference: {fileID: 0}
-    - target: {fileID: 1364243434205216893, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.17196608
-      objectReference: {fileID: 0}
-    - target: {fileID: 1364243434205216893, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.017413666
-      objectReference: {fileID: 0}
-    - target: {fileID: 1599419802052180686, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.0000000047220965
-      objectReference: {fileID: 0}
-    - target: {fileID: 1599419802052180686, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.0000000015097612
-      objectReference: {fileID: 0}
-    - target: {fileID: 1599419802052180686, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9769207
-      objectReference: {fileID: 0}
-    - target: {fileID: 1599419802052180686, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.043565284
-      objectReference: {fileID: 0}
-    - target: {fileID: 1599419802052180686, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.019488981
-      objectReference: {fileID: 0}
-    - target: {fileID: 1599419802052180686, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.20820257
-      objectReference: {fileID: 0}
-    - target: {fileID: 2037997623949206883, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.2711453
-      objectReference: {fileID: 0}
-    - target: {fileID: 2037997623949206883, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.000000007581548
-      objectReference: {fileID: 0}
-    - target: {fileID: 2037997623949206883, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.00038136635
-      objectReference: {fileID: 0}
-    - target: {fileID: 2037997623949206883, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9969866
-      objectReference: {fileID: 0}
-    - target: {fileID: 2037997623949206883, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.020436907
-      objectReference: {fileID: 0}
-    - target: {fileID: 2037997623949206883, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.06663842
-      objectReference: {fileID: 0}
-    - target: {fileID: 2037997623949206883, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.034051593
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077164760549527605, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077164760549527605, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ChayCutsceneCuThe
-      objectReference: {fileID: 0}
-    - target: {fileID: 2077164760549527605, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2077164760549527605, guid: 29695b20b0eac0b43b5c6c2a413edee3,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
       objectReference: {fileID: 2010958017}
-    - target: {fileID: 2077164760549527605, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.GameObject, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 2310378247995099853, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.000000017695129
-      objectReference: {fileID: 0}
-    - target: {fileID: 2310378247995099853, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.00038135424
-      objectReference: {fileID: 0}
-    - target: {fileID: 2310378247995099853, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.99804634
-      objectReference: {fileID: 0}
-    - target: {fileID: 2310378247995099853, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.024874708
-      objectReference: {fileID: 0}
-    - target: {fileID: 2310378247995099853, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.05243533
-      objectReference: {fileID: 0}
-    - target: {fileID: 2310378247995099853, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.023137989
-      objectReference: {fileID: 0}
-    - target: {fileID: 2769222156911012350, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.042488072
-      objectReference: {fileID: 0}
-    - target: {fileID: 2769222156911012350, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.0000002947636
-      objectReference: {fileID: 0}
-    - target: {fileID: 2769222156911012350, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.000000018626451
-      objectReference: {fileID: 0}
-    - target: {fileID: 2769222156911012350, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.963506
-      objectReference: {fileID: 0}
-    - target: {fileID: 2769222156911012350, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.020929763
-      objectReference: {fileID: 0}
-    - target: {fileID: 2769222156911012350, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.018960496
-      objectReference: {fileID: 0}
-    - target: {fileID: 2769222156911012350, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.26619318
-      objectReference: {fileID: 0}
-    - target: {fileID: 4003797141809077021, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.12164436
-      objectReference: {fileID: 0}
-    - target: {fileID: 4003797141809077021, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.000000014901161
-      objectReference: {fileID: 0}
-    - target: {fileID: 4003797141809077021, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.000000013038516
-      objectReference: {fileID: 0}
-    - target: {fileID: 4003797141809077021, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.4915935
-      objectReference: {fileID: 0}
-    - target: {fileID: 4003797141809077021, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.49727643
-      objectReference: {fileID: 0}
-    - target: {fileID: 4003797141809077021, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.58086747
-      objectReference: {fileID: 0}
-    - target: {fileID: 4003797141809077021, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.41670734
-      objectReference: {fileID: 0}
-    - target: {fileID: 4092859740188588834, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.0014475789
-      objectReference: {fileID: 0}
-    - target: {fileID: 4092859740188588834, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.0014362633
-      objectReference: {fileID: 0}
-    - target: {fileID: 4092859740188588834, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9744648
-      objectReference: {fileID: 0}
-    - target: {fileID: 4092859740188588834, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.00057612354
-      objectReference: {fileID: 0}
-    - target: {fileID: 4092859740188588834, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.22434242
-      objectReference: {fileID: 0}
-    - target: {fileID: 4092859740188588834, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.009411878
-      objectReference: {fileID: 0}
-    - target: {fileID: 4216029814926730437, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.39930925
-      objectReference: {fileID: 0}
-    - target: {fileID: 4216029814926730437, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.00000035762787
-      objectReference: {fileID: 0}
-    - target: {fileID: 4216029814926730437, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.2739676e-10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4216029814926730437, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7016015
-      objectReference: {fileID: 0}
-    - target: {fileID: 4216029814926730437, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.704002
-      objectReference: {fileID: 0}
-    - target: {fileID: 4216029814926730437, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.1012762
-      objectReference: {fileID: 0}
-    - target: {fileID: 4216029814926730437, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.04335576
-      objectReference: {fileID: 0}
-    - target: {fileID: 4273214984088687750, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.37712362
-      objectReference: {fileID: 0}
-    - target: {fileID: 4273214984088687750, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00000008940697
-      objectReference: {fileID: 0}
-    - target: {fileID: 4273214984088687750, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.0000000055879354
-      objectReference: {fileID: 0}
-    - target: {fileID: 4273214984088687750, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.04872902
-      objectReference: {fileID: 0}
-    - target: {fileID: 4273214984088687750, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.80648303
-      objectReference: {fileID: 0}
-    - target: {fileID: 4273214984088687750, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.5892235
-      objectReference: {fileID: 0}
-    - target: {fileID: 4273214984088687750, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.005131691
-      objectReference: {fileID: 0}
-    - target: {fileID: 4319385454580718073, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.06370215
-      objectReference: {fileID: 0}
-    - target: {fileID: 4319385454580718073, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00000005448237
-      objectReference: {fileID: 0}
-    - target: {fileID: 4319385454580718073, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.0000000055879354
-      objectReference: {fileID: 0}
-    - target: {fileID: 4319385454580718073, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9832654
-      objectReference: {fileID: 0}
-    - target: {fileID: 4319385454580718073, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.06562254
-      objectReference: {fileID: 0}
-    - target: {fileID: 4319385454580718073, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.16882275
-      objectReference: {fileID: 0}
-    - target: {fileID: 4319385454580718073, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.019537725
-      objectReference: {fileID: 0}
-    - target: {fileID: 4365853241729025314, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.04248817
-      objectReference: {fileID: 0}
-    - target: {fileID: 4365853241729025314, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.000000022286258
-      objectReference: {fileID: 0}
-    - target: {fileID: 4365853241729025314, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 9.749783e-10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4365853241729025314, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9636364
-      objectReference: {fileID: 0}
-    - target: {fileID: 4365853241729025314, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.020919884
-      objectReference: {fileID: 0}
-    - target: {fileID: 4365853241729025314, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.018971873
-      objectReference: {fileID: 0}
-    - target: {fileID: 4365853241729025314, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.26572046
-      objectReference: {fileID: 0}
-    - target: {fileID: 4456388595549956800, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.05801529
-      objectReference: {fileID: 0}
-    - target: {fileID: 4456388595549956800, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.35567325
-      objectReference: {fileID: 0}
-    - target: {fileID: 4456388595549956800, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.636829
-      objectReference: {fileID: 0}
-    - target: {fileID: 4456388595549956800, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.5739488
-      objectReference: {fileID: 0}
-    - target: {fileID: 4456388595549956800, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.37219372
-      objectReference: {fileID: 0}
-    - target: {fileID: 4461751426501026655, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.0000065022614
-      objectReference: {fileID: 0}
-    - target: {fileID: 4461751426501026655, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.000000037252903
-      objectReference: {fileID: 0}
-    - target: {fileID: 4461751426501026655, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7610725
-      objectReference: {fileID: 0}
-    - target: {fileID: 4461751426501026655, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.2713123
-      objectReference: {fileID: 0}
-    - target: {fileID: 4461751426501026655, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.21315989
-      objectReference: {fileID: 0}
-    - target: {fileID: 4461751426501026655, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.5492916
-      objectReference: {fileID: 0}
-    - target: {fileID: 4466460702644684555, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.10396601
-      objectReference: {fileID: 0}
-    - target: {fileID: 4466460702644684555, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.003989964
-      objectReference: {fileID: 0}
-    - target: {fileID: 4466460702644684555, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.02672651
-      objectReference: {fileID: 0}
-    - target: {fileID: 4466460702644684555, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.99775493
-      objectReference: {fileID: 0}
-    - target: {fileID: 4466460702644684555, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.040634543
-      objectReference: {fileID: 0}
-    - target: {fileID: 4466460702644684555, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.043976445
-      objectReference: {fileID: 0}
-    - target: {fileID: 4466460702644684555, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.030002296
-      objectReference: {fileID: 0}
-    - target: {fileID: 4530590446345280257, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.0411578
-      objectReference: {fileID: 0}
-    - target: {fileID: 4530590446345280257, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.026920758
-      objectReference: {fileID: 0}
-    - target: {fileID: 4530590446345280257, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7952745
-      objectReference: {fileID: 0}
-    - target: {fileID: 4530590446345280257, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.6002581
-      objectReference: {fileID: 0}
-    - target: {fileID: 4530590446345280257, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.0089174975
-      objectReference: {fileID: 0}
-    - target: {fileID: 4530590446345280257, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.08455285
-      objectReference: {fileID: 0}
-    - target: {fileID: 4582212416549114705, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: danhSachModelNPCCanAn.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4582212416549114705, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: 'danhSachModelNPCCanAn.Array.data[0]'
-      value: 
-      objectReference: {fileID: 1285196045}
-    - target: {fileID: 4582212416549114705, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: 'danhSachModelNPCCanAn.Array.data[1]'
-      value: 
-      objectReference: {fileID: 1413411075}
-    - target: {fileID: 4582212416549114705, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: danhSachUIAnKhiChayCutscene.Array.size
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 4582212416549114705, guid: 29695b20b0eac0b43b5c6c2a413edee3,
         type: 3}
       propertyPath: 'danhSachUIAnKhiChayCutscene.Array.data[0]'
@@ -314882,321 +314262,49 @@ PrefabInstance:
       propertyPath: 'danhSachUIAnKhiChayCutscene.Array.data[4]'
       value: 
       objectReference: {fileID: 1184388233}
-    - target: {fileID: 4702004813142017856, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.037912123
-      objectReference: {fileID: 0}
-    - target: {fileID: 4702004813142017856, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.0000033010729
-      objectReference: {fileID: 0}
-    - target: {fileID: 4702004813142017856, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.000000048428774
-      objectReference: {fileID: 0}
-    - target: {fileID: 4702004813142017856, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.977573
-      objectReference: {fileID: 0}
-    - target: {fileID: 4702004813142017856, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.043605115
-      objectReference: {fileID: 0}
-    - target: {fileID: 4702004813142017856, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.019678537
-      objectReference: {fileID: 0}
-    - target: {fileID: 4702004813142017856, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.2050915
-      objectReference: {fileID: 0}
-    - target: {fileID: 6049505609982976005, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.03513328
-      objectReference: {fileID: 0}
-    - target: {fileID: 6049505609982976005, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00000003955938
-      objectReference: {fileID: 0}
-    - target: {fileID: 6049505609982976005, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -3.6561687e-10
-      objectReference: {fileID: 0}
-    - target: {fileID: 6049505609982976005, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9575644
-      objectReference: {fileID: 0}
-    - target: {fileID: 6049505609982976005, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.0019296587
-      objectReference: {fileID: 0}
-    - target: {fileID: 6049505609982976005, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.027194254
-      objectReference: {fileID: 0}
-    - target: {fileID: 6049505609982976005, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.28692734
-      objectReference: {fileID: 0}
     - target: {fileID: 6094884298711884002, guid: 29695b20b0eac0b43b5c6c2a413edee3,
         type: 3}
       propertyPath: json
-      value: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":false,"xPos":-147.6001,"yPos":226.8665},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-        have arrived, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":18}],"EditorInfo":{"isRoot":false,"xPos":-214.266785,"yPos":442.866241},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-        will do it, Your Majesty.","parentUIDs":[2],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":24}],"EditorInfo":{"isRoot":false,"xPos":443.066376,"yPos":36.866333},"ID":6,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-        have reached Level 20, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":25}],"EditorInfo":{"isRoot":false,"xPos":397.733,"yPos":394.1984},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-        will bring his head.","parentUIDs":[8],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":26}],"EditorInfo":{"isRoot":false,"xPos":687.0664,"yPos":357.532257},"ID":10,"ParamActions":[],"TMPFontGUID":null,"Text":"It''s
-        too dangerous.","parentUIDs":[8],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":29}],"EditorInfo":{"isRoot":false,"xPos":465.066254,"yPos":-125.801727},"ID":12,"ParamActions":[],"TMPFontGUID":null,"Text":"The
-        Knight Hero is defeated, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":20}],"EditorInfo":{"isRoot":false,"xPos":-420.600067,"yPos":357.533},"ID":19,"ParamActions":[],"TMPFontGUID":null,"Text":"Maybe
-        later","parentUIDs":[2],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":5}],"EditorInfo":{"isRoot":false,"xPos":175.399933,"yPos":202.199875},"ID":22,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-        am still working on my strength, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":28}],"EditorInfo":{"isRoot":false,"xPos":60.7330627,"yPos":-50.4668274},"ID":27,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-        am hunting the traitor, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":712.732666,"yPos":-1.80014038},"ID":30,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-        will go, Your Majesty.","parentUIDs":[15],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":32}],"EditorInfo":{"isRoot":false,"xPos":244.733185,"yPos":419.733215},"ID":31,"ParamActions":[],"TMPFontGUID":null,"Text":"I''m
-        back.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":966.7335,"yPos":424.533234},"ID":34,"ParamActions":[],"TMPFontGUID":null,"Text":"pledge
+      value: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":false,"xPos":-172.40033,"yPos":445.266541},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        have arrived, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":18}],"EditorInfo":{"isRoot":false,"xPos":-239.066833,"yPos":661.2665},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        will do it, Your Majesty.","parentUIDs":[2],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":24}],"EditorInfo":{"isRoot":false,"xPos":418.266479,"yPos":255.2664},"ID":6,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        have reached Level 20, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":25}],"EditorInfo":{"isRoot":false,"xPos":321.733124,"yPos":587.798462},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        will bring his head.","parentUIDs":[8],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":26}],"EditorInfo":{"isRoot":false,"xPos":662.2665,"yPos":575.9324},"ID":10,"ParamActions":[],"TMPFontGUID":null,"Text":"It''s
+        too dangerous.","parentUIDs":[8],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":29}],"EditorInfo":{"isRoot":false,"xPos":440.266357,"yPos":92.59834},"ID":12,"ParamActions":[],"TMPFontGUID":null,"Text":"The
+        Knight Hero is defeated, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":20}],"EditorInfo":{"isRoot":false,"xPos":-445.4002,"yPos":575.9331},"ID":19,"ParamActions":[],"TMPFontGUID":null,"Text":"Maybe
+        later","parentUIDs":[2],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":5}],"EditorInfo":{"isRoot":false,"xPos":150.6,"yPos":420.5999},"ID":22,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        am still working on my strength, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":28}],"EditorInfo":{"isRoot":false,"xPos":35.9331665,"yPos":167.933258},"ID":27,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        am hunting the traitor, Your Majesty.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":687.932739,"yPos":216.59993},"ID":30,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        will go, Your Majesty.","parentUIDs":[15],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":32}],"EditorInfo":{"isRoot":false,"xPos":387.9333,"yPos":394.1333},"ID":31,"ParamActions":[],"TMPFontGUID":null,"Text":"I''m
+        back.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":941.9333,"yPos":642.9335},"ID":34,"ParamActions":[],"TMPFontGUID":null,"Text":"pledge
         of loyalty","parentUIDs":[33],"SpeechUID":-1}],"Parameters":[{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"find
         king_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"LV20_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"LV20_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"craft_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"boss2_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"boss2_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"find
         King_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"NhiemVu_Moi
         1_DangLam","BoolValue":false}],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"find
-        king_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":1},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"LV20_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":22},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"LV20_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":6},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"boss2_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":27},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"boss2_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":12},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"find
-        King_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":31}],"EditorInfo":{"isRoot":true,"xPos":21.3999786,"yPos":89.19992},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Welcome,
-        new knight. No time to celebrate. Our kingdom is in peril, and I need you.","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":4},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":19}],"EditorInfo":{"isRoot":false,"xPos":-164.93335,"yPos":314.5326},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"You
+        king_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":1},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"LV20_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":22},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"LV20_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":6},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"boss2_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":27},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"boss2_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":12},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":31}],"EditorInfo":{"isRoot":true,"xPos":-3.40002441,"yPos":307.6},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Welcome,
+        new knight. No time to celebrate. Our kingdom is in peril, and I need you.","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":4},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":19}],"EditorInfo":{"isRoot":false,"xPos":-189.733582,"yPos":532.9326},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"You
         have arrived? You are the successor of the Hero. Now go and increase your
         strength, and go defeat the Knight Hero. The Knight Hero is the country''s
-        hero, but due to his greed for vanity, he betrayed us and must be defeated.","parentUIDs":[1],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":160.399811,"yPos":303.199341},"ID":5,"ParamActions":[],"TMPFontGUID":null,"Text":"Come
-        back when you are ready.","parentUIDs":[22],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":9},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":10}],"EditorInfo":{"isRoot":false,"xPos":552.3999,"yPos":233.865829},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"Now,
-        execute ''The HERO''. He is a traitor blinded by glory.","parentUIDs":[24],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":436.399261,"yPos":709.199158},"ID":13,"ParamActions":[],"TMPFontGUID":null,"Text":"Excellent
-        work! The kingdom owes you.","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":30}],"EditorInfo":{"isRoot":false,"xPos":714.3994,"yPos":-144.8013},"ID":15,"ParamActions":[],"TMPFontGUID":null,"Text":"One
-        last thing. Seek the Old Wizard to awaken your true power. Go now.","parentUIDs":[29],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-289.9333,"yPos":526.5326},"ID":18,"ParamActions":[],"TMPFontGUID":null,"Text":"Go,
-        and do not fail me.","parentUIDs":[4],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-562.6001,"yPos":454.533},"ID":20,"ParamActions":[],"TMPFontGUID":null,"Text":null,"parentUIDs":[19],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Do
-        not make me wait ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":8}],"EditorInfo":{"isRoot":false,"xPos":548.733154,"yPos":116.533157},"ID":24,"ParamActions":[],"TMPFontGUID":null,"Text":"Impressive.
-        Now go and defeat the Knight Hero.","parentUIDs":[6],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":157.399689,"yPos":449.866241},"ID":25,"ParamActions":[],"TMPFontGUID":null,"Text":"Very
-        good","parentUIDs":[9],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":796.7334,"yPos":235.866379},"ID":26,"ParamActions":[],"TMPFontGUID":null,"Text":"It
+        hero, but due to his greed for vanity, he betrayed us and must be defeated.","parentUIDs":[1],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":135.599884,"yPos":521.599365},"ID":5,"ParamActions":[],"TMPFontGUID":null,"Text":"Come
+        back when you are ready.","parentUIDs":[22],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":9},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":10}],"EditorInfo":{"isRoot":false,"xPos":527.6,"yPos":452.265869},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"Now,
+        execute ''The HERO''. He is a traitor blinded by glory.","parentUIDs":[24],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":411.599365,"yPos":927.599365},"ID":13,"ParamActions":[],"TMPFontGUID":null,"Text":"Excellent
+        work! The kingdom owes you.","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":30}],"EditorInfo":{"isRoot":false,"xPos":689.5995,"yPos":73.59877},"ID":15,"ParamActions":[],"TMPFontGUID":null,"Text":"One
+        last thing. Seek the Old Wizard to awaken your true power. Go now.","parentUIDs":[29],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-314.733582,"yPos":744.932739},"ID":18,"ParamActions":[],"TMPFontGUID":null,"Text":"Go,
+        and do not fail me.","parentUIDs":[4],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-587.399963,"yPos":672.9332},"ID":20,"ParamActions":[],"TMPFontGUID":null,"Text":null,"parentUIDs":[19],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Do
+        not make me wait ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":8}],"EditorInfo":{"isRoot":false,"xPos":523.9332,"yPos":334.933228},"ID":24,"ParamActions":[],"TMPFontGUID":null,"Text":"Impressive.
+        Now go and defeat the Knight Hero.","parentUIDs":[6],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":132.599762,"yPos":668.2665},"ID":25,"ParamActions":[],"TMPFontGUID":null,"Text":"Very
+        good","parentUIDs":[9],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":771.9332,"yPos":454.266418},"ID":26,"ParamActions":[],"TMPFontGUID":null,"Text":"It
         must be done","parentUIDs":[10],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING
-        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":204.066315,"yPos":-179.4667},"ID":28,"ParamActions":[],"TMPFontGUID":null,"Text":"Find
-        him and end this threat.","parentUIDs":[27],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":15}],"EditorInfo":{"isRoot":false,"xPos":573.399536,"yPos":-274.133331},"ID":29,"ParamActions":[],"TMPFontGUID":null,"Text":"Excellent
-        work! The kingdom owes you.","parentUIDs":[12],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":33}],"EditorInfo":{"isRoot":false,"xPos":451.533142,"yPos":522.933167},"ID":32,"ParamActions":[],"TMPFontGUID":null,"Text":"You''re
-        doing a great job, my hero.","parentUIDs":[31],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":34}],"EditorInfo":{"isRoot":false,"xPos":716.733154,"yPos":424.533234},"ID":33,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":179.266388,"yPos":38.9333954},"ID":28,"ParamActions":[],"TMPFontGUID":null,"Text":"Find
+        him and end this threat.","parentUIDs":[27],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":15}],"EditorInfo":{"isRoot":false,"xPos":548.5997,"yPos":-55.7331848},"ID":29,"ParamActions":[],"TMPFontGUID":null,"Text":"Excellent
+        work! The kingdom owes you.","parentUIDs":[12],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":33}],"EditorInfo":{"isRoot":false,"xPos":441.933258,"yPos":642.9335},"ID":32,"ParamActions":[],"TMPFontGUID":null,"Text":"You''re
+        doing a great job, my hero.","parentUIDs":[31],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":34}],"EditorInfo":{"isRoot":false,"xPos":691.9332,"yPos":642.9335},"ID":33,"ParamActions":[],"TMPFontGUID":null,"Text":"I
         shall confer upon you the title of Count.","parentUIDs":[32],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"KING","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
       objectReference: {fileID: 0}
     - target: {fileID: 6094884298711884002, guid: 29695b20b0eac0b43b5c6c2a413edee3,
         type: 3}
       propertyPath: Event.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6094884298711884002, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6094884298711884002, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 157513184}
-    - target: {fileID: 6094884298711884002, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ThuHoiViecTuPlayer
-      objectReference: {fileID: 0}
-    - target: {fileID: 6094884298711884002, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 6094884298711884002, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
-      value: 
-      objectReference: {fileID: 11400000, guid: d070433017888474ba4b740e11e96d70,
-        type: 2}
-    - target: {fileID: 6094884298711884002, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: Event.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: QuestSO, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 6184344372774628803, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.3771233
-      objectReference: {fileID: 0}
-    - target: {fileID: 6184344372774628803, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00000014901161
-      objectReference: {fileID: 0}
-    - target: {fileID: 6184344372774628803, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.0000008530915
-      objectReference: {fileID: 0}
-    - target: {fileID: 6184344372774628803, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.04586156
-      objectReference: {fileID: 0}
-    - target: {fileID: 6184344372774628803, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.8554411
-      objectReference: {fileID: 0}
-    - target: {fileID: 6184344372774628803, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.5154689
-      objectReference: {fileID: 0}
-    - target: {fileID: 6184344372774628803, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.02022928
-      objectReference: {fileID: 0}
-    - target: {fileID: 6402616439186996179, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.009110585
-      objectReference: {fileID: 0}
-    - target: {fileID: 6402616439186996179, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.0020523071
-      objectReference: {fileID: 0}
-    - target: {fileID: 6402616439186996179, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.078733265
-      objectReference: {fileID: 0}
-    - target: {fileID: 6402616439186996179, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9879699
-      objectReference: {fileID: 0}
-    - target: {fileID: 6402616439186996179, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.056700483
-      objectReference: {fileID: 0}
-    - target: {fileID: 6402616439186996179, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.14343648
-      objectReference: {fileID: 0}
-    - target: {fileID: 6402616439186996179, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.011253733
-      objectReference: {fileID: 0}
-    - target: {fileID: 6427855942816531476, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.03514003
-      objectReference: {fileID: 0}
-    - target: {fileID: 6427855942816531476, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.011709999
-      objectReference: {fileID: 0}
-    - target: {fileID: 6427855942816531476, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.045055404
-      objectReference: {fileID: 0}
-    - target: {fileID: 6427855942816531476, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.97662824
-      objectReference: {fileID: 0}
-    - target: {fileID: 6427855942816531476, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.0032473505
-      objectReference: {fileID: 0}
-    - target: {fileID: 6427855942816531476, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.17285061
-      objectReference: {fileID: 0}
-    - target: {fileID: 6427855942816531476, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.1277081
-      objectReference: {fileID: 0}
-    - target: {fileID: 6656671407933622723, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.09982501
-      objectReference: {fileID: 0}
-    - target: {fileID: 6656671407933622723, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.001160054
-      objectReference: {fileID: 0}
-    - target: {fileID: 6656671407933622723, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.032833412
-      objectReference: {fileID: 0}
-    - target: {fileID: 6656671407933622723, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.9979397
-      objectReference: {fileID: 0}
-    - target: {fileID: 6656671407933622723, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.0206054
-      objectReference: {fileID: 0}
-    - target: {fileID: 6656671407933622723, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.028025348
-      objectReference: {fileID: 0}
-    - target: {fileID: 6656671407933622723, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.053911358
-      objectReference: {fileID: 0}
-    - target: {fileID: 6825755615550862510, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.000000004307367
-      objectReference: {fileID: 0}
-    - target: {fileID: 6825755615550862510, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.0000000023283064
-      objectReference: {fileID: 0}
-    - target: {fileID: 6825755615550862510, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9581809
-      objectReference: {fileID: 0}
-    - target: {fileID: 6825755615550862510, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.06578674
-      objectReference: {fileID: 0}
-    - target: {fileID: 6825755615550862510, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.15587093
-      objectReference: {fileID: 0}
-    - target: {fileID: 6825755615550862510, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.23079395
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7337407008283423722, guid: 29695b20b0eac0b43b5c6c2a413edee3,
         type: 3}
@@ -315248,419 +314356,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7512551249941774311, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.33947405
-      objectReference: {fileID: 0}
-    - target: {fileID: 7512551249941774311, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.0014491224
-      objectReference: {fileID: 0}
-    - target: {fileID: 7512551249941774311, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.0014362674
-      objectReference: {fileID: 0}
-    - target: {fileID: 7512551249941774311, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.97783905
-      objectReference: {fileID: 0}
-    - target: {fileID: 7512551249941774311, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.008915468
-      objectReference: {fileID: 0}
-    - target: {fileID: 7512551249941774311, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.20872897
-      objectReference: {fileID: 0}
-    - target: {fileID: 7512551249941774311, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.0135476645
-      objectReference: {fileID: 0}
-    - target: {fileID: 7545425595375737518, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.1128404
-      objectReference: {fileID: 0}
-    - target: {fileID: 7545425595375737518, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.000000007450581
-      objectReference: {fileID: 0}
-    - target: {fileID: 7545425595375737518, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7545425595375737518, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9615594
-      objectReference: {fileID: 0}
-    - target: {fileID: 7545425595375737518, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.0000000118817445
-      objectReference: {fileID: 0}
-    - target: {fileID: 7545425595375737518, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.000000005254857
-      objectReference: {fileID: 0}
-    - target: {fileID: 7545425595375737518, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.27459717
-      objectReference: {fileID: 0}
-    - target: {fileID: 7773272621151349931, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.040935885
-      objectReference: {fileID: 0}
-    - target: {fileID: 7773272621151349931, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.0000009301584
-      objectReference: {fileID: 0}
-    - target: {fileID: 7773272621151349931, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.000000055879354
-      objectReference: {fileID: 0}
-    - target: {fileID: 7773272621151349931, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.955068
-      objectReference: {fileID: 0}
-    - target: {fileID: 7773272621151349931, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.04208144
-      objectReference: {fileID: 0}
-    - target: {fileID: 7773272621151349931, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.0040151775
-      objectReference: {fileID: 0}
-    - target: {fileID: 7773272621151349931, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.2933568
-      objectReference: {fileID: 0}
-    - target: {fileID: 8092299053500247443, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.111889705
-      objectReference: {fileID: 0}
-    - target: {fileID: 8092299053500247443, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8092299053500247443, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8092299053500247443, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.0000000024874587
-      objectReference: {fileID: 0}
-    - target: {fileID: 8092299053500247443, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 5.193357e-11
-      objectReference: {fileID: 0}
-    - target: {fileID: 8092299053500247443, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.04173301
-      objectReference: {fileID: 0}
-    - target: {fileID: 8117182320648492738, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.17903721
-      objectReference: {fileID: 0}
-    - target: {fileID: 8117182320648492738, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.000000014901161
-      objectReference: {fileID: 0}
-    - target: {fileID: 8117182320648492738, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8117182320648492738, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.07384578
-      objectReference: {fileID: 0}
-    - target: {fileID: 8117182320648492738, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.9910595
-      objectReference: {fileID: 0}
-    - target: {fileID: 8117182320648492738, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.11081487
-      objectReference: {fileID: 0}
-    - target: {fileID: 8117182320648492738, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.008251709
-      objectReference: {fileID: 0}
-    - target: {fileID: 8347189647517385129, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.00000005235779
-      objectReference: {fileID: 0}
-    - target: {fileID: 8347189647517385129, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.0000000062864274
-      objectReference: {fileID: 0}
-    - target: {fileID: 8347189647517385129, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7697349
-      objectReference: {fileID: 0}
-    - target: {fileID: 8347189647517385129, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.2637583
-      objectReference: {fileID: 0}
-    - target: {fileID: 8347189647517385129, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.19691642
-      objectReference: {fileID: 0}
-    - target: {fileID: 8347189647517385129, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.5469587
-      objectReference: {fileID: 0}
-    - target: {fileID: 8586314151082306014, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.056655094
-      objectReference: {fileID: 0}
-    - target: {fileID: 8586314151082306014, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.000000113621354
-      objectReference: {fileID: 0}
-    - target: {fileID: 8586314151082306014, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.000000230968
-      objectReference: {fileID: 0}
-    - target: {fileID: 8586314151082306014, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.9574818
-      objectReference: {fileID: 0}
-    - target: {fileID: 8586314151082306014, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.06483444
-      objectReference: {fileID: 0}
-    - target: {fileID: 8586314151082306014, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.16002506
-      objectReference: {fileID: 0}
-    - target: {fileID: 8586314151082306014, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.2311214
-      objectReference: {fileID: 0}
-    - target: {fileID: 8620883427138671527, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.39930907
-      objectReference: {fileID: 0}
-    - target: {fileID: 8620883427138671527, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.000000059604645
-      objectReference: {fileID: 0}
-    - target: {fileID: 8620883427138671527, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 1.2738255e-10
-      objectReference: {fileID: 0}
-    - target: {fileID: 8620883427138671527, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.74535435
-      objectReference: {fileID: 0}
-    - target: {fileID: 8620883427138671527, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.65565103
-      objectReference: {fileID: 0}
-    - target: {fileID: 8620883427138671527, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.1074323
-      objectReference: {fileID: 0}
-    - target: {fileID: 8620883427138671527, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.05501865
-      objectReference: {fileID: 0}
-    - target: {fileID: 8622189513567019619, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.1039656
-      objectReference: {fileID: 0}
-    - target: {fileID: 8622189513567019619, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.003987177
-      objectReference: {fileID: 0}
-    - target: {fileID: 8622189513567019619, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.026726497
-      objectReference: {fileID: 0}
-    - target: {fileID: 8622189513567019619, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.99701726
-      objectReference: {fileID: 0}
-    - target: {fileID: 8622189513567019619, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.044064313
-      objectReference: {fileID: 0}
-    - target: {fileID: 8622189513567019619, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.052818853
-      objectReference: {fileID: 0}
-    - target: {fileID: 8622189513567019619, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.035002463
-      objectReference: {fileID: 0}
-    - target: {fileID: 8637213629881913773, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.09982523
-      objectReference: {fileID: 0}
-    - target: {fileID: 8637213629881913773, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.0011595398
-      objectReference: {fileID: 0}
-    - target: {fileID: 8637213629881913773, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.032833405
-      objectReference: {fileID: 0}
-    - target: {fileID: 8637213629881913773, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.997839
-      objectReference: {fileID: 0}
-    - target: {fileID: 8637213629881913773, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.021412354
-      objectReference: {fileID: 0}
-    - target: {fileID: 8637213629881913773, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.030260265
-      objectReference: {fileID: 0}
-    - target: {fileID: 8637213629881913773, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.054251477
-      objectReference: {fileID: 0}
-    - target: {fileID: 8893923519737720076, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.063701466
-      objectReference: {fileID: 0}
-    - target: {fileID: 8893923519737720076, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.000007799827
-      objectReference: {fileID: 0}
-    - target: {fileID: 8893923519737720076, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.0000004172325
-      objectReference: {fileID: 0}
-    - target: {fileID: 8893923519737720076, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.9812202
-      objectReference: {fileID: 0}
-    - target: {fileID: 8893923519737720076, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.0652404
-      objectReference: {fileID: 0}
-    - target: {fileID: 8893923519737720076, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.18048027
-      objectReference: {fileID: 0}
-    - target: {fileID: 8893923519737720076, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.019429082
-      objectReference: {fileID: 0}
-    - target: {fileID: 8977434076159190257, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.000000041083695
-      objectReference: {fileID: 0}
-    - target: {fileID: 8977434076159190257, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -6.184564e-10
-      objectReference: {fileID: 0}
-    - target: {fileID: 8977434076159190257, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.954695
-      objectReference: {fileID: 0}
-    - target: {fileID: 8977434076159190257, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.042091254
-      objectReference: {fileID: 0}
-    - target: {fileID: 8977434076159190257, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.003945077
-      objectReference: {fileID: 0}
-    - target: {fileID: 8977434076159190257, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.294568
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6653250475248827003, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1281337756}
     - targetCorrespondingSourceObject: {fileID: 370461850626214841, guid: 29695b20b0eac0b43b5c6c2a413edee3,
         type: 3}
       insertIndex: -1
@@ -315670,31 +314369,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 29695b20b0eac0b43b5c6c2a413edee3, type: 3}
---- !u!1 &1281337700 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6653250475248827003, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-    type: 3}
-  m_PrefabInstance: {fileID: 1281337698}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1281337756
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1281337700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueEditor.NodeEventHolder
-  Event:
-    m_PersistentCalls:
-      m_Calls: []
-  NodeID: 39
-  TMPFont: {fileID: 0}
-  Icon: {fileID: 0}
-  Audio: {fileID: 0}
 --- !u!1 &1281789956
 GameObject:
   m_ObjectHideFlags: 0
@@ -317288,12 +315962,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: b257059411ddc3145aade3a193dcca24, type: 3}
---- !u!1 &1285196045 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4525426647827708384, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-    type: 3}
-  m_PrefabInstance: {fileID: 1281337698}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1286010767
 GameObject:
   m_ObjectHideFlags: 0
@@ -343222,12 +341890,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1395649518}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1413411075 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9197883646377023895, guid: 29695b20b0eac0b43b5c6c2a413edee3,
-    type: 3}
-  m_PrefabInstance: {fileID: 1281337698}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1414851543
 GameObject:
   m_ObjectHideFlags: 0
@@ -361850,6 +360512,118 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1 &1554034244
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1554034245}
+  - component: {fileID: 1554034248}
+  - component: {fileID: 1554034247}
+  - component: {fileID: 1554034246}
+  m_Layer: 0
+  m_Name: Cube (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1554034245
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554034244}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.0034769764, y: -0.0007748304, z: -0.3915931, w: 0.92013156}
+  m_LocalPosition: {x: -48.5013, y: 15.6767, z: -22.333}
+  m_LocalScale: {x: 4.1195226, y: 1, z: 3.9997668}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 361387240}
+  m_LocalEulerAnglesHint: {x: -0.401, y: 0.074, z: -46.108}
+--- !u!65 &1554034246
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554034244}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1554034247
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554034244}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1554034248
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554034244}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1554245404
 GameObject:
   m_ObjectHideFlags: 0
@@ -376779,6 +375553,118 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 43dca4df558450047ac5bd12309a1973, type: 3}
+--- !u!1 &1637390048
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1637390049}
+  - component: {fileID: 1637390052}
+  - component: {fileID: 1637390051}
+  - component: {fileID: 1637390050}
+  m_Layer: 0
+  m_Name: Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1637390049
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1637390048}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.2705976, y: -0.6532806, z: -0.2705983, w: 0.6532825}
+  m_LocalPosition: {x: -57.4999, y: 27.0452, z: -12.5752}
+  m_LocalScale: {x: 7.376048, y: 1, z: 3.9997668}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 361387240}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: -45}
+--- !u!65 &1637390050
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1637390048}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1637390051
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1637390048}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1637390052
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1637390048}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1001 &1637757646
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -513905,6 +512791,51 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5403699594351043927, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -24.65503
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403699594351043927, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.999237
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403699594351043927, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -7.6064453
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403699594351043927, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071069
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403699594351043927, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.0000001607101
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403699594351043927, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.70710677
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403699594351043927, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.000000113233824
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403699594351043927, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403699594351043927, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5411833366820807951, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
         type: 3}
       propertyPath: m_StaticEditorFlags
@@ -515134,6 +514065,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_StaticEditorFlags
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6497890816756467402, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6498373841673319593, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
         type: 3}
@@ -517715,7 +516651,8 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5338495207426760391, guid: 46c42f5e883cd8c468c4e1fb48a3de92, type: 3}
     m_RemovedGameObjects:
     - {fileID: 8603254574868173779, guid: 46c42f5e883cd8c468c4e1fb48a3de92, type: 3}
     - {fileID: 6470561970559696033, guid: 46c42f5e883cd8c468c4e1fb48a3de92, type: 3}
@@ -517741,6 +516678,18 @@ PrefabInstance:
     - {fileID: 2453142261975832838, guid: 46c42f5e883cd8c468c4e1fb48a3de92, type: 3}
     - {fileID: 4963562658118264501, guid: 46c42f5e883cd8c468c4e1fb48a3de92, type: 3}
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1643786669338522194, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      insertIndex: 2428
+      addedObject: {fileID: 1637390049}
+    - targetCorrespondingSourceObject: {fileID: 1643786669338522194, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      insertIndex: 2429
+      addedObject: {fileID: 1554034245}
+    - targetCorrespondingSourceObject: {fileID: 1643786669338522194, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
+        type: 3}
+      insertIndex: 2430
+      addedObject: {fileID: 805868123}
     - targetCorrespondingSourceObject: {fileID: 3834790067308019118, guid: 46c42f5e883cd8c468c4e1fb48a3de92,
         type: 3}
       insertIndex: -1
@@ -558432,6 +557381,51 @@ PrefabInstance:
     - target: {fileID: 5849677912962610217, guid: 1151ff966161e9b428c5b1609bc14b71,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6529112795165161678, guid: 1151ff966161e9b428c5b1609bc14b71,
+        type: 3}
+      propertyPath: json
+      value: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":2}],"EditorInfo":{"isRoot":false,"xPos":-390.8003,"yPos":-87.26709},"ID":1,"ParamActions":[],"TMPFontGUID":null,"Text":"Youknow
+        who I am?","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":4}],"EditorInfo":{"isRoot":false,"xPos":-690.1341,"yPos":106.066086},"ID":3,"ParamActions":[],"TMPFontGUID":null,"Text":"Tellme
+        what I must do.","parentUIDs":[2],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":6}],"EditorInfo":{"isRoot":false,"xPos":-674.134,"yPos":248.732849},"ID":5,"ParamActions":[],"TMPFontGUID":null,"Text":"Iwill
+        get them.","parentUIDs":[4],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":9}],"EditorInfo":{"isRoot":false,"xPos":-293.46756,"yPos":432.06543},"ID":8,"ParamActions":[],"TMPFontGUID":null,"Text":"Ihave
+        the 20 Ores.","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":18}],"EditorInfo":{"isRoot":false,"xPos":329.866516,"yPos":165.400635},"ID":17,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+        will defeat the Orc Hammer.","parentUIDs":[16],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":21}],"EditorInfo":{"isRoot":false,"xPos":-8.800972,"yPos":182.731689},"ID":20,"ParamActions":[],"TMPFontGUID":null,"Text":"TheOrc
+        Hammer is dead","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":23}],"EditorInfo":{"isRoot":false,"xPos":-604.134,"yPos":-206.600113},"ID":22,"ParamActions":[],"TMPFontGUID":null,"Text":"iam
+        still working","parentUIDs":[0],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":27}],"EditorInfo":{"isRoot":false,"xPos":549.8664,"yPos":116.066452},"ID":26,"ParamActions":[],"TMPFontGUID":null,"Text":"Thatbeast
+        is too strong for me.","parentUIDs":[16],"SpeechUID":-1},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":29}],"EditorInfo":{"isRoot":false,"xPos":-126.801094,"yPos":-197.933365},"ID":28,"ParamActions":[],"TMPFontGUID":null,"Text":"imstill
+        hunting the beast","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":367.9995,"yPos":499.80014},"ID":39,"ParamActions":[],"TMPFontGUID":null,"Text":"Ok\n","parentUIDs":[38],"SpeechUID":-1}],"Parameters":[{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"talk2_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"daoquang_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"daoquang_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"bossfinal_DangLam","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"bossfinal_DaXong","BoolValue":false},{"__type":"EditableBoolParameter:#DialogueEditor","ParameterName":"Daoquangchuanhan","BoolValue":false}],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"Daoquangchuanhan","CheckType":0,"RequiredValue":true}],"NodeUID":1},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"daoquang_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":22},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"daoquang_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":8},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bossfinal_DaXong","CheckType":0,"RequiredValue":true}],"NodeUID":20},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[{"__type":"EditableBoolCondition:#DialogueEditor","ParameterName":"bossfinal_DangLam","CheckType":0,"RequiredValue":true}],"NodeUID":28}],"EditorInfo":{"isRoot":true,"xPos":-981.8,"yPos":-79.5999756},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Ihave
+        been waiting for you... The winds whispered of your arrival","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THEMASTER
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":3}],"EditorInfo":{"isRoot":false,"xPos":-400.133972,"yPos":43.7329254},"ID":2,"ParamActions":[],"TMPFontGUID":null,"Text":"Youare
+        the successor. The one destined to bear the ultimate power. But power mustbe
+        earned, not given.","parentUIDs":[1],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THEMASTER
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":5}],"EditorInfo":{"isRoot":false,"xPos":-368.133667,"yPos":177.732666},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"First,we
+        temper your physical vessel. Bring me 20 Ores from the deep earth","parentUIDs":[3],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THEMASTER
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-397.467224,"yPos":292.400574},"ID":6,"ParamActions":[],"TMPFontGUID":null,"Text":"Go.The
+        earth does not yield its secrets to the weak.","parentUIDs":[5],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THEMASTER
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":16}],"EditorInfo":{"isRoot":false,"xPos":-677.4672,"yPos":519.732},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"A
+        solid foundation. Your body is ready. You are finally ready for the true
+        test.","parentUIDs":[8],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THEMASTER
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":17},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":26}],"EditorInfo":{"isRoot":false,"xPos":353.2005,"yPos":7.066963},"ID":16,"ParamActions":[],"TMPFontGUID":null,"Text":"The
+        final trial. Slay the world''s strongest beast: The Orc Hammer. Only then
+        will your true power awaken.","parentUIDs":[9],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THEMASTER
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":376.532959,"yPos":279.733948},"ID":18,"ParamActions":[],"TMPFontGUID":null,"Text":"Maythe
+        stars guide your blade. Return only in victory","parentUIDs":[17],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THEMASTER
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":38}],"EditorInfo":{"isRoot":false,"xPos":32.79827,"yPos":347.999451},"ID":21,"ParamActions":[],"TMPFontGUID":null,"Text":"Theprophecy
+        is fulfilled. Arise, true Hero! The ultimate power is now yours.","parentUIDs":[20],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THEMASTER
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":-349.467163,"yPos":-327.60022},"ID":23,"ParamActions":[],"TMPFontGUID":null,"Text":"Go.The
+        earth does not yield its secrets to the weak","parentUIDs":[22],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THEMASTER
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":677.200867,"yPos":238.399475},"ID":27,"ParamActions":[],"TMPFontGUID":null,"Text":"Fearis
+        the enemy of fate. You will never become the true Hero","parentUIDs":[26],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THEMASTER
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":132.53186,"yPos":-229.6001},"ID":29,"ParamActions":[],"TMPFontGUID":null,"Text":"Maythe
+        stars guide your blade. Return only in victory","parentUIDs":[28],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"THEMASTER
+        ","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":39}],"EditorInfo":{"isRoot":false,"xPos":102.399719,"yPos":495.200043},"ID":38,"ParamActions":[],"TMPFontGUID":null,"Text":"GO
+        FIND THE KING","parentUIDs":[21],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6529112795165161678, guid: 1151ff966161e9b428c5b1609bc14b71,
+        type: 3}
+      propertyPath: Event.m_PersistentCalls.m_Calls.Array.size
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
